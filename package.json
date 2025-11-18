@@ -1,0 +1,30 @@
+{
+  "name": "rox",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lightweight ActivityPub server & client with Misskey API compatibility",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "bun run --filter '*' dev",
+    "build": "bun run --filter '*' build",
+    "test": "bun test",
+    "lint": "oxlint",
+    "format": "oxlint --fix",
+    "typecheck": "bun run --filter '*' typecheck",
+    "backend:dev": "bun run --filter backend dev",
+    "frontend:dev": "bun run --filter frontend dev",
+    "db:generate": "bun run --filter backend db:generate",
+    "db:migrate": "bun run --filter backend db:migrate",
+    "db:studio": "bun run --filter backend db:studio"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "oxlint": "^0.15.0",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

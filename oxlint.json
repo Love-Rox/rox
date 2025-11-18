@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "typescript": "warn",
+    "correctness": "warn",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "ignorePatterns": [
+    "**/node_modules",
+    "**/dist",
+    "**/build",
+    "**/.waku",
+    "**/*.d.ts"
+  ]
+}
