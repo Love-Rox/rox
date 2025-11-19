@@ -8,6 +8,7 @@ import driveRoute from './routes/drive.js';
 import notesRoute from './routes/notes.js';
 import reactionsRoute from './routes/reactions.js';
 import followingRoute from './routes/following.js';
+import packageJson from '../../../package.json';
 
 const app = new Hono();
 
@@ -22,7 +23,7 @@ app.get('/health', (c) => {
   return c.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    version: '0.1.0',
+    version: packageJson.version,
   });
 });
 
@@ -30,7 +31,7 @@ app.get('/health', (c) => {
 app.get('/', (c) => {
   return c.json({
     name: 'Rox API',
-    version: '0.1.0',
+    version: packageJson.version,
     description: 'Lightweight ActivityPub server with Misskey API compatibility',
   });
 });
