@@ -288,6 +288,44 @@ export class NoteService {
   }
 
   /**
+   * Get social timeline
+   *
+   * Returns local public posts + posts from followed remote users.
+   *
+   * @param userId - User ID requesting the timeline (optional for unauthenticated users)
+   * @param options - Pagination options
+   * @returns List of Note records
+   *
+   * @example
+   * ```typescript
+   * const notes = await noteService.getSocialTimeline('user456', {
+   *   limit: 20,
+   * });
+   * ```
+   */
+  async getSocialTimeline(userId: string | null, options: TimelineOptions = {}): Promise<Note[]> {
+    const limit = this.normalizeLimit(options.limit);
+
+    let remoteUserIds: string[] = [];
+
+    // ログインユーザーの場合、フォロー中のリモートユーザーIDを取得
+    if (userId) {
+      const followings = await this.followRepository.findByFollowerId(userId);
+      // host が null でないユーザー（リモートユーザー）のみ
+      remoteUserIds = followings
+        .filter((f: any) => f.followee?.host != null)
+        .map((f: { followeeId: string }) => f.followeeId);
+    }
+
+    return await this.noteRepository.getSocialTimeline({
+      userIds: remoteUserIds,
+      limit,
+      sinceId: options.sinceId,
+      untilId: options.untilId,
+    });
+  }
+
+  /**
    * Get user timeline
    *
    * Returns posts from a specific user.

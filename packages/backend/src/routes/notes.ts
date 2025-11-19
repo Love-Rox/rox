@@ -208,6 +208,44 @@ notes.get('/timeline', requireAuth(), async (c: Context) => {
 });
 
 /**
+ * GET /api/notes/social-timeline
+ *
+ * Get social timeline
+ *
+ * Returns local public posts + posts from followed remote users.
+ *
+ * @auth Optional
+ * @query {number} [limit=20] - Maximum number of notes (max: 100)
+ * @query {string} [sinceId] - Get notes newer than this ID
+ * @query {string} [untilId] - Get notes older than this ID
+ * @returns {Note[]} List of notes
+ */
+notes.get('/social-timeline', optionalAuth(), async (c: Context) => {
+  const user = c.get('user');
+  const noteRepository = c.get('noteRepository');
+  const driveFileRepository = c.get('driveFileRepository');
+  const followRepository = c.get('followRepository');
+
+  const noteService = new NoteService(
+    noteRepository,
+    driveFileRepository,
+    followRepository,
+  );
+
+  const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : undefined;
+  const sinceId = c.req.query('sinceId');
+  const untilId = c.req.query('untilId');
+
+  const timeline = await noteService.getSocialTimeline(user?.id ?? null, {
+    limit,
+    sinceId,
+    untilId,
+  });
+
+  return c.json(timeline);
+});
+
+/**
  * GET /api/users/notes
  *
  * Get user timeline

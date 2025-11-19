@@ -36,6 +36,12 @@ export interface INoteRepository {
   getTimeline(options: TimelineOptions & { userIds: string[] }): Promise<Note[]>;
 
   /**
+   * ソーシャルタイムラインを取得
+   * ローカルの公開投稿 + フォロー中のリモートユーザーの投稿
+   */
+  getSocialTimeline(options: TimelineOptions & { userIds?: string[] }): Promise<Note[]>;
+
+  /**
    * ユーザーの投稿を取得
    */
   findByUserId(userId: string, options: TimelineOptions): Promise<Note[]>;

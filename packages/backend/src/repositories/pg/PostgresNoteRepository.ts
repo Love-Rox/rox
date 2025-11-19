@@ -1,4 +1,4 @@
-import { eq, and, isNull, inArray, desc, gt, lt, sql } from 'drizzle-orm';
+import { eq, and, or, isNull, inArray, desc, gt, lt, sql } from 'drizzle-orm';
 import type { Database } from '../../db/index.js';
 import { notes, users } from '../../db/schema/pg.js';
 import type {
@@ -104,6 +104,54 @@ export class PostgresNoteRepository implements INoteRepository {
       .limit(limit);
 
     return results as Note[];
+  }
+
+  async getSocialTimeline(
+    options: TimelineOptions & { userIds?: string[] }
+  ): Promise<Note[]> {
+    const { limit = 20, sinceId, untilId, userIds = [] } = options;
+
+    // ソーシャルタイムライン = ローカルの公開投稿 OR フォロー中のリモートユーザーの投稿
+    const conditions = [];
+
+    // ローカル公開投稿の条件（localOnlyではない、publicのみ）
+    const localConditions = [
+      isNull(users.host),
+      eq(notes.visibility, 'public'),
+      eq(notes.localOnly, false),
+    ];
+
+    // リモートユーザーの投稿の条件（userIdsに含まれる）
+    if (userIds.length > 0) {
+      // (ローカル公開投稿) OR (フォロー中のリモートユーザー)
+      conditions.push(
+        or(
+          and(...localConditions),
+          inArray(notes.userId, userIds)
+        )!
+      );
+    } else {
+      // フォローなしの場合はローカル公開投稿のみ
+      conditions.push(...localConditions);
+    }
+
+    if (sinceId) {
+      conditions.push(gt(notes.id, sinceId));
+    }
+
+    if (untilId) {
+      conditions.push(lt(notes.id, untilId));
+    }
+
+    const results = await this.db
+      .select()
+      .from(notes)
+      .innerJoin(users, eq(notes.userId, users.id))
+      .where(and(...conditions))
+      .orderBy(desc(notes.createdAt))
+      .limit(limit);
+
+    return results.map((r) => r.notes as Note);
   }
 
   async findByUserId(

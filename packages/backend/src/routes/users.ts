@@ -157,6 +157,60 @@ app.get('/@me', requireAuth(), async (c) => {
 });
 
 /**
+ * Get User Information (Misskey-compatible)
+ *
+ * GET /api/users/show
+ *
+ * Retrieves public information of a user by userId or username (no authentication required).
+ * This endpoint is Misskey API compatible.
+ *
+ * @remarks
+ * Query Parameters (one required):
+ * - userId: User ID
+ * - username: Username
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "id": "...",
+ *   "username": "alice",
+ *   "displayName": "Alice Smith",
+ *   "bio": "Hello!",
+ *   ...
+ * }
+ * ```
+ *
+ * Errors:
+ * - 400: userId or username is required
+ * - 404: User not found
+ */
+app.get('/show', async (c) => {
+  const userRepository = c.get('userRepository');
+  const userId = c.req.query('userId');
+  const username = c.req.query('username');
+
+  if (!userId && !username) {
+    return c.json({ error: 'userId or username is required' }, 400);
+  }
+
+  let user;
+  if (userId) {
+    user = await userRepository.findById(userId);
+  } else if (username) {
+    user = await userRepository.findByUsername(username, null);
+  }
+
+  if (!user) {
+    return c.json({ error: 'User not found' }, 404);
+  }
+
+  // パスワードハッシュとメールアドレスを除外
+  const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+
+  return c.json(publicUser);
+});
+
+/**
  * Get User Information
  *
  * GET /api/users/:id
