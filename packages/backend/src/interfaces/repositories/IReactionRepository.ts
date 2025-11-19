@@ -12,9 +12,24 @@ export interface IReactionRepository {
   findById(id: string): Promise<Reaction | null>;
 
   /**
-   * ユーザーとノートでリアクションを取得
+   * ユーザーとノートでリアクションを取得（最初の1つ）
+   * @deprecated 複数リアクション対応のため、findByUserNoteAndReactionを使用してください
    */
   findByUserAndNote(userId: string, noteId: string): Promise<Reaction | null>;
+
+  /**
+   * ユーザー・ノート・リアクションの組み合わせでリアクションを取得
+   */
+  findByUserNoteAndReaction(
+    userId: string,
+    noteId: string,
+    reaction: string,
+  ): Promise<Reaction | null>;
+
+  /**
+   * ユーザーがノートに付けた全リアクションを取得
+   */
+  findByUserAndNoteAll(userId: string, noteId: string): Promise<Reaction[]>;
 
   /**
    * ノートの全リアクションを取得
@@ -33,9 +48,15 @@ export interface IReactionRepository {
   countByNoteIds(noteIds: string[]): Promise<Map<string, Record<string, number>>>;
 
   /**
-   * リアクションを削除
+   * リアクションを削除（ユーザーとノートの組み合わせで最初の1つ）
+   * @deprecated 複数リアクション対応のため、deleteByUserNoteAndReactionを使用してください
    */
   delete(userId: string, noteId: string): Promise<void>;
+
+  /**
+   * 特定のリアクションを削除
+   */
+  deleteByUserNoteAndReaction(userId: string, noteId: string, reaction: string): Promise<void>;
 
   /**
    * ノートの全リアクションを削除（ノート削除時）

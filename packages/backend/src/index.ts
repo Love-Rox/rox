@@ -6,6 +6,7 @@ import usersRoute from './routes/users.js';
 import authRoute from './routes/auth.js';
 import driveRoute from './routes/drive.js';
 import notesRoute from './routes/notes.js';
+import reactionsRoute from './routes/reactions.js';
 
 const app = new Hono();
 
@@ -38,6 +39,7 @@ app.route('/api/users', usersRoute);
 app.route('/api/auth', authRoute);
 app.route('/api/drive', driveRoute);
 app.route('/api/notes', notesRoute);
+app.route('/api/notes/reactions', reactionsRoute);
 
 const port = parseInt(process.env.PORT || '3000', 10);
 

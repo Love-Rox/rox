@@ -15,6 +15,13 @@
       "when": 1763510442462,
       "tag": "0001_known_vapor",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1763565080940,
+      "tag": "0002_famous_the_hunter",
+      "breakpoints": true
     }
   ]
 }

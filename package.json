@@ -17,12 +17,14 @@
     "frontend:dev": "bun run --filter frontend dev",
     "db:generate": "bun run --filter backend db:generate",
     "db:migrate": "bun run --filter backend db:migrate",
-    "db:studio": "bun run --filter backend db:studio"
+    "db:studio": "bun run --filter backend db:studio",
+    "typedoc": "typedoc --entryPointStrategy expand --out ./typedoc/ ./packages/"
   },
   "devDependencies": {
     "@types/bun": "latest",
     "bun-types": "^1.3.2",
     "oxlint": "^0.15.0",
+    "typedoc": "^0.28.14",
     "typescript": "^5.7.2"
   },
   "engines": {

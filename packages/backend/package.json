@@ -20,7 +20,7 @@
     "mysql2": "^3.11.5",
     "better-sqlite3": "^11.7.0",
     "@aws-sdk/client-s3": "^3.705.0",
-    "shared": "workspace:*"
+    "rox_shared": "workspace:*"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",

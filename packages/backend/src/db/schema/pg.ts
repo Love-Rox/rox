@@ -121,7 +121,11 @@ export const reactions = pgTable(
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },
   (table) => ({
-    userNoteIdx: uniqueIndex('reaction_user_note_idx').on(table.userId, table.noteId),
+    userNoteReactionIdx: uniqueIndex('reaction_user_note_reaction_idx').on(
+      table.userId,
+      table.noteId,
+      table.reaction
+    ),
     noteIdIdx: index('reaction_note_id_idx').on(table.noteId),
   })
 );

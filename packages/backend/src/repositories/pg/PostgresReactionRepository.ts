@@ -50,6 +50,35 @@ export class PostgresReactionRepository implements IReactionRepository {
     return (result as Reaction) ?? null;
   }
 
+  async findByUserNoteAndReaction(
+    userId: string,
+    noteId: string,
+    reaction: string
+  ): Promise<Reaction | null> {
+    const [result] = await this.db
+      .select()
+      .from(reactions)
+      .where(
+        and(
+          eq(reactions.userId, userId),
+          eq(reactions.noteId, noteId),
+          eq(reactions.reaction, reaction)
+        )
+      )
+      .limit(1);
+
+    return (result as Reaction) ?? null;
+  }
+
+  async findByUserAndNoteAll(userId: string, noteId: string): Promise<Reaction[]> {
+    const results = await this.db
+      .select()
+      .from(reactions)
+      .where(and(eq(reactions.userId, userId), eq(reactions.noteId, noteId)));
+
+    return results as Reaction[];
+  }
+
   async findByNoteId(noteId: string, limit = 100): Promise<Reaction[]> {
     const results = await this.db
       .select()
@@ -116,6 +145,22 @@ export class PostgresReactionRepository implements IReactionRepository {
     await this.db
       .delete(reactions)
       .where(and(eq(reactions.userId, userId), eq(reactions.noteId, noteId)));
+  }
+
+  async deleteByUserNoteAndReaction(
+    userId: string,
+    noteId: string,
+    reaction: string
+  ): Promise<void> {
+    await this.db
+      .delete(reactions)
+      .where(
+        and(
+          eq(reactions.userId, userId),
+          eq(reactions.noteId, noteId),
+          eq(reactions.reaction, reaction)
+        )
+      );
   }
 
   async deleteByNoteId(noteId: string): Promise<void> {
