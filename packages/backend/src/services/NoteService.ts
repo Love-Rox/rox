@@ -1,0 +1,417 @@
+/**
+ * Note Management Service
+ *
+ * Handles note creation, deletion, and timeline retrieval.
+ * Integrates with INoteRepository for persistence and IDriveFileRepository for file validation.
+ *
+ * @module services/NoteService
+ */
+
+import type { INoteRepository } from '../interfaces/repositories/INoteRepository.js';
+import type { IDriveFileRepository } from '../interfaces/repositories/IDriveFileRepository.js';
+import type { IFollowRepository } from '../interfaces/repositories/IFollowRepository.js';
+import type { Note } from '../../../shared/src/types/note.js';
+import type { Visibility } from '../../../shared/src/types/common.js';
+import { generateId } from '../../../shared/src/utils/id.js';
+
+/**
+ * Note creation input data
+ */
+export interface NoteCreateInput {
+  /** User ID creating the note */
+  userId: string;
+  /** Note text content (can be null if files are attached) */
+  text?: string | null;
+  /** Content Warning text */
+  cw?: string | null;
+  /** Visibility level */
+  visibility?: Visibility;
+  /** Local-only flag (disable federation) */
+  localOnly?: boolean;
+  /** Reply target note ID */
+  replyId?: string | null;
+  /** Renote target note ID */
+  renoteId?: string | null;
+  /** File IDs to attach */
+  fileIds?: string[];
+}
+
+/**
+ * Timeline retrieval options
+ */
+export interface TimelineOptions {
+  /** Maximum number of notes to retrieve (default: 20, max: 100) */
+  limit?: number;
+  /** Get notes newer than this ID */
+  sinceId?: string;
+  /** Get notes older than this ID */
+  untilId?: string;
+}
+
+/**
+ * Note Service
+ *
+ * Provides business logic for note operations including:
+ * - Note creation with validation
+ * - File attachment verification
+ * - Note deletion with ownership verification
+ * - Timeline retrieval (local, home, user)
+ *
+ * @remarks
+ * - Text or files are required (cannot be both empty)
+ * - File ownership is verified before attachment
+ * - Maximum 4 files per note
+ * - Default visibility: public
+ * - Default limit: 20 notes (max: 100)
+ */
+export class NoteService {
+  private readonly maxFilesPerNote = 4;
+  private readonly defaultTimelineLimit = 20;
+  private readonly maxTimelineLimit = 100;
+
+  /**
+   * NoteService Constructor
+   *
+   * @param noteRepository - Note repository
+   * @param driveFileRepository - Drive file repository
+   * @param followRepository - Follow repository
+   */
+  constructor(
+    private readonly noteRepository: INoteRepository,
+    private readonly driveFileRepository: IDriveFileRepository,
+    private readonly followRepository: IFollowRepository,
+  ) {}
+
+  /**
+   * Create a new note
+   *
+   * Validates input, verifies file ownership, and creates the note.
+   *
+   * @param input - Note creation parameters
+   * @returns Created Note record
+   * @throws Error if validation fails
+   * @throws Error if file ownership verification fails
+   *
+   * @example
+   * ```typescript
+   * const note = await noteService.create({
+   *   userId: user.id,
+   *   text: 'Hello, world!',
+   *   visibility: 'public',
+   *   fileIds: ['file123'],
+   * });
+   * ```
+   *
+   * @remarks
+   * - At least text or files must be provided
+   * - Maximum 4 files per note
+   * - Files must be owned by the user
+   * - Renote can have no text (quote renote if text is provided)
+   */
+  async create(input: NoteCreateInput): Promise<Note> {
+    const {
+      userId,
+      text = null,
+      cw = null,
+      visibility = 'public',
+      localOnly = false,
+      replyId = null,
+      renoteId = null,
+      fileIds = [],
+    } = input;
+
+    // バリデーション: テキストまたはファイルが必須（Renoteの場合は除く）
+    if (!renoteId && !text && fileIds.length === 0) {
+      throw new Error('Note must have text or files');
+    }
+
+    // バリデーション: ファイル数制限
+    if (fileIds.length > this.maxFilesPerNote) {
+      throw new Error(`Maximum ${this.maxFilesPerNote} files allowed per note`);
+    }
+
+    // ファイル所有権の確認
+    if (fileIds.length > 0) {
+      await this.verifyFileOwnership(fileIds, userId);
+    }
+
+    // リプライ先の存在確認
+    if (replyId) {
+      const replyNote = await this.noteRepository.findById(replyId);
+      if (!replyNote) {
+        throw new Error('Reply target note not found');
+      }
+    }
+
+    // Renote先の存在確認
+    if (renoteId) {
+      const renoteTarget = await this.noteRepository.findById(renoteId);
+      if (!renoteTarget) {
+        throw new Error('Renote target note not found');
+      }
+    }
+
+    // メンション抽出（簡易実装、Phase 1.1で拡張予定）
+    const mentions = this.extractMentions(text || '');
+
+    // ハッシュタグ抽出（簡易実装、Phase 1.1で拡張予定）
+    const tags = this.extractHashtags(text || '');
+
+    // 絵文字抽出（簡易実装、Phase 1.1で拡張予定）
+    const emojis = this.extractEmojis(text || '');
+
+    // ノート作成
+    const note = await this.noteRepository.create({
+      id: generateId(),
+      userId,
+      text,
+      cw,
+      visibility,
+      localOnly,
+      replyId,
+      renoteId,
+      fileIds,
+      mentions,
+      emojis,
+      tags,
+      uri: null, // ローカルノートなのでnull
+    });
+
+    return note;
+  }
+
+  /**
+   * Get a note by ID
+   *
+   * @param noteId - Note ID
+   * @returns Note record or null if not found
+   *
+   * @example
+   * ```typescript
+   * const note = await noteService.findById('note123');
+   * if (!note) {
+   *   throw new Error('Note not found');
+   * }
+   * ```
+   */
+  async findById(noteId: string): Promise<Note | null> {
+    return await this.noteRepository.findById(noteId);
+  }
+
+  /**
+   * Delete a note
+   *
+   * Verifies ownership before deletion.
+   *
+   * @param noteId - Note ID
+   * @param userId - User ID (for ownership verification)
+   * @throws Error if note not found or access denied
+   *
+   * @example
+   * ```typescript
+   * await noteService.delete('note123', 'user456');
+   * ```
+   */
+  async delete(noteId: string, userId: string): Promise<void> {
+    const note = await this.noteRepository.findById(noteId);
+
+    if (!note) {
+      throw new Error('Note not found');
+    }
+
+    // 所有者確認
+    if (note.userId !== userId) {
+      throw new Error('Access denied');
+    }
+
+    await this.noteRepository.delete(noteId);
+  }
+
+  /**
+   * Get local timeline
+   *
+   * Returns public posts from local users only.
+   *
+   * @param options - Pagination options
+   * @returns List of Note records
+   *
+   * @example
+   * ```typescript
+   * const notes = await noteService.getLocalTimeline({
+   *   limit: 20,
+   *   sinceId: 'note123',
+   * });
+   * ```
+   */
+  async getLocalTimeline(options: TimelineOptions = {}): Promise<Note[]> {
+    const limit = this.normalizeLimit(options.limit);
+
+    return await this.noteRepository.getLocalTimeline({
+      limit,
+      sinceId: options.sinceId,
+      untilId: options.untilId,
+    });
+  }
+
+  /**
+   * Get home timeline
+   *
+   * Returns posts from followed users.
+   *
+   * @param userId - User ID requesting the timeline
+   * @param options - Pagination options
+   * @returns List of Note records
+   *
+   * @example
+   * ```typescript
+   * const notes = await noteService.getHomeTimeline('user456', {
+   *   limit: 20,
+   * });
+   * ```
+   */
+  async getHomeTimeline(userId: string, options: TimelineOptions = {}): Promise<Note[]> {
+    const limit = this.normalizeLimit(options.limit);
+
+    // フォロー中のユーザーIDを取得
+    const followings = await this.followRepository.findByFollowerId(userId);
+    const followingUserIds = followings.map((f: { followeeId: string }) => f.followeeId);
+
+    // 自分の投稿も含める
+    const userIds = [userId, ...followingUserIds];
+
+    return await this.noteRepository.getTimeline({
+      userIds,
+      limit,
+      sinceId: options.sinceId,
+      untilId: options.untilId,
+    });
+  }
+
+  /**
+   * Get user timeline
+   *
+   * Returns posts from a specific user.
+   *
+   * @param userId - Target user ID
+   * @param options - Pagination options
+   * @returns List of Note records
+   *
+   * @example
+   * ```typescript
+   * const notes = await noteService.getUserTimeline('user456', {
+   *   limit: 20,
+   * });
+   * ```
+   */
+  async getUserTimeline(userId: string, options: TimelineOptions = {}): Promise<Note[]> {
+    const limit = this.normalizeLimit(options.limit);
+
+    return await this.noteRepository.findByUserId(userId, {
+      limit,
+      sinceId: options.sinceId,
+      untilId: options.untilId,
+    });
+  }
+
+  /**
+   * Verify file ownership
+   *
+   * Ensures all files belong to the user.
+   *
+   * @param fileIds - File IDs to verify
+   * @param userId - User ID
+   * @throws Error if any file is not owned by the user
+   *
+   * @private
+   */
+  private async verifyFileOwnership(fileIds: string[], userId: string): Promise<void> {
+    for (const fileId of fileIds) {
+      const file = await this.driveFileRepository.findById(fileId);
+
+      if (!file) {
+        throw new Error(`File not found: ${fileId}`);
+      }
+
+      if (file.userId !== userId) {
+        throw new Error(`File access denied: ${fileId}`);
+      }
+    }
+  }
+
+  /**
+   * Extract mentions from text
+   *
+   * Finds @username patterns in text.
+   *
+   * @param text - Note text
+   * @returns Array of mentioned usernames
+   *
+   * @private
+   * @remarks Simple implementation, will be enhanced in Phase 1.1
+   */
+  private extractMentions(text: string): string[] {
+    const mentionPattern = /@([a-zA-Z0-9_]+)/g;
+    const matches = text.matchAll(mentionPattern);
+    return Array.from(matches, (m) => m[1]).filter((m): m is string => m !== undefined);
+  }
+
+  /**
+   * Extract hashtags from text
+   *
+   * Finds #tag patterns in text.
+   *
+   * @param text - Note text
+   * @returns Array of hashtags (without #)
+   *
+   * @private
+   * @remarks Simple implementation, will be enhanced in Phase 1.1
+   */
+  private extractHashtags(text: string): string[] {
+    const hashtagPattern = /#([a-zA-Z0-9_]+)/g;
+    const matches = text.matchAll(hashtagPattern);
+    return Array.from(matches, (m) => m[1]).filter((m): m is string => m !== undefined);
+  }
+
+  /**
+   * Extract custom emojis from text
+   *
+   * Finds :emoji: patterns in text.
+   *
+   * @param text - Note text
+   * @returns Array of emoji names (without colons)
+   *
+   * @private
+   * @remarks Simple implementation, will be enhanced in Phase 1.1
+   */
+  private extractEmojis(text: string): string[] {
+    const emojiPattern = /:([a-zA-Z0-9_]+):/g;
+    const matches = text.matchAll(emojiPattern);
+    return Array.from(matches, (m) => m[1]).filter((m): m is string => m !== undefined);
+  }
+
+  /**
+   * Normalize timeline limit
+   *
+   * Ensures limit is within valid range.
+   *
+   * @param limit - Requested limit
+   * @returns Normalized limit
+   *
+   * @private
+   */
+  private normalizeLimit(limit?: number): number {
+    if (!limit) {
+      return this.defaultTimelineLimit;
+    }
+
+    if (limit < 1) {
+      return this.defaultTimelineLimit;
+    }
+
+    if (limit > this.maxTimelineLimit) {
+      return this.maxTimelineLimit;
+    }
+
+    return limit;
+  }
+}

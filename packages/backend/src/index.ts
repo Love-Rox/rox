@@ -5,6 +5,7 @@ import { diMiddleware, errorHandler } from './middleware/index.js';
 import usersRoute from './routes/users.js';
 import authRoute from './routes/auth.js';
 import driveRoute from './routes/drive.js';
+import notesRoute from './routes/notes.js';
 
 const app = new Hono();
 
@@ -36,6 +37,7 @@ app.get('/', (c) => {
 app.route('/api/users', usersRoute);
 app.route('/api/auth', authRoute);
 app.route('/api/drive', driveRoute);
+app.route('/api/notes', notesRoute);
 
 const port = parseInt(process.env.PORT || '3000', 10);
 

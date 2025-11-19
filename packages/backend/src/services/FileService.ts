@@ -60,6 +60,12 @@ export interface FileUpdateInput {
 export class FileService {
   private readonly maxFileSize: number;
 
+  /**
+   * FileService Constructor
+   *
+   * @param driveFileRepository - Drive file repository
+   * @param storage - File storage adapter (Local or S3)
+   */
   constructor(
     private readonly driveFileRepository: IDriveFileRepository,
     private readonly storage: IFileStorage,
