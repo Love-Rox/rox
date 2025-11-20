@@ -185,11 +185,11 @@ Roxは**リポジトリパターン**と**アダプターパターン**を使用
   - ✅ Waku + Jotaiセットアップ
   - ✅ Tailwind CSS v4（OKLCH色空間対応）
   - ✅ React Aria Components（Button、TextField、Dialog、Form、Avatar、Card）
-  - ✅ Lingui国際化（英語/日本語 - 32メッセージ）
+  - ✅ Lingui国際化（英語/日本語 - 36メッセージ）
   - ✅ 認証（Passkey + Password）
   - ✅ タイムライン（表示、ページネーション）
   - ✅ ノート投稿（テキスト、CW、公開範囲）
-  - 🚧 ユーザーインタラクション（リプライ、リアクション、フォロー）
+  - ✅ ユーザーインタラクション（リプライ、リアクション、フォロー）
   - 🚧 ファイルアップロード
   - 🚧 ユーザープロフィール
 - **Phase 3**: ActivityPub連合 ⏳ **計画中**

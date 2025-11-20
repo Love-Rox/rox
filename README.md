@@ -185,11 +185,11 @@ See [Implementation Guide](./docs/implementation/README.md) for detailed archite
   - ✅ Waku + Jotai setup
   - ✅ Tailwind CSS v4 with OKLCH colors
   - ✅ React Aria Components (Button, TextField, Dialog, Form, Avatar, Card)
-  - ✅ Lingui i18n (English/Japanese - 32 messages)
+  - ✅ Lingui i18n (English/Japanese - 36 messages)
   - ✅ Authentication (Passkey + Password)
   - ✅ Timeline (display, pagination)
   - ✅ Note Composer (text, CW, visibility)
-  - 🚧 User interactions (reply, reaction, follow)
+  - ✅ User interactions (reply, reaction, follow)
   - 🚧 File uploads
   - 🚧 User profiles
 - **Phase 3**: ActivityPub Federation ⏳ **Planned**
