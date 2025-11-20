@@ -25,7 +25,7 @@ msgstr "Be the first to post something!"
 msgid "Choose your preferred sign-in method"
 msgstr "Choose your preferred sign-in method"
 
-#: src/components/note/NoteCard.tsx:103
+#: src/components/note/NoteCard.tsx:137
 msgid "Content Warning"
 msgstr "Content Warning"
 
@@ -77,11 +77,15 @@ msgstr "Post"
 msgid "Posting..."
 msgstr "Posting..."
 
-#: src/pages/index.tsx:32
+#: src/components/note/ReactionPicker.tsx:135
+msgid "React"
+msgstr "React"
+
+#: src/pages/index.tsx:34
 msgid "Recent posts from your community"
 msgstr "Recent posts from your community"
 
-#: src/components/note/NoteCard.tsx:94
+#: src/components/note/NoteCard.tsx:128
 msgid "Renoted"
 msgstr "Renoted"
 
@@ -89,7 +93,7 @@ msgstr "Renoted"
 msgid "Reply"
 msgstr "Reply"
 
-#: src/components/note/NoteCard.tsx:111
+#: src/components/note/NoteCard.tsx:145
 msgid "Show content"
 msgstr "Show content"
 
@@ -117,7 +121,7 @@ msgstr "Sign up"
 msgid "Signing in..."
 msgstr "Signing in..."
 
-#: src/pages/index.tsx:29
+#: src/pages/index.tsx:31
 msgid "Timeline"
 msgstr "Timeline"
 

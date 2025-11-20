@@ -1,12 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAtom } from 'jotai';
 import type { Note, NoteFile } from '../../lib/types/note';
 import { Trans } from '@lingui/react/macro';
 import { Card, CardContent } from '../ui/Card';
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
 import { notesApi } from '../../lib/api/notes';
+import { ReactionButton } from './ReactionPicker';
+import { createReaction, deleteReaction, getMyReactions } from '../../lib/api/reactions';
+import { tokenAtom } from '../../lib/atoms/auth';
 
 /**
  * Props for the NoteCard component
@@ -28,14 +32,44 @@ export interface NoteCardProps {
 export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
   const [showCw, setShowCw] = useState(false);
   const [isReacting, setIsReacting] = useState(false);
+  const [token] = useAtom(tokenAtom);
+  const [myReactions, setMyReactions] = useState<string[]>([]);
+
+  // Load user's existing reactions on mount
+  useEffect(() => {
+    const loadMyReactions = async () => {
+      if (!token) return;
+
+      try {
+        const reactions = await getMyReactions(note.id, token);
+        setMyReactions(reactions.map((r) => r.reaction));
+      } catch (error) {
+        console.error('Failed to load user reactions:', error);
+      }
+    };
+
+    loadMyReactions();
+  }, [note.id, token]);
 
   const handleReaction = async (reaction: string) => {
-    if (isReacting) return;
+    if (isReacting || !token) return;
     setIsReacting(true);
 
     try {
-      await notesApi.createReaction(note.id, reaction);
-      // TODO: Update local state or refetch
+      // Check if user already reacted with this emoji
+      const isAlreadyReacted = myReactions.includes(reaction);
+
+      if (isAlreadyReacted) {
+        // Remove reaction
+        await deleteReaction(note.id, reaction, token);
+        setMyReactions(myReactions.filter((r) => r !== reaction));
+      } else {
+        // Add reaction
+        await createReaction(note.id, reaction, token);
+        setMyReactions([...myReactions, reaction]);
+      }
+
+      // TODO: Update local state or refetch timeline
     } catch (error) {
       console.error('Failed to react:', error);
     } finally {
@@ -187,15 +221,30 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
           >
             🔁 {note.renoteCount || 0}
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onPress={() => handleReaction('❤️')}
+          <ReactionButton
+            onReactionSelect={handleReaction}
+            selectedReactions={myReactions}
             isDisabled={isReacting}
-            className="text-gray-600 hover:text-red-600"
-          >
-            ❤️ {note.reactions ? Object.keys(note.reactions).length : 0}
-          </Button>
+          />
+          {note.reactions && Object.keys(note.reactions).length > 0 && (
+            <div className="flex items-center gap-1 text-sm text-gray-600">
+              {Object.entries(note.reactions).map(([emoji, count]) => (
+                <button
+                  key={emoji}
+                  onClick={() => handleReaction(emoji)}
+                  disabled={isReacting}
+                  className={`
+                    flex items-center gap-1 px-2 py-1 rounded-full
+                    transition-all hover:bg-gray-100
+                    ${myReactions.includes(emoji) ? 'bg-primary-100 ring-1 ring-primary-500' : 'bg-gray-50'}
+                  `}
+                >
+                  <span>{emoji}</span>
+                  <span className="text-xs font-medium">{count}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

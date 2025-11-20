@@ -25,7 +25,7 @@ msgstr "最初の投稿をしてみましょう！"
 msgid "Choose your preferred sign-in method"
 msgstr "サインイン方法を選択してください"
 
-#: src/components/note/NoteCard.tsx:103
+#: src/components/note/NoteCard.tsx:137
 msgid "Content Warning"
 msgstr "閲覧注意"
 
@@ -77,11 +77,15 @@ msgstr "投稿"
 msgid "Posting..."
 msgstr "投稿中..."
 
-#: src/pages/index.tsx:32
+#: src/components/note/ReactionPicker.tsx:135
+msgid "React"
+msgstr "リアクション"
+
+#: src/pages/index.tsx:34
 msgid "Recent posts from your community"
 msgstr "コミュニティの最新投稿"
 
-#: src/components/note/NoteCard.tsx:94
+#: src/components/note/NoteCard.tsx:128
 msgid "Renoted"
 msgstr "リノート"
 
@@ -89,7 +93,7 @@ msgstr "リノート"
 msgid "Reply"
 msgstr "返信"
 
-#: src/components/note/NoteCard.tsx:111
+#: src/components/note/NoteCard.tsx:145
 msgid "Show content"
 msgstr "内容を表示"
 
@@ -117,7 +121,7 @@ msgstr "新規登録"
 msgid "Signing in..."
 msgstr "サインイン中..."
 
-#: src/pages/index.tsx:29
+#: src/pages/index.tsx:31
 msgid "Timeline"
 msgstr "タイムライン"
 
