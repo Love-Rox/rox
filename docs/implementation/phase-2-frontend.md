@@ -1,24 +1,25 @@
 # Phase 2: Frontend (Waku Client)
 
 **期間:** 3-4週間
-**ステータス:** 🚧 進行中
+**ステータス:** ✅ 基盤完了 / 🚧 機能拡張中
 **前提条件:** Phase 1 (Misskey API)完了 ✅
 **並行可能:** Phase 3と並行可能
+**最終更新:** 2025-11-21
 
 ## 目的
 
 Waku + React Server Components + Jotai を活用した、高速で使いやすいWebクライアントを構築する。
 
-## 技術スタック
+## 技術スタック（実装済み）
 
-| カテゴリ | 技術 | 目的 |
-|---------|------|------|
-| フレームワーク | Waku | React Server Components (RSC) ネイティブサポート |
-| 状態管理 | Jotai | アトミックな状態管理、最小限の再レンダリング |
-| UIコンポーネント | React Aria Components | アクセシブルで高品質なヘッドレスUIコンポーネント |
-| スタイリング | Tailwind CSS | ユーティリティファーストCSS、ビルド時最適化 |
-| 国際化 | Lingui | 読みやすく自動化された最適化されたi18n（3kb） |
-| フォーム | React Hook Form | パフォーマンス重視のフォーム管理 |
+| カテゴリ | 技術 | バージョン | ステータス |
+|---------|------|-----------|----------|
+| フレームワーク | Waku | 0.27.1 | ✅ 実装完了 |
+| 状態管理 | Jotai | 2.15.1 | ✅ 実装完了 |
+| UIコンポーネント | React Aria Components | 1.6.3 | ✅ 実装完了 |
+| スタイリング | Tailwind CSS v4 | 4.1.17 (OKLCH色空間) | ✅ 実装完了 |
+| 国際化 | Lingui | 5.6.0 | ✅ 実装完了 (en/ja) |
+| 認証 | Passkey + Password | カスタム実装 | ✅ 実装完了 |
 
 ## 実装順序
 
@@ -178,10 +179,11 @@ export const apiClient = new ApiClient(
 ```
 
 **完了条件:**
-- [ ] Waku開発サーバー起動
-- [ ] Tailwind CSS動作確認
-- [ ] APIクライアント実装
-- [ ] 基本的なルーティング設定
+- [x] Waku開発サーバー起動
+- [x] Tailwind CSS v4動作確認（OKLCH色空間対応）
+- [x] APIクライアント実装
+- [x] 基本的なルーティング設定
+- [x] 型定義（shared typesとの統合）
 
 ---
 
@@ -319,11 +321,12 @@ export function LanguageSwitcher() {
 ```
 
 **完了条件:**
-- [ ] Lingui設定完了
-- [ ] en/ja カタログ作成
-- [ ] i18nプロバイダー設定
-- [ ] 言語切り替え機能実装
-- [ ] メッセージ抽出ワークフロー確立（`bun lingui extract`）
+- [x] Lingui設定完了
+- [x] en/ja カタログ作成（32メッセージ完全翻訳）
+- [x] i18nプロバイダー設定
+- [x] 言語切り替え機能実装（LanguageSwitcherコンポーネント）
+- [x] メッセージ抽出ワークフロー確立（`bun lingui extract`）
+- [x] localStorage連携による言語設定永続化
 
 ---
 
@@ -463,10 +466,11 @@ export function Dialog({ title, children, trigger }: {
 }
 ```
 
-**実装予定コンポーネント（React Aria Components）:**
+**実装済みコンポーネント（React Aria Components）:**
 - ✅ Button (AriaButton)
-- ✅ TextField / TextArea (AriaTextField)
+- ✅ TextField (AriaTextField)
 - ✅ Dialog / Modal (AriaDialog)
+- ✅ Form (AriaForm)
 - [ ] Select / ComboBox (AriaSelect, AriaComboBox)
 - [ ] Menu / Dropdown (AriaMenu)
 - [ ] Tabs (AriaTabs)
@@ -474,10 +478,11 @@ export function Dialog({ title, children, trigger }: {
 - [ ] RadioGroup (AriaRadioGroup)
 - [ ] DatePicker (AriaDatePicker)
 - カスタムコンポーネント:
-  - Avatar
-  - Card
-  - Loading Spinner
-  - Toast / Alert
+  - ✅ Avatar
+  - ✅ Card
+  - ✅ LanguageSwitcher
+  - [ ] Loading Spinner
+  - [ ] Toast / Alert
 
 ### 3.4 フォームコンポーネント（React Hook Form + React Aria）
 
@@ -553,12 +558,14 @@ export default function RootLayout({
 ```
 
 **完了条件:**
-- [ ] React Aria Components基本セットアップ
-- [ ] 全基本コンポーネント実装（Button, TextField, Dialog, Select, Menu）
-- [ ] レスポンシブ対応
-- [ ] アクセシビリティ対応（自動対応済み、React Ariaの利点）
-- [ ] キーボードナビゲーション対応（自動対応済み）
-- [ ] Tailwind CSSスタイリング
+- [x] React Aria Components基本セットアップ
+- [x] 基本コンポーネント実装（Button, TextField, Dialog, Form）
+- [x] カスタムコンポーネント実装（Avatar, Card, LanguageSwitcher）
+- [x] レスポンシブ対応
+- [x] アクセシビリティ対応（React Ariaによる自動対応）
+- [x] キーボードナビゲーション対応（React Ariaによる自動対応）
+- [x] Tailwind CSS v4 スタイリング（OKLCH色空間）
+- [ ] 追加コンポーネント（Select, Menu, Tabs, Switch など）
 - [ ] ダークモード対応（オプション）
 
 **React Aria Componentsの利点:**
@@ -712,10 +719,13 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 ```
 
 **完了条件:**
-- [ ] ログインページ実装
+- [x] ログインページ実装（Passkey + Password）
+- [x] 認証状態管理（Jotai）
+- [x] トークン永続化（localStorage）
+- [x] 認証フロー（AuthManager）
+- [x] Passkey認証実装（WebAuthn）
+- [x] パスワード認証実装
 - [ ] サインアップページ実装
-- [ ] 認証状態管理（Jotai）
-- [ ] トークン永続化（localStorage）
 - [ ] Protected Route実装
 - [ ] 自動ログイン（トークン検証）
 
@@ -892,11 +902,14 @@ export function useInfiniteScroll(callback: () => void) {
 ```
 
 **完了条件:**
-- [ ] タイムライン表示（RSC活用）
-- [ ] 無限スクロールページネーション
+- [x] タイムライン表示（Client Component）
+- [x] ページネーション（Load More）
+- [x] ノートカード実装
+- [x] CW（Content Warning）機能
+- [x] Renote表示機能
+- [ ] 無限スクロール実装
 - [ ] Pull-to-refresh（モバイル）
-- [ ] ノートカード実装
-- [ ] 画像ギャラリー
+- [ ] 画像ギャラリー最適化
 - [ ] リアルタイム更新（ポーリング or WebSocket）
 
 ---
@@ -978,11 +991,13 @@ export function NoteComposer() {
 ```
 
 **完了条件:**
-- [ ] テキスト入力
+- [x] テキスト入力
+- [x] NoteComposerコンポーネント実装
+- [x] 公開範囲選択（Visibility）
+- [x] CW（Content Warning）設定
+- [x] 投稿状態管理（Jotai）
 - [ ] ファイル添付（ドラッグ&ドロップ）
 - [ ] 絵文字ピッカー
-- [ ] CW設定
-- [ ] 公開範囲選択
 - [ ] 文字数カウンター
 - [ ] 下書き保存（localStorage）
 - [ ] Optimistic Update
@@ -1014,8 +1029,25 @@ export function NoteComposer() {
 
 ## 完了条件（Phase 2全体）
 
-- [ ] 全ユーザーフロー動作
-- [ ] レスポンシブ対応
+### ✅ 完了済み（基盤）
+- [x] Waku + Jotai環境構築
+- [x] Tailwind CSS v4設定（OKLCH色空間）
+- [x] 国際化（Lingui）完全実装（en/ja 32メッセージ）
+- [x] React Aria Components基本セットアップ
+- [x] 認証フロー（Passkey + Password）
+- [x] タイムライン表示・ページネーション
+- [x] ノート投稿機能（NoteComposer）
+- [x] ノートカード（CW、Renote対応）
+- [x] 型システム（shared typesとの統合）
+- [x] レスポンシブ対応（基本）
+
+### 🚧 進行中・未実装
+- [ ] ユーザーインタラクション（リプライ、リアクション、フォロー）
+- [ ] ユーザープロフィールページ
+- [ ] ファイル添付機能
+- [ ] 絵文字ピッカー
+- [ ] 無限スクロール
+- [ ] リアルタイム更新
 - [ ] Lighthouse Performance > 90
 - [ ] Accessibility > 90
 - [ ] クロスブラウザ動作確認

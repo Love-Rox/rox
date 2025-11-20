@@ -155,24 +155,44 @@ See [Implementation Guide](./docs/implementation/README.md) for detailed archite
 
 ## Technology Stack
 
-| Category | Technology | Purpose |
-|----------|-----------|---------|
-| Runtime | Bun | Fast JavaScript runtime, package manager, test runner |
-| Language | TypeScript | Type safety and development efficiency |
-| Backend | Hono | Ultra-lightweight web framework |
-| Frontend | Waku | React Server Components framework |
-| State Management | Jotai | Atomic state management |
-| Styling | Tailwind CSS | Utility-first CSS |
-| ORM | Drizzle ORM | TypeScript-first ORM |
-| Queue | Dragonfly / BullMQ | Async job processing |
-| Code Quality | oxc | Linting and formatting |
+### Backend
+
+| Category | Technology | Version | Purpose |
+|----------|-----------|---------|---------|
+| Runtime | Bun | 1.1.45+ | Fast JavaScript runtime, package manager, test runner |
+| Language | TypeScript | 5.x | Type safety and development efficiency |
+| Framework | Hono | 4.10.6 | Ultra-lightweight web framework |
+| ORM | Drizzle ORM | 0.36.4 | TypeScript-first ORM |
+| Queue | Dragonfly / BullMQ | - | Async job processing |
+| Code Quality | oxc | Latest | Linting and formatting |
+
+### Frontend (✅ Implemented)
+
+| Category | Technology | Version | Purpose |
+|----------|-----------|---------|---------|
+| Framework | Waku | 0.27.1 | React Server Components framework |
+| State Management | Jotai | 2.15.1 | Atomic state management |
+| UI Components | React Aria Components | 1.6.3 | Accessible headless UI |
+| Styling | Tailwind CSS v4 | 4.1.17 | Utility-first CSS with OKLCH color space |
+| Internationalization | Lingui | 5.6.0 | 3kb optimized i18n (en/ja) |
+| Authentication | Passkey + Password | Custom | WebAuthn + traditional auth |
 
 ## Implementation Phases
 
-- **Phase 0**: Foundation (Database, Storage, DI) ← *Current*
-- **Phase 1**: Misskey-Compatible API
-- **Phase 2**: Frontend (Waku Client)
-- **Phase 3**: ActivityPub Federation
+- **Phase 0**: Foundation (Database, Storage, DI) ✅ **Complete**
+- **Phase 1**: Misskey-Compatible API ✅ **Complete**
+- **Phase 2**: Frontend (Waku Client) ✅ **Foundation Complete** / 🚧 Feature Expansion
+  - ✅ Waku + Jotai setup
+  - ✅ Tailwind CSS v4 with OKLCH colors
+  - ✅ React Aria Components (Button, TextField, Dialog, Form, Avatar, Card)
+  - ✅ Lingui i18n (English/Japanese - 32 messages)
+  - ✅ Authentication (Passkey + Password)
+  - ✅ Timeline (display, pagination)
+  - ✅ Note Composer (text, CW, visibility)
+  - 🚧 User interactions (reply, reaction, follow)
+  - 🚧 File uploads
+  - 🚧 User profiles
+- **Phase 3**: ActivityPub Federation ⏳ **Planned**
 
 ## Contributing
 

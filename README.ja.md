@@ -155,24 +155,44 @@ Roxは**リポジトリパターン**と**アダプターパターン**を使用
 
 ## 技術スタック
 
-| カテゴリ | 技術 | 用途 |
-|----------|-----------|---------|
-| ランタイム | Bun | 高速JavaScriptランタイム、パッケージマネージャー、テストランナー |
-| 言語 | TypeScript | 型安全性と開発効率 |
-| バックエンド | Hono | 超軽量Webフレームワーク |
-| フロントエンド | Waku | React Server Componentsフレームワーク |
-| 状態管理 | Jotai | アトミックな状態管理 |
-| スタイリング | Tailwind CSS | ユーティリティファーストCSS |
-| ORM | Drizzle ORM | TypeScriptファーストORM |
-| キュー | Dragonfly / BullMQ | 非同期ジョブ処理 |
-| コード品質 | oxc | リントとフォーマット |
+### バックエンド
+
+| カテゴリ | 技術 | バージョン | 用途 |
+|----------|-----------|---------|---------|
+| ランタイム | Bun | 1.1.45+ | 高速JavaScriptランタイム、パッケージマネージャー、テストランナー |
+| 言語 | TypeScript | 5.x | 型安全性と開発効率 |
+| フレームワーク | Hono | 4.10.6 | 超軽量Webフレームワーク |
+| ORM | Drizzle ORM | 0.36.4 | TypeScriptファーストORM |
+| キュー | Dragonfly / BullMQ | - | 非同期ジョブ処理 |
+| コード品質 | oxc | 最新 | リントとフォーマット |
+
+### フロントエンド（✅ 実装済み）
+
+| カテゴリ | 技術 | バージョン | 用途 |
+|----------|-----------|---------|---------|
+| フレームワーク | Waku | 0.27.1 | React Server Componentsフレームワーク |
+| 状態管理 | Jotai | 2.15.1 | アトミックな状態管理 |
+| UIコンポーネント | React Aria Components | 1.6.3 | アクセシブルなヘッドレスUI |
+| スタイリング | Tailwind CSS v4 | 4.1.17 | ユーティリティファーストCSS（OKLCH色空間） |
+| 国際化 | Lingui | 5.6.0 | 3kb最適化i18n（英語/日本語） |
+| 認証 | Passkey + Password | カスタム実装 | WebAuthn + 従来型認証 |
 
 ## 実装フェーズ
 
-- **Phase 0**: 基盤（データベース、ストレージ、DI）✅ 完了
-- **Phase 1**: Misskey互換API 🔄 進行中（30%）
-- **Phase 2**: フロントエンド（Wakuクライアント）
-- **Phase 3**: ActivityPub連合
+- **Phase 0**: 基盤（データベース、ストレージ、DI）✅ **完了**
+- **Phase 1**: Misskey互換API ✅ **完了**
+- **Phase 2**: フロントエンド（Wakuクライアント）✅ **基盤完了** / 🚧 機能拡張中
+  - ✅ Waku + Jotaiセットアップ
+  - ✅ Tailwind CSS v4（OKLCH色空間対応）
+  - ✅ React Aria Components（Button、TextField、Dialog、Form、Avatar、Card）
+  - ✅ Lingui国際化（英語/日本語 - 32メッセージ）
+  - ✅ 認証（Passkey + Password）
+  - ✅ タイムライン（表示、ページネーション）
+  - ✅ ノート投稿（テキスト、CW、公開範囲）
+  - 🚧 ユーザーインタラクション（リプライ、リアクション、フォロー）
+  - 🚧 ファイルアップロード
+  - 🚧 ユーザープロフィール
+- **Phase 3**: ActivityPub連合 ⏳ **計画中**
 
 ## コントリビューション
 
