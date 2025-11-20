@@ -1,0 +1,45 @@
+import type { UserProfile } from 'rox_shared';
+
+/**
+ * User entity from API responses
+ * Extends the shared UserProfile type with additional frontend-specific fields
+ */
+export interface User extends Omit<UserProfile, 'createdAt' | 'displayName'> {
+  name: string; // Alias for displayName
+  email?: string;
+  createdAt: string;
+  updatedAt: string;
+
+  // Optional fields
+  isBot?: boolean;
+  isCat?: boolean;
+  isLocked?: boolean;
+
+  // Follow counts
+  followersCount?: number;
+  followingCount?: number;
+  notesCount?: number;
+
+  // User interaction state
+  isFollowing?: boolean;
+  isFollowed?: boolean;
+  isBlocking?: boolean;
+  isBlocked?: boolean;
+  isMuted?: boolean;
+}
+
+/**
+ * Authentication result
+ */
+export interface AuthResult {
+  token: string;
+  user: User;
+}
+
+/**
+ * Session validation response
+ */
+export interface SessionResponse {
+  user: User;
+  expiresAt: string;
+}

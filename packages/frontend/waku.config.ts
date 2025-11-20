@@ -1,19 +1,34 @@
-import type { Config } from 'waku/config';
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import { lingui } from "@lingui/vite-plugin";
+import { defineConfig } from 'waku/config';
 
 /**
  * Waku configuration
- * Configures Vite settings for Tailwind CSS v3 (via PostCSS) and Lingui integration
+ * Configures Vite settings for Tailwind CSS v4 (via Vite plugin) and Lingui integration
  */
-export default {
+export default defineConfig({
   /** Vite configuration for all environments */
   vite: {
+    plugins: [
+      tailwindcss(),
+      react({
+        babel: {
+          plugins: [
+            'babel-plugin-react-compiler',
+            '@lingui/babel-plugin-lingui-macro'
+          ],
+        },
+      }),
+      lingui(),
+    ],
     ssr: {
       /** Allow Lingui macros to work with SSR by not externalizing them */
-      noExternal: ['@lingui/macro'],
+      noExternal: ['@lingui/macro', 'babel-plugin-macros'],
     },
     optimizeDeps: {
       /** Optimize Lingui macro for ESM compatibility */
-      include: ['@lingui/macro', '@lingui/react'],
+      include: ['@lingui/macro', '@lingui/react', 'babel-plugin-macros'],
     },
   },
-} satisfies Config;
+});

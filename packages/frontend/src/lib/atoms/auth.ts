@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
-import type { User } from 'rox_shared';
+import type { User } from '../types/user';
 
 /**
  * Authentication token atom (persisted in localStorage)
