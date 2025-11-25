@@ -157,8 +157,9 @@ export class NoteService {
     }
 
     // Renote先の存在確認
+    let renoteTarget: Note | null = null;
     if (renoteId) {
-      const renoteTarget = await this.noteRepository.findById(renoteId);
+      renoteTarget = await this.noteRepository.findById(renoteId);
       if (!renoteTarget) {
         throw new Error('Renote target note not found');
       }
@@ -200,6 +201,17 @@ export class NoteService {
       this.deliveryService.deliverCreateNote(note, author).catch((error) => {
         console.error(`Failed to deliver Create activity for note ${noteId}:`, error);
       });
+    }
+
+    // Deliver Announce activity to remote note author (async, non-blocking)
+    if (renoteTarget && author && !author.host && !localOnly && visibility === 'public') {
+      const renoteAuthor = await this.userRepository.findById(renoteTarget.userId);
+      if (renoteAuthor && renoteAuthor.host && renoteAuthor.inbox) {
+        // Only deliver if renote target is a remote user with inbox
+        this.deliveryService.deliverAnnounceActivity(note.id, renoteTarget, author, renoteAuthor).catch((error) => {
+          console.error(`Failed to deliver Announce activity for renote ${noteId}:`, error);
+        });
+      }
     }
 
     return note;

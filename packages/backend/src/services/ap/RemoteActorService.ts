@@ -10,7 +10,7 @@
 import type { IUserRepository } from '../../interfaces/repositories/IUserRepository.js';
 import type { User } from '../../db/schema/pg.js';
 import { generateId } from 'shared';
-import { RemoteFetchService } from './RemoteFetchService.js';
+import { RemoteFetchService, type SignatureConfig } from './RemoteFetchService.js';
 
 /**
  * ActivityPub Actor document
@@ -51,9 +51,20 @@ interface ActorDocument {
  */
 export class RemoteActorService {
   private fetchService: RemoteFetchService;
+  private signatureConfig?: SignatureConfig;
 
-  constructor(private userRepository: IUserRepository) {
+  constructor(private userRepository: IUserRepository, signatureConfig?: SignatureConfig) {
     this.fetchService = new RemoteFetchService();
+    this.signatureConfig = signatureConfig;
+  }
+
+  /**
+   * Set signature configuration for authenticated fetches
+   *
+   * GoToSocial and other strict servers require HTTP Signature for actor fetches.
+   */
+  setSignatureConfig(config: SignatureConfig): void {
+    this.signatureConfig = config;
   }
 
   /**
@@ -154,7 +165,9 @@ export class RemoteActorService {
    * @throws Error if fetch fails or response is invalid
    */
   private async fetchActor(actorUri: string): Promise<ActorDocument> {
-    const result = await this.fetchService.fetchActivityPubObject<ActorDocument>(actorUri);
+    const result = await this.fetchService.fetchActivityPubObject<ActorDocument>(actorUri, {
+      signature: this.signatureConfig,
+    });
 
     if (!result.success) {
       const errorMsg = `Failed to fetch actor ${actorUri}: ${result.error?.message}`;

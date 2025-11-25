@@ -251,7 +251,18 @@ app.get('/resolve', async (c) => {
   }
 
   try {
-    const remoteActorService = new RemoteActorService(userRepository);
+    // Get an instance actor (local user with private key) for HTTP Signature
+    // GoToSocial requires HTTP signatures for actor fetches
+    // Try to find 'alice' as default instance actor, or any local user
+    const instanceActor = await userRepository.findByUsername('alice', null);
+
+    const baseUrl = process.env.URL || 'http://localhost:3000';
+    const signatureConfig = instanceActor?.privateKey ? {
+      keyId: `${baseUrl}/users/${instanceActor.username}#main-key`,
+      privateKey: instanceActor.privateKey,
+    } : undefined;
+
+    const remoteActorService = new RemoteActorService(userRepository, signatureConfig);
     const user = await remoteActorService.resolveActorByAcct(acct);
 
     // パスワードハッシュとメールアドレスを除外

@@ -117,8 +117,24 @@ export function verifySignature(
   algorithm = 'rsa-sha256'
 ): boolean {
   try {
-    // Extract hash algorithm (rsa-sha256 => sha256)
-    const hashAlgorithm = algorithm.replace('rsa-', '');
+    // Map algorithm to hash algorithm
+    // - hs2019: New HTTP Signatures standard, typically uses RSA-SHA256
+    // - rsa-sha256: Legacy format
+    // - rsa-sha512: Legacy format with SHA-512
+    let hashAlgorithm: string;
+    const lowerAlgorithm = algorithm.toLowerCase();
+
+    if (lowerAlgorithm === 'hs2019') {
+      // hs2019 is the modern HTTP Signature algorithm identifier
+      // Most implementations use RSA-SHA256 with this identifier
+      hashAlgorithm = 'sha256';
+    } else if (lowerAlgorithm.startsWith('rsa-')) {
+      // Extract hash algorithm (rsa-sha256 => sha256)
+      hashAlgorithm = lowerAlgorithm.replace('rsa-', '');
+    } else {
+      // Default to sha256 for unknown algorithms
+      hashAlgorithm = 'sha256';
+    }
 
     const verifier = createVerify(hashAlgorithm);
     verifier.update(signatureString);

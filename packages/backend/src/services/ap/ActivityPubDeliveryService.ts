@@ -565,4 +565,69 @@ export class ActivityPubDeliveryService {
 
     console.log(`📤 Enqueued Update delivery to ${inboxUrls.size} inboxes (${remoteFollowers.length} followers) for user ${user.username}`);
   }
+
+  /**
+   * Delivers an Announce activity to the remote note author's inbox when a local user renotes
+   *
+   * @param renoteId - The ID of the renote (the new note created by renoting)
+   * @param originalNote - The original note being renoted
+   * @param announcer - The local user who is renoting
+   * @param originalNoteAuthor - The author of the original note (must be remote)
+   *
+   * @example
+   * ```typescript
+   * await deliveryService.deliverAnnounceActivity(renote.id, originalNote, announcer, noteAuthor);
+   * ```
+   */
+  async deliverAnnounceActivity(
+    renoteId: string,
+    originalNote: Note,
+    announcer: User,
+    originalNoteAuthor: User,
+  ): Promise<void> {
+    // Skip delivery for remote announcer
+    if (announcer.host) {
+      return;
+    }
+
+    // Skip if original note author is not remote
+    if (!originalNoteAuthor.host || !originalNoteAuthor.inbox) {
+      return;
+    }
+
+    // Skip delivery if announcer has no private key
+    if (!announcer.privateKey) {
+      console.log(`⚠️  Cannot deliver Announce for renote ${renoteId}: announcer has no private key`);
+      return;
+    }
+
+    const baseUrl = process.env.URL || 'http://localhost:3000';
+    const originalNoteUri = originalNote.uri || `${baseUrl}/notes/${originalNote.id}`;
+
+    // Create ActivityPub Announce activity
+    const activity = {
+      '@context': 'https://www.w3.org/ns/activitystreams',
+      type: 'Announce',
+      id: `${baseUrl}/activities/announce/${renoteId}`,
+      actor: `${baseUrl}/users/${announcer.username}`,
+      published: new Date().toISOString(),
+      to: ['https://www.w3.org/ns/activitystreams#Public'],
+      cc: [
+        `${baseUrl}/users/${announcer.username}/followers`,
+        originalNoteAuthor.uri || `https://${originalNoteAuthor.host}/users/${originalNoteAuthor.username}`,
+      ],
+      object: originalNoteUri,
+    };
+
+    // Enqueue delivery to note author's inbox with normal priority
+    await this.queue.enqueue({
+      activity,
+      inboxUrl: originalNoteAuthor.inbox,
+      keyId: `${baseUrl}/users/${announcer.username}#main-key`,
+      privateKey: announcer.privateKey,
+      priority: JobPriority.NORMAL,
+    });
+
+    console.log(`📤 Enqueued Announce activity delivery to ${originalNoteAuthor.inbox} for renote ${renoteId}`);
+  }
 }

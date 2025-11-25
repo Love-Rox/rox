@@ -7,9 +7,22 @@
  * - Rate limit handling (429 responses)
  * - Network error recovery
  * - Detailed error logging
+ * - HTTP Signature support for authenticated fetches
  *
  * @module services/ap/RemoteFetchService
  */
+
+import { signRequest, getSignedHeaders } from '../../utils/crypto.js';
+
+/**
+ * Signature configuration for authenticated fetches
+ */
+export interface SignatureConfig {
+  /** Key ID (e.g., "https://example.com/users/alice#main-key") */
+  keyId: string;
+  /** PEM-formatted private key */
+  privateKey: string;
+}
 
 /**
  * Fetch options configuration
@@ -23,6 +36,8 @@ export interface RemoteFetchOptions {
   initialRetryDelay?: number;
   /** Additional headers to include in request */
   headers?: Record<string, string>;
+  /** HTTP Signature configuration for authenticated requests */
+  signature?: SignatureConfig;
 }
 
 /**
@@ -87,6 +102,7 @@ export class RemoteFetchService {
       maxRetries = RemoteFetchService.DEFAULT_MAX_RETRIES,
       initialRetryDelay = RemoteFetchService.DEFAULT_INITIAL_RETRY_DELAY,
       headers = {},
+      signature,
     } = options;
 
     let lastError: RemoteFetchResult<T>['error'];
@@ -94,12 +110,32 @@ export class RemoteFetchService {
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        console.log(`🔄 Fetching ${url} (attempt ${attempt + 1}/${maxRetries + 1})`);
+        console.log(`🔄 Fetching ${url} (attempt ${attempt + 1}/${maxRetries + 1})${signature ? ' (signed)' : ''}`);
 
-        const result = await this.performFetch<T>(url, timeout, {
+        // Build request headers
+        let requestHeaders: Record<string, string> = {
           ...RemoteFetchService.ACTIVITYPUB_HEADERS,
           ...headers,
-        });
+        };
+
+        // Add HTTP Signature if configured
+        if (signature) {
+          const signedHeaders = getSignedHeaders(url, null);
+          const signatureHeader = signRequest(
+            signature.privateKey,
+            signature.keyId,
+            'GET',
+            url,
+            null
+          );
+          requestHeaders = {
+            ...requestHeaders,
+            ...signedHeaders,
+            'Signature': signatureHeader,
+          };
+        }
+
+        const result = await this.performFetch<T>(url, timeout, requestHeaders);
 
         if (result.success) {
           return result;
