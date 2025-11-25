@@ -194,10 +194,10 @@ Roxは**リポジトリパターン**と**アダプターパターン**を使用
   - ✅ ユーザープロフィール（自己紹介、統計、投稿、フォローボタン）
   - ✅ 画像モーダル（ズーム、パン、ギャラリーナビゲーション）
   - ✅ アクセシビリティ（キーボード操作、フォーカス管理、ARIAラベル、スクリーンリーダー対応）
-- **Phase 3**: ActivityPub連合 ✅ **完了（98%）**
+- **Phase 3**: ActivityPub連合 ✅ **完了**
   - ✅ WebFinger（RFC 7033準拠）
   - ✅ Actorドキュメント（Person、JSON-LD）
-  - ✅ HTTP署名（RSA-SHA256）
+  - ✅ HTTP署名（RSA-SHA256、hs2019）
   - ✅ Inbox（11種類のアクティビティ：Follow、Undo Follow、Create、Like、Undo Like、Announce、Undo Announce、Delete、Accept、Update Person、Update Note）
   - ✅ Outbox & Collections（followers/following）
   - ✅ アクティビティ配信キュー（BullMQ + Dragonfly）
@@ -205,6 +205,7 @@ Roxは**リポジトリパターン**と**アダプターパターン**を使用
   - ✅ サーバー別レート制限
   - ✅ アクティビティ重複排除
   - ✅ 配信メトリクス＆モニタリング
+  - ✅ 連携テスト済み（Misskey、GoToSocial）
 
 ## コントリビューション
 
