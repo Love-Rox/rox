@@ -9,8 +9,7 @@
 
 import type { IUserRepository } from '../../interfaces/repositories/IUserRepository.js';
 import type { IFollowRepository } from '../../interfaces/repositories/IFollowRepository.js';
-import type { Note } from '../../../shared/src/types/note.js';
-import type { User } from '../../../shared/src/types/user.js';
+import type { Note, User } from 'shared';
 import { ActivityDeliveryQueue } from './ActivityDeliveryQueue.js';
 
 /**
@@ -97,13 +96,19 @@ export class ActivityPubDeliveryService {
       }
     }
 
+    // Skip delivery if author has no private key
+    if (!author.privateKey) {
+      console.log(`⚠️  Cannot deliver note ${note.id}: author has no private key`);
+      return;
+    }
+
     // Enqueue delivery to each inbox
     const deliveryPromises = Array.from(inboxUrls).map((inboxUrl) =>
       this.queue.enqueue({
         activity,
         inboxUrl,
         keyId: `${baseUrl}/users/${author.username}#main-key`,
-        privateKey: author.privateKey,
+        privateKey: author.privateKey as string,
       })
     );
 
@@ -133,6 +138,12 @@ export class ActivityPubDeliveryService {
   ): Promise<void> {
     // Skip delivery for remote users
     if (reactor.host) {
+      return;
+    }
+
+    // Skip delivery if reactor has no private key
+    if (!reactor.privateKey) {
+      console.log(`⚠️  Cannot deliver Like for note ${noteId}: reactor has no private key`);
       return;
     }
 

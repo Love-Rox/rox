@@ -1,7 +1,7 @@
 # Phase 3: ActivityPub Federation
 
 **期間:** 4-5週間
-**ステータス:** 🚧 実装中 (約70%完了)
+**ステータス:** 🚧 実装中 (約75%完了)
 **前提条件:** Phase 2 (Misskey API)完了 ✅
 **最終更新:** 2025-11-25
 
@@ -649,16 +649,19 @@ export class NoteService {
 
 **完了条件:**
 - [x] Outboxエンドポイント (基本実装) ✅
-- [ ] BullMQ配送キュー ⚠️ **最優先実装項目**
-- [ ] 配送ワーカー ⚠️ **最優先実装項目**
-- [ ] リトライロジック（1分/5分/30分）
+- [x] BullMQ配送キュー ✅
+- [x] 配送ワーカー ✅
+- [x] リトライロジック（指数バックオフ: 1秒 → 2秒 → 4秒...、最大5回） ✅
+- [x] Note作成時の自動配送（NoteServiceへの統合） ✅
 - [ ] レート制限
 - [ ] Shared Inbox対応
-- [ ] Note作成時の自動配送
 
 **実装ファイル:**
 - `src/routes/ap/outbox.ts` - Outbox endpoint (implemented)
-- `src/services/ap/ActivityPubDeliveryService.ts` - Delivery service (skeleton only)
+- `src/services/ap/ActivityPubDeliveryService.ts` - Delivery service with queue integration ✅
+- `src/services/ap/ActivityDeliveryQueue.ts` - BullMQ queue and worker implementation ✅
+- `src/services/ap/ActivityDeliveryService.ts` - HTTP delivery with signatures ✅
+- `src/services/NoteService.ts` - Note creation with automatic delivery ✅
 
 **優先度:** 🔴 **最高** - このセクションの完了がPhase 3完了の鍵
 
@@ -721,9 +724,10 @@ Response: OrderedCollection with paging
 - [x] Inbox実装（Follow対応） ✅
 - [x] Outbox基本実装 ✅
 - [x] Collections実装 ✅
-- [ ] BullMQ配送キュー実装 ⚠️ **最優先**
-- [ ] 配送ワーカー実装 ⚠️ **最優先**
-- [ ] リトライ機構動作
+- [x] BullMQ配送キュー実装 ✅
+- [x] 配送ワーカー実装 ✅
+- [x] リトライ機構動作 ✅
+- [x] NoteServiceへの自動配送統合 ✅
 - [ ] 配送成功率95%以上
 - [ ] 全アクティビティタイプ対応
 - [ ] Mastodonと連合成功
@@ -732,7 +736,7 @@ Response: OrderedCollection with paging
 
 ## Phase 3 進捗状況
 
-**完了率:** 約70%
+**完了率:** 約75%
 
 **完了したコンポーネント:**
 - ✅ WebFinger Discovery
@@ -743,13 +747,16 @@ Response: OrderedCollection with paging
 - ✅ Collections (Followers/Following)
 - ✅ Public key management
 - ✅ Remote actor caching
+- ✅ BullMQ配送キュー
+- ✅ 配送ワーカー
+- ✅ リトライロジック (指数バックオフ)
+- ✅ NoteServiceへの自動配送統合
 
 **未完了のコンポーネント (優先度順):**
-1. 🔴 **BullMQ配送キュー** - プロダクション必須
-2. 🔴 **配送ワーカー** - プロダクション必須
-3. 🟡 リトライロジック
-4. 🟡 追加Activityタイプ (Undo, Like, Announce)
-5. 🟢 実サーバー連合テスト
+1. 🟡 追加Activityタイプ (Undo, Like, Announce)
+2. 🟡 レート制限
+3. 🟡 Shared Inbox対応
+4. 🟢 実サーバー連合テスト
 
 **テスト結果:**
 - 全36テスト合格 ✅
