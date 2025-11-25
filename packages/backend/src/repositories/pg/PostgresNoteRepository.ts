@@ -74,7 +74,16 @@ export class PostgresNoteRepository implements INoteRepository {
       .orderBy(desc(notes.createdAt))
       .limit(limit);
 
-    return results.map((r) => r.notes as Note);
+    return results.map((r) => ({
+      ...r.notes,
+      user: {
+        id: r.users.id,
+        username: r.users.username,
+        displayName: r.users.displayName,
+        avatarUrl: r.users.avatarUrl,
+        host: r.users.host,
+      },
+    }) as Note);
   }
 
   async getTimeline(
@@ -99,11 +108,21 @@ export class PostgresNoteRepository implements INoteRepository {
     const results = await this.db
       .select()
       .from(notes)
+      .innerJoin(users, eq(notes.userId, users.id))
       .where(and(...conditions))
       .orderBy(desc(notes.createdAt))
       .limit(limit);
 
-    return results as Note[];
+    return results.map((r) => ({
+      ...r.notes,
+      user: {
+        id: r.users.id,
+        username: r.users.username,
+        displayName: r.users.displayName,
+        avatarUrl: r.users.avatarUrl,
+        host: r.users.host,
+      },
+    }) as Note);
   }
 
   async getSocialTimeline(
@@ -173,11 +192,21 @@ export class PostgresNoteRepository implements INoteRepository {
     const results = await this.db
       .select()
       .from(notes)
+      .innerJoin(users, eq(notes.userId, users.id))
       .where(and(...conditions))
       .orderBy(desc(notes.createdAt))
       .limit(limit);
 
-    return results as Note[];
+    return results.map((r) => ({
+      ...r.notes,
+      user: {
+        id: r.users.id,
+        username: r.users.username,
+        displayName: r.users.displayName,
+        avatarUrl: r.users.avatarUrl,
+        host: r.users.host,
+      },
+    }) as Note);
   }
 
   async findReplies(
@@ -199,11 +228,21 @@ export class PostgresNoteRepository implements INoteRepository {
     const results = await this.db
       .select()
       .from(notes)
+      .innerJoin(users, eq(notes.userId, users.id))
       .where(and(...conditions))
       .orderBy(desc(notes.createdAt))
       .limit(limit);
 
-    return results as Note[];
+    return results.map((r) => ({
+      ...r.notes,
+      user: {
+        id: r.users.id,
+        username: r.users.username,
+        displayName: r.users.displayName,
+        avatarUrl: r.users.avatarUrl,
+        host: r.users.host,
+      },
+    }) as Note);
   }
 
   async findRenotes(
@@ -225,11 +264,21 @@ export class PostgresNoteRepository implements INoteRepository {
     const results = await this.db
       .select()
       .from(notes)
+      .innerJoin(users, eq(notes.userId, users.id))
       .where(and(...conditions))
       .orderBy(desc(notes.createdAt))
       .limit(limit);
 
-    return results as Note[];
+    return results.map((r) => ({
+      ...r.notes,
+      user: {
+        id: r.users.id,
+        username: r.users.username,
+        displayName: r.users.displayName,
+        avatarUrl: r.users.avatarUrl,
+        host: r.users.host,
+      },
+    }) as Note);
   }
 
   async update(

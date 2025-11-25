@@ -147,6 +147,62 @@ export class NotesApi {
       text,
     });
   }
+
+  /**
+   * Get notes by a specific user
+   *
+   * @param userId - User ID
+   * @param options - Timeline fetch options
+   * @returns Array of notes
+   */
+  async getUserNotes(userId: string, options: TimelineOptions = {}): Promise<Note[]> {
+    const params = new URLSearchParams({ userId });
+    if (options.limit) params.set('limit', options.limit.toString());
+    if (options.untilId) params.set('untilId', options.untilId);
+    if (options.sinceId) params.set('sinceId', options.sinceId);
+
+    return apiClient.get<Note[]>(`/api/notes/user-notes?${params.toString()}`);
+  }
+
+  /**
+   * Get replies to a specific note
+   *
+   * @param noteId - Note ID
+   * @param options - Timeline fetch options
+   * @returns Array of reply notes
+   */
+  async getReplies(noteId: string, options: TimelineOptions = {}): Promise<Note[]> {
+    const params = new URLSearchParams({ noteId });
+    if (options.limit) params.set('limit', options.limit.toString());
+    if (options.untilId) params.set('untilId', options.untilId);
+    if (options.sinceId) params.set('sinceId', options.sinceId);
+
+    return apiClient.get<Note[]>(`/api/notes/replies?${params.toString()}`);
+  }
+
+  /**
+   * Get conversation thread (ancestors and descendants)
+   *
+   * @param noteId - Note ID
+   * @returns Object containing ancestors and descendants
+   */
+  async getConversation(noteId: string): Promise<{ ancestors: Note[]; descendants: Note[] }> {
+    const note = await this.getNote(noteId);
+
+    // Get ancestors (parent notes)
+    const ancestors: Note[] = [];
+    let currentNote = note;
+    while (currentNote.replyId) {
+      const parentNote = await this.getNote(currentNote.replyId);
+      ancestors.unshift(parentNote);
+      currentNote = parentNote;
+    }
+
+    // Get descendants (reply notes)
+    const descendants = await this.getReplies(noteId, { limit: 100 });
+
+    return { ancestors, descendants };
+  }
 }
 
 /**

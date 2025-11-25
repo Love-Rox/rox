@@ -14,4 +14,44 @@
   --color-primary-800: oklch(38% 0.11 40);
   --color-primary-900: oklch(30% 0.08 40);
   --color-primary-950: oklch(20% 0.04 40);
+
+  /* Animations */
+  --animate-slide-in: slide-in 0.3s ease-out;
+  --animate-spin: spin 1s linear infinite;
+  --animate-indeterminate: indeterminate 1.5s ease-in-out infinite;
+}
+
+/* Toast notification animations */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Spinner animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Indeterminate progress bar animation */
+@keyframes indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }

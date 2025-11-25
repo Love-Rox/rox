@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from 'react-aria-components';
-import { Trans } from '@lingui/react/macro';
+import { SmilePlus } from 'lucide-react';
 
 /**
  * Default reaction emojis
@@ -129,11 +129,9 @@ export function ReactionButton({
           text-gray-600 hover:text-primary-600 hover:bg-primary-50
           transition-colors disabled:opacity-50 disabled:cursor-not-allowed
         "
+        aria-label="Add reaction"
       >
-        <span className="text-lg">😊</span>
-        <span className="hidden sm:inline">
-          <Trans>React</Trans>
-        </span>
+        <SmilePlus className="w-4 h-4" />
       </Button>
 
       {isOpen && (

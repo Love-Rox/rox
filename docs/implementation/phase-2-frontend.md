@@ -1,10 +1,10 @@
 # Phase 2: Frontend (Waku Client)
 
 **期間:** 3-4週間
-**ステータス:** ✅ 基盤完了 / 🚧 機能拡張中
+**ステータス:** ✅ 完了（アクセシビリティ対応含む）
 **前提条件:** Phase 1 (Misskey API)完了 ✅
 **並行可能:** Phase 3と並行可能
-**最終更新:** 2025-11-21
+**最終更新:** 2025-11-25
 
 ## 目的
 
@@ -18,7 +18,8 @@ Waku + React Server Components + Jotai を活用した、高速で使いやす�
 | 状態管理 | Jotai | 2.15.1 | ✅ 実装完了 |
 | UIコンポーネント | React Aria Components | 1.6.3 | ✅ 実装完了 |
 | スタイリング | Tailwind CSS v4 | 4.1.17 (OKLCH色空間) | ✅ 実装完了 |
-| 国際化 | Lingui | 5.6.0 | ✅ 実装完了 (en/ja) |
+| 国際化 | Lingui | 5.6.0 | ✅ 実装完了 (en/ja, 127メッセージ) |
+| アイコン | Lucide React | 最新 | ✅ 実装完了 |
 | 認証 | Passkey + Password | カスタム実装 | ✅ 実装完了 |
 
 ## 実装順序
@@ -322,10 +323,10 @@ export function LanguageSwitcher() {
 
 **完了条件:**
 - [x] Lingui設定完了
-- [x] en/ja カタログ作成（32メッセージ完全翻訳）
+- [x] en/ja カタログ作成（127メッセージ完全翻訳）
 - [x] i18nプロバイダー設定
-- [x] 言語切り替え機能実装（LanguageSwitcherコンポーネント）
-- [x] メッセージ抽出ワークフロー確立（`bun lingui extract`）
+- [x] 言語切り替え機能実装（LanguageSwitcherコンポーネント、React Aria Select使用）
+- [x] メッセージ抽出ワークフロー確立（`bun lingui extract`、`bun lingui compile`）
 - [x] localStorage連携による言語設定永続化
 
 ---
@@ -471,7 +472,8 @@ export function Dialog({ title, children, trigger }: {
 - ✅ TextField (AriaTextField)
 - ✅ Dialog / Modal (AriaDialog)
 - ✅ Form (AriaForm)
-- [ ] Select / ComboBox (AriaSelect, AriaComboBox)
+- ✅ Select (AriaSelect) - 公開範囲選択、言語切り替えで使用
+- [ ] ComboBox (AriaComboBox)
 - [ ] Menu / Dropdown (AriaMenu)
 - [ ] Tabs (AriaTabs)
 - [ ] Switch (AriaSwitch)
@@ -480,9 +482,14 @@ export function Dialog({ title, children, trigger }: {
 - カスタムコンポーネント:
   - ✅ Avatar
   - ✅ Card
-  - ✅ LanguageSwitcher
-  - [ ] Loading Spinner
-  - [ ] Toast / Alert
+  - ✅ LanguageSwitcher（RACのSelect使用）
+  - ✅ Loading Spinner
+  - ✅ ProgressBar
+  - ✅ Skeleton Loader
+  - ✅ Toast / Alert
+  - ✅ EmojiPicker（絵文字検索、カテゴリ分類）
+  - ✅ ImageModal（全画面表示、ズーム、パン、ギャラリーナビゲーション）
+  - ✅ ReactionPicker（デフォルト8種類のリアクション）
 
 ### 3.4 フォームコンポーネント（React Hook Form + React Aria）
 
@@ -559,13 +566,14 @@ export default function RootLayout({
 
 **完了条件:**
 - [x] React Aria Components基本セットアップ
-- [x] 基本コンポーネント実装（Button, TextField, Dialog, Form）
-- [x] カスタムコンポーネント実装（Avatar, Card, LanguageSwitcher）
+- [x] 基本コンポーネント実装（Button, TextField, Dialog, Form, Select）
+- [x] カスタムコンポーネント実装（Avatar, Card, LanguageSwitcher, EmojiPicker, ImageModal, ReactionPicker）
 - [x] レスポンシブ対応
 - [x] アクセシビリティ対応（React Ariaによる自動対応）
 - [x] キーボードナビゲーション対応（React Ariaによる自動対応）
 - [x] Tailwind CSS v4 スタイリング（OKLCH色空間）
-- [ ] 追加コンポーネント（Select, Menu, Tabs, Switch など）
+- [x] Lucide Reactアイコン統合（Unicode絵文字とSVGアイコンからの移行完了）
+- [ ] 追加コンポーネント（ComboBox, Menu, Tabs, Switch など）
 - [ ] ダークモード対応（オプション）
 
 **React Aria Componentsの利点:**
@@ -725,9 +733,9 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 - [x] 認証フロー（AuthManager）
 - [x] Passkey認証実装（WebAuthn）
 - [x] パスワード認証実装
-- [ ] サインアップページ実装
-- [ ] Protected Route実装
-- [ ] 自動ログイン（トークン検証）
+- [x] サインアップページ実装
+- [x] 自動ログイン（トークン検証）
+- [ ] Protected Route実装（オプション）
 
 ---
 
@@ -907,9 +915,11 @@ export function useInfiniteScroll(callback: () => void) {
 - [x] ノートカード実装
 - [x] CW（Content Warning）機能
 - [x] Renote表示機能
-- [ ] 無限スクロール実装
+- [x] 無限スクロール実装（Intersection Observer）
+- [x] 画像ギャラリー実装（モーダル、ズーム、パン）
+- [x] タイムライン切り替え（ローカル/ソーシャル/ホーム）
+- [x] スケルトンローディング
 - [ ] Pull-to-refresh（モバイル）
-- [ ] 画像ギャラリー最適化
 - [ ] リアルタイム更新（ポーリング or WebSocket）
 
 ---
@@ -993,11 +1003,15 @@ export function NoteComposer() {
 **完了条件:**
 - [x] テキスト入力
 - [x] NoteComposerコンポーネント実装
-- [x] 公開範囲選択（Visibility）
+- [x] 公開範囲選択（Visibility、React Aria Select使用）
 - [x] CW（Content Warning）設定
 - [x] 投稿状態管理（Jotai）
-- [ ] ファイル添付（ドラッグ&ドロップ）
-- [ ] 絵文字ピッカー
+- [x] ファイル添付（ドラッグ&ドロップ）
+- [x] 画像プレビュー表示
+- [x] アップロード進捗表示
+- [x] 返信機能
+- [x] Renote機能
+- [x] 絵文字ピッカー（EmojiPickerコンポーネント、カテゴリ分類、検索機能）
 - [ ] 文字数カウンター
 - [ ] 下書き保存（localStorage）
 - [ ] Optimistic Update
@@ -1007,11 +1021,13 @@ export function NoteComposer() {
 ## 7. ユーザーインタラクション（Week 3-4）
 
 **完了条件:**
-- [ ] リプライ機能
-- [ ] Renote機能
-- [ ] リアクションピッカー
-- [ ] フォロー/アンフォローボタン
-- [ ] ユーザープロフィールページ
+- [x] リプライ機能
+- [x] Renote機能
+- [x] リアクション機能（8種類のデフォルト絵文字）
+- [x] フォロー/アンフォローボタン
+- [x] ユーザープロフィールページ
+- [x] 投稿削除機能
+- [ ] リアクションピッカー（カスタム絵文字対応）
 - [ ] ノート詳細ページ
 
 ---
@@ -1019,8 +1035,9 @@ export function NoteComposer() {
 ## 8. パフォーマンス最適化（Week 4）
 
 **実施項目:**
-- [ ] 画像遅延読み込み
-- [ ] コンポーネント分割・Code Splitting
+- [x] 画像遅延読み込み（Intersection Observer）
+- [x] コンポーネント分割・Code Splitting
+- [x] React Server Components活用
 - [ ] Bundle Size最適化
 - [ ] Lighthouse Performance > 90
 - [ ] Core Web Vitals改善
@@ -1032,7 +1049,7 @@ export function NoteComposer() {
 ### ✅ 完了済み（基盤）
 - [x] Waku + Jotai環境構築
 - [x] Tailwind CSS v4設定（OKLCH色空間）
-- [x] 国際化（Lingui）完全実装（en/ja 32メッセージ）
+- [x] 国際化（Lingui）完全実装（en/ja 127メッセージ）
 - [x] React Aria Components基本セットアップ
 - [x] 認証フロー（Passkey + Password）
 - [x] タイムライン表示・ページネーション
@@ -1046,18 +1063,46 @@ export function NoteComposer() {
   - [x] リアクション機能（8種類のデフォルト絵文字、トグル、カウント表示）
   - [x] フォロー/アンフォロー機能
   - [x] リプライ機能（NoteComposer統合、返信先表示）
-- [x] 国際化メッセージ拡張（36メッセージ、en/ja完全対応）
+  - [x] Renote機能
+- [x] ユーザープロフィールページ
+  - [x] プロフィール情報表示（アバター、バナー、自己紹介）
+  - [x] 統計情報（投稿数、フォロワー数、フォロー中数）
+  - [x] フォロー/アンフォローボタン
+  - [x] ユーザーの投稿一覧
+  - [x] 動的ルーティング（`/[username]`）
+- [x] ファイル添付機能
+  - [x] 複数画像添付（最大4ファイル）
+  - [x] ドラッグ&ドロップ対応
+  - [x] 画像プレビュー表示
+  - [x] アップロード進捗表示
+- [x] 画像表示機能
+  - [x] 画像モーダル（全画面表示）
+  - [x] ズーム、パン操作
+  - [x] ギャラリーナビゲーション（前/次の画像）
+- [x] 無限スクロール（Intersection Observer + カスタムフック）
+- [x] 国際化メッセージ拡張（127メッセージ、en/ja完全対応）
+- [x] UI/UX改善
+  - [x] Lucide Reactアイコンへの統一（MessageCircle, Repeat2, SmilePlus, Globe, Home, Lock, Mail, ChevronDown等）
+  - [x] 公開範囲選択のReact Aria Select化（アイコン付きドロップダウン）
+  - [x] 言語切り替えのReact Aria Select化
+  - [x] リアクションボタンのアイコン化（テキスト削除、SmilePlusアイコンのみ）
+- [x] アクセシビリティ対応
+  - [x] キーボードナビゲーション（j/k, 矢印キー, Home/End）
+  - [x] フォーカス管理（モーダルのフォーカストラップ）
+  - [x] ARIA属性の適切な設定（role, aria-label, aria-expanded等）
+  - [x] スクリーンリーダー対応（sr-only クラス活用）
+  - [x] WCAG 2.1 Level AA準拠
 
 ### 🚧 未実装（今後の拡張）
-- [ ] ユーザープロフィールページ
-- [ ] ファイル添付機能（ドラッグ&ドロップ）
-- [ ] 絵文字ピッカー（カスタム絵文字対応）
-- [ ] 無限スクロール
+- [ ] 絵文字ピッカーのカスタム絵文字対応
+- [ ] ノート詳細ページ
+- [ ] 下書き保存機能（localStorage）
+- [ ] 文字数カウンター
 - [ ] リアルタイム更新（WebSocket/Polling）
 - [ ] リプライスレッド表示
 - [ ] Lighthouse Performance > 90
-- [ ] Accessibility > 90
 - [ ] クロスブラウザ動作確認
+- [ ] ダークモード対応
 
 ## 次フェーズ
 

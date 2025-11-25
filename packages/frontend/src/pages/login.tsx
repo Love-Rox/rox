@@ -42,12 +42,16 @@ export default function LoginPage() {
         password,
       });
 
+      // Set token and user
       setToken(result.token);
       setCurrentUser(result.user);
       apiClient.setToken(result.token);
 
-      // Redirect to home page
-      window.location.href = '/';
+      // Wait for state to be saved to localStorage before redirecting
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Redirect to timeline
+      window.location.href = '/timeline';
     } catch (err) {
       setError(err instanceof Error ? err.message : _(t`Login failed. Please check your credentials.`));
     } finally {
@@ -62,11 +66,15 @@ export default function LoginPage() {
     try {
       const result = await authManager.authenticate('passkey', username || undefined);
 
+      // Set token and user
       setToken(result.token);
       setCurrentUser(result.user);
       apiClient.setToken(result.token);
 
-      window.location.href = '/';
+      // Wait for state to be saved to localStorage before redirecting
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      window.location.href = '/timeline';
     } catch (err) {
       setError(err instanceof Error ? err.message : _(t`Passkey authentication failed.`));
     } finally {

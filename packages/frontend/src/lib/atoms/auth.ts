@@ -1,11 +1,47 @@
 import { atom } from 'jotai';
-import { atomWithStorage } from 'jotai/utils';
 import type { User } from '../types/user';
 
 /**
- * Authentication token atom (persisted in localStorage)
+ * Get token from localStorage (client-side only)
  */
-export const tokenAtom = atomWithStorage<string | null>('token', null);
+const getTokenFromStorage = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    return localStorage.getItem('token');
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Save token to localStorage (client-side only)
+ */
+const saveTokenToStorage = (token: string | null) => {
+  if (typeof window === 'undefined') return;
+  try {
+    if (token) {
+      localStorage.setItem('token', token);
+    } else {
+      localStorage.removeItem('token');
+    }
+  } catch (error) {
+    console.error('Failed to save token to localStorage:', error);
+  }
+};
+
+/**
+ * Authentication token atom with localStorage sync
+ * Reads from localStorage on initialization, writes on updates
+ */
+export const tokenAtom = atom<string | null>(
+  // Read: Get initial value from localStorage
+  getTokenFromStorage(),
+  // Write: Save to both atom and localStorage
+  (get, set, newValue: string | null) => {
+    set(tokenAtom, newValue);
+    saveTokenToStorage(newValue);
+  }
+);
 
 /**
  * Current user atom

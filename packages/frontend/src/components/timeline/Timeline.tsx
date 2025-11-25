@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useAtom } from 'jotai';
 import { Trans } from '@lingui/react/macro';
 import {
@@ -13,6 +13,11 @@ import {
 import { notesApi } from '../../lib/api/notes';
 import { NoteCard } from '../note/NoteCard';
 import { Button } from '../ui/Button';
+import { TimelineSkeleton } from '../ui/Skeleton';
+import { Spinner } from '../ui/Spinner';
+import { ErrorMessage } from '../ui/ErrorMessage';
+import { useInfiniteScroll } from '../../hooks/useInfiniteScroll';
+import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 
 /**
  * Props for the Timeline component
@@ -38,7 +43,7 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
   const [hasMore, setHasMore] = useAtom(timelineHasMoreAtom);
   const [lastNoteId] = useAtom(timelineLastNoteIdAtom);
 
-  const observerTarget = useRef<HTMLDivElement>(null);
+  const timelineContainerRef = useRef<HTMLDivElement>(null);
 
   // Initialize with initial notes
   useEffect(() => {
@@ -46,6 +51,12 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
       setNotes(initialNotes);
     }
   }, [initialNotes, notes.length, setNotes]);
+
+  // Keyboard navigation for timeline
+  useKeyboardNavigation(timelineContainerRef, {
+    enabled: notes.length > 0,
+    itemSelector: '[role="article"]',
+  });
 
   // Load more notes for pagination
   const loadMore = useCallback(async () => {
@@ -79,28 +90,14 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
     }
   }, [loading, hasMore, lastNoteId, type, setLoading, setError, setHasMore, setNotes]);
 
-  // Intersection Observer for infinite scroll
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && !loading && hasMore) {
-          loadMore();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    const currentTarget = observerTarget.current;
-    if (currentTarget) {
-      observer.observe(currentTarget);
-    }
-
-    return () => {
-      if (currentTarget) {
-        observer.unobserve(currentTarget);
-      }
-    };
-  }, [loading, hasMore, loadMore]);
+  // Use the reusable infinite scroll hook
+  const sentinelRef = useInfiniteScroll({
+    onLoadMore: loadMore,
+    isLoading: loading,
+    hasMore,
+    threshold: 0.1,
+    rootMargin: '100px',
+  });
 
   // Handle note deletion
   const handleNoteDelete = useCallback(
@@ -110,12 +107,36 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
     [setNotes]
   );
 
+  // Retry function for error recovery
+  const handleRetry = useCallback(() => {
+    setError(null);
+    loadMore();
+  }, [loadMore, setError]);
+
   return (
-    <div className="space-y-4">
-      {/* Error Message */}
+    <div
+      ref={timelineContainerRef}
+      className="space-y-4"
+      role="feed"
+      aria-busy={loading}
+      aria-label={`${type} timeline`}
+    >
+      {/* Enhanced Error Message with Retry */}
       {error && (
-        <div className="rounded-lg bg-red-50 p-4 text-red-600">
-          <Trans>Error loading timeline</Trans>: {error}
+        <ErrorMessage
+          title={<Trans>Error loading timeline</Trans> as unknown as string}
+          message={error}
+          onRetry={handleRetry}
+          isRetrying={loading}
+          variant="error"
+        />
+      )}
+
+      {/* Initial Loading State - Show skeleton */}
+      {!error && loading && notes.length === 0 && (
+        <div role="status" aria-label="Loading timeline">
+          <TimelineSkeleton count={3} />
+          <span className="sr-only"><Trans>Loading posts...</Trans></span>
         </div>
       )}
 
@@ -124,27 +145,28 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
         <NoteCard key={note.id} note={note} onDelete={() => handleNoteDelete(note.id)} />
       ))}
 
-      {/* Loading Indicator */}
-      {loading && (
-        <div className="flex justify-center py-8">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
+      {/* Loading More Indicator - Show spinner when loading additional notes */}
+      {loading && notes.length > 0 && (
+        <div className="flex justify-center py-8" role="status" aria-label="Loading more posts">
+          <Spinner size="lg" />
+          <span className="sr-only"><Trans>Loading more posts...</Trans></span>
         </div>
       )}
 
       {/* Load More Trigger (Intersection Observer Target) */}
-      <div ref={observerTarget} className="h-4" />
+      <div ref={sentinelRef} className="h-4" aria-hidden="true" />
 
       {/* End of Timeline */}
       {!hasMore && notes.length > 0 && (
-        <div className="py-8 text-center text-gray-500">
+        <div className="py-8 text-center text-gray-500" role="status" aria-live="polite">
           <Trans>You've reached the end of the timeline</Trans>
         </div>
       )}
 
       {/* Empty State */}
       {!loading && notes.length === 0 && (
-        <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
-          <div className="text-4xl mb-4">📭</div>
+        <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center" role="status">
+          <div className="text-4xl mb-4" aria-hidden="true">📭</div>
           <h3 className="mb-2 text-lg font-semibold text-gray-900">
             <Trans>No notes yet</Trans>
           </h3>
@@ -157,7 +179,11 @@ export function Timeline({ initialNotes = [], type = 'local' }: TimelineProps) {
       {/* Manual Load More Button (fallback) */}
       {hasMore && !loading && notes.length > 0 && (
         <div className="flex justify-center py-4">
-          <Button variant="secondary" onPress={loadMore}>
+          <Button
+            variant="secondary"
+            onPress={loadMore}
+            aria-label="Load more posts manually"
+          >
             <Trans>Load more</Trans>
           </Button>
         </div>

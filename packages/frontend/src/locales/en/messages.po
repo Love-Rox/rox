@@ -13,63 +13,294 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/pages/signup.tsx:76
+msgid "3-20 characters, letters, numbers, and underscores only"
+msgstr "3-20 characters, letters, numbers, and underscores only"
+
 #: src/app/page.tsx:17
 #~ msgid "A lightweight ActivityPub server with Misskey API compatibility"
 #~ msgstr "A lightweight ActivityPub server with Misskey API compatibility"
 
-#: src/components/timeline/Timeline.tsx:152
+#: src/components/LandingPage.tsx:28
+msgid "A lightweight, federated social network powered by ActivityPub"
+msgstr "A lightweight, federated social network powered by ActivityPub"
+
+#: src/components/LandingPage.tsx:93
+msgid "About This Server"
+msgstr "About This Server"
+
+#: src/pages/signup.tsx:124
+msgid "Already have an account?"
+msgstr "Already have an account?"
+
+#: src/components/note/NoteComposer.tsx:189
+msgid "Authentication required"
+msgstr "Authentication required"
+
+#: src/components/pages/NoteDetailPageClient.tsx:100
+msgid "Back to timeline"
+msgstr "Back to timeline"
+
+#: src/components/timeline/Timeline.tsx:174
 msgid "Be the first to post something!"
 msgstr "Be the first to post something!"
 
-#: src/pages/login.tsx:85
+#: src/pages/settings.tsx:159
+msgid "Bio"
+msgstr "Bio"
+
+#: src/components/user/UserProfile.tsx:258
+msgid "Bot"
+msgstr "Bot"
+
+#: src/pages/settings.tsx:229
+msgid "Cancel"
+msgstr "Cancel"
+
+#: src/pages/login.tsx:93
 msgid "Choose your preferred sign-in method"
 msgstr "Choose your preferred sign-in method"
 
-#: src/components/note/NoteCard.tsx:173
+#: src/components/LandingPage.tsx:67
+msgid "Connect with users across the fediverse using ActivityPub protocol"
+msgstr "Connect with users across the fediverse using ActivityPub protocol"
+
+#: src/components/note/NoteCard.tsx:247
 msgid "Content Warning"
 msgstr "Content Warning"
 
-#: src/pages/login.tsx:168
+#: src/components/LandingPage.tsx:85
+msgid "Control your data and choose who sees your posts"
+msgstr "Control your data and choose who sees your posts"
+
+#: src/components/pages/NoteDetailPageClient.tsx:135
+msgid "Conversation thread"
+msgstr "Conversation thread"
+
+#: src/pages/signup.tsx:62
+msgid "Create your account"
+msgstr "Create your account"
+
+#: src/pages/signup.tsx:119
+msgid "Creating account..."
+msgstr "Creating account..."
+
+#: src/components/note/NoteComposer.tsx:271
+msgid "Direct"
+msgstr "Direct"
+
+#: src/components/note/NoteComposer.tsx:317
+msgid "Discard"
+msgstr "Discard"
+
+#: src/pages/settings.tsx:139
+#: src/pages/signup.tsx:101
+msgid "Display Name"
+msgstr "Display Name"
+
+#: src/pages/login.tsx:176
 msgid "Don't have an account?"
 msgstr "Don't have an account?"
 
-#: src/components/timeline/Timeline.tsx:118
+#: src/components/note/NoteComposer.tsx:116
+msgid "Draft discarded"
+msgstr "Draft discarded"
+
+#: src/components/note/NoteComposer.tsx:106
+msgid "Draft restored"
+msgstr "Draft restored"
+
+#: src/components/user/UserProfile.tsx:229
+msgid "Edit Profile"
+msgstr "Edit Profile"
+
+#: src/pages/signup.tsx:82
+msgid "Email"
+msgstr "Email"
+
+#: src/pages/signup.tsx:86
+msgid "Email is required"
+msgstr "Email is required"
+
+#: src/components/ui/EmojiPicker.tsx:261
+msgid "Emoji Picker"
+msgstr "Emoji Picker"
+
+#: src/components/timeline/Timeline.tsx:127
 msgid "Error loading timeline"
 msgstr "Error loading timeline"
 
-#: src/components/note/NoteCard.tsx:156
+#: src/components/user/UserProfile.tsx:176
+msgid "Error loading user profile"
+msgstr "Error loading user profile"
+
+#: src/components/note/NoteCard.tsx:111
+msgid "Failed to add reaction"
+msgstr "Failed to add reaction"
+
+#: src/components/pages/NoteDetailPageClient.tsx:48
+msgid "Failed to load note"
+msgstr "Failed to load note"
+
+#: src/components/note/NoteCard.tsx:129
+msgid "Failed to renote"
+msgstr "Failed to renote"
+
+#: src/components/note/NoteCard.tsx:157
+msgid "Failed to update follow status"
+msgstr "Failed to update follow status"
+
+#. placeholder {0}: file.name
+#: src/components/note/NoteComposer.tsx:216
+msgid "Failed to upload {0}"
+msgstr "Failed to upload {0}"
+
+#: src/components/LandingPage.tsx:76
+msgid "Fast and efficient with minimal resource usage"
+msgstr "Fast and efficient with minimal resource usage"
+
+#: src/components/LandingPage.tsx:64
+msgid "Federated"
+msgstr "Federated"
+
+#: src/components/note/NoteCard.tsx:230
+#: src/components/user/UserProfile.tsx:245
 msgid "Follow"
 msgstr "Follow"
 
-#: src/components/note/NoteCard.tsx:156
+#: src/components/note/NoteComposer.tsx:270
+#: src/components/user/UserProfile.tsx:279
+msgid "Followers"
+msgstr "Followers"
+
+#: src/components/note/NoteCard.tsx:230
+#: src/components/user/UserProfile.tsx:243
+#: src/components/user/UserProfile.tsx:285
 msgid "Following"
 msgstr "Following"
 
-#: src/components/timeline/Timeline.tsx:161
+#: src/components/note/NoteCard.tsx:150
+msgid "Following successfully"
+msgstr "Following successfully"
+
+#: src/components/user/UserProfile.tsx:240
+msgid "Following..."
+msgstr "Following..."
+
+#: src/components/LandingPage.tsx:46
+msgid "Get Started"
+msgstr "Get Started"
+
+#: src/components/LandingPage.tsx:37
+msgid "Go to Timeline"
+msgstr "Go to Timeline"
+
+#: src/components/layout/Sidebar.tsx:33
+#: src/components/note/NoteComposer.tsx:269
+#: src/pages/timeline.tsx:131
+msgid "Home"
+msgstr "Home"
+
+#: src/pages/signup.tsx:65
+msgid "Join Rox and start sharing"
+msgstr "Join Rox and start sharing"
+
+#: src/components/LandingPage.tsx:73
+msgid "Lightweight"
+msgstr "Lightweight"
+
+#: src/components/timeline/Timeline.tsx:187
+#: src/components/user/UserProfile.tsx:334
 msgid "Load more"
 msgstr "Load more"
 
-#: src/pages/login.tsx:52
+#: src/components/timeline/Timeline.tsx:152
+msgid "Loading more posts..."
+msgstr "Loading more posts..."
+
+#: src/components/timeline/Timeline.tsx:139
+msgid "Loading posts..."
+msgstr "Loading posts..."
+
+#: src/components/user/UserProfile.tsx:330
+msgid "Loading..."
+msgstr "Loading..."
+
+#: src/pages/timeline.tsx:103
+msgid "Local"
+msgstr "Local"
+
+#: src/components/LandingPage.tsx:52
+msgid "Log In"
+msgstr "Log In"
+
+#: src/pages/login.tsx:56
 msgid "Login failed. Please check your credentials."
 msgstr "Login failed. Please check your credentials."
 
-#: src/components/timeline/Timeline.tsx:149
+#: src/pages/settings.tsx:129
+msgid "Manage your profile information"
+msgstr "Manage your profile information"
+
+#: src/pages/signup.tsx:95
+msgid "Minimum 8 characters"
+msgstr "Minimum 8 characters"
+
+#: src/components/ui/EmojiPicker.tsx:336
+msgid "No emojis found"
+msgstr "No emojis found"
+
+#: src/components/timeline/Timeline.tsx:171
 msgid "No notes yet"
 msgstr "No notes yet"
 
-#: src/pages/login.tsx:126
+#: src/components/user/UserProfile.tsx:310
+msgid "No posts yet"
+msgstr "No posts yet"
+
+#: src/components/pages/NoteDetailPageClient.tsx:178
+msgid "No replies yet"
+msgstr "No replies yet"
+
+#: src/components/pages/NoteDetailPageClient.tsx:126
+msgid "Note"
+msgstr "Note"
+
+#: src/components/pages/NoteDetailPageClient.tsx:65
+msgid "Note deleted"
+msgstr "Note deleted"
+
+#: src/components/pages/NoteDetailPageClient.tsx:95
+msgid "Note not found"
+msgstr "Note not found"
+
+#: src/components/note/NoteComposer.tsx:248
+msgid "Note posted successfully"
+msgstr "Note posted successfully"
+
+#: src/components/note/NoteCard.tsx:123
+msgid "Note renoted"
+msgstr "Note renoted"
+
+#: src/pages/signup.tsx:105
+msgid "Optional"
+msgstr "Optional"
+
+#: src/pages/login.tsx:134
 msgid "Or continue with password"
 msgstr "Or continue with password"
 
-#: src/pages/login.tsx:71
+#: src/pages/login.tsx:79
 msgid "Passkey authentication failed."
 msgstr "Passkey authentication failed."
 
-#: src/pages/login.tsx:144
+#: src/pages/login.tsx:152
+#: src/pages/signup.tsx:91
 msgid "Password"
 msgstr "Password"
 
-#: src/pages/login.tsx:148
+#: src/pages/login.tsx:156
+#: src/pages/signup.tsx:96
 msgid "Password is required"
 msgstr "Password is required"
 
@@ -77,63 +308,169 @@ msgstr "Password is required"
 #~ msgid "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
 #~ msgstr "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
 
-#: src/components/note/NoteComposer.tsx:281
+#: src/components/note/NoteComposer.tsx:179
+msgid "Please enter text or attach files"
+msgstr "Please enter text or attach files"
+
+#: src/pages/settings.tsx:74
+msgid "Please log in to update your profile"
+msgstr "Please log in to update your profile"
+
+#: src/components/note/NoteComposer.tsx:540
 msgid "Post"
 msgstr "Post"
 
-#: src/components/note/NoteComposer.tsx:281
+#: src/components/note/NoteComposer.tsx:536
 msgid "Posting..."
 msgstr "Posting..."
 
-#: src/components/note/ReactionPicker.tsx:135
-msgid "React"
-msgstr "React"
+#: src/components/user/UserProfile.tsx:273
+#: src/components/user/UserProfile.tsx:295
+msgid "Posts"
+msgstr "Posts"
 
-#: src/pages/index.tsx:34
+#: src/components/LandingPage.tsx:110
+msgid "Powered by"
+msgstr "Powered by"
+
+#: src/components/LandingPage.tsx:82
+msgid "Privacy First"
+msgstr "Privacy First"
+
+#: src/components/layout/Sidebar.tsx:39
+msgid "Profile"
+msgstr "Profile"
+
+#: src/pages/settings.tsx:93
+msgid "Profile updated successfully"
+msgstr "Profile updated successfully"
+
+#: src/components/note/NoteComposer.tsx:268
+msgid "Public"
+msgstr "Public"
+
+#: src/components/note/ReactionPicker.tsx:135
+#~ msgid "React"
+#~ msgstr "React"
+
+#: src/components/note/NoteCard.tsx:104
+msgid "Reaction added"
+msgstr "Reaction added"
+
+#: src/pages/timeline.tsx:84
 msgid "Recent posts from your community"
 msgstr "Recent posts from your community"
 
-#: src/components/note/NoteCard.tsx:164
+#: src/pages/signup.tsx:51
+msgid "Registration failed. Please try again."
+msgstr "Registration failed. Please try again."
+
+#: src/components/note/NoteCard.tsx:238
 msgid "Renoted"
 msgstr "Renoted"
 
-#: src/components/note/NoteComposer.tsx:281
+#. placeholder {0}: descendants.length
+#: src/components/pages/NoteDetailPageClient.tsx:159
+msgid "Replies ({0})"
+msgstr "Replies ({0})"
+
+#: src/components/note/NoteComposer.tsx:538
 msgid "Reply"
 msgstr "Reply"
 
-#: src/components/note/NoteComposer.tsx:152
+#: src/components/note/NoteComposer.tsx:336
 msgid "Replying to"
 msgstr "Replying to"
 
-#: src/components/note/NoteCard.tsx:181
+#: src/components/ui/ImageModal.tsx:209
+msgid "Reset"
+msgstr "Reset"
+
+#: src/components/note/NoteComposer.tsx:309
+msgid "Restore"
+msgstr "Restore"
+
+#: src/components/ui/ErrorMessage.tsx:88
+msgid "Retry"
+msgstr "Retry"
+
+#: src/components/ui/ErrorMessage.tsx:88
+msgid "Retrying..."
+msgstr "Retrying..."
+
+#: src/pages/settings.tsx:217
+msgid "Save Changes"
+msgstr "Save Changes"
+
+#: src/pages/settings.tsx:213
+msgid "Saving..."
+msgstr "Saving..."
+
+#: src/components/ui/EmojiPicker.tsx:278
+msgid "Search emoji..."
+msgstr "Search emoji..."
+
+#: src/components/layout/Sidebar.tsx:45
+#: src/pages/settings.tsx:126
+msgid "Settings"
+msgstr "Settings"
+
+#: src/components/LandingPage.tsx:101
+msgid "Share your thoughts, connect with friends, and join conversations across the fediverse. Your data stays with you, and you control who sees what you share."
+msgstr "Share your thoughts, connect with friends, and join conversations across the fediverse. Your data stays with you, and you control who sees what you share."
+
+#: src/components/note/NoteCard.tsx:257
 msgid "Show content"
 msgstr "Show content"
 
-#: src/pages/login.tsx:163
+#: src/pages/login.tsx:171
+#: src/pages/signup.tsx:126
 msgid "Sign in"
 msgstr "Sign in"
 
-#: src/pages/login.tsx:82
+#: src/pages/login.tsx:90
 msgid "Sign in to Rox"
 msgstr "Sign in to Rox"
 
-#: src/pages/login.tsx:113
+#: src/pages/login.tsx:121
 msgid "Sign in with GitHub"
 msgstr "Sign in with GitHub"
 
-#: src/pages/login.tsx:99
+#: src/pages/login.tsx:107
 msgid "Sign in with Passkey"
 msgstr "Sign in with Passkey"
 
-#: src/pages/login.tsx:170
+#: src/pages/login.tsx:178
+#: src/pages/signup.tsx:119
 msgid "Sign up"
 msgstr "Sign up"
 
-#: src/pages/login.tsx:163
+#: src/pages/login.tsx:171
 msgid "Signing in..."
 msgstr "Signing in..."
 
-#: src/pages/index.tsx:31
+#: src/pages/timeline.tsx:117
+msgid "Social"
+msgstr "Social"
+
+#: src/pages/settings.tsx:165
+msgid "Tell us about yourself..."
+msgstr "Tell us about yourself..."
+
+#: src/components/note/NoteComposer.tsx:184
+msgid "Text exceeds {maxLength} characters"
+msgstr "Text exceeds {maxLength} characters"
+
+#: src/components/LandingPage.tsx:96
+msgid "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
+msgstr "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
+
+#: src/components/user/UserProfile.tsx:316
+msgid "This user hasn't posted anything yet"
+msgstr "This user hasn't posted anything yet"
+
+#: src/components/pages/NoteDetailPageClient.tsx:115
+#: src/pages/timeline.tsx:81
 msgid "Timeline"
 msgstr "Timeline"
 
@@ -141,11 +478,38 @@ msgstr "Timeline"
 #~ msgid "UI Components Demo"
 #~ msgstr "UI Components Demo"
 
-#: src/pages/login.tsx:135
+#: src/components/note/NoteCard.tsx:143
+msgid "Unfollowed successfully"
+msgstr "Unfollowed successfully"
+
+#: src/components/user/UserProfile.tsx:240
+msgid "Unfollowing..."
+msgstr "Unfollowing..."
+
+#: src/components/note/NoteComposer.tsx:393
+msgid "Uploading files..."
+msgstr "Uploading files..."
+
+#: src/components/note/NoteComposer.tsx:534
+msgid "Uploading..."
+msgstr "Uploading..."
+
+#: src/components/user/UserProfile.tsx:177
+msgid "User not found"
+msgstr "User not found"
+
+#: src/pages/login.tsx:143
+#: src/pages/settings.tsx:184
+#: src/pages/signup.tsx:72
 msgid "Username"
 msgstr "Username"
 
-#: src/pages/login.tsx:139
+#: src/pages/settings.tsx:195
+msgid "Username cannot be changed"
+msgstr "Username cannot be changed"
+
+#: src/pages/login.tsx:147
+#: src/pages/signup.tsx:77
 msgid "Username is required"
 msgstr "Username is required"
 
@@ -153,6 +517,26 @@ msgstr "Username is required"
 #~ msgid "Welcome to Rox"
 #~ msgstr "Welcome to Rox"
 
-#: src/components/timeline/Timeline.tsx:140
+#: src/components/note/NoteComposer.tsx:299
+msgid "You have an unsaved draft"
+msgstr "You have an unsaved draft"
+
+#: src/components/user/UserProfile.tsx:314
+msgid "You haven't posted anything yet"
+msgstr "You haven't posted anything yet"
+
+#: src/components/user/UserProfile.tsx:343
+msgid "You've reached the end"
+msgstr "You've reached the end"
+
+#: src/components/timeline/Timeline.tsx:162
 msgid "You've reached the end of the timeline"
 msgstr "You've reached the end of the timeline"
+
+#: src/pages/settings.tsx:173
+msgid "Your bio (max 500 characters)"
+msgstr "Your bio (max 500 characters)"
+
+#: src/pages/settings.tsx:152
+msgid "Your public display name (max 50 characters)"
+msgstr "Your public display name (max 50 characters)"

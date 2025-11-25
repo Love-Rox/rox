@@ -1,47 +1,47 @@
 'use client';
 
-import { Trans } from '@lingui/react/macro';
 import { useAtom } from 'jotai';
-import { Timeline } from '../components/timeline/Timeline';
-import { NoteComposer } from '../components/note/NoteComposer';
-import { LanguageSwitcher } from '../components/LanguageSwitcher';
-import { currentUserAtom } from '../lib/atoms/auth';
-import { timelineNotesAtom } from '../lib/atoms/timeline';
+import { useEffect, useState } from 'react';
+import { LandingPage } from '../components/LandingPage';
+import { currentUserAtom, tokenAtom } from '../lib/atoms/auth';
+import { apiClient } from '../lib/api/client';
 
 /**
  * Home page component
- * Displays the note composer and local timeline of notes
+ * Shows landing page with context-aware actions based on authentication status
  */
 export default function HomePage() {
-  const [currentUser] = useAtom(currentUserAtom);
-  const [, setTimelineNotes] = useAtom(timelineNotesAtom);
+  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
+  const [token] = useAtom(tokenAtom);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleNoteCreated = () => {
-    // Refresh timeline by clearing current notes
-    // Timeline component will automatically reload
-    setTimelineNotes([]);
-  };
+  // Restore user session if token exists
+  useEffect(() => {
+    const restoreSession = async () => {
+      if (token && !currentUser) {
+        try {
+          apiClient.setToken(token);
+          const response = await apiClient.get<{ user: any }>('/api/auth/session');
+          setCurrentUser(response.user);
+        } catch (error) {
+          console.error('Failed to restore session:', error);
+          // Token is invalid, stay on landing page as guest
+        }
+      }
+      setIsLoading(false);
+    };
+    restoreSession();
+  }, [token, currentUser, setCurrentUser]);
 
-  return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
-      {/* Header */}
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="text-4xl font-bold text-gray-900">
-            <Trans>Timeline</Trans>
-          </h1>
-          <p className="mt-2 text-gray-600">
-            <Trans>Recent posts from your community</Trans>
-          </p>
-        </div>
-        <LanguageSwitcher />
+  // Show loading spinner while checking auth
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>
+    );
+  }
 
-      {/* Note Composer (only shown when logged in) */}
-      {currentUser && <NoteComposer onNoteCreated={handleNoteCreated} />}
-
-      {/* Timeline */}
-      <Timeline type="local" />
-    </div>
-  );
+  // Show landing page with user context
+  return <LandingPage currentUser={currentUser} />;
 }

@@ -10,6 +10,7 @@
     "**/dist",
     "**/build",
     "**/.waku",
-    "**/*.d.ts"
+    "**/*.d.ts",
+    "**/pages.gen.ts"
   ]
 }

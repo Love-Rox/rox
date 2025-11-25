@@ -289,4 +289,50 @@ notes.get('/user-notes', optionalAuth(), async (c: Context) => {
   return c.json(timeline);
 });
 
+/**
+ * GET /api/notes/replies
+ *
+ * Get replies to a specific note
+ *
+ * @auth Optional
+ * @query {string} noteId - Note ID to get replies for
+ * @query {number} [limit=20] - Maximum number of replies to return
+ * @query {string} [sinceId] - Return replies after this ID
+ * @query {string} [untilId] - Return replies before this ID
+ * @returns {Note[]} Array of reply notes
+ */
+notes.get('/replies', optionalAuth(), async (c: Context) => {
+  const noteRepository = c.get('noteRepository');
+  const driveFileRepository = c.get('driveFileRepository');
+  const followRepository = c.get('followRepository');
+
+  const noteService = new NoteService(
+    noteRepository,
+    driveFileRepository,
+    followRepository,
+  );
+
+  const noteId = c.req.query('noteId');
+
+  if (!noteId) {
+    return c.json({ error: 'noteId is required' }, 400);
+  }
+
+  const limit = c.req.query('limit') ? Number.parseInt(c.req.query('limit')!, 10) : 20;
+  const sinceId = c.req.query('sinceId');
+  const untilId = c.req.query('untilId');
+
+  // Get all replies to this note
+  const replies = await noteRepository.findReplies(noteId, {
+    limit,
+    sinceId,
+    untilId,
+  });
+
+  // Hydrate replies with user and file data
+  const hydratedReplies = await noteService.hydrateNotes(replies);
+
+  return c.json(hydratedReplies);
+});
+
 export default notes;

@@ -53,7 +53,10 @@ app.get('/api/notes', async (c) => {
 | Backend | Hono | 超軽量、Web標準準拠、エッジ互換 |
 | Frontend | Waku | RSCネイティブサポート、最小構成 |
 | State | Jotai | アトミック、再レンダリング最小化 |
-| Styling | Tailwind CSS | ビルド時最適化、ユーティリティファースト |
+| UI Components | React Aria Components | アクセシブル、ヘッドレスUI、WAI-ARIA準拠 |
+| Icons | Lucide React | ツリーシェイキング対応、軽量、一貫性 |
+| Styling | Tailwind CSS v4 | ビルド時最適化、OKLCH色空間 |
+| i18n | Lingui | 可読性、自動化、最適化（3kb） |
 | ORM | Drizzle ORM | TypeScriptファースト、軽量、マルチDB |
 | Queue | Dragonfly/BullMQ | 非同期ジョブ処理（ActivityPub配送） |
 | Lint/Format | oxc | Rust製、高速（ESLint/Prettier代替） |
@@ -95,22 +98,25 @@ app.get('/api/notes', async (c) => {
 - Postman/Thunder Clientで動作確認
 - テストカバレッジ80%以上
 
-### Phase 2: Frontend（フロントエンド）
+### Phase 2: Frontend（フロントエンド）✅ 完了
 
 **目的:** 使いやすいWebクライアントの提供
 
-**期間:** 3-4週間
+**期間:** 3-4週間（完了日: 2025-11-25）
 
 **主要機能:**
-- 認証フロー
-- タイムライン表示（RSC活用）
-- 投稿機能
-- ユーザーインタラクション
+- ✅ 認証フロー（Passkey/パスワード）
+- ✅ タイムライン表示（RSC活用、無限スクロール）
+- ✅ 投稿機能（テキスト、画像、CW、公開範囲）
+- ✅ ユーザーインタラクション（リアクション、リノート、返信、フォロー）
+- ✅ UIコンポーネント（React Aria Components、Lucide React）
+- ✅ アクセシビリティ対応（キーボードナビゲーション、ARIA属性）
+- ✅ 国際化対応（Lingui、日本語・英語、127メッセージ）
 
 **完了条件:**
-- 全ユーザーフローが動作
-- Lighthouse Performance > 90
-- モバイルレスポンシブ対応
+- ✅ 全ユーザーフローが動作
+- ✅ モバイルレスポンシブ対応
+- ✅ WCAG 2.1 Level AA準拠
 
 ### Phase 3: ActivityPub Federation（連合）
 

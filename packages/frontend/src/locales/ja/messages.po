@@ -13,63 +13,294 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/pages/signup.tsx:76
+msgid "3-20 characters, letters, numbers, and underscores only"
+msgstr "3-20文字、英数字とアンダースコアのみ"
+
 #: src/app/page.tsx:17
 #~ msgid "A lightweight ActivityPub server with Misskey API compatibility"
 #~ msgstr ""
 
-#: src/components/timeline/Timeline.tsx:152
+#: src/components/LandingPage.tsx:28
+msgid "A lightweight, federated social network powered by ActivityPub"
+msgstr "ActivityPubで動作する軽量で分散型のソーシャルネットワーク"
+
+#: src/components/LandingPage.tsx:93
+msgid "About This Server"
+msgstr "このサーバーについて"
+
+#: src/pages/signup.tsx:124
+msgid "Already have an account?"
+msgstr "すでにアカウントをお持ちですか？"
+
+#: src/components/note/NoteComposer.tsx:189
+msgid "Authentication required"
+msgstr "認証が必要です"
+
+#: src/components/pages/NoteDetailPageClient.tsx:100
+msgid "Back to timeline"
+msgstr "タイムラインに戻る"
+
+#: src/components/timeline/Timeline.tsx:174
 msgid "Be the first to post something!"
 msgstr "最初の投稿をしてみましょう！"
 
-#: src/pages/login.tsx:85
+#: src/pages/settings.tsx:159
+msgid "Bio"
+msgstr "自己紹介"
+
+#: src/components/user/UserProfile.tsx:258
+msgid "Bot"
+msgstr "Bot"
+
+#: src/pages/settings.tsx:229
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: src/pages/login.tsx:93
 msgid "Choose your preferred sign-in method"
 msgstr "サインイン方法を選択してください"
 
-#: src/components/note/NoteCard.tsx:173
+#: src/components/LandingPage.tsx:67
+msgid "Connect with users across the fediverse using ActivityPub protocol"
+msgstr "ActivityPubプロトコルを使用してFediverse全体のユーザーと繋がる"
+
+#: src/components/note/NoteCard.tsx:247
 msgid "Content Warning"
 msgstr "閲覧注意"
 
-#: src/pages/login.tsx:168
+#: src/components/LandingPage.tsx:85
+msgid "Control your data and choose who sees your posts"
+msgstr "データを管理し、誰が投稿を見るかを選択できます"
+
+#: src/components/pages/NoteDetailPageClient.tsx:135
+msgid "Conversation thread"
+msgstr "会話スレッド"
+
+#: src/pages/signup.tsx:62
+msgid "Create your account"
+msgstr "アカウントを作成"
+
+#: src/pages/signup.tsx:119
+msgid "Creating account..."
+msgstr "アカウント作成中..."
+
+#: src/components/note/NoteComposer.tsx:271
+msgid "Direct"
+msgstr "ダイレクト"
+
+#: src/components/note/NoteComposer.tsx:317
+msgid "Discard"
+msgstr "破棄"
+
+#: src/pages/settings.tsx:139
+#: src/pages/signup.tsx:101
+msgid "Display Name"
+msgstr "表示名"
+
+#: src/pages/login.tsx:176
 msgid "Don't have an account?"
 msgstr "アカウントをお持ちでないですか？"
 
-#: src/components/timeline/Timeline.tsx:118
+#: src/components/note/NoteComposer.tsx:116
+msgid "Draft discarded"
+msgstr "下書きを破棄しました"
+
+#: src/components/note/NoteComposer.tsx:106
+msgid "Draft restored"
+msgstr "下書きを復元しました"
+
+#: src/components/user/UserProfile.tsx:229
+msgid "Edit Profile"
+msgstr "プロフィールを編集"
+
+#: src/pages/signup.tsx:82
+msgid "Email"
+msgstr "メールアドレス"
+
+#: src/pages/signup.tsx:86
+msgid "Email is required"
+msgstr "メールアドレスを入力してください"
+
+#: src/components/ui/EmojiPicker.tsx:261
+msgid "Emoji Picker"
+msgstr "絵文字ピッカー"
+
+#: src/components/timeline/Timeline.tsx:127
 msgid "Error loading timeline"
 msgstr "タイムラインの読み込みに失敗しました"
 
-#: src/components/note/NoteCard.tsx:156
+#: src/components/user/UserProfile.tsx:176
+msgid "Error loading user profile"
+msgstr "ユーザープロフィールの読み込みに失敗しました"
+
+#: src/components/note/NoteCard.tsx:111
+msgid "Failed to add reaction"
+msgstr "リアクションの追加に失敗しました"
+
+#: src/components/pages/NoteDetailPageClient.tsx:48
+msgid "Failed to load note"
+msgstr "ノートの読み込みに失敗しました"
+
+#: src/components/note/NoteCard.tsx:129
+msgid "Failed to renote"
+msgstr "リノートに失敗しました"
+
+#: src/components/note/NoteCard.tsx:157
+msgid "Failed to update follow status"
+msgstr "フォロー状態の更新に失敗しました"
+
+#. placeholder {0}: file.name
+#: src/components/note/NoteComposer.tsx:216
+msgid "Failed to upload {0}"
+msgstr "{0}のアップロードに失敗しました"
+
+#: src/components/LandingPage.tsx:76
+msgid "Fast and efficient with minimal resource usage"
+msgstr "最小限のリソース使用で高速かつ効率的"
+
+#: src/components/LandingPage.tsx:64
+msgid "Federated"
+msgstr "分散型"
+
+#: src/components/note/NoteCard.tsx:230
+#: src/components/user/UserProfile.tsx:245
 msgid "Follow"
 msgstr "フォロー"
 
-#: src/components/note/NoteCard.tsx:156
+#: src/components/note/NoteComposer.tsx:270
+#: src/components/user/UserProfile.tsx:279
+msgid "Followers"
+msgstr "フォロワー"
+
+#: src/components/note/NoteCard.tsx:230
+#: src/components/user/UserProfile.tsx:243
+#: src/components/user/UserProfile.tsx:285
 msgid "Following"
 msgstr "フォロー中"
 
-#: src/components/timeline/Timeline.tsx:161
+#: src/components/note/NoteCard.tsx:150
+msgid "Following successfully"
+msgstr "フォローしました"
+
+#: src/components/user/UserProfile.tsx:240
+msgid "Following..."
+msgstr "フォロー中..."
+
+#: src/components/LandingPage.tsx:46
+msgid "Get Started"
+msgstr "始める"
+
+#: src/components/LandingPage.tsx:37
+msgid "Go to Timeline"
+msgstr "タイムラインへ"
+
+#: src/components/layout/Sidebar.tsx:33
+#: src/components/note/NoteComposer.tsx:269
+#: src/pages/timeline.tsx:131
+msgid "Home"
+msgstr "ホーム"
+
+#: src/pages/signup.tsx:65
+msgid "Join Rox and start sharing"
+msgstr "Roxに参加して共有を始めましょう"
+
+#: src/components/LandingPage.tsx:73
+msgid "Lightweight"
+msgstr "軽量"
+
+#: src/components/timeline/Timeline.tsx:187
+#: src/components/user/UserProfile.tsx:334
 msgid "Load more"
 msgstr "もっと読み込む"
 
-#: src/pages/login.tsx:52
+#: src/components/timeline/Timeline.tsx:152
+msgid "Loading more posts..."
+msgstr "投稿を読み込み中..."
+
+#: src/components/timeline/Timeline.tsx:139
+msgid "Loading posts..."
+msgstr "投稿を読み込み中..."
+
+#: src/components/user/UserProfile.tsx:330
+msgid "Loading..."
+msgstr "読み込み中..."
+
+#: src/pages/timeline.tsx:103
+msgid "Local"
+msgstr "ローカル"
+
+#: src/components/LandingPage.tsx:52
+msgid "Log In"
+msgstr "ログイン"
+
+#: src/pages/login.tsx:56
 msgid "Login failed. Please check your credentials."
 msgstr "ログインに失敗しました。認証情報を確認してください。"
 
-#: src/components/timeline/Timeline.tsx:149
+#: src/pages/settings.tsx:129
+msgid "Manage your profile information"
+msgstr "プロフィール情報を管理"
+
+#: src/pages/signup.tsx:95
+msgid "Minimum 8 characters"
+msgstr "最低8文字"
+
+#: src/components/ui/EmojiPicker.tsx:336
+msgid "No emojis found"
+msgstr "絵文字が見つかりません"
+
+#: src/components/timeline/Timeline.tsx:171
 msgid "No notes yet"
 msgstr "まだ投稿がありません"
 
-#: src/pages/login.tsx:126
+#: src/components/user/UserProfile.tsx:310
+msgid "No posts yet"
+msgstr "まだ投稿がありません"
+
+#: src/components/pages/NoteDetailPageClient.tsx:178
+msgid "No replies yet"
+msgstr "まだ返信がありません"
+
+#: src/components/pages/NoteDetailPageClient.tsx:126
+msgid "Note"
+msgstr "ノート"
+
+#: src/components/pages/NoteDetailPageClient.tsx:65
+msgid "Note deleted"
+msgstr "ノートを削除しました"
+
+#: src/components/pages/NoteDetailPageClient.tsx:95
+msgid "Note not found"
+msgstr "ノートが見つかりません"
+
+#: src/components/note/NoteComposer.tsx:248
+msgid "Note posted successfully"
+msgstr "投稿しました"
+
+#: src/components/note/NoteCard.tsx:123
+msgid "Note renoted"
+msgstr "リノートしました"
+
+#: src/pages/signup.tsx:105
+msgid "Optional"
+msgstr "任意"
+
+#: src/pages/login.tsx:134
 msgid "Or continue with password"
 msgstr "またはパスワードでログイン"
 
-#: src/pages/login.tsx:71
+#: src/pages/login.tsx:79
 msgid "Passkey authentication failed."
 msgstr "パスキー認証に失敗しました。"
 
-#: src/pages/login.tsx:144
+#: src/pages/login.tsx:152
+#: src/pages/signup.tsx:91
 msgid "Password"
 msgstr "パスワード"
 
-#: src/pages/login.tsx:148
+#: src/pages/login.tsx:156
+#: src/pages/signup.tsx:96
 msgid "Password is required"
 msgstr "パスワードを入力してください"
 
@@ -77,63 +308,169 @@ msgstr "パスワードを入力してください"
 #~ msgid "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
 #~ msgstr ""
 
-#: src/components/note/NoteComposer.tsx:281
+#: src/components/note/NoteComposer.tsx:179
+msgid "Please enter text or attach files"
+msgstr "テキストを入力するかファイルを添付してください"
+
+#: src/pages/settings.tsx:74
+msgid "Please log in to update your profile"
+msgstr "プロフィールを更新するにはログインしてください"
+
+#: src/components/note/NoteComposer.tsx:540
 msgid "Post"
 msgstr "投稿"
 
-#: src/components/note/NoteComposer.tsx:281
+#: src/components/note/NoteComposer.tsx:536
 msgid "Posting..."
 msgstr "投稿中..."
 
-#: src/components/note/ReactionPicker.tsx:135
-msgid "React"
-msgstr "リアクション"
+#: src/components/user/UserProfile.tsx:273
+#: src/components/user/UserProfile.tsx:295
+msgid "Posts"
+msgstr "投稿"
 
-#: src/pages/index.tsx:34
+#: src/components/LandingPage.tsx:110
+msgid "Powered by"
+msgstr "Powered by"
+
+#: src/components/LandingPage.tsx:82
+msgid "Privacy First"
+msgstr "プライバシー第一"
+
+#: src/components/layout/Sidebar.tsx:39
+msgid "Profile"
+msgstr "プロフィール"
+
+#: src/pages/settings.tsx:93
+msgid "Profile updated successfully"
+msgstr "プロフィールを更新しました"
+
+#: src/components/note/NoteComposer.tsx:268
+msgid "Public"
+msgstr "公開"
+
+#: src/components/note/ReactionPicker.tsx:135
+#~ msgid "React"
+#~ msgstr "リアクション"
+
+#: src/components/note/NoteCard.tsx:104
+msgid "Reaction added"
+msgstr "リアクションを追加しました"
+
+#: src/pages/timeline.tsx:84
 msgid "Recent posts from your community"
 msgstr "コミュニティの最新投稿"
 
-#: src/components/note/NoteCard.tsx:164
+#: src/pages/signup.tsx:51
+msgid "Registration failed. Please try again."
+msgstr "登録に失敗しました。もう一度お試しください。"
+
+#: src/components/note/NoteCard.tsx:238
 msgid "Renoted"
 msgstr "リノート"
 
-#: src/components/note/NoteComposer.tsx:281
+#. placeholder {0}: descendants.length
+#: src/components/pages/NoteDetailPageClient.tsx:159
+msgid "Replies ({0})"
+msgstr "返信 ({0})"
+
+#: src/components/note/NoteComposer.tsx:538
 msgid "Reply"
 msgstr "返信"
 
-#: src/components/note/NoteComposer.tsx:152
+#: src/components/note/NoteComposer.tsx:336
 msgid "Replying to"
 msgstr "返信先:"
 
-#: src/components/note/NoteCard.tsx:181
+#: src/components/ui/ImageModal.tsx:209
+msgid "Reset"
+msgstr "リセット"
+
+#: src/components/note/NoteComposer.tsx:309
+msgid "Restore"
+msgstr "復元"
+
+#: src/components/ui/ErrorMessage.tsx:88
+msgid "Retry"
+msgstr "再試行"
+
+#: src/components/ui/ErrorMessage.tsx:88
+msgid "Retrying..."
+msgstr "再試行中..."
+
+#: src/pages/settings.tsx:217
+msgid "Save Changes"
+msgstr "変更を保存"
+
+#: src/pages/settings.tsx:213
+msgid "Saving..."
+msgstr "保存中..."
+
+#: src/components/ui/EmojiPicker.tsx:278
+msgid "Search emoji..."
+msgstr "絵文字を検索..."
+
+#: src/components/layout/Sidebar.tsx:45
+#: src/pages/settings.tsx:126
+msgid "Settings"
+msgstr "設定"
+
+#: src/components/LandingPage.tsx:101
+msgid "Share your thoughts, connect with friends, and join conversations across the fediverse. Your data stays with you, and you control who sees what you share."
+msgstr "思いを共有し、友人とつながり、Fediverse全体での会話に参加しましょう。データはあなたのもので、誰が何を見るかを管理できます。"
+
+#: src/components/note/NoteCard.tsx:257
 msgid "Show content"
 msgstr "内容を表示"
 
-#: src/pages/login.tsx:163
+#: src/pages/login.tsx:171
+#: src/pages/signup.tsx:126
 msgid "Sign in"
 msgstr "サインイン"
 
-#: src/pages/login.tsx:82
+#: src/pages/login.tsx:90
 msgid "Sign in to Rox"
 msgstr "Roxにサインイン"
 
-#: src/pages/login.tsx:113
+#: src/pages/login.tsx:121
 msgid "Sign in with GitHub"
 msgstr "GitHubでサインイン"
 
-#: src/pages/login.tsx:99
+#: src/pages/login.tsx:107
 msgid "Sign in with Passkey"
 msgstr "パスキーでサインイン"
 
-#: src/pages/login.tsx:170
+#: src/pages/login.tsx:178
+#: src/pages/signup.tsx:119
 msgid "Sign up"
 msgstr "新規登録"
 
-#: src/pages/login.tsx:163
+#: src/pages/login.tsx:171
 msgid "Signing in..."
 msgstr "サインイン中..."
 
-#: src/pages/index.tsx:31
+#: src/pages/timeline.tsx:117
+msgid "Social"
+msgstr "ソーシャル"
+
+#: src/pages/settings.tsx:165
+msgid "Tell us about yourself..."
+msgstr "自己紹介を入力..."
+
+#: src/components/note/NoteComposer.tsx:184
+msgid "Text exceeds {maxLength} characters"
+msgstr "テキストが{maxLength}文字を超えています"
+
+#: src/components/LandingPage.tsx:96
+msgid "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
+msgstr "これはRoxインスタンスです - あなたを分散型ソーシャルネットワークに接続する、モダンで軽量なActivityPubサーバーです。"
+
+#: src/components/user/UserProfile.tsx:316
+msgid "This user hasn't posted anything yet"
+msgstr "このユーザーはまだ何も投稿していません"
+
+#: src/components/pages/NoteDetailPageClient.tsx:115
+#: src/pages/timeline.tsx:81
 msgid "Timeline"
 msgstr "タイムライン"
 
@@ -141,11 +478,38 @@ msgstr "タイムライン"
 #~ msgid "UI Components Demo"
 #~ msgstr ""
 
-#: src/pages/login.tsx:135
+#: src/components/note/NoteCard.tsx:143
+msgid "Unfollowed successfully"
+msgstr "フォロー解除しました"
+
+#: src/components/user/UserProfile.tsx:240
+msgid "Unfollowing..."
+msgstr "フォロー解除中..."
+
+#: src/components/note/NoteComposer.tsx:393
+msgid "Uploading files..."
+msgstr "ファイルをアップロード中..."
+
+#: src/components/note/NoteComposer.tsx:534
+msgid "Uploading..."
+msgstr "アップロード中..."
+
+#: src/components/user/UserProfile.tsx:177
+msgid "User not found"
+msgstr "ユーザーが見つかりません"
+
+#: src/pages/login.tsx:143
+#: src/pages/settings.tsx:184
+#: src/pages/signup.tsx:72
 msgid "Username"
 msgstr "ユーザー名"
 
-#: src/pages/login.tsx:139
+#: src/pages/settings.tsx:195
+msgid "Username cannot be changed"
+msgstr "ユーザー名は変更できません"
+
+#: src/pages/login.tsx:147
+#: src/pages/signup.tsx:77
 msgid "Username is required"
 msgstr "ユーザー名を入力してください"
 
@@ -153,6 +517,26 @@ msgstr "ユーザー名を入力してください"
 #~ msgid "Welcome to Rox"
 #~ msgstr ""
 
-#: src/components/timeline/Timeline.tsx:140
+#: src/components/note/NoteComposer.tsx:299
+msgid "You have an unsaved draft"
+msgstr "未保存の下書きがあります"
+
+#: src/components/user/UserProfile.tsx:314
+msgid "You haven't posted anything yet"
+msgstr "まだ何も投稿していません"
+
+#: src/components/user/UserProfile.tsx:343
+msgid "You've reached the end"
+msgstr "最後まで到達しました"
+
+#: src/components/timeline/Timeline.tsx:162
 msgid "You've reached the end of the timeline"
 msgstr "タイムラインの最後に到達しました"
+
+#: src/pages/settings.tsx:173
+msgid "Your bio (max 500 characters)"
+msgstr "自己紹介（最大500文字）"
+
+#: src/pages/settings.tsx:152
+msgid "Your public display name (max 50 characters)"
+msgstr "表示名（最大50文字）"

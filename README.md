@@ -181,18 +181,20 @@ See [Implementation Guide](./docs/implementation/README.md) for detailed archite
 
 - **Phase 0**: Foundation (Database, Storage, DI) ✅ **Complete**
 - **Phase 1**: Misskey-Compatible API ✅ **Complete**
-- **Phase 2**: Frontend (Waku Client) ✅ **Foundation Complete** / 🚧 Feature Expansion
+- **Phase 2**: Frontend (Waku Client) ✅ **Complete**
   - ✅ Waku + Jotai setup
   - ✅ Tailwind CSS v4 with OKLCH colors
   - ✅ React Aria Components (Button, TextField, Dialog, Form, Avatar, Card)
-  - ✅ Lingui i18n (English/Japanese - 36 messages)
+  - ✅ Lingui i18n (English/Japanese - 87 messages)
   - ✅ Authentication (Passkey + Password)
-  - ✅ Timeline (display, pagination)
-  - ✅ Note Composer (text, CW, visibility)
-  - ✅ User interactions (reply, reaction, follow)
-  - 🚧 File uploads
-  - 🚧 User profiles
-- **Phase 3**: ActivityPub Federation ⏳ **Planned**
+  - ✅ Timeline (display, infinite scroll pagination)
+  - ✅ Note Composer (text, images, CW, visibility, reply, renote)
+  - ✅ User interactions (reply, reaction, follow/unfollow)
+  - ✅ File uploads (multiple images, drag & drop, preview)
+  - ✅ User profile pages (bio, stats, posts, follow button)
+  - ✅ Image modal (zoom, pan, gallery navigation)
+  - ✅ Accessibility (keyboard navigation, focus management, ARIA labels, screen reader support)
+- **Phase 3**: ActivityPub Federation ⏳ **Next**
 
 ## Contributing
 

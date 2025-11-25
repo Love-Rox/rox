@@ -124,13 +124,9 @@ export async function getFollowing(
  * Check if current user is following a specific user
  *
  * @param userId - User ID to check
- * @param token - Authentication token
  * @returns True if following, false otherwise
  */
-export async function isFollowing(
-  userId: string,
-  token: string,
-): Promise<boolean> {
+export async function isFollowing(userId: string): Promise<boolean> {
   try {
     const following = await getFollowing(userId);
     return following.length > 0;

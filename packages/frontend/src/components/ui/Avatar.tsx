@@ -5,14 +5,14 @@ import { cva, type VariantProps } from 'class-variance-authority';
  * Defines visual variants for size
  */
 const avatarVariants = cva(
-  'inline-block rounded-full bg-gray-200 object-cover',
+  'rounded-full bg-gray-200 object-cover',
   {
     variants: {
       size: {
-        sm: 'h-8 w-8',
-        md: 'h-10 w-10',
-        lg: 'h-12 w-12',
-        xl: 'h-16 w-16',
+        sm: 'h-8 w-8 text-xs',
+        md: 'h-10 w-10 text-sm',
+        lg: 'h-12 w-12 text-base',
+        xl: 'h-16 w-16 text-xl',
       },
     },
     defaultVariants: {
@@ -63,7 +63,7 @@ export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps
       <img
         src={src}
         alt={alt}
-        className={avatarVariants({ size, className })}
+        className={'inline-block ' + avatarVariants({ size, className })}
       />
     );
   }
@@ -71,7 +71,7 @@ export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps
   if (fallback) {
     return (
       <div
-        className={avatarVariants({ size, className }) + ' flex items-center justify-center bg-primary-100 text-primary-700 font-semibold'}
+        className={'inline-flex items-center justify-center ' + avatarVariants({ size }) + ' bg-primary-100! text-primary-700 font-semibold ' + (className || '')}
         aria-label={alt}
       >
         {fallback}
@@ -82,7 +82,7 @@ export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps
   // Default fallback: user icon
   return (
     <div
-      className={avatarVariants({ size, className }) + ' flex items-center justify-center bg-gray-300 text-gray-600'}
+      className={'inline-flex items-center justify-center ' + avatarVariants({ size }) + ' bg-gray-300! text-gray-600 ' + (className || '')}
       aria-label={alt}
     >
       <svg

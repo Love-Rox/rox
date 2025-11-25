@@ -6,10 +6,10 @@
 ## 全体スケジュール
 
 ```
-Phase 0: Foundation         [████████░░] 60%  Week 1-2   (2025-11-19 〜 2025-12-03)
-Phase 1: Misskey API        [░░░░░░░░░░]  0%  Week 3-6   (2025-12-04 〜 2025-12-31)
-Phase 2: Frontend           [░░░░░░░░░░]  0%  Week 7-10  (2026-01-01 〜 2026-01-28)
-Phase 3: Federation         [░░░░░░░░░░]  0%  Week 11-17 (2026-01-29 〜 2026-03-25)
+Phase 0: Foundation         [██████████] 100% ✅ 完了 (2025-11-19)
+Phase 1: Misskey API        [██████████] 100% ✅ 完了 (2025-11-19)
+Phase 2: Frontend           [██████████] 100% ✅ 完了 (2025-11-25)
+Phase 3: Federation         [░░░░░░░░░░]   0% ⏳ 次   (開始可能)
 ```
 
 ---
@@ -431,20 +431,26 @@ Phase 3: Federation         [░░░░░░░░░░]  0%  Week 11-17 (20
 
 ## 現在の状況
 
-**現在のSprint:** Sprint 0 (Week 1)
-**進捗:** 60%
-**ステータス:** ✅ 順調
+**現在のフェーズ:** Phase 3準備中
+**完了フェーズ:** Phase 0, 1, 2
+**ステータス:** ✅ Phase 2完了、Phase 3開始可能
 
-**完了項目:**
-- プロジェクト構造作成
-- 型定義完了
-- データベーススキーマ定義
-- Docker Compose設定
+**Phase 0-2 完了項目:**
+- ✅ 基盤構築（モノレポ、DI、Repository Pattern）
+- ✅ 全Misskey互換API実装（32エンドポイント）
+- ✅ フロントエンド完全実装（Waku + React Aria Components）
+- ✅ 認証フロー（Passkey/パスワード）
+- ✅ タイムライン、投稿、リアクション、フォロー機能
+- ✅ UI/UXの改善（Lucide React、アクセシビリティ対応）
+- ✅ 国際化対応（Lingui、日本語・英語、127メッセージ）
+
+**次のフェーズ:** Phase 3 (ActivityPub Federation)
 
 **次のタスク:**
-- マイグレーション生成
-- Repository Interface定義
-- PostgreSQL Repository実装
+- WebFinger実装
+- Actor endpoint実装
+- HTTP Signatures対応
+- Inbox/Outbox実装
 
 **ブロッカー:** なし
 
@@ -455,3 +461,5 @@ Phase 3: Federation         [░░░░░░░░░░]  0%  Week 11-17 (20
 | 日付 | 変更内容 | 理由 |
 |------|---------|------|
 | 2025-11-19 | タイムライン初版作成 | プロジェクト開始 |
+| 2025-11-19 | Phase 0, 1完了を記録 | 基盤とAPI実装完了 |
+| 2025-11-25 | Phase 2完了を記録 | フロントエンド実装完了（Lucide React、React Aria Select、i18n 127メッセージ） |

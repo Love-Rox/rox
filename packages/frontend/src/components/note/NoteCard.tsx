@@ -1,18 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { useAtom } from 'jotai';
 import type { Note, NoteFile } from '../../lib/types/note';
 import { Trans } from '@lingui/react/macro';
+import { t } from '@lingui/core/macro';
+import { MessageCircle, Repeat2 } from 'lucide-react';
 import { Card, CardContent } from '../ui/Card';
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
+import { ImageModal } from '../ui/ImageModal';
 import { notesApi } from '../../lib/api/notes';
 import { NoteComposer } from './NoteComposer';
 import { ReactionButton } from './ReactionPicker';
 import { createReaction, deleteReaction, getMyReactions } from '../../lib/api/reactions';
 import { followUser, unfollowUser } from '../../lib/api/following';
 import { tokenAtom, currentUserAtom } from '../../lib/atoms/auth';
+import { addToastAtom } from '../../lib/atoms/toast';
 
 /**
  * Props for the NoteCard component
@@ -31,14 +35,18 @@ export interface NoteCardProps {
  * @param note - Note data to display
  * @param onDelete - Callback when note is deleted
  */
-export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
+function NoteCardComponent({ note, onDelete: _onDelete }: NoteCardProps) {
   const [showCw, setShowCw] = useState(false);
   const [isReacting, setIsReacting] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [showReplyComposer, setShowReplyComposer] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [token] = useAtom(tokenAtom);
   const [currentUser] = useAtom(currentUserAtom);
+  const [, addToast] = useAtom(addToastAtom);
   const [myReactions, setMyReactions] = useState<string[]>([]);
+  const [localReactions, setLocalReactions] = useState<Record<string, number>>(note.reactions || {});
 
   // Load user's existing reactions on mount
   useEffect(() => {
@@ -68,15 +76,40 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
         // Remove reaction
         await deleteReaction(note.id, reaction, token);
         setMyReactions(myReactions.filter((r) => r !== reaction));
+
+        // Update local reaction count
+        setLocalReactions((prev) => {
+          const newReactions = { ...prev };
+          const currentCount = newReactions[reaction] || 0;
+          if (currentCount <= 1) {
+            delete newReactions[reaction];
+          } else {
+            newReactions[reaction] = currentCount - 1;
+          }
+          return newReactions;
+        });
       } else {
         // Add reaction
         await createReaction(note.id, reaction, token);
         setMyReactions([...myReactions, reaction]);
-      }
 
-      // TODO: Update local state or refetch timeline
+        // Update local reaction count
+        setLocalReactions((prev) => ({
+          ...prev,
+          [reaction]: (prev[reaction] || 0) + 1,
+        }));
+
+        addToast({
+          type: 'success',
+          message: t`Reaction added`,
+        });
+      }
     } catch (error) {
       console.error('Failed to react:', error);
+      addToast({
+        type: 'error',
+        message: t`Failed to add reaction`,
+      });
     } finally {
       setIsReacting(false);
     }
@@ -85,9 +118,16 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
   const handleRenote = async () => {
     try {
       await notesApi.renote(note.id);
-      // TODO: Show success message
+      addToast({
+        type: 'success',
+        message: t`Note renoted`,
+      });
     } catch (error) {
       console.error('Failed to renote:', error);
+      addToast({
+        type: 'error',
+        message: t`Failed to renote`,
+      });
     }
   };
 
@@ -98,12 +138,24 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
       if (isFollowing) {
         await unfollowUser(note.user.id, token);
         setIsFollowing(false);
+        addToast({
+          type: 'success',
+          message: t`Unfollowed successfully`,
+        });
       } else {
         await followUser(note.user.id, token);
         setIsFollowing(true);
+        addToast({
+          type: 'success',
+          message: t`Following successfully`,
+        });
       }
     } catch (error) {
       console.error('Failed to update follow status:', error);
+      addToast({
+        type: 'error',
+        message: t`Failed to update follow status`,
+      });
     }
   };
 
@@ -118,28 +170,50 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
     : note.user.username.slice(0, 2).toUpperCase();
 
   return (
-    <Card hover className="transition-all">
+    <Card
+      hover
+      className="transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+      role="article"
+      aria-label={`Post by ${note.user.name || note.user.username}`}
+      tabIndex={0}
+    >
       <CardContent className="p-4">
         {/* User Info */}
         <div className="mb-3 flex items-start gap-3">
-          <Avatar
-            src={note.user.avatarUrl}
-            alt={note.user.name || note.user.username}
-            fallback={userInitials}
-            size="md"
-          />
+          <a
+            href={`/${note.user.username}`}
+            className="shrink-0"
+            aria-label={`View profile of ${note.user.name || note.user.username}`}
+          >
+            <Avatar
+              src={note.user.avatarUrl}
+              alt={note.user.name || note.user.username}
+              fallback={userInitials}
+              size="md"
+            />
+          </a>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-900 truncate">
+              <a
+                href={`/${note.user.username}`}
+                className="font-semibold text-gray-900 truncate hover:underline"
+              >
                 {note.user.name || note.user.username}
-              </span>
-              <span className="text-sm text-gray-500 truncate">
+              </a>
+              <a
+                href={`/${note.user.username}`}
+                className="text-sm text-gray-500 truncate hover:underline"
+              >
                 @{note.user.username}
-              </span>
+              </a>
             </div>
-            <div className="text-xs text-gray-500">
+            <a
+              href={`/notes/${note.id}`}
+              className="text-xs text-gray-500 hover:underline"
+              title={new Date(note.createdAt).toLocaleString()}
+            >
               {new Date(note.createdAt).toLocaleString()}
-            </div>
+            </a>
           </div>
           {/* Follow button (only show if not own post and logged in) */}
           {currentUser && currentUser.id !== note.user.id && (
@@ -168,7 +242,7 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
         {/* Content Warning */}
         {note.cw && !showCw && (
           <div className="mb-3">
-            <div className="rounded-md bg-yellow-50 p-3">
+            <div className="rounded-md bg-yellow-50 p-3" role="alert">
               <div className="text-sm font-medium text-yellow-800">
                 <Trans>Content Warning</Trans>: {note.cw}
               </div>
@@ -177,6 +251,8 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
                 size="sm"
                 onPress={() => setShowCw(true)}
                 className="mt-2"
+                aria-expanded={showCw}
+                aria-label={`Show content. Warning: ${note.cw}`}
               >
                 <Trans>Show content</Trans>
               </Button>
@@ -196,43 +272,73 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
 
             {/* Attachments */}
             {note.files && note.files.length > 0 && (
-              <div className={`mb-3 grid gap-2 ${
-                note.files.length === 1
-                  ? 'grid-cols-1'
-                  : note.files.length === 2
-                  ? 'grid-cols-2'
-                  : note.files.length === 3
-                  ? 'grid-cols-3'
-                  : 'grid-cols-2'
-              }`}>
-                {note.files.map((file: NoteFile) => (
-                  <div key={file.id} className="relative overflow-hidden rounded-lg">
+              <div
+                className={`mb-3 grid gap-2 ${
+                  note.files.length === 1
+                    ? 'grid-cols-1'
+                    : note.files.length === 2
+                    ? 'grid-cols-2'
+                    : note.files.length === 3
+                    ? 'grid-cols-3'
+                    : 'grid-cols-2'
+                }`}
+                role="group"
+                aria-label={`${note.files.length} attached image${note.files.length > 1 ? 's' : ''}`}
+              >
+                {note.files.map((file: NoteFile, index: number) => (
+                  <button
+                    key={file.id}
+                    onClick={() => {
+                      setSelectedImageIndex(index);
+                      setShowImageModal(true);
+                    }}
+                    className="relative overflow-hidden rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                    aria-label={`View image ${index + 1} of ${note.files.length}${file.comment ? `: ${file.comment}` : ''}`}
+                  >
                     <img
                       src={file.thumbnailUrl || file.url}
-                      alt=""
+                      alt={file.comment || `Image ${index + 1} from ${note.user.name || note.user.username}'s post`}
                       className="h-full w-full object-cover"
                       loading="lazy"
                     />
-                  </div>
+                  </button>
                 ))}
               </div>
+            )}
+
+            {/* Image Modal */}
+            {showImageModal && note.files && note.files.length > 0 && (
+              <ImageModal
+                images={note.files.map((file) => file.url)}
+                initialIndex={selectedImageIndex}
+                onClose={() => setShowImageModal(false)}
+                alt={`${note.user.name || note.user.username}'s post`}
+              />
             )}
 
             {/* Renoted Note */}
             {note.renote && (
               <div className="mb-3 rounded-lg border border-gray-200 p-3">
                 <div className="mb-2 flex items-center gap-2">
-                  <Avatar
-                    src={note.renote.user.avatarUrl}
-                    alt={note.renote.user.name || note.renote.user.username}
-                    size="sm"
-                  />
-                  <span className="text-sm font-medium text-gray-700">
+                  <a href={`/${note.renote.user.username}`} className="shrink-0">
+                    <Avatar
+                      src={note.renote.user.avatarUrl}
+                      alt={note.renote.user.name || note.renote.user.username}
+                      size="sm"
+                    />
+                  </a>
+                  <a
+                    href={`/${note.renote.user.username}`}
+                    className="text-sm font-medium text-gray-700 hover:underline"
+                  >
                     {note.renote.user.name || note.renote.user.username}
-                  </span>
-                  <span className="text-xs text-gray-500">
+                  </a>
+                  <a
+                    href={`/${note.renote.user.username}`}
+                    className="text-xs text-gray-500 hover:underline"
+                  >
                     @{note.renote.user.username}
-                  </span>
+                  </a>
                 </div>
                 {note.renote.text && (
                   <div className="text-sm text-gray-700 whitespace-pre-wrap wrap-break-word">
@@ -245,31 +351,36 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
         )}
 
         {/* Interaction Buttons */}
-        <div className="flex items-center gap-4 border-t border-gray-100 pt-3">
+        <div className="flex items-center gap-2 border-t border-gray-100 pt-3" role="group" aria-label="Post actions">
           <Button
             variant="ghost"
             size="sm"
             onPress={() => setShowReplyComposer(!showReplyComposer)}
-            className="text-gray-600 hover:text-primary-600"
+            className="text-gray-600 hover:text-primary-600 min-w-[60px] flex items-center gap-1"
+            aria-label={`Reply to post. ${note.repliesCount || 0} ${note.repliesCount === 1 ? 'reply' : 'replies'}`}
+            aria-expanded={showReplyComposer}
           >
-            💬 {note.repliesCount || 0}
+            <MessageCircle className="w-4 h-4" />
+            <span>{note.repliesCount || 0}</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onPress={handleRenote}
-            className="text-gray-600 hover:text-green-600"
+            className="text-gray-600 hover:text-green-600 min-w-[60px] flex items-center gap-1"
+            aria-label={`Renote post. ${note.renoteCount || 0} ${note.renoteCount === 1 ? 'renote' : 'renotes'}`}
           >
-            🔁 {note.renoteCount || 0}
+            <Repeat2 className="w-4 h-4" />
+            <span>{note.renoteCount || 0}</span>
           </Button>
           <ReactionButton
             onReactionSelect={handleReaction}
             selectedReactions={myReactions}
             isDisabled={isReacting}
           />
-          {note.reactions && Object.keys(note.reactions).length > 0 && (
-            <div className="flex items-center gap-1 text-sm text-gray-600">
-              {Object.entries(note.reactions).map(([emoji, count]) => (
+          {localReactions && Object.keys(localReactions).length > 0 && (
+            <div className="flex items-center gap-1 text-sm text-gray-600" role="group" aria-label="Reactions">
+              {Object.entries(localReactions).map(([emoji, count]) => (
                 <button
                   key={emoji}
                   onClick={() => handleReaction(emoji)}
@@ -279,8 +390,10 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
                     transition-all hover:bg-gray-100
                     ${myReactions.includes(emoji) ? 'bg-primary-100 ring-1 ring-primary-500' : 'bg-gray-50'}
                   `}
+                  aria-label={`${myReactions.includes(emoji) ? 'Remove' : 'Add'} ${emoji} reaction. ${count} ${count === 1 ? 'reaction' : 'reactions'}`}
+                  aria-pressed={myReactions.includes(emoji)}
                 >
-                  <span>{emoji}</span>
+                  <span aria-hidden="true">{emoji}</span>
                   <span className="text-xs font-medium">{count}</span>
                 </button>
               ))}
@@ -305,3 +418,6 @@ export function NoteCard({ note, onDelete: _onDelete }: NoteCardProps) {
     </Card>
   );
 }
+
+// Memoize NoteCard to prevent unnecessary re-renders in timeline
+export const NoteCard = memo(NoteCardComponent);

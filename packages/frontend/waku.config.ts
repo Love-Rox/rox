@@ -22,6 +22,16 @@ export default defineConfig({
       }),
       lingui(),
     ],
+    /** Proxy API requests to backend server */
+    server: {
+      port: 3001,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+        },
+      },
+    },
     ssr: {
       /** Allow Lingui macros to work with SSR by not externalizing them */
       noExternal: ['@lingui/macro', 'babel-plugin-macros'],

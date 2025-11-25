@@ -1,10 +1,26 @@
 /**
+ * Custom error class for API errors with additional context
+ */
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public statusCode?: number,
+    public isNetworkError: boolean = false,
+    public isTimeout: boolean = false,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
+/**
  * API Client for communicating with Rox backend
  * Provides type-safe HTTP methods with automatic token authentication
  */
 export class ApiClient {
   private baseUrl: string;
   private token: string | null = null;
+  private defaultTimeout: number = 30000; // 30 seconds
 
   /**
    * Create new API client instance
@@ -31,18 +47,20 @@ export class ApiClient {
   }
 
   /**
-   * Make HTTP request with automatic authentication
+   * Make HTTP request with automatic authentication and timeout
    *
    * @param path - API endpoint path (e.g., '/api/users/@me')
    * @param options - Fetch options
+   * @param timeout - Request timeout in milliseconds (default: 30000)
    * @returns Parsed JSON response
-   * @throws Error if response is not ok
+   * @throws ApiError if response is not ok or network error occurs
    *
    * @private
    */
   private async request<T>(
     path: string,
-    options?: RequestInit
+    options?: RequestInit,
+    timeout: number = this.defaultTimeout,
   ): Promise<T> {
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
@@ -53,17 +71,61 @@ export class ApiClient {
       (headers as Record<string, string>).Authorization = `Bearer ${this.token}`;
     }
 
-    const response = await fetch(`${this.baseUrl}${path}`, {
-      ...options,
-      headers,
-    });
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: response.statusText }));
-      throw new Error(error.error || `API Error: ${response.statusText}`);
+    try {
+      const response = await fetch(`${this.baseUrl}${path}`, {
+        ...options,
+        headers,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: response.statusText }));
+        throw new ApiError(
+          error.error || `API Error: ${response.statusText}`,
+          response.status,
+          false,
+          false,
+        );
+      }
+
+      return response.json();
+    } catch (error) {
+      clearTimeout(timeoutId);
+
+      // Handle abort/timeout
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new ApiError('Request timeout. Please try again.', undefined, false, true);
+      }
+
+      // Handle network errors
+      if (error instanceof TypeError) {
+        throw new ApiError(
+          'Network error. Please check your connection.',
+          undefined,
+          true,
+          false,
+        );
+      }
+
+      // Re-throw ApiError as-is
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      // Handle unknown errors
+      throw new ApiError(
+        error instanceof Error ? error.message : 'Unknown error occurred',
+        undefined,
+        false,
+        false,
+      );
     }
-
-    return response.json();
   }
 
   /**
@@ -143,10 +205,11 @@ export class ApiClient {
 
 /**
  * Default API client instance
- * Automatically points to backend server (port 3000) when running in Vite dev server (port 5173)
+ * In development, uses proxy configured in waku.config.ts to forward /api requests to backend
+ * In production, uses same origin
  */
 export const apiClient = new ApiClient(
   typeof window !== 'undefined'
-    ? window.location.origin.replace(':5173', ':3000') // Vite dev server -> backend
+    ? window.location.origin // Use same origin (proxy handles routing in dev)
     : 'http://localhost:3000'
 );

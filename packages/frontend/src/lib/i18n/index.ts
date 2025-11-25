@@ -6,7 +6,6 @@
 
 import { i18n } from '@lingui/core';
 import { messages as enMessages } from '../../locales/en/messages.js';
-import { messages as jaMessages } from '../../locales/ja/messages.js';
 
 /**
  * Available locales with display names
@@ -28,32 +27,46 @@ export const defaultLocale: Locale = 'en';
 
 /**
  * Load and activate locale messages
+ * English is loaded synchronously, Japanese uses dynamic import for code splitting
  *
  * @param locale - The locale to load ('en' or 'ja')
  *
  * @example
  * ```ts
- * // Switch to Japanese
- * loadLocale('ja');
+ * // Switch to Japanese (dynamic import)
+ * await loadLocale('ja');
  *
- * // Switch to English
- * loadLocale('en');
+ * // Switch to English (already loaded)
+ * await loadLocale('en');
  * ```
  */
-export function loadLocale(locale: Locale) {
-  const messages = locale === 'ja' ? jaMessages : enMessages;
-  i18n.load(locale, messages);
-  i18n.activate(locale);
+export async function loadLocale(locale: Locale) {
+  if (locale === 'ja') {
+    // Dynamic import for Japanese to enable code splitting
+    const { messages } = await import('../../locales/ja/messages.js');
+    i18n.load(locale, messages);
+    i18n.activate(locale);
+  } else {
+    // English is already loaded (static import)
+    i18n.load('en', enMessages);
+    i18n.activate('en');
+  }
 }
 
-// Initialize with default locale
+// Initialize with default English locale synchronously
+i18n.load('en', enMessages);
+i18n.activate('en');
+
 // On client side, restore saved locale from localStorage
-// On server side, use default locale
 if (typeof window !== 'undefined') {
   const savedLocale = (localStorage.getItem('locale') as Locale) || defaultLocale;
-  loadLocale(savedLocale);
-} else {
-  loadLocale(defaultLocale);
+  if (savedLocale !== 'en') {
+    // Async load non-default locale
+    loadLocale(savedLocale).catch((error) => {
+      console.error('Failed to load locale:', error);
+      // Already using English as fallback
+    });
+  }
 }
 
 /**
