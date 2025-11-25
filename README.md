@@ -194,10 +194,10 @@ See [Implementation Guide](./docs/implementation/README.md) for detailed archite
   - ✅ User profile pages (bio, stats, posts, follow button)
   - ✅ Image modal (zoom, pan, gallery navigation)
   - ✅ Accessibility (keyboard navigation, focus management, ARIA labels, screen reader support)
-- **Phase 3**: ActivityPub Federation ✅ **Complete (98%)**
+- **Phase 3**: ActivityPub Federation ✅ **Complete**
   - ✅ WebFinger (RFC 7033 compliant)
   - ✅ Actor documents (Person, JSON-LD)
-  - ✅ HTTP Signatures (RSA-SHA256)
+  - ✅ HTTP Signatures (RSA-SHA256, hs2019)
   - ✅ Inbox (11 activity types: Follow, Undo Follow, Create, Like, Undo Like, Announce, Undo Announce, Delete, Accept, Update Person, Update Note)
   - ✅ Outbox & Collections (followers/following)
   - ✅ Activity delivery queue (BullMQ + Dragonfly)
@@ -205,6 +205,7 @@ See [Implementation Guide](./docs/implementation/README.md) for detailed archite
   - ✅ Per-server rate limiting
   - ✅ Activity deduplication
   - ✅ Delivery metrics & monitoring
+  - ✅ Federation tested with Misskey, GoToSocial
 
 ## Contributing
 
