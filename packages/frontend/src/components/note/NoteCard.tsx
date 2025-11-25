@@ -26,6 +26,12 @@ export interface NoteCardProps {
   note: Note;
   /** Optional callback when note is deleted */
   onDelete?: () => void;
+  /** Optional callback when note is deleted (alias) */
+  onNoteDeleted?: () => void;
+  /** Optional callback when a reply is created */
+  onReplyCreated?: () => void | Promise<void>;
+  /** Show detailed timestamp (full date/time) */
+  showDetailedTimestamp?: boolean;
 }
 
 /**
@@ -35,7 +41,13 @@ export interface NoteCardProps {
  * @param note - Note data to display
  * @param onDelete - Callback when note is deleted
  */
-function NoteCardComponent({ note, onDelete: _onDelete }: NoteCardProps) {
+function NoteCardComponent({
+  note,
+  onDelete: _onDelete,
+  onNoteDeleted: _onNoteDeleted,
+  onReplyCreated: _onReplyCreated,
+  showDetailedTimestamp: _showDetailedTimestamp,
+}: NoteCardProps) {
   const [showCw, setShowCw] = useState(false);
   const [isReacting, setIsReacting] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -293,7 +305,7 @@ function NoteCardComponent({ note, onDelete: _onDelete }: NoteCardProps) {
                       setShowImageModal(true);
                     }}
                     className="relative overflow-hidden rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                    aria-label={`View image ${index + 1} of ${note.files.length}${file.comment ? `: ${file.comment}` : ''}`}
+                    aria-label={`View image ${index + 1} of ${note.files?.length ?? 0}${file.comment ? `: ${file.comment}` : ''}`}
                   >
                     <img
                       src={file.thumbnailUrl || file.url}

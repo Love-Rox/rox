@@ -72,7 +72,7 @@ This guide provides instructions for setting up the development environment, run
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-org/rox.git
+git clone https://github.com/Love-rox/rox.git
 cd rox
 ```
 

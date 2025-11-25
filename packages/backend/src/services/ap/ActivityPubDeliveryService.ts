@@ -209,6 +209,62 @@ export class ActivityPubDeliveryService {
   }
 
   /**
+   * Deliver Follow activity when following a remote user
+   *
+   * @param follower - Local user who is following
+   * @param followee - Remote user being followed
+   * @returns The Follow activity ID for tracking
+   *
+   * @example
+   * ```typescript
+   * const followId = await deliveryService.deliverFollow(follower, followee);
+   * ```
+   */
+  async deliverFollow(follower: User, followee: User): Promise<string | null> {
+    // Skip delivery for remote follower (shouldn't happen, but safety check)
+    if (follower.host) {
+      console.log(`⚠️  Skipping Follow delivery: follower is remote`);
+      return null;
+    }
+
+    // Skip if followee is not remote
+    if (!followee.host || !followee.inbox) {
+      return null;
+    }
+
+    // Skip delivery if follower has no private key
+    if (!follower.privateKey) {
+      console.log(`⚠️  Cannot deliver Follow: follower has no private key`);
+      return null;
+    }
+
+    const baseUrl = process.env.URL || 'http://localhost:3000';
+    const followActivityId = `${baseUrl}/activities/follow/${follower.id}/${followee.id}/${Date.now()}`;
+
+    // Create ActivityPub Follow activity
+    const activity = {
+      '@context': 'https://www.w3.org/ns/activitystreams',
+      type: 'Follow',
+      id: followActivityId,
+      actor: `${baseUrl}/users/${follower.username}`,
+      object: followee.uri || `https://${followee.host}/users/${followee.username}`,
+    };
+
+    // Enqueue delivery to followee's inbox with urgent priority (immediate user action)
+    await this.queue.enqueue({
+      activity,
+      inboxUrl: followee.inbox,
+      keyId: `${baseUrl}/users/${follower.username}#main-key`,
+      privateKey: follower.privateKey,
+      priority: JobPriority.URGENT,
+    });
+
+    console.log(`📤 Enqueued Follow activity delivery to ${followee.inbox} (${follower.username} following ${followee.username}@${followee.host})`);
+
+    return followActivityId;
+  }
+
+  /**
    * Deliver Undo Follow activity when unfollowing a remote user
    *
    * @param follower - Local user who is unfollowing

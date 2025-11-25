@@ -9,6 +9,7 @@
 import { Hono } from 'hono';
 import { AuthService } from '../services/AuthService.js';
 import { UserService } from '../services/UserService.js';
+import { RemoteActorService } from '../services/ap/RemoteActorService.js';
 import { requireAuth } from '../middleware/auth.js';
 
 const app = new Hono();
@@ -208,6 +209,68 @@ app.get('/show', async (c) => {
   const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
 
   return c.json(publicUser);
+});
+
+/**
+ * Resolve Remote User
+ *
+ * GET /api/users/resolve
+ *
+ * Resolves a remote user by their acct URI (e.g., alice@mastodon.social).
+ * Performs WebFinger lookup and fetches actor information from remote server.
+ * If the user already exists in the database, returns cached information.
+ *
+ * @remarks
+ * Query Parameters:
+ * - acct: Account identifier (e.g., "alice@mastodon.social" or "acct:alice@mastodon.social")
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "id": "...",
+ *   "username": "alice",
+ *   "host": "mastodon.social",
+ *   "displayName": "Alice",
+ *   "bio": "Hello from Mastodon!",
+ *   "avatarUrl": "https://...",
+ *   ...
+ * }
+ * ```
+ *
+ * Errors:
+ * - 400: acct parameter is required or invalid format
+ * - 404: User not found on remote server
+ * - 502: Failed to fetch remote user (network error, invalid response)
+ */
+app.get('/resolve', async (c) => {
+  const userRepository = c.get('userRepository');
+  const acct = c.req.query('acct');
+
+  if (!acct) {
+    return c.json({ error: 'acct parameter is required' }, 400);
+  }
+
+  try {
+    const remoteActorService = new RemoteActorService(userRepository);
+    const user = await remoteActorService.resolveActorByAcct(acct);
+
+    // パスワードハッシュとメールアドレスを除外
+    const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+
+    return c.json(publicUser);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to resolve user';
+
+    // Determine appropriate error code
+    if (message.includes('Invalid acct format')) {
+      return c.json({ error: message }, 400);
+    }
+    if (message.includes('not found') || message.includes('No ActivityPub actor link')) {
+      return c.json({ error: message }, 404);
+    }
+    // Network/fetch errors
+    return c.json({ error: message }, 502);
+  }
 });
 
 /**

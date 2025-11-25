@@ -36,7 +36,7 @@ rox/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/rox.git
+git clone https://github.com/Love-rox/rox.git
 cd rox
 ```
 
@@ -194,7 +194,17 @@ See [Implementation Guide](./docs/implementation/README.md) for detailed archite
   - ✅ User profile pages (bio, stats, posts, follow button)
   - ✅ Image modal (zoom, pan, gallery navigation)
   - ✅ Accessibility (keyboard navigation, focus management, ARIA labels, screen reader support)
-- **Phase 3**: ActivityPub Federation ⏳ **Next**
+- **Phase 3**: ActivityPub Federation ✅ **Complete (98%)**
+  - ✅ WebFinger (RFC 7033 compliant)
+  - ✅ Actor documents (Person, JSON-LD)
+  - ✅ HTTP Signatures (RSA-SHA256)
+  - ✅ Inbox (11 activity types: Follow, Undo Follow, Create, Like, Undo Like, Announce, Undo Announce, Delete, Accept, Update Person, Update Note)
+  - ✅ Outbox & Collections (followers/following)
+  - ✅ Activity delivery queue (BullMQ + Dragonfly)
+  - ✅ Shared inbox support (50-90% delivery reduction)
+  - ✅ Per-server rate limiting
+  - ✅ Activity deduplication
+  - ✅ Delivery metrics & monitoring
 
 ## Contributing
 

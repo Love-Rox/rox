@@ -27,8 +27,16 @@ following.post('/create', requireAuth(), async (c: Context) => {
   const user = c.get('user')!;
   const followRepository = c.get('followRepository');
   const userRepository = c.get('userRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
 
-  const followService = new FollowService(followRepository, userRepository);
+  // Initialize ActivityPub delivery service for federation
+  const deliveryService = new ActivityPubDeliveryService(
+    userRepository,
+    followRepository,
+    activityDeliveryQueue,
+  );
+
+  const followService = new FollowService(followRepository, userRepository, deliveryService);
 
   const body = await c.req.json();
 

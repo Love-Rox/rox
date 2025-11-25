@@ -62,7 +62,7 @@ export default function SettingsPage() {
   // Initialize form with current user data
   useEffect(() => {
     if (currentUser) {
-      setDisplayName(currentUser.displayName || '');
+      setDisplayName(currentUser.displayName || currentUser.name || '');
       setBio(currentUser.bio || '');
     }
   }, [currentUser]);

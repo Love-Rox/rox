@@ -29,6 +29,7 @@ export interface NoteWithRelations extends Note {
     url: string;
     thumbnailUrl: string | null;
     type: string;
+    comment: string | null;
   }>;
   reactionCounts?: Record<string, number>;
   myReaction?: string | null;

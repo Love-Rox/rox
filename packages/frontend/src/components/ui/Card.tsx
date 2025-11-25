@@ -44,6 +44,12 @@ export interface CardProps extends VariantProps<typeof cardVariants> {
   className?: string;
   /** Click handler */
   onClick?: () => void;
+  /** ARIA role attribute */
+  role?: string;
+  /** ARIA label for accessibility */
+  'aria-label'?: string;
+  /** Tab index for keyboard navigation */
+  tabIndex?: number;
 }
 
 /**
@@ -83,6 +89,9 @@ export function Card({
   hover,
   className,
   onClick,
+  role,
+  'aria-label': ariaLabel,
+  tabIndex,
 }: CardProps) {
   const Component = onClick ? 'button' : 'div';
 
@@ -91,6 +100,9 @@ export function Card({
       className={cardVariants({ padding, shadow, hover, className })}
       onClick={onClick}
       type={onClick ? 'button' : undefined}
+      role={role}
+      aria-label={ariaLabel}
+      tabIndex={tabIndex}
     >
       {children}
     </Component>

@@ -21,7 +21,7 @@ The initial delivery queue implementation had several inefficiencies:
 
 ### 1. Job Priority Support
 
-**File**: [`packages/backend/src/services/ap/ActivityDeliveryQueue.ts`](/Users/sasapiyo/rox/packages/backend/src/services/ap/ActivityDeliveryQueue.ts)
+**File**: [`packages/backend/src/services/ap/ActivityDeliveryQueue.ts`](packages/backend/src/services/ap/ActivityDeliveryQueue.ts)
 
 Added `JobPriority` enum with three priority levels:
 
@@ -69,7 +69,7 @@ public async enqueue(data: DeliveryJobData): Promise<void> {
 
 ### 2. Job Deduplication
 
-**File**: [`packages/backend/src/services/ap/ActivityDeliveryQueue.ts`](/Users/sasapiyo/rox/packages/backend/src/services/ap/ActivityDeliveryQueue.ts:95)
+**File**: [`packages/backend/src/services/ap/ActivityDeliveryQueue.ts`](packages/backend/src/services/ap/ActivityDeliveryQueue.ts)
 
 Added `generateJobId()` method that creates consistent job IDs based on activity ID and inbox URL:
 
@@ -105,7 +105,7 @@ Job ID: deliver-aHR0cHM6Ly9yb3guZXhhbXBsZS...
 
 ### 3. Delivery Metrics
 
-**File**: [`packages/backend/src/services/ap/ActivityDeliveryQueue.ts`](/Users/sasapiyo/rox/packages/backend/src/services/ap/ActivityDeliveryQueue.ts:30)
+**File**: [`packages/backend/src/services/ap/ActivityDeliveryQueue.ts`](packages/backend/src/services/ap/ActivityDeliveryQueue.ts)
 
 Added metrics tracking with Map-based storage:
 
@@ -172,7 +172,7 @@ private async processJob(job: Job<DeliveryJobData>): Promise<void> {
 
 ### 4. Timeout Handling
 
-**File**: [`packages/backend/src/services/ap/ActivityDeliveryService.ts`](/Users/sasapiyo/rox/packages/backend/src/services/ap/ActivityDeliveryService.ts:39)
+**File**: [`packages/backend/src/services/ap/ActivityDeliveryService.ts`](packages/backend/src/services/ap/ActivityDeliveryService.ts)
 
 Added 30-second timeout using `AbortController`:
 
@@ -229,7 +229,7 @@ async deliver(
 
 ### 5. Priority Usage in ActivityPubDeliveryService
 
-**File**: [`packages/backend/src/services/ap/ActivityPubDeliveryService.ts`](/Users/sasapiyo/rox/packages/backend/src/services/ap/ActivityPubDeliveryService.ts)
+**File**: [`packages/backend/src/services/ap/ActivityPubDeliveryService.ts`](packages/backend/src/services/ap/ActivityPubDeliveryService.ts)
 
 Updated all delivery methods to specify appropriate priority:
 
@@ -301,7 +301,7 @@ await this.queue.enqueue({
 
 ### Test Suite
 
-**File**: [`packages/backend/test-delivery-queue.ts`](/Users/sasapiyo/rox/packages/backend/test-delivery-queue.ts)
+**File**: [`packages/backend/test-delivery-queue.ts`](packages/backend/test-delivery-queue.ts)
 
 Created comprehensive test suite covering:
 

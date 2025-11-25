@@ -221,7 +221,7 @@ export class RemoteFetchService {
       let data: T;
       try {
         data = (await response.json()) as T;
-      } catch (parseError) {
+      } catch {
         return {
           success: false,
           error: {

@@ -48,8 +48,7 @@ const draftAtom = atomWithStorage<DraftData | null>('note-composer-draft', null)
  * clearDraft();
  * ```
  */
-export function useDraft(options: { autosaveDelay?: number } = {}) {
-  const { autosaveDelay = 1000 } = options;
+export function useDraft(_options: { autosaveDelay?: number } = {}) {
   const [draft, setDraft] = useAtom(draftAtom);
 
   /**

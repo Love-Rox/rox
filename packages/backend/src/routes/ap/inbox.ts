@@ -264,8 +264,37 @@ async function handleFollow(c: Context, activity: any, recipientId: string): Pro
  *
  * Processes acceptance of follow requests.
  */
-async function handleAccept(_c: Context, _activity: any, _recipientId: string): Promise<void> {
-  console.log('TODO: Implement Accept handler');
+async function handleAccept(c: Context, activity: any, _recipientId: string): Promise<void> {
+  try {
+    const object = activity.object;
+
+    if (!object || typeof object !== 'object') {
+      console.warn('Invalid Accept activity: missing or invalid object');
+      return;
+    }
+
+    const userRepository = c.get('userRepository');
+    const remoteActorService = new RemoteActorService(userRepository);
+
+    const actorUri = typeof activity.actor === 'string' ? activity.actor : activity.actor.id;
+    const remoteActor = await remoteActorService.resolveActor(actorUri);
+
+    // Handle Accept Follow (our follow request was accepted)
+    if (object.type === 'Follow') {
+      console.log(`📥 Accept Follow: ${remoteActor.username}@${remoteActor.host} accepted our follow request`);
+
+      // In the current implementation, follows are created immediately when we send the Follow activity.
+      // The Accept just confirms it was successful.
+      // Future enhancement: track pending follow requests and only finalize on Accept.
+
+      console.log(`✅ Follow confirmed: now following ${remoteActor.username}@${remoteActor.host}`);
+    } else {
+      console.log(`Unsupported Accept object type: ${object.type}`);
+    }
+  } catch (error) {
+    console.error('Failed to handle Accept activity:', error);
+    throw error;
+  }
 }
 
 /**
@@ -320,8 +349,115 @@ async function handleCreate(c: Context, activity: any, _recipientId: string): Pr
  *
  * Processes updates to existing objects.
  */
-async function handleUpdate(_c: Context, _activity: any, _recipientId: string): Promise<void> {
-  console.log('TODO: Implement Update handler');
+async function handleUpdate(c: Context, activity: any, _recipientId: string): Promise<void> {
+  try {
+    const object = activity.object;
+    if (!object || typeof object !== 'object') {
+      console.warn('Invalid Update activity: missing or invalid object');
+      return;
+    }
+
+    const userRepository = c.get('userRepository');
+    const remoteActorService = new RemoteActorService(userRepository);
+    const actorUri = typeof activity.actor === 'string' ? activity.actor : activity.actor.id;
+    const remoteActor = await remoteActorService.resolveActor(actorUri);
+
+    // Handle Person update (profile update)
+    if (object.type === 'Person' || object.type === 'Service' || object.type === 'Application') {
+      const objectUri = object.id;
+      if (!objectUri) {
+        console.warn('Invalid Update Person: missing object id');
+        return;
+      }
+
+      // Verify the actor is updating their own profile
+      if (objectUri !== actorUri) {
+        console.warn(`Actor ${actorUri} cannot update another actor ${objectUri}`);
+        return;
+      }
+
+      console.log(`📥 Update Person: ${remoteActor.username}@${remoteActor.host}`);
+
+      // Extract profile fields from the Person object
+      const updateData: Record<string, any> = {};
+      
+      if (object.name !== undefined) {
+        updateData.name = object.name || null;
+      }
+      if (object.summary !== undefined) {
+        updateData.description = object.summary || null;
+      }
+      if (object.icon && typeof object.icon === 'object' && object.icon.url) {
+        updateData.avatarUrl = object.icon.url;
+      } else if (object.icon && typeof object.icon === 'string') {
+        updateData.avatarUrl = object.icon;
+      }
+      if (object.image && typeof object.image === 'object' && object.image.url) {
+        updateData.bannerUrl = object.image.url;
+      } else if (object.image && typeof object.image === 'string') {
+        updateData.bannerUrl = object.image;
+      }
+      if (object.publicKey && object.publicKey.publicKeyPem) {
+        updateData.publicKey = object.publicKey.publicKeyPem;
+      }
+
+      if (Object.keys(updateData).length > 0) {
+        await userRepository.update(remoteActor.id, updateData);
+        console.log(`✅ Profile updated: ${remoteActor.username}@${remoteActor.host}`, Object.keys(updateData));
+      } else {
+        console.log(`ℹ️ No profile fields to update for ${remoteActor.username}@${remoteActor.host}`);
+      }
+      return;
+    }
+
+    // Handle Note update (note edit)
+    if (object.type === 'Note') {
+      const noteUri = object.id;
+      if (!noteUri) {
+        console.warn('Invalid Update Note: missing object id');
+        return;
+      }
+
+      console.log(`📥 Update Note: ${remoteActor.username}@${remoteActor.host} → ${noteUri}`);
+
+      const noteRepository = c.get('noteRepository');
+      const note = await noteRepository.findByUri(noteUri);
+
+      if (!note) {
+        console.warn(`Note not found: ${noteUri}`);
+        return;
+      }
+
+      // Verify the actor owns the note
+      if (note.userId !== remoteActor.id) {
+        console.warn(`Actor ${remoteActor.id} does not own note ${note.id}`);
+        return;
+      }
+
+      // Extract note fields
+      const updateData: Record<string, any> = {};
+      
+      if (object.content !== undefined) {
+        updateData.text = object.content || '';
+      }
+      if (object.summary !== undefined) {
+        updateData.cw = object.summary || null;
+      }
+
+      if (Object.keys(updateData).length > 0) {
+        await noteRepository.update(note.id, updateData);
+        console.log(`✅ Note updated: ${note.id}`, Object.keys(updateData));
+      } else {
+        console.log(`ℹ️ No note fields to update for ${note.id}`);
+      }
+      return;
+    }
+
+    console.log(`Unsupported Update object type: ${object.type}`);
+  } catch (error) {
+    console.error('Failed to handle Update activity:', error);
+    throw error;
+  }
 }
 
 /**
@@ -329,8 +465,58 @@ async function handleUpdate(_c: Context, _activity: any, _recipientId: string): 
  *
  * Processes deletion of objects.
  */
-async function handleDelete(_c: Context, _activity: any, _recipientId: string): Promise<void> {
-  console.log('TODO: Implement Delete handler');
+async function handleDelete(c: Context, activity: any, _recipientId: string): Promise<void> {
+  try {
+    const object = activity.object;
+
+    // Get the object URI - can be string or object with id
+    let objectUri: string;
+    if (typeof object === 'string') {
+      objectUri = object;
+    } else if (object && typeof object === 'object') {
+      objectUri = object.id;
+    } else {
+      console.warn('Invalid Delete activity: missing or invalid object');
+      return;
+    }
+
+    if (!objectUri) {
+      console.warn('Invalid Delete activity: missing object URI');
+      return;
+    }
+
+    const userRepository = c.get('userRepository');
+    const remoteActorService = new RemoteActorService(userRepository);
+
+    const actorUri = typeof activity.actor === 'string' ? activity.actor : activity.actor.id;
+    const remoteActor = await remoteActorService.resolveActor(actorUri);
+
+    console.log(`📥 Delete: ${remoteActor.username}@${remoteActor.host} → ${objectUri}`);
+
+    // Try to find and delete the note
+    const noteRepository = c.get('noteRepository');
+    const note = await noteRepository.findByUri(objectUri);
+
+    if (note) {
+      // Verify the actor owns this note
+      if (note.userId !== remoteActor.id) {
+        console.warn(`Actor ${remoteActor.id} does not own note ${note.id}`);
+        return;
+      }
+
+      // Delete the note
+      await noteRepository.delete(note.id);
+      console.log(`✅ Note deleted: ${remoteActor.username}@${remoteActor.host} deleted note ${note.id}`);
+      return;
+    }
+
+    // If not a note, it might be an actor deletion (account deletion)
+    // For now, log and ignore actor deletions
+    console.log(`Delete target not found or not supported: ${objectUri}`);
+  } catch (error) {
+    console.error('Failed to handle Delete activity:', error);
+    throw error;
+  }
 }
 
 /**
@@ -521,6 +707,37 @@ async function handleUndo(c: Context, activity: any, recipientId: string): Promi
       await reactionRepository.deleteByUserNoteAndReaction(remoteActor.id, note.id, '❤️');
 
       console.log(`✅ Reaction deleted: ${remoteActor.username}@${remoteActor.host} unliked note ${note.id}`);
+    }
+    // Handle Undo Announce (unboost/unrenote)
+    else if (object.type === 'Announce') {
+      const announceUri = object.id;
+
+      if (!announceUri) {
+        console.warn('Invalid Undo Announce: missing object id');
+        return;
+      }
+
+      console.log(`📥 Undo Announce: ${remoteActor.username}@${remoteActor.host} → ${announceUri}`);
+
+      // Find the renote by URI (the Announce activity URI is stored as the note's uri)
+      const noteRepository = c.get('noteRepository');
+      const renote = await noteRepository.findByUri(announceUri);
+
+      if (!renote) {
+        console.warn(`Renote not found: ${announceUri}`);
+        return;
+      }
+
+      // Verify the actor owns this renote
+      if (renote.userId !== remoteActor.id) {
+        console.warn(`Actor ${remoteActor.id} does not own renote ${renote.id}`);
+        return;
+      }
+
+      // Delete the renote
+      await noteRepository.delete(renote.id);
+
+      console.log(`✅ Renote deleted: ${remoteActor.username}@${remoteActor.host} unannounced note`);
     } else {
       console.log(`Unsupported Undo object type: ${object.type}`);
     }

@@ -188,4 +188,100 @@ export class RemoteActorService {
     }
     return actor.id;
   }
+
+  /**
+   * Resolve remote actor by acct URI (WebFinger)
+   *
+   * Performs WebFinger lookup to discover actor URI, then resolves the actor.
+   * Supports format: `acct:username@host` or `username@host`
+   *
+   * @param acct - Account identifier (e.g., "alice@mastodon.social" or "acct:alice@mastodon.social")
+   * @returns User record
+   * @throws Error if WebFinger lookup fails or actor not found
+   *
+   * @example
+   * ```typescript
+   * const remoteUser = await remoteActorService.resolveActorByAcct('alice@mastodon.social');
+   * ```
+   */
+  async resolveActorByAcct(acct: string): Promise<User> {
+    // Normalize acct (remove acct: prefix if present)
+    const normalizedAcct = acct.startsWith('acct:') ? acct.slice(5) : acct;
+
+    // Parse username and host
+    const atIndex = normalizedAcct.indexOf('@');
+    if (atIndex === -1) {
+      throw new Error(`Invalid acct format: ${acct} (missing @host)`);
+    }
+
+    const username = normalizedAcct.slice(0, atIndex);
+    const host = normalizedAcct.slice(atIndex + 1);
+
+    if (!username || !host) {
+      throw new Error(`Invalid acct format: ${acct}`);
+    }
+
+    // Check if local user
+    const localHost = new URL(process.env.URL || 'http://localhost:3000').hostname;
+    if (host === localHost) {
+      const localUser = await this.userRepository.findByUsername(username, null);
+      if (!localUser) {
+        throw new Error(`Local user not found: ${username}`);
+      }
+      return localUser;
+    }
+
+    // Check if user already exists in database
+    const existingUser = await this.userRepository.findByUsername(username, host);
+    if (existingUser) {
+      console.log(`📦 Found cached remote user: ${username}@${host}`);
+      return existingUser;
+    }
+
+    // Perform WebFinger lookup
+    const webfingerUrl = `https://${host}/.well-known/webfinger?resource=acct:${encodeURIComponent(normalizedAcct)}`;
+    console.log(`🔍 WebFinger lookup: ${webfingerUrl}`);
+
+    const webfingerResult = await this.fetchService.fetchActivityPubObject<WebFingerResponse>(webfingerUrl, {
+      headers: {
+        'Accept': 'application/jrd+json, application/json',
+      },
+    });
+
+    if (!webfingerResult.success) {
+      throw new Error(`WebFinger lookup failed for ${acct}: ${webfingerResult.error?.message}`);
+    }
+
+    const webfinger = webfingerResult.data!;
+
+    // Find ActivityPub actor link
+    const actorLink = webfinger.links?.find(
+      (link) =>
+        link.rel === 'self' &&
+        (link.type === 'application/activity+json' || link.type === 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"')
+    );
+
+    if (!actorLink?.href) {
+      throw new Error(`No ActivityPub actor link found in WebFinger response for ${acct}`);
+    }
+
+    console.log(`🔗 Found actor URI: ${actorLink.href}`);
+
+    // Resolve actor from URI
+    return this.resolveActor(actorLink.href);
+  }
+}
+
+/**
+ * WebFinger response structure
+ */
+interface WebFingerResponse {
+  subject: string;
+  aliases?: string[];
+  links?: Array<{
+    rel: string;
+    type?: string;
+    href?: string;
+    template?: string;
+  }>;
 }

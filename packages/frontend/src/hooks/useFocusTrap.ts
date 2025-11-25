@@ -13,11 +13,11 @@ export interface UseFocusTrapOptions {
    * Element to focus initially when trap activates
    * If not provided, focuses the first focusable element
    */
-  initialFocusRef?: React.RefObject<HTMLElement>;
+  initialFocusRef?: React.RefObject<HTMLElement | null>;
   /**
    * Element to return focus to when trap deactivates
    */
-  returnFocusRef?: React.RefObject<HTMLElement>;
+  returnFocusRef?: React.RefObject<HTMLElement | null>;
   /**
    * Callback when Escape key is pressed
    */

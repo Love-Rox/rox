@@ -107,7 +107,7 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
       {/* Footer */}
       <div className="text-center text-gray-500 text-sm">
         <p>
-          <Trans>Powered by</Trans> <a href="https://github.com/sasapiyo/rox" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">Rox</a>
+          <Trans>Powered by</Trans> <a href="https://github.com/Love-rox/rox" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">Rox</a>
         </p>
       </div>
     </div>

@@ -60,7 +60,7 @@ export interface UseKeyboardNavigationOptions {
  * ```
  */
 export function useKeyboardNavigation(
-  containerRef: React.RefObject<HTMLElement>,
+  containerRef: React.RefObject<HTMLElement | null>,
   options: UseKeyboardNavigationOptions = {}
 ) {
   const {

@@ -29,6 +29,7 @@ export interface NoteFile {
   size: number;
   blurhash?: string;
   isSensitive?: boolean;
+  comment?: string;
 }
 
 /**

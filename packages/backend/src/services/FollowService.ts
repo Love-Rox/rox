@@ -91,6 +91,14 @@ export class FollowService {
       followeeId,
     });
 
+    // If federation is enabled and followee is remote, send Follow activity
+    if (this.deliveryService && followee.host) {
+      // Fire-and-forget delivery (don't await to avoid blocking)
+      this.deliveryService.deliverFollow(follower, followee).catch((error) => {
+        console.error(`Failed to deliver Follow activity:`, error);
+      });
+    }
+
     return follow;
   }
 

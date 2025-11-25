@@ -36,7 +36,7 @@ rox/
 ### 1. リポジトリをクローン
 
 ```bash
-git clone https://github.com/yourusername/rox.git
+git clone https://github.com/Love-rox/rox.git
 cd rox
 ```
 
@@ -181,18 +181,30 @@ Roxは**リポジトリパターン**と**アダプターパターン**を使用
 
 - **Phase 0**: 基盤（データベース、ストレージ、DI）✅ **完了**
 - **Phase 1**: Misskey互換API ✅ **完了**
-- **Phase 2**: フロントエンド（Wakuクライアント）✅ **基盤完了** / 🚧 機能拡張中
+- **Phase 2**: フロントエンド（Wakuクライアント）✅ **完了**
   - ✅ Waku + Jotaiセットアップ
   - ✅ Tailwind CSS v4（OKLCH色空間対応）
   - ✅ React Aria Components（Button、TextField、Dialog、Form、Avatar、Card）
-  - ✅ Lingui国際化（英語/日本語 - 36メッセージ）
+  - ✅ Lingui国際化（英語/日本語 - 87メッセージ）
   - ✅ 認証（Passkey + Password）
-  - ✅ タイムライン（表示、ページネーション）
-  - ✅ ノート投稿（テキスト、CW、公開範囲）
-  - ✅ ユーザーインタラクション（リプライ、リアクション、フォロー）
-  - 🚧 ファイルアップロード
-  - 🚧 ユーザープロフィール
-- **Phase 3**: ActivityPub連合 ⏳ **計画中**
+  - ✅ タイムライン（表示、無限スクロール）
+  - ✅ ノート投稿（テキスト、画像、CW、公開範囲、リプライ、リノート）
+  - ✅ ユーザーインタラクション（リプライ、リアクション、フォロー/アンフォロー）
+  - ✅ ファイルアップロード（複数画像、ドラッグ&ドロップ、プレビュー）
+  - ✅ ユーザープロフィール（自己紹介、統計、投稿、フォローボタン）
+  - ✅ 画像モーダル（ズーム、パン、ギャラリーナビゲーション）
+  - ✅ アクセシビリティ（キーボード操作、フォーカス管理、ARIAラベル、スクリーンリーダー対応）
+- **Phase 3**: ActivityPub連合 ✅ **完了（98%）**
+  - ✅ WebFinger（RFC 7033準拠）
+  - ✅ Actorドキュメント（Person、JSON-LD）
+  - ✅ HTTP署名（RSA-SHA256）
+  - ✅ Inbox（11種類のアクティビティ：Follow、Undo Follow、Create、Like、Undo Like、Announce、Undo Announce、Delete、Accept、Update Person、Update Note）
+  - ✅ Outbox & Collections（followers/following）
+  - ✅ アクティビティ配信キュー（BullMQ + Dragonfly）
+  - ✅ 共有Inboxサポート（配信数50-90%削減）
+  - ✅ サーバー別レート制限
+  - ✅ アクティビティ重複排除
+  - ✅ 配信メトリクス＆モニタリング
 
 ## コントリビューション
 

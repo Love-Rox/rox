@@ -15,6 +15,7 @@ import outboxRoute from './routes/ap/outbox.js';
 import followersRoute from './routes/ap/followers.js';
 import followingAPRoute from './routes/ap/following.js';
 import noteAPRoute from './routes/ap/note.js';
+import nodeinfoRoute from './routes/ap/nodeinfo.js';
 import packageJson from '../../../package.json';
 import { ReceivedActivitiesCleanupService } from './services/ReceivedActivitiesCleanupService.js';
 
@@ -54,6 +55,7 @@ app.route('/api/following', followingRoute);
 
 // ActivityPubルート
 app.route('/', webfingerRoute); // /.well-known/webfinger
+app.route('/', nodeinfoRoute); // /.well-known/nodeinfo, /nodeinfo/*
 app.route('/users', actorRoute); // /users/:username
 app.route('/', inboxRoute); // /users/:username/inbox
 app.route('/users', outboxRoute); // /users/:username/outbox

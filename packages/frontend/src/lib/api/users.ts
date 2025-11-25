@@ -5,25 +5,9 @@
  */
 
 import { apiClient } from './client';
+import type { User } from '../types/user';
 
-/**
- * User data structure
- */
-export interface User {
-  id: string;
-  username: string;
-  displayName?: string | null;
-  bio?: string | null;
-  avatarUrl?: string | null;
-  bannerUrl?: string | null;
-  isBot: boolean;
-  isFollowed?: boolean;
-  isFollowing?: boolean;
-  notesCount?: number;
-  followersCount?: number;
-  followingCount?: number;
-  createdAt: string;
-}
+export type { User };
 
 /**
  * Follow relationship data structure

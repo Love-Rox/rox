@@ -30,15 +30,20 @@ const saveTokenToStorage = (token: string | null) => {
 };
 
 /**
+ * Base token atom for storage
+ */
+const baseTokenAtom = atom<string | null>(getTokenFromStorage());
+
+/**
  * Authentication token atom with localStorage sync
  * Reads from localStorage on initialization, writes on updates
  */
-export const tokenAtom = atom<string | null>(
-  // Read: Get initial value from localStorage
-  getTokenFromStorage(),
+export const tokenAtom = atom(
+  // Read: Get value from base atom
+  (get) => get(baseTokenAtom),
   // Write: Save to both atom and localStorage
-  (get, set, newValue: string | null) => {
-    set(tokenAtom, newValue);
+  (_get, set, newValue: string | null) => {
+    set(baseTokenAtom, newValue);
     saveTokenToStorage(newValue);
   }
 );

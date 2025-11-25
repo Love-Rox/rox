@@ -4,11 +4,13 @@ import type { UserProfile } from 'rox_shared';
  * User entity from API responses
  * Extends the shared UserProfile type with additional frontend-specific fields
  */
-export interface User extends Omit<UserProfile, 'createdAt' | 'displayName'> {
+export interface User extends Omit<UserProfile, 'createdAt' | 'displayName' | 'host'> {
   name: string; // Alias for displayName
+  displayName?: string; // Keep for backward compatibility
   email?: string;
   createdAt: string;
   updatedAt: string;
+  host?: string | null;
 
   // Optional fields
   isBot?: boolean;
