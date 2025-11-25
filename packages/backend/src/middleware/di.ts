@@ -17,6 +17,7 @@ export function diMiddleware() {
     c.set('reactionRepository', container.reactionRepository);
     c.set('followRepository', container.followRepository);
     c.set('fileStorage', container.fileStorage);
+    c.set('activityDeliveryQueue', container.activityDeliveryQueue);
 
     await next();
   };

@@ -249,7 +249,19 @@ export class NoteService {
       throw new Error('Access denied');
     }
 
+    // Get author info before deletion for ActivityPub delivery
+    const author = await this.userRepository.findById(userId);
+
+    // Delete the note from local database
     await this.noteRepository.delete(noteId);
+
+    // Deliver Delete activity to remote followers (async, non-blocking)
+    if (author && !author.host) {
+      // Only deliver if author is a local user
+      this.deliveryService.deliverDelete(note, author).catch((error) => {
+        console.error(`Failed to deliver Delete activity for note ${noteId}:`, error);
+      });
+    }
   }
 
   /**

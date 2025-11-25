@@ -11,6 +11,7 @@ import type { IFollowRepository } from '../interfaces/repositories/IFollowReposi
 import type { IUserRepository } from '../interfaces/repositories/IUserRepository.js';
 import type { Follow } from '../../../shared/src/types/user.js';
 import { generateId } from '../../../shared/src/utils/id.js';
+import type { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
 
 /**
  * Follow Service
@@ -33,10 +34,12 @@ export class FollowService {
    *
    * @param followRepository - Follow repository
    * @param userRepository - User repository
+   * @param deliveryService - ActivityPub delivery service (optional, for federation)
    */
   constructor(
     private readonly followRepository: IFollowRepository,
     private readonly userRepository: IUserRepository,
+    private readonly deliveryService?: ActivityPubDeliveryService,
   ) {}
 
   /**
@@ -95,6 +98,7 @@ export class FollowService {
    * Delete a follow relationship (unfollow)
    *
    * Removes the follow relationship between follower and followee.
+   * If the followee is a remote user, sends an Undo Follow activity via ActivityPub.
    * This operation is idempotent - no error if relationship doesn't exist.
    *
    * @param followerId - User ID who wants to unfollow
@@ -104,9 +108,26 @@ export class FollowService {
    * ```typescript
    * await followService.unfollow(user.id, targetUserId);
    * ```
+   *
+   * @remarks
+   * - Sends Undo Follow activity to remote users automatically
+   * - ActivityPub delivery is fire-and-forget (non-blocking)
    */
   async unfollow(followerId: string, followeeId: string): Promise<void> {
+    // Get follower and followee info for ActivityPub delivery
+    const follower = await this.userRepository.findById(followerId);
+    const followee = await this.userRepository.findById(followeeId);
+
+    // Delete the follow relationship from local database
     await this.followRepository.delete(followerId, followeeId);
+
+    // If federation is enabled and followee is remote, send Undo Follow activity
+    if (this.deliveryService && follower && followee && followee.host) {
+      // Fire-and-forget delivery (don't await to avoid blocking)
+      this.deliveryService.deliverUndoFollow(follower, followee).catch((error) => {
+        console.error(`Failed to deliver Undo Follow activity:`, error);
+      });
+    }
   }
 
   /**

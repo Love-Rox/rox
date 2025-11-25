@@ -9,6 +9,7 @@
 import { Hono } from 'hono';
 import type { User } from 'shared';
 import { AuthService } from '../services/AuthService.js';
+import { UserService } from '../services/UserService.js';
 import { requireAuth } from '../middleware/auth.js';
 
 const app = new Hono();
@@ -293,17 +294,31 @@ app.patch('/@me', requireAuth(), async (c) => {
 
   const body = await c.req.json();
   const userRepository = c.get('userRepository');
+  const followRepository = c.get('followRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
+
+  // Initialize UserService with ActivityPub delivery support
+  const userService = new UserService(
+    userRepository,
+    followRepository,
+    activityDeliveryQueue,
+  );
 
   // 更新可能なフィールドのみを抽出
-  const updateData: Partial<User> = {};
+  const updateData: any = {};
   if (body.name !== undefined) updateData.displayName = body.name;
   if (body.description !== undefined) updateData.bio = body.description;
   if (body.avatarUrl !== undefined) updateData.avatarUrl = body.avatarUrl;
-  if (body.bannerUrl !== undefined) updateData.bannerUrl = body.bannerUrl;
+  if (body.bannerUrl !== undefined) updateData.headerUrl = body.bannerUrl;
 
-  const updatedUser = await userRepository.update(user.id, updateData);
-  const { passwordHash: _passwordHash, ...userData } = updatedUser;
-  return c.json(userData);
+  try {
+    const updatedUser = await userService.updateProfile(user.id, updateData);
+    const { passwordHash: _passwordHash, ...userData } = updatedUser;
+    return c.json(userData);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to update profile';
+    return c.json({ error: message }, 400);
+  }
 });
 
 export default app;

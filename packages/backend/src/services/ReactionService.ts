@@ -183,7 +183,27 @@ export class ReactionService {
       throw new Error('Reaction not found');
     }
 
+    // Get user and note data before deletion for ActivityPub delivery
+    const reactor = await this.userRepository.findById(userId);
+    const note = await this.noteRepository.findById(noteId);
+    const noteAuthor = note ? await this.userRepository.findById(note.userId) : null;
+
+    // Delete the reaction from local database
     await this.reactionRepository.deleteByUserNoteAndReaction(userId, noteId, reaction);
+
+    // Deliver Undo Like activity to remote note author (async, non-blocking)
+    if (reactor && note && noteAuthor && !reactor.host && noteAuthor.host) {
+      // Only deliver if:
+      // 1. Reactor is a local user (reactor.host is null)
+      // 2. Note author is a remote user (noteAuthor.host is not null)
+      this.deliveryService.deliverUndoLike(
+        reactor,
+        note,
+        noteAuthor
+      ).catch((error) => {
+        console.error(`Failed to deliver Undo Like activity:`, error);
+      });
+    }
   }
 
   /**
