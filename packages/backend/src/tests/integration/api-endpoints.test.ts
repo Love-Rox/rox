@@ -297,6 +297,55 @@ describe('API Endpoints Integration', () => {
     });
   });
 
+  describe('User Profile', () => {
+    test('should get current user profile', async () => {
+      const res = await fetch(`${BASE_URL}/api/users/@me`, {
+        headers: {
+          Authorization: `Bearer ${user1.token}`,
+        },
+      });
+
+      expect(res.status).toBe(200);
+      const user = (await res.json()) as any;
+      expect(user.id).toBe(user1.user.id);
+      expect(user.username).toBeDefined();
+    });
+
+    test('should update user profile', async () => {
+      const res = await fetch(`${BASE_URL}/api/users/@me`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user1.token}`,
+        },
+        body: JSON.stringify({
+          name: 'Updated Name',
+          description: 'Updated bio',
+        }),
+      });
+
+      expect(res.status).toBe(200);
+      const user = (await res.json()) as any;
+      expect(user.displayName).toBe('Updated Name');
+      expect(user.bio).toBe('Updated bio');
+    });
+
+    test('should get user by username', async () => {
+      const res = await fetch(
+        `${BASE_URL}/api/users/show?username=${user1.user.username}`
+      );
+
+      expect(res.status).toBe(200);
+      const user = (await res.json()) as any;
+      expect(user.id).toBe(user1.user.id);
+    });
+
+    test('should return 401 for unauthenticated profile access', async () => {
+      const res = await fetch(`${BASE_URL}/api/users/@me`);
+      expect(res.status).toBe(401);
+    });
+  });
+
   describe('Timelines', () => {
     beforeAll(async () => {
       // Create follow relationship

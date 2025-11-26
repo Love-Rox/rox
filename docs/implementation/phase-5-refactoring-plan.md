@@ -314,10 +314,19 @@ routes/proxy.ts                      # Media proxy endpoint (230 lines)
 - [x] `UserService` - updateProfile, findById, findByUsername, caching
 - [x] `InboxService` - handler registration, activity routing, singleton
 
-### 4.2 Integration Tests (Medium Priority)
+### 4.2 Integration Tests (Medium Priority) - IN PROGRESS
+
+**Current Coverage:**
+- `api-endpoints.test.ts` - 22 tests
+  - Authentication (2 tests)
+  - Notes CRUD (4 tests)
+  - Reactions (4 tests)
+  - Following (3 tests)
+  - User Profile (4 tests) ✅ NEW
+  - Timelines (2 tests)
 
 **Tasks:**
-- [ ] Expand `api-endpoints.test.ts`
+- [x] Expand `api-endpoints.test.ts` with User Profile tests
 - [ ] Add ActivityPub inbox tests
 - [ ] Add delivery queue tests
 
