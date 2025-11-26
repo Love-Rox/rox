@@ -138,7 +138,7 @@ export function LandingPage({ currentUser }: { currentUser: User | null }) {
                 )}
                 <Button
                   onPress={() => window.location.href = '/login'}
-                  className="bg-(--card-bg) hover:bg-(--bg-tertiary)-[var(--text-primary)] border border-(--border-color) px-8 py-3 rounded-lg font-semibold text-lg shadow hover:shadow-md transition-all"
+                  className="bg-(--card-bg) hover:bg-(--bg-tertiary) text-(--text-primary) border border-(--border-color) px-8 py-3 rounded-lg font-semibold text-lg shadow hover:shadow-md transition-all"
                 >
                   <Trans>Log In</Trans>
                 </Button>
