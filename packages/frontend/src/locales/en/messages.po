@@ -13,7 +13,7 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/pages/admin/invitations.tsx:295
+#: src/pages/admin/invitations.tsx:299
 msgid "1 Day"
 msgstr "1 Day"
 
@@ -21,11 +21,11 @@ msgstr "1 Day"
 msgid "3-20 characters, letters, numbers, and underscores only"
 msgstr "3-20 characters, letters, numbers, and underscores only"
 
-#: src/pages/admin/invitations.tsx:297
+#: src/pages/admin/invitations.tsx:301
 msgid "30 Days"
 msgstr "30 Days"
 
-#: src/pages/admin/invitations.tsx:296
+#: src/pages/admin/invitations.tsx:300
 msgid "7 Days"
 msgstr "7 Days"
 
@@ -49,15 +49,19 @@ msgstr "About This Instance"
 msgid "Admin"
 msgstr "Admin"
 
-#: src/pages/admin/roles.tsx:418
+#: src/pages/admin/roles.tsx:422
 msgid "Admin Role"
 msgstr "Admin Role"
 
-#: src/pages/admin/settings.tsx:179
+#: src/pages/admin/settings.tsx:180
 msgid "Admin Settings"
 msgstr "Admin Settings"
 
-#: src/pages/admin/settings.tsx:381
+#: src/pages/admin/blocks.tsx:311
+msgid "All instances can federate with this server"
+msgstr "All instances can federate with this server"
+
+#: src/pages/admin/settings.tsx:385
 msgid "Allow new users to register accounts"
 msgstr "Allow new users to register accounts"
 
@@ -73,11 +77,11 @@ msgstr "Already have an account? Sign in"
 msgid "Authentication required"
 msgstr "Authentication required"
 
-#: src/pages/admin/invitations.tsx:371
+#: src/pages/admin/invitations.tsx:375
 msgid "Available"
 msgstr "Available"
 
-#: src/pages/admin/invitations.tsx:238
+#: src/pages/admin/invitations.tsx:242
 msgid "Available Codes"
 msgstr "Available Codes"
 
@@ -85,7 +89,7 @@ msgstr "Available Codes"
 msgid "Back to timeline"
 msgstr "Back to timeline"
 
-#: src/pages/admin/settings.tsx:298
+#: src/pages/admin/settings.tsx:302
 msgid "Banner URL"
 msgstr "Banner URL"
 
@@ -97,27 +101,50 @@ msgstr "Be the first to post something!"
 msgid "Bio"
 msgstr "Bio"
 
+#: src/pages/admin/blocks.tsx:223
+#: src/pages/admin/blocks.tsx:282
+msgid "Block Instance"
+msgstr "Block Instance"
+
+#: src/pages/admin/blocks.tsx:193
+msgid "Block instances from federating with this server"
+msgstr "Block instances from federating with this server"
+
+#: src/pages/admin/blocks.tsx:211
+#: src/pages/admin/blocks.tsx:293
+msgid "Blocked Instances"
+msgstr "Blocked Instances"
+
+#. placeholder {0}: formatDate(block.createdAt)
+#: src/pages/admin/blocks.tsx:334
+msgid "Blocked on {0}"
+msgstr "Blocked on {0}"
+
+#: src/pages/admin/blocks.tsx:231
+msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
+msgstr "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
+
 #: src/components/user/UserProfile.tsx:319
 msgid "Bot"
 msgstr "Bot"
 
-#: src/pages/admin/roles.tsx:484
+#: src/pages/admin/roles.tsx:488
 msgid "Can delete notes"
 msgstr "Can delete notes"
 
-#: src/pages/admin/roles.tsx:448
+#: src/pages/admin/roles.tsx:452
 msgid "Can invite users"
 msgstr "Can invite users"
 
-#: src/pages/admin/roles.tsx:473
+#: src/pages/admin/roles.tsx:477
 msgid "Can manage reports"
 msgstr "Can manage reports"
 
-#: src/pages/admin/roles.tsx:495
+#: src/pages/admin/roles.tsx:499
 msgid "Can suspend users"
 msgstr "Can suspend users"
 
-#: src/pages/admin/roles.tsx:526
+#: src/pages/admin/roles.tsx:530
 #: src/pages/settings.tsx:260
 msgid "Cancel"
 msgstr "Cancel"
@@ -126,15 +153,15 @@ msgstr "Cancel"
 msgid "Choose your preferred sign-in method"
 msgstr "Choose your preferred sign-in method"
 
-#: src/pages/admin/invitations.tsx:173
+#: src/pages/admin/invitations.tsx:174
 msgid "Code copied to clipboard"
 msgstr "Code copied to clipboard"
 
-#: src/pages/admin/roles.tsx:362
+#: src/pages/admin/roles.tsx:366
 msgid "Color"
 msgstr "Color"
 
-#: src/pages/admin/settings.tsx:182
+#: src/pages/admin/settings.tsx:183
 msgid "Configure your instance settings"
 msgstr "Configure your instance settings"
 
@@ -158,21 +185,21 @@ msgstr "Control your data and choose who sees your posts"
 msgid "Conversation thread"
 msgstr "Conversation thread"
 
-#: src/pages/admin/invitations.tsx:392
+#: src/pages/admin/invitations.tsx:396
 msgid "Copy code"
 msgstr "Copy code"
 
-#: src/pages/admin/roles.tsx:312
+#: src/pages/admin/roles.tsx:313
 msgid "Create and manage user roles with custom permissions"
 msgstr "Create and manage user roles with custom permissions"
 
-#: src/pages/admin/invitations.tsx:248
-#: src/pages/admin/invitations.tsx:312
+#: src/pages/admin/invitations.tsx:252
+#: src/pages/admin/invitations.tsx:316
 msgid "Create Invitation Code"
 msgstr "Create Invitation Code"
 
-#: src/pages/admin/roles.tsx:342
-#: src/pages/admin/roles.tsx:517
+#: src/pages/admin/roles.tsx:346
+#: src/pages/admin/roles.tsx:521
 msgid "Create Role"
 msgstr "Create Role"
 
@@ -181,7 +208,7 @@ msgid "Create your account"
 msgstr "Create your account"
 
 #. placeholder {0}: formatDate(invitation.createdAt)
-#: src/pages/admin/invitations.tsx:383
+#: src/pages/admin/invitations.tsx:387
 msgid "Created: {0}"
 msgstr "Created: {0}"
 
@@ -189,7 +216,7 @@ msgstr "Created: {0}"
 msgid "Creating account..."
 msgstr "Creating account..."
 
-#: src/pages/admin/invitations.tsx:254
+#: src/pages/admin/invitations.tsx:258
 msgid "Custom Code (optional)"
 msgstr "Custom Code (optional)"
 
@@ -201,40 +228,40 @@ msgstr "Custom CSS"
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "Custom CSS for your profile page (max 10KB)"
 
-#: src/pages/admin/settings.tsx:549
+#: src/pages/admin/settings.tsx:553
 msgid "Dark"
 msgstr "Dark"
 
-#: src/pages/admin/roles.tsx:573
+#: src/pages/admin/roles.tsx:577
 msgid "Default"
 msgstr "Default"
 
-#: src/pages/admin/roles.tsx:407
+#: src/pages/admin/roles.tsx:411
 msgid "Default (auto-assign to new users)"
 msgstr "Default (auto-assign to new users)"
 
-#: src/pages/admin/settings.tsx:503
+#: src/pages/admin/settings.tsx:507
 msgid "Default Color Mode"
 msgstr "Default Color Mode"
 
-#: src/pages/admin/roles.tsx:332
+#: src/pages/admin/roles.tsx:336
 msgid "Default Roles"
 msgstr "Default Roles"
 
-#: src/pages/admin/invitations.tsx:400
+#: src/pages/admin/invitations.tsx:404
 msgid "Delete code"
 msgstr "Delete code"
 
-#: src/pages/admin/roles.tsx:600
+#: src/pages/admin/roles.tsx:604
 msgid "Delete Notes"
 msgstr "Delete Notes"
 
-#: src/pages/admin/roles.tsx:623
+#: src/pages/admin/roles.tsx:627
 msgid "Delete role"
 msgstr "Delete role"
 
-#: src/pages/admin/roles.tsx:375
-#: src/pages/admin/settings.tsx:249
+#: src/pages/admin/roles.tsx:379
+#: src/pages/admin/settings.tsx:253
 msgid "Description"
 msgstr "Description"
 
@@ -267,11 +294,11 @@ msgstr "Draft restored"
 msgid "Edit Profile"
 msgstr "Edit Profile"
 
-#: src/pages/admin/roles.tsx:615
+#: src/pages/admin/roles.tsx:619
 msgid "Edit role"
 msgstr "Edit role"
 
-#: src/pages/admin/roles.tsx:342
+#: src/pages/admin/roles.tsx:346
 msgid "Edit Role"
 msgstr "Edit Role"
 
@@ -287,9 +314,13 @@ msgstr "Email is required"
 msgid "Emoji Picker"
 msgstr "Emoji Picker"
 
-#: src/pages/admin/settings.tsx:378
+#: src/pages/admin/settings.tsx:382
 msgid "Enable Registration"
 msgstr "Enable Registration"
+
+#: src/pages/admin/blocks.tsx:254
+msgid "Enter the domain without https:// prefix"
+msgstr "Enter the domain without https:// prefix"
 
 #: src/pages/signup.tsx:152
 msgid "Enter your invitation code to register"
@@ -303,16 +334,20 @@ msgstr "Error loading timeline"
 msgid "Error loading user profile"
 msgstr "Error loading user profile"
 
-#: src/pages/admin/invitations.tsx:361
+#: src/pages/admin/blocks.tsx:249
+msgid "example.com"
+msgstr "example.com"
+
+#: src/pages/admin/invitations.tsx:365
 msgid "Expired"
 msgstr "Expired"
 
-#: src/pages/admin/invitations.tsx:287
+#: src/pages/admin/invitations.tsx:291
 msgid "Expires In"
 msgstr "Expires In"
 
 #. placeholder {0}: formatDate(invitation.expiresAt)
-#: src/pages/admin/invitations.tsx:379
+#: src/pages/admin/invitations.tsx:383
 msgid "Expires: {0}"
 msgstr "Expires: {0}"
 
@@ -320,15 +355,19 @@ msgstr "Expires: {0}"
 msgid "Failed to add reaction"
 msgstr "Failed to add reaction"
 
-#: src/pages/admin/invitations.tsx:140
+#: src/pages/admin/blocks.tsx:131
+msgid "Failed to block instance"
+msgstr "Failed to block instance"
+
+#: src/pages/admin/invitations.tsx:141
 msgid "Failed to create invitation code"
 msgstr "Failed to create invitation code"
 
-#: src/pages/admin/invitations.tsx:164
+#: src/pages/admin/invitations.tsx:165
 msgid "Failed to delete invitation code"
 msgstr "Failed to delete invitation code"
 
-#: src/pages/admin/roles.tsx:272
+#: src/pages/admin/roles.tsx:273
 msgid "Failed to delete role"
 msgstr "Failed to delete role"
 
@@ -340,9 +379,13 @@ msgstr "Failed to load note"
 msgid "Failed to renote"
 msgstr "Failed to renote"
 
-#: src/pages/admin/roles.tsx:212
+#: src/pages/admin/roles.tsx:213
 msgid "Failed to save role"
 msgstr "Failed to save role"
+
+#: src/pages/admin/blocks.tsx:155
+msgid "Failed to unblock instance"
+msgstr "Failed to unblock instance"
 
 #: src/components/note/NoteCard.tsx:180
 msgid "Failed to update follow status"
@@ -399,39 +442,55 @@ msgstr "Go to Timeline"
 msgid "Home"
 msgstr "Home"
 
-#: src/pages/admin/settings.tsx:282
+#: src/pages/admin/settings.tsx:286
 msgid "Icon URL"
 msgstr "Icon URL"
 
-#: src/pages/admin/settings.tsx:197
+#: src/pages/admin/settings.tsx:201
 msgid "Instance"
 msgstr "Instance"
+
+#: src/pages/admin/blocks.tsx:119
+msgid "Instance blocked"
+msgstr "Instance blocked"
+
+#: src/pages/admin/blocks.tsx:190
+msgid "Instance Blocks"
+msgstr "Instance Blocks"
 
 #: src/components/LandingPage.tsx:223
 msgid "Instance Details"
 msgstr "Instance Details"
 
-#: src/pages/admin/settings.tsx:228
+#: src/pages/admin/blocks.tsx:241
+msgid "Instance Domain"
+msgstr "Instance Domain"
+
+#: src/pages/admin/settings.tsx:232
 msgid "Instance Information"
 msgstr "Instance Information"
 
-#: src/pages/admin/settings.tsx:233
+#: src/pages/admin/settings.tsx:237
 msgid "Instance Name"
 msgstr "Instance Name"
 
-#: src/pages/admin/settings.tsx:113
+#: src/pages/admin/settings.tsx:114
 msgid "Instance settings saved"
 msgstr "Instance settings saved"
+
+#: src/pages/admin/blocks.tsx:147
+msgid "Instance unblocked"
+msgstr "Instance unblocked"
 
 #: src/pages/signup.tsx:148
 msgid "Invitation Code"
 msgstr "Invitation Code"
 
-#: src/pages/admin/invitations.tsx:127
+#: src/pages/admin/invitations.tsx:128
 msgid "Invitation code created"
 msgstr "Invitation code created"
 
-#: src/pages/admin/invitations.tsx:156
+#: src/pages/admin/invitations.tsx:157
 msgid "Invitation code deleted"
 msgstr "Invitation code deleted"
 
@@ -439,21 +498,21 @@ msgstr "Invitation code deleted"
 msgid "Invitation code is required"
 msgstr "Invitation code is required"
 
-#: src/pages/admin/invitations.tsx:217
-#: src/pages/admin/invitations.tsx:323
+#: src/pages/admin/invitations.tsx:218
+#: src/pages/admin/invitations.tsx:327
 msgid "Invitation Codes"
 msgstr "Invitation Codes"
 
-#: src/pages/admin/roles.tsx:590
+#: src/pages/admin/roles.tsx:594
 msgid "Invite"
 msgstr "Invite"
 
-#: src/pages/admin/roles.tsx:453
+#: src/pages/admin/roles.tsx:457
 msgid "Invite limit:"
 msgstr "Invite limit:"
 
 #: src/components/LandingPage.tsx:99
-#: src/pages/admin/settings.tsx:399
+#: src/pages/admin/settings.tsx:403
 #: src/pages/signup.tsx:138
 msgid "Invite Only"
 msgstr "Invite Only"
@@ -462,11 +521,11 @@ msgstr "Invite Only"
 msgid "Join Rox and start sharing"
 msgstr "Join Rox and start sharing"
 
-#: src/pages/admin/invitations.tsx:260
+#: src/pages/admin/invitations.tsx:264
 msgid "Leave empty for auto-generated code"
 msgstr "Leave empty for auto-generated code"
 
-#: src/pages/admin/settings.tsx:534
+#: src/pages/admin/settings.tsx:538
 msgid "Light"
 msgstr "Light"
 
@@ -503,11 +562,11 @@ msgstr "Log In"
 msgid "Login failed. Please check your credentials."
 msgstr "Login failed. Please check your credentials."
 
-#: src/pages/admin/settings.tsx:265
+#: src/pages/admin/settings.tsx:269
 msgid "Maintainer Email"
 msgstr "Maintainer Email"
 
-#: src/pages/admin/invitations.tsx:220
+#: src/pages/admin/invitations.tsx:221
 msgid "Manage invitation codes for new user registration"
 msgstr "Manage invitation codes for new user registration"
 
@@ -515,7 +574,7 @@ msgstr "Manage invitation codes for new user registration"
 msgid "Manage your profile information"
 msgstr "Manage your profile information"
 
-#: src/pages/admin/invitations.tsx:269
+#: src/pages/admin/invitations.tsx:273
 msgid "Max Uses"
 msgstr "Max Uses"
 
@@ -523,27 +582,31 @@ msgstr "Max Uses"
 msgid "Minimum 8 characters"
 msgstr "Minimum 8 characters"
 
-#: src/pages/admin/roles.tsx:429
+#: src/pages/admin/roles.tsx:433
 msgid "Moderator Role"
 msgstr "Moderator Role"
 
-#: src/pages/admin/roles.tsx:349
+#: src/pages/admin/roles.tsx:353
 msgid "Name"
 msgstr "Name"
 
-#: src/pages/admin/invitations.tsx:294
+#: src/pages/admin/invitations.tsx:298
 msgid "Never"
 msgstr "Never"
 
-#: src/pages/admin/settings.tsx:423
+#: src/pages/admin/settings.tsx:427
 msgid "New accounts require admin approval"
 msgstr "New accounts require admin approval"
+
+#: src/pages/admin/blocks.tsx:308
+msgid "No blocked instances"
+msgstr "No blocked instances"
 
 #: src/components/ui/EmojiPicker.tsx:335
 msgid "No emojis found"
 msgstr "No emojis found"
 
-#: src/pages/admin/invitations.tsx:336
+#: src/pages/admin/invitations.tsx:340
 msgid "No invitation codes yet"
 msgstr "No invitation codes yet"
 
@@ -559,7 +622,7 @@ msgstr "No posts yet"
 msgid "No replies yet"
 msgstr "No replies yet"
 
-#: src/pages/admin/roles.tsx:550
+#: src/pages/admin/roles.tsx:554
 msgid "No roles yet"
 msgstr "No roles yet"
 
@@ -613,7 +676,7 @@ msgstr "Password"
 msgid "Password is required"
 msgstr "Password is required"
 
-#: src/pages/admin/roles.tsx:437
+#: src/pages/admin/roles.tsx:441
 msgid "Permissions"
 msgstr "Permissions"
 
@@ -646,15 +709,15 @@ msgstr "Posts"
 msgid "Powered by"
 msgstr "Powered by"
 
-#: src/pages/admin/settings.tsx:560
+#: src/pages/admin/settings.tsx:564
 msgid "Preview"
 msgstr "Preview"
 
-#: src/pages/admin/settings.tsx:567
+#: src/pages/admin/settings.tsx:571
 msgid "Primary Button"
 msgstr "Primary Button"
 
-#: src/pages/admin/settings.tsx:446
+#: src/pages/admin/settings.tsx:450
 msgid "Primary Color"
 msgstr "Primary Color"
 
@@ -670,7 +733,7 @@ msgstr "Privacy First"
 msgid "Privacy Policy"
 msgstr "Privacy Policy"
 
-#: src/pages/admin/settings.tsx:333
+#: src/pages/admin/settings.tsx:337
 msgid "Privacy Policy URL"
 msgstr "Privacy Policy URL"
 
@@ -683,11 +746,11 @@ msgid "Profile updated successfully"
 msgstr "Profile updated successfully"
 
 #: src/components/note/NoteComposer.tsx:268
-#: src/pages/admin/roles.tsx:578
+#: src/pages/admin/roles.tsx:582
 msgid "Public"
 msgstr "Public"
 
-#: src/pages/admin/roles.tsx:396
+#: src/pages/admin/roles.tsx:400
 msgid "Public (show on profiles)"
 msgstr "Public (show on profiles)"
 
@@ -699,11 +762,15 @@ msgstr "Public (show on profiles)"
 msgid "Reaction added"
 msgstr "Reaction added"
 
+#: src/pages/admin/blocks.tsx:260
+msgid "Reason (optional)"
+msgstr "Reason (optional)"
+
 #: src/pages/timeline.tsx:84
 msgid "Recent posts from your community"
 msgstr "Recent posts from your community"
 
-#: src/pages/admin/settings.tsx:207
+#: src/pages/admin/settings.tsx:211
 msgid "Registration"
 msgstr "Registration"
 
@@ -716,11 +783,11 @@ msgstr "Registration Closed"
 msgid "Registration failed. Please try again."
 msgstr "Registration failed. Please try again."
 
-#: src/pages/admin/settings.tsx:362
+#: src/pages/admin/settings.tsx:366
 msgid "Registration Settings"
 msgstr "Registration Settings"
 
-#: src/pages/admin/settings.tsx:132
+#: src/pages/admin/settings.tsx:133
 msgid "Registration settings saved"
 msgstr "Registration settings saved"
 
@@ -741,15 +808,15 @@ msgstr "Reply"
 msgid "Replying to"
 msgstr "Replying to"
 
-#: src/pages/admin/roles.tsx:595
+#: src/pages/admin/roles.tsx:599
 msgid "Reports"
 msgstr "Reports"
 
-#: src/pages/admin/settings.tsx:402
+#: src/pages/admin/settings.tsx:406
 msgid "Require an invitation code to register"
 msgstr "Require an invitation code to register"
 
-#: src/pages/admin/settings.tsx:420
+#: src/pages/admin/settings.tsx:424
 msgid "Require Approval"
 msgstr "Require Approval"
 
@@ -769,31 +836,31 @@ msgstr "Retry"
 msgid "Retrying..."
 msgstr "Retrying..."
 
-#: src/pages/admin/roles.tsx:186
+#: src/pages/admin/roles.tsx:187
 msgid "Role created"
 msgstr "Role created"
 
-#: src/pages/admin/roles.tsx:264
+#: src/pages/admin/roles.tsx:265
 msgid "Role deleted"
 msgstr "Role deleted"
 
-#: src/pages/admin/roles.tsx:381
+#: src/pages/admin/roles.tsx:385
 msgid "Role description"
 msgstr "Role description"
 
-#: src/pages/admin/roles.tsx:309
+#: src/pages/admin/roles.tsx:310
 msgid "Role Management"
 msgstr "Role Management"
 
-#: src/pages/admin/roles.tsx:355
+#: src/pages/admin/roles.tsx:359
 msgid "Role name"
 msgstr "Role name"
 
-#: src/pages/admin/roles.tsx:170
+#: src/pages/admin/roles.tsx:171
 msgid "Role updated"
 msgstr "Role updated"
 
-#: src/pages/admin/roles.tsx:537
+#: src/pages/admin/roles.tsx:541
 msgid "Roles"
 msgstr "Roles"
 
@@ -801,15 +868,15 @@ msgstr "Roles"
 msgid "Save Changes"
 msgstr "Save Changes"
 
-#: src/pages/admin/settings.tsx:351
+#: src/pages/admin/settings.tsx:355
 msgid "Save Instance Settings"
 msgstr "Save Instance Settings"
 
-#: src/pages/admin/settings.tsx:430
+#: src/pages/admin/settings.tsx:434
 msgid "Save Registration Settings"
 msgstr "Save Registration Settings"
 
-#: src/pages/admin/settings.tsx:583
+#: src/pages/admin/settings.tsx:587
 msgid "Save Theme Settings"
 msgstr "Save Theme Settings"
 
@@ -821,7 +888,7 @@ msgstr "Saving..."
 msgid "Search emoji..."
 msgstr "Search emoji..."
 
-#: src/pages/admin/settings.tsx:576
+#: src/pages/admin/settings.tsx:580
 msgid "Secondary"
 msgstr "Secondary"
 
@@ -872,11 +939,11 @@ msgstr "Social"
 msgid "Software"
 msgstr "Software"
 
-#: src/pages/admin/roles.tsx:605
+#: src/pages/admin/roles.tsx:609
 msgid "Suspend Users"
 msgstr "Suspend Users"
 
-#: src/pages/admin/settings.tsx:519
+#: src/pages/admin/settings.tsx:523
 msgid "System"
 msgstr "System"
 
@@ -892,7 +959,7 @@ msgstr "Terms"
 msgid "Terms of Service"
 msgstr "Terms of Service"
 
-#: src/pages/admin/settings.tsx:317
+#: src/pages/admin/settings.tsx:321
 msgid "Terms of Service URL"
 msgstr "Terms of Service URL"
 
@@ -900,15 +967,15 @@ msgstr "Terms of Service URL"
 msgid "Text exceeds {maxLength} characters"
 msgstr "Text exceeds {maxLength} characters"
 
-#: src/pages/admin/settings.tsx:217
+#: src/pages/admin/settings.tsx:221
 msgid "Theme"
 msgstr "Theme"
 
-#: src/pages/admin/settings.tsx:441
+#: src/pages/admin/settings.tsx:445
 msgid "Theme Settings"
 msgstr "Theme Settings"
 
-#: src/pages/admin/settings.tsx:151
+#: src/pages/admin/settings.tsx:152
 msgid "Theme settings saved"
 msgstr "Theme settings saved"
 
@@ -929,17 +996,21 @@ msgstr "This user hasn't posted anything yet"
 msgid "Timeline"
 msgstr "Timeline"
 
-#: src/pages/admin/invitations.tsx:230
+#: src/pages/admin/invitations.tsx:234
 msgid "Total Codes"
 msgstr "Total Codes"
 
-#: src/pages/admin/roles.tsx:322
+#: src/pages/admin/roles.tsx:326
 msgid "Total Roles"
 msgstr "Total Roles"
 
 #: src/app/page.tsx:22
 #~ msgid "UI Components Demo"
 #~ msgstr "UI Components Demo"
+
+#: src/pages/admin/blocks.tsx:341
+msgid "Unblock instance"
+msgstr "Unblock instance"
 
 #: src/components/note/NoteCard.tsx:166
 msgid "Unfollowed successfully"
@@ -949,7 +1020,7 @@ msgstr "Unfollowed successfully"
 msgid "Unfollowing..."
 msgstr "Unfollowing..."
 
-#: src/pages/admin/roles.tsx:512
+#: src/pages/admin/roles.tsx:516
 msgid "Update Role"
 msgstr "Update Role"
 
@@ -961,7 +1032,7 @@ msgstr "Uploading files..."
 msgid "Uploading..."
 msgstr "Uploading..."
 
-#: src/pages/admin/invitations.tsx:366
+#: src/pages/admin/invitations.tsx:370
 msgid "Used"
 msgstr "Used"
 
@@ -984,13 +1055,13 @@ msgstr "Username cannot be changed"
 msgid "Username is required"
 msgstr "Username is required"
 
-#: src/pages/admin/settings.tsx:553
+#: src/pages/admin/settings.tsx:557
 msgid "Users can still override this with their own preference"
 msgstr "Users can still override this with their own preference"
 
 #. placeholder {0}: invitation.useCount
 #. placeholder {1}: invitation.maxUses
-#: src/pages/admin/invitations.tsx:376
+#: src/pages/admin/invitations.tsx:380
 msgid "Uses: {0}/{1}"
 msgstr "Uses: {0}/{1}"
 
@@ -1005,6 +1076,10 @@ msgstr "View Terms"
 #: src/app/page.tsx:12
 #~ msgid "Welcome to Rox"
 #~ msgstr "Welcome to Rox"
+
+#: src/pages/admin/blocks.tsx:265
+msgid "Why is this instance being blocked?"
+msgstr "Why is this instance being blocked?"
 
 #: src/components/LandingPage.tsx:154
 msgid "Why Join?"

@@ -19,6 +19,7 @@ import { Spinner } from '../../components/ui/Spinner';
 import { InlineError } from '../../components/ui/ErrorMessage';
 import { addToastAtom } from '../../lib/atoms/toast';
 import { Layout } from '../../components/layout/Layout';
+import { AdminNav } from '../../components/admin/AdminNav';
 
 interface InvitationCode {
   id: string;
@@ -220,6 +221,9 @@ export default function AdminInvitationsPage() {
             <Trans>Manage invitation codes for new user registration</Trans>
           </p>
         </div>
+
+        {/* Admin Navigation */}
+        <AdminNav currentPath="/admin/invitations" />
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 mb-8">

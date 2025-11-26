@@ -19,6 +19,7 @@ import { Spinner } from '../../components/ui/Spinner';
 import { InlineError } from '../../components/ui/ErrorMessage';
 import { addToastAtom } from '../../lib/atoms/toast';
 import { Layout } from '../../components/layout/Layout';
+import { AdminNav } from '../../components/admin/AdminNav';
 
 interface RolePolicies {
   canViewGlobalTimeline?: boolean;
@@ -312,6 +313,9 @@ export default function AdminRolesPage() {
             <Trans>Create and manage user roles with custom permissions</Trans>
           </p>
         </div>
+
+        {/* Admin Navigation */}
+        <AdminNav currentPath="/admin/roles" />
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 mb-8">

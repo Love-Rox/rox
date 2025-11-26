@@ -13,7 +13,7 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/pages/admin/invitations.tsx:295
+#: src/pages/admin/invitations.tsx:299
 msgid "1 Day"
 msgstr "1日"
 
@@ -21,11 +21,11 @@ msgstr "1日"
 msgid "3-20 characters, letters, numbers, and underscores only"
 msgstr "3-20文字、英数字とアンダースコアのみ"
 
-#: src/pages/admin/invitations.tsx:297
+#: src/pages/admin/invitations.tsx:301
 msgid "30 Days"
 msgstr "30日"
 
-#: src/pages/admin/invitations.tsx:296
+#: src/pages/admin/invitations.tsx:300
 msgid "7 Days"
 msgstr "7日"
 
@@ -49,15 +49,19 @@ msgstr "このインスタンスについて"
 msgid "Admin"
 msgstr "管理"
 
-#: src/pages/admin/roles.tsx:418
+#: src/pages/admin/roles.tsx:422
 msgid "Admin Role"
 msgstr "管理者ロール"
 
-#: src/pages/admin/settings.tsx:179
+#: src/pages/admin/settings.tsx:180
 msgid "Admin Settings"
 msgstr "管理設定"
 
-#: src/pages/admin/settings.tsx:381
+#: src/pages/admin/blocks.tsx:311
+msgid "All instances can federate with this server"
+msgstr "すべてのインスタンスがこのサーバーと連携できます"
+
+#: src/pages/admin/settings.tsx:385
 msgid "Allow new users to register accounts"
 msgstr "新規ユーザーのアカウント登録を許可"
 
@@ -73,11 +77,11 @@ msgstr "すでにアカウントをお持ちですか？サインイン"
 msgid "Authentication required"
 msgstr "認証が必要です"
 
-#: src/pages/admin/invitations.tsx:371
+#: src/pages/admin/invitations.tsx:375
 msgid "Available"
 msgstr "利用可能"
 
-#: src/pages/admin/invitations.tsx:238
+#: src/pages/admin/invitations.tsx:242
 msgid "Available Codes"
 msgstr "利用可能なコード"
 
@@ -85,7 +89,7 @@ msgstr "利用可能なコード"
 msgid "Back to timeline"
 msgstr "タイムラインに戻る"
 
-#: src/pages/admin/settings.tsx:298
+#: src/pages/admin/settings.tsx:302
 msgid "Banner URL"
 msgstr "バナーURL"
 
@@ -97,27 +101,50 @@ msgstr "最初の投稿をしてみましょう！"
 msgid "Bio"
 msgstr "自己紹介"
 
+#: src/pages/admin/blocks.tsx:223
+#: src/pages/admin/blocks.tsx:282
+msgid "Block Instance"
+msgstr "インスタンスをブロック"
+
+#: src/pages/admin/blocks.tsx:193
+msgid "Block instances from federating with this server"
+msgstr "インスタンスの連携をブロックします"
+
+#: src/pages/admin/blocks.tsx:211
+#: src/pages/admin/blocks.tsx:293
+msgid "Blocked Instances"
+msgstr "ブロック中のインスタンス"
+
+#. placeholder {0}: formatDate(block.createdAt)
+#: src/pages/admin/blocks.tsx:334
+msgid "Blocked on {0}"
+msgstr "{0}にブロック"
+
+#: src/pages/admin/blocks.tsx:231
+msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
+msgstr "インスタンスをブロックすると、そのサーバーとの連携がすべて停止されます。ブロックされたインスタンスのユーザーはこのサーバーとやり取りできなくなります。"
+
 #: src/components/user/UserProfile.tsx:319
 msgid "Bot"
 msgstr "Bot"
 
-#: src/pages/admin/roles.tsx:484
+#: src/pages/admin/roles.tsx:488
 msgid "Can delete notes"
 msgstr "ノートを削除可能"
 
-#: src/pages/admin/roles.tsx:448
+#: src/pages/admin/roles.tsx:452
 msgid "Can invite users"
 msgstr "ユーザーを招待可能"
 
-#: src/pages/admin/roles.tsx:473
+#: src/pages/admin/roles.tsx:477
 msgid "Can manage reports"
 msgstr "通報を管理可能"
 
-#: src/pages/admin/roles.tsx:495
+#: src/pages/admin/roles.tsx:499
 msgid "Can suspend users"
 msgstr "ユーザーを凍結可能"
 
-#: src/pages/admin/roles.tsx:526
+#: src/pages/admin/roles.tsx:530
 #: src/pages/settings.tsx:260
 msgid "Cancel"
 msgstr "キャンセル"
@@ -126,15 +153,15 @@ msgstr "キャンセル"
 msgid "Choose your preferred sign-in method"
 msgstr "サインイン方法を選択してください"
 
-#: src/pages/admin/invitations.tsx:173
+#: src/pages/admin/invitations.tsx:174
 msgid "Code copied to clipboard"
 msgstr "コードをクリップボードにコピーしました"
 
-#: src/pages/admin/roles.tsx:362
+#: src/pages/admin/roles.tsx:366
 msgid "Color"
 msgstr "カラー"
 
-#: src/pages/admin/settings.tsx:182
+#: src/pages/admin/settings.tsx:183
 msgid "Configure your instance settings"
 msgstr "インスタンスの設定を構成"
 
@@ -158,21 +185,21 @@ msgstr "データを管理し、誰が投稿を見るかを選択できます"
 msgid "Conversation thread"
 msgstr "会話スレッド"
 
-#: src/pages/admin/invitations.tsx:392
+#: src/pages/admin/invitations.tsx:396
 msgid "Copy code"
 msgstr "コードをコピー"
 
-#: src/pages/admin/roles.tsx:312
+#: src/pages/admin/roles.tsx:313
 msgid "Create and manage user roles with custom permissions"
 msgstr "カスタム権限を持つユーザーロールを作成・管理"
 
-#: src/pages/admin/invitations.tsx:248
-#: src/pages/admin/invitations.tsx:312
+#: src/pages/admin/invitations.tsx:252
+#: src/pages/admin/invitations.tsx:316
 msgid "Create Invitation Code"
 msgstr "招待コードを作成"
 
-#: src/pages/admin/roles.tsx:342
-#: src/pages/admin/roles.tsx:517
+#: src/pages/admin/roles.tsx:346
+#: src/pages/admin/roles.tsx:521
 msgid "Create Role"
 msgstr "ロールを作成"
 
@@ -181,7 +208,7 @@ msgid "Create your account"
 msgstr "アカウントを作成"
 
 #. placeholder {0}: formatDate(invitation.createdAt)
-#: src/pages/admin/invitations.tsx:383
+#: src/pages/admin/invitations.tsx:387
 msgid "Created: {0}"
 msgstr "作成日: {0}"
 
@@ -189,7 +216,7 @@ msgstr "作成日: {0}"
 msgid "Creating account..."
 msgstr "アカウント作成中..."
 
-#: src/pages/admin/invitations.tsx:254
+#: src/pages/admin/invitations.tsx:258
 msgid "Custom Code (optional)"
 msgstr "カスタムコード（任意）"
 
@@ -201,40 +228,40 @@ msgstr "カスタムCSS"
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 
-#: src/pages/admin/settings.tsx:549
+#: src/pages/admin/settings.tsx:553
 msgid "Dark"
 msgstr "ダーク"
 
-#: src/pages/admin/roles.tsx:573
+#: src/pages/admin/roles.tsx:577
 msgid "Default"
 msgstr "デフォルト"
 
-#: src/pages/admin/roles.tsx:407
+#: src/pages/admin/roles.tsx:411
 msgid "Default (auto-assign to new users)"
 msgstr "デフォルト（新規ユーザーに自動割り当て）"
 
-#: src/pages/admin/settings.tsx:503
+#: src/pages/admin/settings.tsx:507
 msgid "Default Color Mode"
 msgstr "デフォルトカラーモード"
 
-#: src/pages/admin/roles.tsx:332
+#: src/pages/admin/roles.tsx:336
 msgid "Default Roles"
 msgstr "デフォルトロール数"
 
-#: src/pages/admin/invitations.tsx:400
+#: src/pages/admin/invitations.tsx:404
 msgid "Delete code"
 msgstr "コードを削除"
 
-#: src/pages/admin/roles.tsx:600
+#: src/pages/admin/roles.tsx:604
 msgid "Delete Notes"
 msgstr "ノート削除"
 
-#: src/pages/admin/roles.tsx:623
+#: src/pages/admin/roles.tsx:627
 msgid "Delete role"
 msgstr "ロールを削除"
 
-#: src/pages/admin/roles.tsx:375
-#: src/pages/admin/settings.tsx:249
+#: src/pages/admin/roles.tsx:379
+#: src/pages/admin/settings.tsx:253
 msgid "Description"
 msgstr "説明"
 
@@ -267,11 +294,11 @@ msgstr "下書きを復元しました"
 msgid "Edit Profile"
 msgstr "プロフィールを編集"
 
-#: src/pages/admin/roles.tsx:615
+#: src/pages/admin/roles.tsx:619
 msgid "Edit role"
 msgstr "ロールを編集"
 
-#: src/pages/admin/roles.tsx:342
+#: src/pages/admin/roles.tsx:346
 msgid "Edit Role"
 msgstr "ロールを編集"
 
@@ -287,9 +314,13 @@ msgstr "メールアドレスを入力してください"
 msgid "Emoji Picker"
 msgstr "絵文字ピッカー"
 
-#: src/pages/admin/settings.tsx:378
+#: src/pages/admin/settings.tsx:382
 msgid "Enable Registration"
 msgstr "登録を有効化"
+
+#: src/pages/admin/blocks.tsx:254
+msgid "Enter the domain without https:// prefix"
+msgstr "https://を除いたドメインを入力してください"
 
 #: src/pages/signup.tsx:152
 msgid "Enter your invitation code to register"
@@ -303,16 +334,20 @@ msgstr "タイムラインの読み込みに失敗しました"
 msgid "Error loading user profile"
 msgstr "ユーザープロフィールの読み込みに失敗しました"
 
-#: src/pages/admin/invitations.tsx:361
+#: src/pages/admin/blocks.tsx:249
+msgid "example.com"
+msgstr "example.com"
+
+#: src/pages/admin/invitations.tsx:365
 msgid "Expired"
 msgstr "期限切れ"
 
-#: src/pages/admin/invitations.tsx:287
+#: src/pages/admin/invitations.tsx:291
 msgid "Expires In"
 msgstr "有効期限"
 
 #. placeholder {0}: formatDate(invitation.expiresAt)
-#: src/pages/admin/invitations.tsx:379
+#: src/pages/admin/invitations.tsx:383
 msgid "Expires: {0}"
 msgstr "有効期限: {0}"
 
@@ -320,15 +355,19 @@ msgstr "有効期限: {0}"
 msgid "Failed to add reaction"
 msgstr "リアクションの追加に失敗しました"
 
-#: src/pages/admin/invitations.tsx:140
+#: src/pages/admin/blocks.tsx:131
+msgid "Failed to block instance"
+msgstr "インスタンスのブロックに失敗しました"
+
+#: src/pages/admin/invitations.tsx:141
 msgid "Failed to create invitation code"
 msgstr "招待コードの作成に失敗しました"
 
-#: src/pages/admin/invitations.tsx:164
+#: src/pages/admin/invitations.tsx:165
 msgid "Failed to delete invitation code"
 msgstr "招待コードの削除に失敗しました"
 
-#: src/pages/admin/roles.tsx:272
+#: src/pages/admin/roles.tsx:273
 msgid "Failed to delete role"
 msgstr "ロールの削除に失敗しました"
 
@@ -340,9 +379,13 @@ msgstr "ノートの読み込みに失敗しました"
 msgid "Failed to renote"
 msgstr "リノートに失敗しました"
 
-#: src/pages/admin/roles.tsx:212
+#: src/pages/admin/roles.tsx:213
 msgid "Failed to save role"
 msgstr "ロールの保存に失敗しました"
+
+#: src/pages/admin/blocks.tsx:155
+msgid "Failed to unblock instance"
+msgstr "インスタンスのブロック解除に失敗しました"
 
 #: src/components/note/NoteCard.tsx:180
 msgid "Failed to update follow status"
@@ -399,39 +442,55 @@ msgstr "タイムラインへ"
 msgid "Home"
 msgstr "ホーム"
 
-#: src/pages/admin/settings.tsx:282
+#: src/pages/admin/settings.tsx:286
 msgid "Icon URL"
 msgstr "アイコンURL"
 
-#: src/pages/admin/settings.tsx:197
+#: src/pages/admin/settings.tsx:201
 msgid "Instance"
 msgstr "インスタンス"
+
+#: src/pages/admin/blocks.tsx:119
+msgid "Instance blocked"
+msgstr "インスタンスをブロックしました"
+
+#: src/pages/admin/blocks.tsx:190
+msgid "Instance Blocks"
+msgstr "インスタンスブロック"
 
 #: src/components/LandingPage.tsx:223
 msgid "Instance Details"
 msgstr "インスタンス詳細"
 
-#: src/pages/admin/settings.tsx:228
+#: src/pages/admin/blocks.tsx:241
+msgid "Instance Domain"
+msgstr "インスタンスドメイン"
+
+#: src/pages/admin/settings.tsx:232
 msgid "Instance Information"
 msgstr "インスタンス情報"
 
-#: src/pages/admin/settings.tsx:233
+#: src/pages/admin/settings.tsx:237
 msgid "Instance Name"
 msgstr "インスタンス名"
 
-#: src/pages/admin/settings.tsx:113
+#: src/pages/admin/settings.tsx:114
 msgid "Instance settings saved"
 msgstr "インスタンス設定を保存しました"
+
+#: src/pages/admin/blocks.tsx:147
+msgid "Instance unblocked"
+msgstr "インスタンスのブロックを解除しました"
 
 #: src/pages/signup.tsx:148
 msgid "Invitation Code"
 msgstr "招待コード"
 
-#: src/pages/admin/invitations.tsx:127
+#: src/pages/admin/invitations.tsx:128
 msgid "Invitation code created"
 msgstr "招待コードを作成しました"
 
-#: src/pages/admin/invitations.tsx:156
+#: src/pages/admin/invitations.tsx:157
 msgid "Invitation code deleted"
 msgstr "招待コードを削除しました"
 
@@ -439,21 +498,21 @@ msgstr "招待コードを削除しました"
 msgid "Invitation code is required"
 msgstr "招待コードを入力してください"
 
-#: src/pages/admin/invitations.tsx:217
-#: src/pages/admin/invitations.tsx:323
+#: src/pages/admin/invitations.tsx:218
+#: src/pages/admin/invitations.tsx:327
 msgid "Invitation Codes"
 msgstr "招待コード"
 
-#: src/pages/admin/roles.tsx:590
+#: src/pages/admin/roles.tsx:594
 msgid "Invite"
 msgstr "招待"
 
-#: src/pages/admin/roles.tsx:453
+#: src/pages/admin/roles.tsx:457
 msgid "Invite limit:"
 msgstr "招待上限:"
 
 #: src/components/LandingPage.tsx:99
-#: src/pages/admin/settings.tsx:399
+#: src/pages/admin/settings.tsx:403
 #: src/pages/signup.tsx:138
 msgid "Invite Only"
 msgstr "招待制"
@@ -462,11 +521,11 @@ msgstr "招待制"
 msgid "Join Rox and start sharing"
 msgstr "Roxに参加して共有を始めましょう"
 
-#: src/pages/admin/invitations.tsx:260
+#: src/pages/admin/invitations.tsx:264
 msgid "Leave empty for auto-generated code"
 msgstr "空欄にすると自動生成されます"
 
-#: src/pages/admin/settings.tsx:534
+#: src/pages/admin/settings.tsx:538
 msgid "Light"
 msgstr "ライト"
 
@@ -503,11 +562,11 @@ msgstr "ログイン"
 msgid "Login failed. Please check your credentials."
 msgstr "ログインに失敗しました。認証情報を確認してください。"
 
-#: src/pages/admin/settings.tsx:265
+#: src/pages/admin/settings.tsx:269
 msgid "Maintainer Email"
 msgstr "管理者メールアドレス"
 
-#: src/pages/admin/invitations.tsx:220
+#: src/pages/admin/invitations.tsx:221
 msgid "Manage invitation codes for new user registration"
 msgstr "新規ユーザー登録用の招待コードを管理"
 
@@ -515,7 +574,7 @@ msgstr "新規ユーザー登録用の招待コードを管理"
 msgid "Manage your profile information"
 msgstr "プロフィール情報を管理"
 
-#: src/pages/admin/invitations.tsx:269
+#: src/pages/admin/invitations.tsx:273
 msgid "Max Uses"
 msgstr "最大使用回数"
 
@@ -523,27 +582,31 @@ msgstr "最大使用回数"
 msgid "Minimum 8 characters"
 msgstr "最低8文字"
 
-#: src/pages/admin/roles.tsx:429
+#: src/pages/admin/roles.tsx:433
 msgid "Moderator Role"
 msgstr "モデレーターロール"
 
-#: src/pages/admin/roles.tsx:349
+#: src/pages/admin/roles.tsx:353
 msgid "Name"
 msgstr "名前"
 
-#: src/pages/admin/invitations.tsx:294
+#: src/pages/admin/invitations.tsx:298
 msgid "Never"
 msgstr "無期限"
 
-#: src/pages/admin/settings.tsx:423
+#: src/pages/admin/settings.tsx:427
 msgid "New accounts require admin approval"
 msgstr "新規アカウントは管理者の承認が必要"
+
+#: src/pages/admin/blocks.tsx:308
+msgid "No blocked instances"
+msgstr "ブロック中のインスタンスはありません"
 
 #: src/components/ui/EmojiPicker.tsx:335
 msgid "No emojis found"
 msgstr "絵文字が見つかりません"
 
-#: src/pages/admin/invitations.tsx:336
+#: src/pages/admin/invitations.tsx:340
 msgid "No invitation codes yet"
 msgstr "招待コードがまだありません"
 
@@ -559,7 +622,7 @@ msgstr "まだ投稿がありません"
 msgid "No replies yet"
 msgstr "まだ返信がありません"
 
-#: src/pages/admin/roles.tsx:550
+#: src/pages/admin/roles.tsx:554
 msgid "No roles yet"
 msgstr "ロールがまだありません"
 
@@ -613,7 +676,7 @@ msgstr "パスワード"
 msgid "Password is required"
 msgstr "パスワードを入力してください"
 
-#: src/pages/admin/roles.tsx:437
+#: src/pages/admin/roles.tsx:441
 msgid "Permissions"
 msgstr "権限"
 
@@ -646,15 +709,15 @@ msgstr "投稿"
 msgid "Powered by"
 msgstr "Powered by"
 
-#: src/pages/admin/settings.tsx:560
+#: src/pages/admin/settings.tsx:564
 msgid "Preview"
 msgstr "プレビュー"
 
-#: src/pages/admin/settings.tsx:567
+#: src/pages/admin/settings.tsx:571
 msgid "Primary Button"
 msgstr "プライマリボタン"
 
-#: src/pages/admin/settings.tsx:446
+#: src/pages/admin/settings.tsx:450
 msgid "Primary Color"
 msgstr "テーマカラー"
 
@@ -670,7 +733,7 @@ msgstr "プライバシー第一"
 msgid "Privacy Policy"
 msgstr "プライバシーポリシー"
 
-#: src/pages/admin/settings.tsx:333
+#: src/pages/admin/settings.tsx:337
 msgid "Privacy Policy URL"
 msgstr "プライバシーポリシーURL"
 
@@ -683,11 +746,11 @@ msgid "Profile updated successfully"
 msgstr "プロフィールを更新しました"
 
 #: src/components/note/NoteComposer.tsx:268
-#: src/pages/admin/roles.tsx:578
+#: src/pages/admin/roles.tsx:582
 msgid "Public"
 msgstr "公開"
 
-#: src/pages/admin/roles.tsx:396
+#: src/pages/admin/roles.tsx:400
 msgid "Public (show on profiles)"
 msgstr "公開（プロフィールに表示）"
 
@@ -699,11 +762,15 @@ msgstr "公開（プロフィールに表示）"
 msgid "Reaction added"
 msgstr "リアクションを追加しました"
 
+#: src/pages/admin/blocks.tsx:260
+msgid "Reason (optional)"
+msgstr "理由（任意）"
+
 #: src/pages/timeline.tsx:84
 msgid "Recent posts from your community"
 msgstr "コミュニティの最新投稿"
 
-#: src/pages/admin/settings.tsx:207
+#: src/pages/admin/settings.tsx:211
 msgid "Registration"
 msgstr "登録"
 
@@ -716,11 +783,11 @@ msgstr "登録停止中"
 msgid "Registration failed. Please try again."
 msgstr "登録に失敗しました。もう一度お試しください。"
 
-#: src/pages/admin/settings.tsx:362
+#: src/pages/admin/settings.tsx:366
 msgid "Registration Settings"
 msgstr "登録設定"
 
-#: src/pages/admin/settings.tsx:132
+#: src/pages/admin/settings.tsx:133
 msgid "Registration settings saved"
 msgstr "登録設定を保存しました"
 
@@ -741,15 +808,15 @@ msgstr "返信"
 msgid "Replying to"
 msgstr "返信先:"
 
-#: src/pages/admin/roles.tsx:595
+#: src/pages/admin/roles.tsx:599
 msgid "Reports"
 msgstr "通報"
 
-#: src/pages/admin/settings.tsx:402
+#: src/pages/admin/settings.tsx:406
 msgid "Require an invitation code to register"
 msgstr "登録に招待コードが必要"
 
-#: src/pages/admin/settings.tsx:420
+#: src/pages/admin/settings.tsx:424
 msgid "Require Approval"
 msgstr "承認が必要"
 
@@ -769,31 +836,31 @@ msgstr "再試行"
 msgid "Retrying..."
 msgstr "再試行中..."
 
-#: src/pages/admin/roles.tsx:186
+#: src/pages/admin/roles.tsx:187
 msgid "Role created"
 msgstr "ロールを作成しました"
 
-#: src/pages/admin/roles.tsx:264
+#: src/pages/admin/roles.tsx:265
 msgid "Role deleted"
 msgstr "ロールを削除しました"
 
-#: src/pages/admin/roles.tsx:381
+#: src/pages/admin/roles.tsx:385
 msgid "Role description"
 msgstr "ロールの説明"
 
-#: src/pages/admin/roles.tsx:309
+#: src/pages/admin/roles.tsx:310
 msgid "Role Management"
 msgstr "ロール管理"
 
-#: src/pages/admin/roles.tsx:355
+#: src/pages/admin/roles.tsx:359
 msgid "Role name"
 msgstr "ロール名"
 
-#: src/pages/admin/roles.tsx:170
+#: src/pages/admin/roles.tsx:171
 msgid "Role updated"
 msgstr "ロールを更新しました"
 
-#: src/pages/admin/roles.tsx:537
+#: src/pages/admin/roles.tsx:541
 msgid "Roles"
 msgstr "ロール"
 
@@ -801,15 +868,15 @@ msgstr "ロール"
 msgid "Save Changes"
 msgstr "変更を保存"
 
-#: src/pages/admin/settings.tsx:351
+#: src/pages/admin/settings.tsx:355
 msgid "Save Instance Settings"
 msgstr "インスタンス設定を保存"
 
-#: src/pages/admin/settings.tsx:430
+#: src/pages/admin/settings.tsx:434
 msgid "Save Registration Settings"
 msgstr "登録設定を保存"
 
-#: src/pages/admin/settings.tsx:583
+#: src/pages/admin/settings.tsx:587
 msgid "Save Theme Settings"
 msgstr "テーマ設定を保存"
 
@@ -821,7 +888,7 @@ msgstr "保存中..."
 msgid "Search emoji..."
 msgstr "絵文字を検索..."
 
-#: src/pages/admin/settings.tsx:576
+#: src/pages/admin/settings.tsx:580
 msgid "Secondary"
 msgstr "セカンダリ"
 
@@ -872,11 +939,11 @@ msgstr "ソーシャル"
 msgid "Software"
 msgstr "ソフトウェア"
 
-#: src/pages/admin/roles.tsx:605
+#: src/pages/admin/roles.tsx:609
 msgid "Suspend Users"
 msgstr "ユーザー凍結"
 
-#: src/pages/admin/settings.tsx:519
+#: src/pages/admin/settings.tsx:523
 msgid "System"
 msgstr "システム"
 
@@ -892,7 +959,7 @@ msgstr "利用規約"
 msgid "Terms of Service"
 msgstr "利用規約"
 
-#: src/pages/admin/settings.tsx:317
+#: src/pages/admin/settings.tsx:321
 msgid "Terms of Service URL"
 msgstr "利用規約URL"
 
@@ -900,15 +967,15 @@ msgstr "利用規約URL"
 msgid "Text exceeds {maxLength} characters"
 msgstr "テキストが{maxLength}文字を超えています"
 
-#: src/pages/admin/settings.tsx:217
+#: src/pages/admin/settings.tsx:221
 msgid "Theme"
 msgstr "テーマ"
 
-#: src/pages/admin/settings.tsx:441
+#: src/pages/admin/settings.tsx:445
 msgid "Theme Settings"
 msgstr "テーマ設定"
 
-#: src/pages/admin/settings.tsx:151
+#: src/pages/admin/settings.tsx:152
 msgid "Theme settings saved"
 msgstr "テーマ設定を保存しました"
 
@@ -929,17 +996,21 @@ msgstr "このユーザーはまだ何も投稿していません"
 msgid "Timeline"
 msgstr "タイムライン"
 
-#: src/pages/admin/invitations.tsx:230
+#: src/pages/admin/invitations.tsx:234
 msgid "Total Codes"
 msgstr "コード総数"
 
-#: src/pages/admin/roles.tsx:322
+#: src/pages/admin/roles.tsx:326
 msgid "Total Roles"
 msgstr "ロール総数"
 
 #: src/app/page.tsx:22
 #~ msgid "UI Components Demo"
 #~ msgstr ""
+
+#: src/pages/admin/blocks.tsx:341
+msgid "Unblock instance"
+msgstr "ブロック解除"
 
 #: src/components/note/NoteCard.tsx:166
 msgid "Unfollowed successfully"
@@ -949,7 +1020,7 @@ msgstr "フォロー解除しました"
 msgid "Unfollowing..."
 msgstr "フォロー解除中..."
 
-#: src/pages/admin/roles.tsx:512
+#: src/pages/admin/roles.tsx:516
 msgid "Update Role"
 msgstr "ロールを更新"
 
@@ -961,7 +1032,7 @@ msgstr "ファイルをアップロード中..."
 msgid "Uploading..."
 msgstr "アップロード中..."
 
-#: src/pages/admin/invitations.tsx:366
+#: src/pages/admin/invitations.tsx:370
 msgid "Used"
 msgstr "使用済み"
 
@@ -984,13 +1055,13 @@ msgstr "ユーザー名は変更できません"
 msgid "Username is required"
 msgstr "ユーザー名を入力してください"
 
-#: src/pages/admin/settings.tsx:553
+#: src/pages/admin/settings.tsx:557
 msgid "Users can still override this with their own preference"
 msgstr "ユーザーは自分の設定で上書きできます"
 
 #. placeholder {0}: invitation.useCount
 #. placeholder {1}: invitation.maxUses
-#: src/pages/admin/invitations.tsx:376
+#: src/pages/admin/invitations.tsx:380
 msgid "Uses: {0}/{1}"
 msgstr "使用回数: {0}/{1}"
 
@@ -1005,6 +1076,10 @@ msgstr "規約を見る"
 #: src/app/page.tsx:12
 #~ msgid "Welcome to Rox"
 #~ msgstr ""
+
+#: src/pages/admin/blocks.tsx:265
+msgid "Why is this instance being blocked?"
+msgstr "このインスタンスをブロックする理由は？"
 
 #: src/components/LandingPage.tsx:154
 msgid "Why Join?"

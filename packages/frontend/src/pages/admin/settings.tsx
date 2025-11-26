@@ -22,6 +22,7 @@ import { InlineError } from '../../components/ui/ErrorMessage';
 import { addToastAtom } from '../../lib/atoms/toast';
 import { Layout } from '../../components/layout/Layout';
 import { clearInstanceInfoCache } from '../../hooks/useInstanceInfo';
+import { AdminNav } from '../../components/admin/AdminNav';
 
 interface AdminSettings {
   registration: {
@@ -182,6 +183,9 @@ export default function AdminSettingsPage() {
           <Trans>Configure your instance settings</Trans>
         </p>
       </div>
+
+      {/* Admin Navigation */}
+      <AdminNav currentPath="/admin/settings" />
 
       {/* Tab Navigation */}
       <div className="border-b border-(--border-color) mb-6">
