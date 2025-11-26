@@ -64,7 +64,7 @@ export class LikeHandler extends BaseHandler {
       }
 
       // Create reaction with custom emoji URL if available
-      const id = await this.generateId();
+      const id = this.generateId();
       await reactionRepository.create({
         id,
         userId: remoteActor.id,

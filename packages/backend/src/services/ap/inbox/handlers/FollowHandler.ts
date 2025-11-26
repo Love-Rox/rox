@@ -42,7 +42,7 @@ export class FollowHandler extends BaseHandler {
       }
 
       // Create follow relationship
-      const id = await this.generateId();
+      const id = this.generateId();
       await followRepository.create({
         id,
         followerId: remoteActor.id,

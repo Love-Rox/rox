@@ -61,7 +61,7 @@ export class AnnounceHandler extends BaseHandler {
       }
 
       // Create a renote (quote without text = pure boost)
-      const id = await this.generateId();
+      const id = this.generateId();
       await noteRepository.create({
         id,
         userId: remoteActor.id,

@@ -9,6 +9,7 @@
 
 import { Hono } from 'hono';
 import type { Context } from 'hono';
+import { eq } from 'drizzle-orm';
 import { verifySignatureMiddleware } from '../../middleware/verifySignature.js';
 import { getDatabase } from '../../db/index.js';
 import { receivedActivities } from '../../db/schema/pg.js';
@@ -99,7 +100,6 @@ inbox.post('/users/:username/inbox', verifySignatureMiddleware, async (c: Contex
   if (activityId) {
     try {
       const db = getDatabase();
-      const { eq } = await import('drizzle-orm');
 
       // Check if we've already received this activity
       const existing = await db

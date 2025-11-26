@@ -10,6 +10,7 @@
  */
 
 import sharp from 'sharp';
+import { encode as blurhashEncode } from 'blurhash';
 
 /**
  * Processed image result
@@ -198,9 +199,7 @@ export class ImageProcessor {
         .raw()
         .toBuffer({ resolveWithObject: true });
 
-      // Import blurhash dynamically to avoid startup overhead
-      const { encode } = await import('blurhash');
-      return encode(new Uint8ClampedArray(data), info.width, info.height, 4, 4);
+      return blurhashEncode(new Uint8ClampedArray(data), info.width, info.height, 4, 4);
     } catch (error) {
       console.warn('Failed to generate blurhash:', error);
       return null;

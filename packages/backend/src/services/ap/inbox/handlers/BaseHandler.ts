@@ -8,6 +8,7 @@
  */
 
 import type { Context } from 'hono';
+import { generateId } from 'shared';
 import type {
   Activity,
   HandlerContext,
@@ -101,8 +102,7 @@ export abstract class BaseHandler implements IActivityHandler {
   /**
    * Generate a unique ID
    */
-  protected async generateId(): Promise<string> {
-    const { generateId } = await import('shared');
+  protected generateId(): string {
     return generateId();
   }
 
