@@ -226,7 +226,7 @@ export default function AdminBlocksPage() {
           <CardContent className="space-y-4">
             <div className="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
               <div className="flex items-start gap-2">
-                <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+                <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
                 <p className="text-sm text-yellow-800 dark:text-yellow-200">
                   <Trans>
                     Blocking an instance will prevent all federation with that server.
