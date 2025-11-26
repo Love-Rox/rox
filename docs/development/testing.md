@@ -260,19 +260,36 @@ DATABASE_URL=postgresql://rox:rox_dev_password@localhost:5432/rox_test bun test
 
 ## Continuous Integration
 
-Tests run automatically on:
+**Unit tests** run automatically on:
 
 - Pull request creation/update
 - Push to main branch
 
-GitHub Actions workflow:
+GitHub Actions workflow runs:
+1. `lint-and-typecheck` - Lint and TypeScript checks
+2. `unit-tests` - All unit tests (180+ tests)
+3. `build` - Backend and frontend builds
 
 ```yaml
-- name: Run tests
-  run: bun test
-  env:
-    DB_TYPE: postgres
-    DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+- name: Run unit tests
+  run: bun test src/tests/unit/
+  working-directory: packages/backend
+```
+
+### Integration & E2E Tests
+
+Integration and E2E tests require a running server and are **not run in CI**.
+Run them manually in development or staging:
+
+```bash
+# 1. Start the server
+bun run dev
+
+# 2. In another terminal, run integration tests
+bun test src/tests/integration/
+
+# 3. Run E2E tests
+bun test src/tests/e2e/
 ```
 
 ## Test Coverage Goals
