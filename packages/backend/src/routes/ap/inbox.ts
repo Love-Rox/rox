@@ -11,6 +11,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { eq } from 'drizzle-orm';
 import { verifySignatureMiddleware } from '../../middleware/verifySignature.js';
+import { inboxRateLimit, RateLimitPresets } from '../../middleware/rateLimit.js';
 import { getDatabase } from '../../db/index.js';
 import { receivedActivities } from '../../db/schema/pg.js';
 import {
@@ -40,7 +41,7 @@ const inbox = new Hono();
  *   -d '{"type":"Follow","actor":"...","object":"..."}'
  * ```
  */
-inbox.post('/users/:username/inbox', verifySignatureMiddleware, async (c: Context) => {
+inbox.post('/users/:username/inbox', inboxRateLimit(RateLimitPresets.inbox), verifySignatureMiddleware, async (c: Context) => {
   const { username } = c.req.param();
 
   // Verify recipient exists

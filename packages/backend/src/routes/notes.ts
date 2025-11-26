@@ -9,6 +9,7 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { requireAuth, optionalAuth } from '../middleware/auth.js';
+import { userRateLimit, RateLimitPresets } from '../middleware/rateLimit.js';
 import { NoteService } from '../services/NoteService.js';
 
 const notes = new Hono();
@@ -28,7 +29,7 @@ const notes = new Hono();
  * @body {string[]} [fileIds] - File IDs to attach
  * @returns {Note} Created note
  */
-notes.post('/create', requireAuth(), async (c: Context) => {
+notes.post('/create', requireAuth(), userRateLimit(RateLimitPresets.createNote), async (c: Context) => {
   const user = c.get('user')!;
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');

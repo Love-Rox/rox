@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
-import { diMiddleware, errorHandler } from './middleware/index.js';
+import { diMiddleware, errorHandler, securityHeaders } from './middleware/index.js';
 import usersRoute from './routes/users.js';
 import authRoute from './routes/auth.js';
 import driveRoute from './routes/drive.js';
@@ -17,25 +17,21 @@ import followingAPRoute from './routes/ap/following.js';
 import noteAPRoute from './routes/ap/note.js';
 import nodeinfoRoute from './routes/ap/nodeinfo.js';
 import proxyRoute from './routes/proxy.js';
+import healthRoute from './routes/health.js';
 import packageJson from '../../../package.json';
 import { ReceivedActivitiesCleanupService } from './services/ReceivedActivitiesCleanupService.js';
 
 const app = new Hono();
 
-// グローバルミドルウェア
+// Global middleware
 app.use('*', logger());
 app.use('*', errorHandler);
+app.use('*', securityHeaders());
 app.use('*', cors());
 app.use('*', diMiddleware());
 
-// ヘルスチェック
-app.get('/health', (c) => {
-  return c.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    version: packageJson.version,
-  });
-});
+// Health check routes
+app.route('/health', healthRoute);
 
 // ルートエンドポイント
 app.get('/', (c) => {

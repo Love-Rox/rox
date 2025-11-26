@@ -9,6 +9,7 @@
 import { Hono } from 'hono';
 import { AuthService } from '../services/AuthService.js';
 import { requireAuth } from '../middleware/auth.js';
+import { rateLimit, RateLimitPresets } from '../middleware/rateLimit.js';
 
 const app = new Hono();
 
@@ -42,7 +43,7 @@ const app = new Hono();
  * - 400: Missing or invalid fields
  * - 409: Username or email already exists
  */
-app.post('/register', async (c) => {
+app.post('/register', rateLimit(RateLimitPresets.register), async (c) => {
   const body = await c.req.json();
 
   // Validation
@@ -132,7 +133,7 @@ app.post('/register', async (c) => {
  * - 401: Invalid username or password
  * - 403: Account is suspended
  */
-app.post('/session', async (c) => {
+app.post('/session', rateLimit(RateLimitPresets.login), async (c) => {
   const body = await c.req.json();
 
   // バリデーション
