@@ -158,9 +158,10 @@ handlers/AnnounceHandler.ts  # Use getRemoteNoteService()
    - Invalidate on profile update
    - Cache by ID (`findById`) and username (`findByUsername`)
 
-3. **Remote Actor Cache**
-   - Already partially implemented
-   - Extend TTL and add cache warming (planned)
+3. **Remote Actor Cache** ✅
+   - Two-tier caching: L1 (Dragonfly 1hr) + L2 (Database 24hr)
+   - L1 cache warming from L2 hits
+   - Cache update on actor refresh/creation
 
 **Tasks:**
 - [x] Create `ICacheService` interface (`interfaces/ICacheService.ts`)
@@ -170,6 +171,7 @@ handlers/AnnounceHandler.ts  # Use getRemoteNoteService()
 - [x] Add `cacheService` to DI Container
 - [x] Add caching to `UserService.findById()` and `findByUsername()`
 - [x] Add cache invalidation on profile update
+- [x] Add L1 cache to `RemoteActorService.resolveActor()` (1hr TTL)
 
 **Implementation Details:**
 ```

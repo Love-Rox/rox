@@ -72,7 +72,12 @@ export function createContainer(): AppContainer {
   });
 
   // Remote Actor/Note Services for ActivityPub federation
-  const remoteActorService = new RemoteActorService(repositories.userRepository);
+  // Pass cacheService for L1 caching (memory cache for fast actor lookups)
+  const remoteActorService = new RemoteActorService(
+    repositories.userRepository,
+    undefined, // signatureConfig - set later per request
+    cacheService
+  );
   const remoteNoteService = new RemoteNoteService(
     repositories.noteRepository,
     repositories.userRepository,

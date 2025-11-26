@@ -3,14 +3,17 @@
  *
  * Handles fetching and caching of remote ActivityPub actors.
  * Resolves actor URIs to user records in the database.
+ * Uses two-tier caching: memory cache (Dragonfly) + database cache.
  *
  * @module services/ap/RemoteActorService
  */
 
 import type { IUserRepository } from '../../interfaces/repositories/IUserRepository.js';
 import type { User } from '../../db/schema/pg.js';
+import type { ICacheService } from '../../interfaces/ICacheService.js';
 import { generateId } from 'shared';
 import { RemoteFetchService, type SignatureConfig } from './RemoteFetchService.js';
+import { CacheTTL, CachePrefix } from '../../adapters/cache/DragonflyCacheAdapter.js';
 
 /**
  * ActivityPub Actor document
@@ -48,14 +51,23 @@ interface ActorDocument {
  * Remote Actor Service
  *
  * Manages remote ActivityPub actors (users from other servers).
+ * Implements two-tier caching:
+ * - L1: Memory cache (Dragonfly) - 1 hour TTL for fast lookups
+ * - L2: Database cache - 24 hour TTL for persistence
  */
 export class RemoteActorService {
   private fetchService: RemoteFetchService;
   private signatureConfig?: SignatureConfig;
+  private cacheService: ICacheService | null;
 
-  constructor(private userRepository: IUserRepository, signatureConfig?: SignatureConfig) {
+  constructor(
+    private userRepository: IUserRepository,
+    signatureConfig?: SignatureConfig,
+    cacheService?: ICacheService,
+  ) {
     this.fetchService = new RemoteFetchService();
     this.signatureConfig = signatureConfig;
+    this.cacheService = cacheService ?? null;
   }
 
   /**
@@ -85,16 +97,35 @@ export class RemoteActorService {
    * ```
    */
   async resolveActor(actorUri: string, forceRefresh = false): Promise<User> {
-    // Check if actor already exists in database
+    const cacheKey = `${CachePrefix.REMOTE_ACTOR}:${actorUri}`;
+
+    // L1: Check memory cache first (fastest)
+    if (!forceRefresh && this.cacheService?.isAvailable()) {
+      const cached = await this.cacheService.get<User>(cacheKey);
+      if (cached) {
+        console.log(`⚡ L1 cache hit for actor: ${cached.username}@${cached.host}`);
+        return cached;
+      }
+    }
+
+    // L2: Check database cache
     const existing = await this.userRepository.findByUri(actorUri);
 
     if (existing && !forceRefresh) {
-      // Check if cache is fresh (< 24 hours old)
+      // Check if database cache is fresh (< 24 hours old)
       const cacheAge = Date.now() - existing.updatedAt.getTime();
-      const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+      const DB_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
-      if (cacheAge < CACHE_TTL) {
-        console.log(`📦 Using cached actor: ${existing.username}@${existing.host}`);
+      if (cacheAge < DB_CACHE_TTL) {
+        console.log(`📦 L2 cache hit for actor: ${existing.username}@${existing.host}`);
+
+        // Warm L1 cache for future requests
+        if (this.cacheService?.isAvailable()) {
+          this.cacheService.set(cacheKey, existing, { ttl: CacheTTL.LONG }).catch((err) => {
+            console.warn('Failed to warm L1 cache:', err);
+          });
+        }
+
         return existing;
       }
 
@@ -123,6 +154,14 @@ export class RemoteActorService {
       });
 
       console.log(`✅ Refreshed remote user: ${actor.preferredUsername}@${host}`);
+
+      // Update L1 cache
+      if (this.cacheService?.isAvailable()) {
+        this.cacheService.set(cacheKey, updated, { ttl: CacheTTL.LONG }).catch((err) => {
+          console.warn('Failed to update L1 cache:', err);
+        });
+      }
+
       return updated;
     }
 
@@ -150,6 +189,13 @@ export class RemoteActorService {
     });
 
     console.log(`✅ Created remote user: ${actor.preferredUsername}@${host}`);
+
+    // Update L1 cache
+    if (this.cacheService?.isAvailable()) {
+      this.cacheService.set(cacheKey, user, { ttl: CacheTTL.LONG }).catch((err) => {
+        console.warn('Failed to update L1 cache:', err);
+      });
+    }
 
     return user;
   }
