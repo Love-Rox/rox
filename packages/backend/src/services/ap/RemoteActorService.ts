@@ -187,6 +187,7 @@ export class RemoteActorService {
       uri: actorUri,
       sharedInbox: actor.endpoints?.sharedInbox || null,
       customCss: null, // Remote users don't have custom CSS
+      uiSettings: null, // Remote users don't have UI settings
     });
 
     console.log(`✅ Created remote user: ${actor.preferredUsername}@${host}`);

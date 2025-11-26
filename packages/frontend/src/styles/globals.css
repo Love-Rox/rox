@@ -32,6 +32,11 @@
   --border-color: #e5e7eb;
   --card-bg: #ffffff;
   --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+
+  /* UI Settings - Default values (medium) */
+  --rox-font-size: 14px;
+  --rox-line-height: 1.6;
+  --rox-content-width: 800px;
 }
 
 /* Dark mode */
@@ -87,4 +92,26 @@ body {
   100% {
     transform: translateX(100%);
   }
+}
+
+/* UI Settings - Applied to main content areas */
+.rox-content {
+  font-size: var(--rox-font-size);
+  line-height: var(--rox-line-height);
+}
+
+.rox-content-container {
+  max-width: var(--rox-content-width);
+}
+
+/* Note content styling with UI settings */
+.note-content {
+  font-size: var(--rox-font-size);
+  line-height: var(--rox-line-height);
+}
+
+/* User profile content */
+.profile-bio {
+  font-size: var(--rox-font-size);
+  line-height: var(--rox-line-height);
 }

@@ -45,6 +45,8 @@ Guides for deploying Rox in various environments.
 
 - [VPS Docker Deployment](./vps-docker.md) - Deploy with Docker Compose
 - [Bare Metal Deployment](./bare-metal.md) - Deploy directly on Linux
+- [Nginx Configuration](./nginx.conf.example) - Example nginx reverse proxy config
+- [Docker Compose Production](./docker-compose.prod.yml) - Production Docker Compose
 - [Environment Variables](./environment-variables.md) - Complete configuration reference
 - [Troubleshooting](./troubleshooting.md) - Common issues and solutions
 

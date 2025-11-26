@@ -1,0 +1,207 @@
+# Rox - Nginx Configuration Example
+#
+# This configuration provides:
+# - HTTPS termination with Let's Encrypt
+# - Reverse proxy to Rox backend
+# - WebSocket support for real-time features
+# - Static file caching
+# - Security headers
+# - Gzip compression
+#
+# Usage:
+# 1. Copy this file to /etc/nginx/sites-available/rox.example.com
+# 2. Update server_name and SSL certificate paths
+# 3. Create symlink: ln -s /etc/nginx/sites-available/rox.example.com /etc/nginx/sites-enabled/
+# 4. Test: nginx -t
+# 5. Reload: systemctl reload nginx
+
+# Rate limiting zone (adjust as needed)
+limit_req_zone $binary_remote_addr zone=rox_api:10m rate=10r/s;
+limit_req_zone $binary_remote_addr zone=rox_ap:10m rate=5r/s;
+
+# Upstream backend
+upstream rox_backend {
+    server 127.0.0.1:3000;
+    keepalive 32;
+}
+
+# HTTP -> HTTPS redirect
+server {
+    listen 80;
+    listen [::]:80;
+    server_name rox.example.com;
+
+    # Let's Encrypt challenge
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+# Main HTTPS server
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name rox.example.com;
+
+    # SSL Configuration
+    ssl_certificate /etc/letsencrypt/live/rox.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/rox.example.com/privkey.pem;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:50m;
+    ssl_session_tickets off;
+
+    # Modern SSL configuration
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+
+    # HSTS
+    add_header Strict-Transport-Security "max-age=63072000" always;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # Content Security Policy (adjust as needed)
+    # add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' wss:; frame-ancestors 'self';" always;
+
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types text/plain text/css text/xml application/json application/javascript application/rss+xml application/atom+xml image/svg+xml application/activity+json application/ld+json;
+
+    # Client body size (for file uploads)
+    client_max_body_size 50M;
+
+    # Proxy settings
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_connect_timeout 60s;
+    proxy_send_timeout 60s;
+    proxy_read_timeout 60s;
+
+    # WebSocket support
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+
+    # ===========================================
+    # ActivityPub endpoints (lower rate limit)
+    # ===========================================
+
+    # WebFinger
+    location /.well-known/webfinger {
+        limit_req zone=rox_ap burst=10 nodelay;
+        proxy_pass http://rox_backend;
+    }
+
+    # NodeInfo
+    location /.well-known/nodeinfo {
+        limit_req zone=rox_ap burst=10 nodelay;
+        proxy_pass http://rox_backend;
+
+        # Cache nodeinfo for 5 minutes
+        proxy_cache_valid 200 5m;
+    }
+
+    # Host-meta
+    location /.well-known/host-meta {
+        limit_req zone=rox_ap burst=10 nodelay;
+        proxy_pass http://rox_backend;
+    }
+
+    # User ActivityPub endpoints
+    location ~ ^/users/[^/]+$ {
+        limit_req zone=rox_ap burst=20 nodelay;
+        proxy_pass http://rox_backend;
+
+        # Add ActivityPub content type handling
+        add_header Vary "Accept" always;
+    }
+
+    # Inbox (POST only, federation)
+    location ~ ^/users/[^/]+/inbox$ {
+        limit_req zone=rox_ap burst=50 nodelay;
+        proxy_pass http://rox_backend;
+    }
+
+    # Outbox
+    location ~ ^/users/[^/]+/outbox$ {
+        limit_req zone=rox_ap burst=20 nodelay;
+        proxy_pass http://rox_backend;
+    }
+
+    # Followers/Following
+    location ~ ^/users/[^/]+/(followers|following)$ {
+        limit_req zone=rox_ap burst=20 nodelay;
+        proxy_pass http://rox_backend;
+    }
+
+    # Notes (ActivityPub objects)
+    location ~ ^/notes/[^/]+$ {
+        limit_req zone=rox_ap burst=30 nodelay;
+        proxy_pass http://rox_backend;
+        add_header Vary "Accept" always;
+    }
+
+    # ===========================================
+    # API endpoints (standard rate limit)
+    # ===========================================
+
+    location /api/ {
+        limit_req zone=rox_api burst=30 nodelay;
+        proxy_pass http://rox_backend;
+    }
+
+    # ===========================================
+    # Static files (if serving locally)
+    # ===========================================
+
+    # Uploaded files (if using local storage)
+    location /uploads/ {
+        alias /var/www/rox/uploads/;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+
+        # Security: prevent execution
+        location ~ \.(php|cgi|pl|py)$ {
+            deny all;
+        }
+    }
+
+    # Frontend static assets (if pre-built)
+    # location /assets/ {
+    #     alias /var/www/rox/frontend/dist/assets/;
+    #     expires 1y;
+    #     add_header Cache-Control "public, immutable";
+    # }
+
+    # ===========================================
+    # Default: proxy everything else to backend
+    # ===========================================
+
+    location / {
+        proxy_pass http://rox_backend;
+
+        # Frontend pages - no rate limit for better UX
+        # API calls are already rate limited above
+    }
+
+    # Error pages
+    error_page 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+}

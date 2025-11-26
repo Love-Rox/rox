@@ -446,6 +446,35 @@ app.patch('/@me', requireAuth(), async (c) => {
     }
   }
 
+  // Handle UI settings
+  if (body.uiSettings !== undefined) {
+    const validFontSizes = ['small', 'medium', 'large', 'xlarge'];
+    const validLineHeights = ['compact', 'normal', 'relaxed'];
+    const validContentWidths = ['narrow', 'normal', 'wide'];
+    const validThemes = ['light', 'dark', 'system'];
+
+    const uiSettings: Record<string, unknown> = {};
+
+    if (body.uiSettings.fontSize && validFontSizes.includes(body.uiSettings.fontSize)) {
+      uiSettings.fontSize = body.uiSettings.fontSize;
+    }
+    if (body.uiSettings.lineHeight && validLineHeights.includes(body.uiSettings.lineHeight)) {
+      uiSettings.lineHeight = body.uiSettings.lineHeight;
+    }
+    if (body.uiSettings.contentWidth && validContentWidths.includes(body.uiSettings.contentWidth)) {
+      uiSettings.contentWidth = body.uiSettings.contentWidth;
+    }
+    if (body.uiSettings.theme && validThemes.includes(body.uiSettings.theme)) {
+      uiSettings.theme = body.uiSettings.theme;
+    }
+    // Custom CSS for app (limit to 10KB)
+    if (typeof body.uiSettings.appCustomCss === 'string' && body.uiSettings.appCustomCss.length <= 10240) {
+      uiSettings.appCustomCss = body.uiSettings.appCustomCss;
+    }
+
+    updateData.uiSettings = uiSettings;
+  }
+
   try {
     const updatedUser = await userService.updateProfile(user.id, updateData);
     const { passwordHash: _passwordHash, ...userData } = updatedUser;

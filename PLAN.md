@@ -1,13 +1,19 @@
 # Implementation Plan: Role System, Instance Settings, and Moderation Enhancements
 
+> **Status: ✅ COMPLETED** (November 2025)
+>
+> All phases have been implemented and tested. See the Implementation Status section below for details.
+
 ## Overview
 
 This plan implements:
-1. Misskey-style role-based permission system
-2. Instance settings management (invite-only mode via admin UI instead of env var)
-3. Role-based invitation code generation permission
-4. Instance block management UI (frontend)
-5. Enhanced rate limiting
+1. ✅ Misskey-style role-based permission system
+2. ✅ Instance settings management (invite-only mode via admin UI instead of env var)
+3. ✅ Role-based invitation code generation permission
+4. ✅ Instance block management UI (frontend)
+5. ✅ User report system (backend + frontend)
+6. ✅ Public role badges on user profiles
+7. ✅ User-facing invitation code generation in settings
 
 ## Phase 1: Database Schema Changes
 
@@ -310,3 +316,38 @@ GET    /api/instance/settings              - Get public instance info (name, inv
 - Modified files: ~10
 - New tests: ~50
 - Database migration: 1
+
+---
+
+## Implementation Status (Completed November 2025)
+
+### Phase 1-4: Backend ✅
+- [x] Database schema and migrations (roles, role_assignments, instance_settings, invitation_codes, user_reports)
+- [x] Repository interfaces and implementations for PostgreSQL
+- [x] RoleService and InstanceSettingsService
+- [x] DI container setup with all repositories
+- [x] Permission middleware (`requirePermission`)
+- [x] Admin API routes for roles, instance settings, and instance blocks
+- [x] Updated auth flow for invite-only registration
+- [x] User invitation API with permission checks
+
+### Phase 5: Frontend Admin UI ✅
+- [x] Role management page (`/admin/roles`)
+- [x] Instance settings page (`/admin/settings`)
+- [x] Instance blocks management (`/admin/blocks`)
+- [x] User reports management (`/admin/reports`)
+
+### Phase 6: User-Facing Features ✅
+- [x] Public role badges on user profiles (`RoleBadge.tsx`, `RoleBadgeList.tsx`)
+- [x] User-facing invitation code generation in settings (`InvitationCodeSection.tsx`)
+- [x] Report user/note functionality (`ReportDialog.tsx`)
+
+### Testing ✅
+- [x] Unit tests: RoleService, PermissionMiddleware, InstanceSettingsService
+- [x] Unit tests: InvitationCodeRepository, UserReportRepository
+- [x] Unit tests: InviteOnlyRegistration, InstanceBlockDelivery
+- [x] Integration tests with server availability check
+
+### Total Test Results
+- **382 tests** passing across 27 test files
+- 0 failures

@@ -61,6 +61,7 @@ Thumbs.db
 
 # typedoc
 typedoc/
+docs/api/
 
 # Temporary debug/test scripts (not actual test files)
 # Note: Actual tests in src/tests/ are tracked - these are ad-hoc debugging scripts

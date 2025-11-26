@@ -4,3 +4,4 @@ export * from './file.js';
 export * from './session.js';
 export * from './reaction.js';
 export * from './common.js';
+export * from './uiSettings.js';

@@ -1,4 +1,47 @@
 {
-    "out": "typedoc",
-    "theme": "default"
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "./packages/backend/src",
+    "./packages/frontend/src",
+    "./packages/shared/src"
+  ],
+  "entryPointStrategy": "expand",
+  "tsconfig": "./tsconfig.typedoc.json",
+  "out": "docs/api",
+  "name": "Rox Documentation",
+  "readme": "./README.md",
+  "theme": "default",
+  "exclude": [
+    "**/node_modules/**",
+    "**/tests/**",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/.waku/**"
+  ],
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "categoryOrder": [
+    "Components",
+    "Hooks",
+    "Routes",
+    "Services",
+    "Repositories",
+    "Interfaces",
+    "Middleware",
+    "Adapters",
+    "Database",
+    "Utils",
+    "Types",
+    "*"
+  ],
+  "navigationLinks": {
+    "GitHub": "https://github.com/your-org/rox",
+    "Documentation": "https://your-org.github.io/rox/"
+  },
+  "gitRevision": "main",
+  "hideGenerator": false,
+  "searchInComments": true,
+  "cleanOutputDir": true
 }

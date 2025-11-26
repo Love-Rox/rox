@@ -1,4 +1,5 @@
 import type { ID, Timestamps } from './common.js';
+import type { UISettings } from './uiSettings.js';
 
 export interface User extends Timestamps {
   id: ID;
@@ -23,6 +24,7 @@ export interface User extends Timestamps {
   sharedInbox: string | null; // Shared inbox URL (for remote users, optional)
   // User customization
   customCss: string | null; // Custom CSS for profile page
+  uiSettings: UISettings | null; // UI display preferences
 }
 
 export interface UserProfile {

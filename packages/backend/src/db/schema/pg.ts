@@ -1,6 +1,23 @@
 import { pgTable, text, timestamp, boolean, integer, jsonb, index, uniqueIndex } from 'drizzle-orm/pg-core';
 
 /**
+ * User UI settings structure
+ * Allows users to customize their viewing experience
+ */
+export interface UISettings {
+  /** Font size: 'small' (12px), 'medium' (14px), 'large' (16px), 'xlarge' (18px) */
+  fontSize?: 'small' | 'medium' | 'large' | 'xlarge';
+  /** Line height: 'compact' (1.4), 'normal' (1.6), 'relaxed' (1.8) */
+  lineHeight?: 'compact' | 'normal' | 'relaxed';
+  /** Content width: 'narrow' (600px), 'normal' (800px), 'wide' (1000px) */
+  contentWidth?: 'narrow' | 'normal' | 'wide';
+  /** Theme: 'light', 'dark', 'system' */
+  theme?: 'light' | 'dark' | 'system';
+  /** Custom CSS applied to the entire app (for this user only) */
+  appCustomCss?: string;
+}
+
+/**
  * Role policies structure (Misskey-style)
  * Defines permissions and limits that can be controlled by roles
  */
@@ -63,6 +80,7 @@ export const users = pgTable(
     sharedInbox: text('shared_inbox'), // Shared inbox URL (for remote users, optional)
     // User customization
     customCss: text('custom_css'), // User's custom CSS for profile page
+    uiSettings: jsonb('ui_settings').$type<UISettings>(), // User's UI preferences
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },

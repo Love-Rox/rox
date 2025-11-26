@@ -114,7 +114,7 @@ msgstr "Banner URL"
 msgid "Be the first to post something!"
 msgstr "Be the first to post something!"
 
-#: src/pages/settings.tsx:163
+#: src/pages/settings.tsx:164
 msgid "Bio"
 msgstr "Bio"
 
@@ -163,7 +163,7 @@ msgstr "Can suspend users"
 
 #: src/components/report/ReportDialog.tsx:181
 #: src/pages/admin/roles.tsx:530
-#: src/pages/settings.tsx:261
+#: src/pages/settings.tsx:262
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -200,6 +200,10 @@ msgstr "Contact"
 #: src/components/note/NoteCard.tsx:282
 msgid "Content Warning"
 msgstr "Content Warning"
+
+#: src/components/settings/UISettingsSection.tsx:215
+msgid "Content Width"
+msgstr "Content Width"
 
 #: src/components/LandingPage.tsx:193
 msgid "Control your data and choose who sees your posts"
@@ -248,11 +252,19 @@ msgstr "Creating account..."
 msgid "Custom Code (optional)"
 msgstr "Custom Code (optional)"
 
-#: src/pages/settings.tsx:206
+#: src/pages/settings.tsx:207
 msgid "Custom CSS"
 msgstr "Custom CSS"
 
-#: src/pages/settings.tsx:220
+#: src/components/settings/UISettingsSection.tsx:237
+msgid "Custom CSS (App-wide)"
+msgstr "Custom CSS (App-wide)"
+
+#: src/components/settings/UISettingsSection.tsx:250
+msgid "Custom CSS applied to the entire app (max 10KB)"
+msgstr "Custom CSS applied to the entire app (max 10KB)"
+
+#: src/pages/settings.tsx:221
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "Custom CSS for your profile page (max 10KB)"
 
@@ -302,10 +314,14 @@ msgstr "Direct"
 msgid "Discard"
 msgstr "Discard"
 
-#: src/pages/settings.tsx:143
+#: src/pages/settings.tsx:144
 #: src/pages/signup.tsx:189
 msgid "Display Name"
 msgstr "Display Name"
+
+#: src/components/settings/UISettingsSection.tsx:189
+msgid "Display Settings"
+msgstr "Display Settings"
 
 #: src/pages/login.tsx:176
 msgid "Don't have an account?"
@@ -425,6 +441,10 @@ msgstr "Failed to renote"
 msgid "Failed to save role"
 msgstr "Failed to save role"
 
+#: src/components/settings/UISettingsSection.tsx:146
+msgid "Failed to save UI settings"
+msgstr "Failed to save UI settings"
+
 #: src/components/report/ReportDialog.tsx:86
 msgid "Failed to submit report"
 msgstr "Failed to submit report"
@@ -473,6 +493,10 @@ msgstr "Following successfully"
 #: src/components/user/UserProfile.tsx:336
 msgid "Following..."
 msgstr "Following..."
+
+#: src/components/settings/UISettingsSection.tsx:195
+msgid "Font Size"
+msgstr "Font Size"
 
 #: src/components/LandingPage.tsx:136
 msgid "Get Started"
@@ -582,6 +606,10 @@ msgstr "Light"
 msgid "Lightweight"
 msgstr "Lightweight"
 
+#: src/components/settings/UISettingsSection.tsx:205
+msgid "Line Height"
+msgstr "Line Height"
+
 #: src/components/timeline/Timeline.tsx:187
 #: src/components/user/UserProfile.tsx:445
 msgid "Load more"
@@ -619,7 +647,7 @@ msgstr "Maintainer Email"
 msgid "Manage invitation codes for new user registration"
 msgstr "Manage invitation codes for new user registration"
 
-#: src/pages/settings.tsx:133
+#: src/pages/settings.tsx:134
 msgid "Manage your profile information"
 msgstr "Manage your profile information"
 
@@ -716,9 +744,13 @@ msgstr "Note renoted"
 msgid "Note Report"
 msgstr "Note Report"
 
-#: src/pages/settings.tsx:227
+#: src/pages/settings.tsx:228
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
 msgstr "Note: Custom CSS is sanitized and some properties may be restricted for security."
+
+#: src/components/settings/UISettingsSection.tsx:257
+msgid "Note: Some CSS properties may be restricted for security."
+msgstr "Note: Some CSS properties may be restricted for security."
 
 #: src/components/LandingPage.tsx:106
 msgid "Open Registration"
@@ -766,7 +798,7 @@ msgstr "Permissions"
 msgid "Please enter text or attach files"
 msgstr "Please enter text or attach files"
 
-#: src/pages/settings.tsx:77
+#: src/pages/settings.tsx:78
 msgid "Please log in to update your profile"
 msgstr "Please log in to update your profile"
 
@@ -787,6 +819,7 @@ msgstr "Posts"
 msgid "Powered by"
 msgstr "Powered by"
 
+#: src/components/settings/UISettingsSection.tsx:264
 #: src/pages/admin/settings.tsx:564
 msgid "Preview"
 msgstr "Preview"
@@ -819,7 +852,7 @@ msgstr "Privacy Policy URL"
 msgid "Profile"
 msgstr "Profile"
 
-#: src/pages/settings.tsx:97
+#: src/pages/settings.tsx:98
 msgid "Profile updated successfully"
 msgstr "Profile updated successfully"
 
@@ -980,6 +1013,10 @@ msgstr "Require Approval"
 msgid "Reset"
 msgstr "Reset"
 
+#: src/components/settings/UISettingsSection.tsx:307
+msgid "Reset to Default"
+msgstr "Reset to Default"
+
 #: src/pages/admin/reports.tsx:500
 msgid "Resolution"
 msgstr "Resolution"
@@ -1045,7 +1082,7 @@ msgstr "Role updated"
 msgid "Roles"
 msgstr "Roles"
 
-#: src/pages/settings.tsx:249
+#: src/pages/settings.tsx:250
 msgid "Save Changes"
 msgstr "Save Changes"
 
@@ -1057,11 +1094,16 @@ msgstr "Save Instance Settings"
 msgid "Save Registration Settings"
 msgstr "Save Registration Settings"
 
+#: src/components/settings/UISettingsSection.tsx:303
+msgid "Save Settings"
+msgstr "Save Settings"
+
 #: src/pages/admin/settings.tsx:587
 msgid "Save Theme Settings"
 msgstr "Save Theme Settings"
 
-#: src/pages/settings.tsx:245
+#: src/components/settings/UISettingsSection.tsx:299
+#: src/pages/settings.tsx:246
 msgid "Saving..."
 msgstr "Saving..."
 
@@ -1074,7 +1116,7 @@ msgid "Secondary"
 msgstr "Secondary"
 
 #: src/components/layout/Sidebar.tsx:46
-#: src/pages/settings.tsx:130
+#: src/pages/settings.tsx:131
 msgid "Settings"
 msgstr "Settings"
 
@@ -1132,7 +1174,7 @@ msgstr "Suspend Users"
 msgid "System"
 msgstr "System"
 
-#: src/pages/settings.tsx:169
+#: src/pages/settings.tsx:170
 msgid "Tell us about yourself..."
 msgstr "Tell us about yourself..."
 
@@ -1152,6 +1194,7 @@ msgstr "Terms of Service URL"
 msgid "Text exceeds {maxLength} characters"
 msgstr "Text exceeds {maxLength} characters"
 
+#: src/components/settings/UISettingsSection.tsx:225
 #: src/pages/admin/settings.tsx:221
 msgid "Theme"
 msgstr "Theme"
@@ -1167,6 +1210,10 @@ msgstr "Theme settings saved"
 #: src/pages/signup.tsx:110
 msgid "This instance is not accepting new registrations at this time."
 msgstr "This instance is not accepting new registrations at this time."
+
+#: src/components/settings/UISettingsSection.tsx:285
+msgid "This is a preview of how text will appear with your selected settings. Adjust the options above to customize your reading experience."
+msgstr "This is a preview of how text will appear with your selected settings. Adjust the options above to customize your reading experience."
 
 #: src/components/LandingPage.tsx:208
 msgid "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
@@ -1200,6 +1247,10 @@ msgstr "Try adjusting your filter"
 #: src/app/page.tsx:22
 #~ msgid "UI Components Demo"
 #~ msgstr "UI Components Demo"
+
+#: src/components/settings/UISettingsSection.tsx:141
+msgid "UI settings saved"
+msgstr "UI settings saved"
 
 #: src/pages/admin/blocks.tsx:341
 msgid "Unblock instance"
@@ -1243,12 +1294,12 @@ msgid "User Report"
 msgstr "User Report"
 
 #: src/pages/login.tsx:143
-#: src/pages/settings.tsx:188
+#: src/pages/settings.tsx:189
 #: src/pages/signup.tsx:160
 msgid "Username"
 msgstr "Username"
 
-#: src/pages/settings.tsx:199
+#: src/pages/settings.tsx:200
 msgid "Username cannot be changed"
 msgstr "Username cannot be changed"
 
@@ -1328,10 +1379,10 @@ msgstr "You've reached the end of the timeline"
 msgid "Your account will need to be approved by an administrator before you can use it."
 msgstr "Your account will need to be approved by an administrator before you can use it."
 
-#: src/pages/settings.tsx:177
+#: src/pages/settings.tsx:178
 msgid "Your bio (max 500 characters)"
 msgstr "Your bio (max 500 characters)"
 
-#: src/pages/settings.tsx:156
+#: src/pages/settings.tsx:157
 msgid "Your public display name (max 50 characters)"
 msgstr "Your public display name (max 50 characters)"

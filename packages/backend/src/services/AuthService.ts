@@ -112,6 +112,7 @@ export class AuthService {
       publicKey,
       privateKey,
       customCss: null, // Custom CSS for profile page
+      uiSettings: null, // Default UI settings
       // ActivityPub fields for local users
       inbox: `${baseUrl}/users/${input.username}/inbox`,
       outbox: `${baseUrl}/users/${input.username}/outbox`,

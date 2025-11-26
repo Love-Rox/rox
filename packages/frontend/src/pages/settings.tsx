@@ -13,6 +13,7 @@ import { InlineError } from '../components/ui/ErrorMessage';
 import { addToastAtom } from '../lib/atoms/toast';
 import { Layout } from '../components/layout/Layout';
 import { InvitationCodeSection } from '../components/settings/InvitationCodeSection';
+import { UISettingsSection } from '../components/settings/UISettingsSection';
 
 /**
  * Settings page
@@ -264,6 +265,11 @@ export default function SettingsPage() {
           </form>
         </CardContent>
       </Card>
+
+      {/* UI Settings Section */}
+      <div className="mt-6">
+        <UISettingsSection />
+      </div>
 
       {/* Invitation Codes Section - only shown if user has permission */}
       <div className="mt-6">
