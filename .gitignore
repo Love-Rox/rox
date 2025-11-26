@@ -10,6 +10,9 @@ coverage/
 # Production
 dist/
 build/
+
+# TypeScript build cache
+*.tsbuildinfo
 .next/
 .waku/
 
