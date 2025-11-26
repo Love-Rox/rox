@@ -6,6 +6,15 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  # Default environment for tests (no real DB needed for unit tests)
+  DB_TYPE: postgres
+  DATABASE_URL: postgresql://test:test@localhost:5432/test
+  STORAGE_TYPE: local
+  LOCAL_STORAGE_PATH: ./uploads
+  URL: http://localhost:3000
+  NODE_ENV: test
+
 jobs:
   lint-and-typecheck:
     name: Lint & Type Check
@@ -23,11 +32,20 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Type check
+      - name: Lint
+        run: bun run lint
+        continue-on-error: true
+
+      - name: Type check backend
         run: bun run typecheck
         working-directory: packages/backend
 
-  test:
+      - name: Type check frontend
+        run: bun run typecheck
+        working-directory: packages/frontend
+        continue-on-error: true
+
+  unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
 
@@ -46,11 +64,115 @@ jobs:
       - name: Run unit tests
         run: bun test src/tests/unit/
         working-directory: packages/backend
+        env:
+          DB_TYPE: postgres
+          DATABASE_URL: postgresql://test:test@localhost:5432/test
+          STORAGE_TYPE: local
+          LOCAL_STORAGE_PATH: ./uploads
+          URL: http://localhost:3000
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: rox
+          POSTGRES_PASSWORD: rox_test_password
+          POSTGRES_DB: rox_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run database migrations
+        run: bun run db:migrate
+        working-directory: packages/backend
+        env:
+          DB_TYPE: postgres
+          DATABASE_URL: postgresql://rox:rox_test_password@localhost:5432/rox_test
+
+      - name: Run integration tests
+        run: bun test src/tests/integration/
+        working-directory: packages/backend
+        env:
+          DB_TYPE: postgres
+          DATABASE_URL: postgresql://rox:rox_test_password@localhost:5432/rox_test
+          STORAGE_TYPE: local
+          LOCAL_STORAGE_PATH: ./uploads
+          URL: http://localhost:3000
+          NODE_ENV: test
+
+  all-tests:
+    name: All Tests (with coverage)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: rox
+          POSTGRES_PASSWORD: rox_test_password
+          POSTGRES_DB: rox_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run database migrations
+        run: bun run db:migrate
+        working-directory: packages/backend
+        env:
+          DB_TYPE: postgres
+          DATABASE_URL: postgresql://rox:rox_test_password@localhost:5432/rox_test
+
+      - name: Run all tests
+        run: bun test src/tests/
+        working-directory: packages/backend
+        env:
+          DB_TYPE: postgres
+          DATABASE_URL: postgresql://rox:rox_test_password@localhost:5432/rox_test
+          STORAGE_TYPE: local
+          LOCAL_STORAGE_PATH: ./uploads
+          URL: http://localhost:3000
+          NODE_ENV: test
 
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [lint-and-typecheck, test]
+    needs: [lint-and-typecheck, unit-tests]
 
     steps:
       - name: Checkout
@@ -67,7 +189,6 @@ jobs:
       - name: Build backend
         run: bun run build
         working-directory: packages/backend
-        continue-on-error: true
 
       - name: Build frontend
         run: bun run build
