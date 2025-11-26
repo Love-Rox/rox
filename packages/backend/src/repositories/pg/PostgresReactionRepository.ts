@@ -109,6 +109,37 @@ export class PostgresReactionRepository implements IReactionRepository {
     return counts;
   }
 
+  async countByNoteIdWithEmojis(noteId: string): Promise<{
+    counts: Record<string, number>;
+    emojis: Record<string, string>;
+  }> {
+    // Get all reactions for the note to include custom emoji URLs
+    const allReactions = await this.db
+      .select({
+        reaction: reactions.reaction,
+        customEmojiUrl: reactions.customEmojiUrl,
+      })
+      .from(reactions)
+      .where(eq(reactions.noteId, noteId));
+
+    const counts: Record<string, number> = {};
+    const emojis: Record<string, string> = {};
+
+    for (const row of allReactions) {
+      if (row.reaction) {
+        // Count reactions
+        counts[row.reaction] = (counts[row.reaction] || 0) + 1;
+
+        // Store custom emoji URL (only need one URL per emoji name)
+        if (row.customEmojiUrl && !emojis[row.reaction]) {
+          emojis[row.reaction] = row.customEmojiUrl;
+        }
+      }
+    }
+
+    return { counts, emojis };
+  }
+
   async countByNoteIds(
     noteIds: string[]
   ): Promise<Map<string, Record<string, number>>> {

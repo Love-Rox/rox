@@ -49,6 +49,7 @@ export interface Note extends Omit<NoteWithRelations, 'createdAt' | 'updatedAt' 
   repliesCount?: number;
   renoteCount?: number;
   reactions?: Record<string, number>;
+  reactionEmojis?: Record<string, string>; // Custom emoji URLs: { ":emoji_name:": "https://..." }
 }
 
 /**

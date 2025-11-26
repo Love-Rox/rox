@@ -43,6 +43,13 @@
       "when": 1764067981526,
       "tag": "0005_melted_nova",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1764129741018,
+      "tag": "0006_public_puck",
+      "breakpoints": true
     }
   ]
 }

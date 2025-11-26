@@ -14,6 +14,7 @@ import { RemoteActorService } from '../../services/ap/RemoteActorService.js';
 import { ActivityDeliveryService } from '../../services/ap/ActivityDeliveryService.js';
 import { RemoteNoteService } from '../../services/ap/RemoteNoteService.js';
 import { RemoteFetchService } from '../../services/ap/RemoteFetchService.js';
+import { extractReactionFromLike } from '../../utils/activitypub/reaction.js';
 import { getDatabase } from '../../db/index.js';
 import { receivedActivities } from '../../db/schema/pg.js';
 import {
@@ -523,6 +524,7 @@ async function handleDelete(c: Context, activity: any, _recipientId: string): Pr
  * Handle Like activity
  *
  * Processes likes/reactions to posts from remote users.
+ * Supports Misskey custom emoji reactions via _misskey_reaction extension.
  */
 async function handleLike(c: Context, activity: any, _recipientId: string): Promise<void> {
   try {
@@ -534,7 +536,10 @@ async function handleLike(c: Context, activity: any, _recipientId: string): Prom
       return;
     }
 
-    console.log(`📥 Like: ${activity.actor} → ${objectUri}`);
+    // Extract reaction (supports Misskey custom emoji)
+    const { reaction, customEmojiUrl } = extractReactionFromLike(activity);
+
+    console.log(`📥 Like: ${activity.actor} → ${objectUri} (reaction: ${reaction}${customEmojiUrl ? ', custom emoji' : ''})`);
 
     // Resolve remote actor
     const userRepository = c.get('userRepository');
@@ -557,7 +562,7 @@ async function handleLike(c: Context, activity: any, _recipientId: string): Prom
     const existingReaction = await reactionRepository.findByUserNoteAndReaction(
       remoteActor.id,
       note.id,
-      '❤️' // Default to heart emoji for ActivityPub Like
+      reaction
     );
 
     if (existingReaction) {
@@ -565,16 +570,17 @@ async function handleLike(c: Context, activity: any, _recipientId: string): Prom
       return;
     }
 
-    // Create reaction
+    // Create reaction with custom emoji URL if available
     const { generateId } = await import('shared');
     await reactionRepository.create({
       id: generateId(),
       userId: remoteActor.id,
       noteId: note.id,
-      reaction: '❤️', // ActivityPub Like maps to heart emoji
+      reaction,
+      ...(customEmojiUrl && { customEmojiUrl }),
     });
 
-    console.log(`✅ Reaction created: ${remoteActor.username}@${remoteActor.host} ❤️ note ${note.id}`);
+    console.log(`✅ Reaction created: ${remoteActor.username}@${remoteActor.host} ${reaction} note ${note.id}`);
   } catch (error) {
     console.error('Failed to handle Like activity:', error);
     throw error;

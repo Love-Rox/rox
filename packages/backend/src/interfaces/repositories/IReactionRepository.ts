@@ -43,6 +43,15 @@ export interface IReactionRepository {
   countByNoteId(noteId: string): Promise<Record<string, number>>;
 
   /**
+   * ノートのリアクション数とカスタム絵文字URLを集計
+   * @returns { counts: { "👍": 5, ":custom:": 2 }, emojis: { ":custom:": "https://..." } }
+   */
+  countByNoteIdWithEmojis(noteId: string): Promise<{
+    counts: Record<string, number>;
+    emojis: Record<string, string>;
+  }>;
+
+  /**
    * 複数ノートのリアクション数を一括取得
    */
   countByNoteIds(noteIds: string[]): Promise<Map<string, Record<string, number>>>;

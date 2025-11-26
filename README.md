@@ -205,7 +205,7 @@ See [Implementation Guide](./docs/implementation/README.md) for detailed archite
   - ✅ Per-server rate limiting
   - ✅ Activity deduplication
   - ✅ Delivery metrics & monitoring
-  - ✅ Federation tested with Misskey, GoToSocial
+  - ✅ Federation tested with Mastodon, Misskey, GoToSocial
 
 ## Contributing
 

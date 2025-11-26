@@ -243,6 +243,30 @@ export class ReactionService {
   }
 
   /**
+   * Get reaction counts with custom emoji URLs for a note
+   *
+   * Returns aggregated reaction counts and custom emoji image URLs.
+   *
+   * @param noteId - Note ID
+   * @returns Object with counts and emojis
+   *
+   * @example
+   * ```typescript
+   * const result = await reactionService.getReactionCountsWithEmojis('note123');
+   * // => {
+   * //   counts: { "👍": 5, ":custom:": 2 },
+   * //   emojis: { ":custom:": "https://example.com/emoji.png" }
+   * // }
+   * ```
+   */
+  async getReactionCountsWithEmojis(noteId: string): Promise<{
+    counts: Record<string, number>;
+    emojis: Record<string, string>;
+  }> {
+    return await this.reactionRepository.countByNoteIdWithEmojis(noteId);
+  }
+
+  /**
    * Get reaction counts for multiple notes
    *
    * Returns aggregated reaction counts for each note.

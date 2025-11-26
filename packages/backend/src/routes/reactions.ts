@@ -191,6 +191,47 @@ reactions.get('/counts', optionalAuth(), async (c: Context) => {
 });
 
 /**
+ * GET /api/notes/reactions/counts-with-emojis
+ *
+ * Get reaction counts with custom emoji URLs for a note
+ *
+ * @auth Optional
+ * @query {string} noteId - Note ID
+ * @returns {Object} Reaction counts and custom emoji URLs
+ * @returns {Record<string, number>} counts - Reaction counts by emoji
+ * @returns {Record<string, string>} emojis - Custom emoji URLs by emoji name
+ */
+reactions.get('/counts-with-emojis', optionalAuth(), async (c: Context) => {
+  const reactionRepository = c.get('reactionRepository');
+  const noteRepository = c.get('noteRepository');
+  const userRepository = c.get('userRepository');
+  const followRepository = c.get('followRepository');
+  const activityDeliveryQueue = c.get('activityDeliveryQueue');
+
+  const reactionService = new ReactionService(
+    reactionRepository,
+    noteRepository,
+    userRepository,
+    followRepository,
+    activityDeliveryQueue,
+  );
+
+  const noteId = c.req.query('noteId');
+
+  if (!noteId) {
+    return c.json({ error: 'noteId is required' }, 400);
+  }
+
+  try {
+    const result = await reactionService.getReactionCountsWithEmojis(noteId);
+    return c.json(result);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to get reaction counts';
+    return c.json({ error: message }, 400);
+  }
+});
+
+/**
  * GET /api/notes/reactions/my-reactions
  *
  * Get current user's reactions to a note

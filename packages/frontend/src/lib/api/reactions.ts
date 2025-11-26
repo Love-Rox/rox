@@ -13,6 +13,7 @@ export interface Reaction {
   userId: string;
   noteId: string;
   reaction: string;
+  customEmojiUrl?: string;
   createdAt: string;
 }
 
@@ -110,6 +111,34 @@ export async function getReactionCounts(
 ): Promise<Record<string, number>> {
   const params = new URLSearchParams({ noteId });
   const response = await fetch(`${API_BASE}/api/notes/reactions/counts?${params}`);
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to get reaction counts');
+  }
+
+  return response.json();
+}
+
+/**
+ * Reaction counts with custom emoji URLs
+ */
+export interface ReactionCountsWithEmojis {
+  counts: Record<string, number>;
+  emojis: Record<string, string>;
+}
+
+/**
+ * Get reaction counts with custom emoji URLs for a note
+ *
+ * @param noteId - Note ID
+ * @returns Reaction counts and custom emoji URLs
+ */
+export async function getReactionCountsWithEmojis(
+  noteId: string,
+): Promise<ReactionCountsWithEmojis> {
+  const params = new URLSearchParams({ noteId });
+  const response = await fetch(`${API_BASE}/api/notes/reactions/counts-with-emojis?${params}`);
 
   if (!response.ok) {
     const error = await response.json();

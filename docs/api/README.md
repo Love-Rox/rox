@@ -400,6 +400,34 @@ Retrieves reaction counts grouped by emoji.
 
 ---
 
+### GET /notes/reactions/counts-with-emojis
+
+Retrieves reaction counts with custom emoji URLs. This endpoint is useful for displaying custom emoji reactions from federated servers (e.g., Misskey).
+
+**Query Parameters:**
+- `noteId` (required)
+
+**Response (200 OK):**
+```json
+{
+  "counts": {
+    "👍": 5,
+    "❤️": 3,
+    ":custom_emoji:": 2
+  },
+  "emojis": {
+    ":custom_emoji:": "https://remote-server.example/files/emoji.png"
+  }
+}
+```
+
+**Notes:**
+- Unicode emoji reactions (e.g., 👍, ❤️) will have counts but no entry in `emojis`
+- Custom emoji reactions (format: `:emoji_name:`) will have their image URLs in `emojis`
+- Custom emoji URLs are typically provided by federated Misskey instances
+
+---
+
 ### GET /notes/reactions/my-reactions
 
 Retrieves the current user's reactions for a specific note.

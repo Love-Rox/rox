@@ -125,6 +125,7 @@ export const reactions = pgTable(
       .notNull()
       .references(() => notes.id, { onDelete: 'cascade' }),
     reaction: text('reaction').notNull(), // Emoji name or Unicode emoji
+    customEmojiUrl: text('custom_emoji_url'), // URL for custom emoji image (for remote reactions)
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },

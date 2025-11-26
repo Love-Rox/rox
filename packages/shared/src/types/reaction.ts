@@ -5,4 +5,5 @@ export interface Reaction extends Timestamps {
   userId: ID;
   noteId: ID;
   reaction: string; // Emoji name or Unicode emoji
+  customEmojiUrl?: string; // URL for custom emoji image (for remote reactions)
 }

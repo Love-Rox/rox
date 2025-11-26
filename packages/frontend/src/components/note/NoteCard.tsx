@@ -13,7 +13,7 @@ import { ImageModal } from '../ui/ImageModal';
 import { notesApi } from '../../lib/api/notes';
 import { NoteComposer } from './NoteComposer';
 import { ReactionButton } from './ReactionPicker';
-import { createReaction, deleteReaction, getMyReactions } from '../../lib/api/reactions';
+import { createReaction, deleteReaction, getMyReactions, getReactionCountsWithEmojis } from '../../lib/api/reactions';
 import { followUser, unfollowUser } from '../../lib/api/following';
 import { tokenAtom, currentUserAtom } from '../../lib/atoms/auth';
 import { addToastAtom } from '../../lib/atoms/toast';
@@ -59,21 +59,32 @@ function NoteCardComponent({
   const [, addToast] = useAtom(addToastAtom);
   const [myReactions, setMyReactions] = useState<string[]>([]);
   const [localReactions, setLocalReactions] = useState<Record<string, number>>(note.reactions || {});
+  const [reactionEmojis, setReactionEmojis] = useState<Record<string, string>>(note.reactionEmojis || {});
 
-  // Load user's existing reactions on mount
+  // Load user's existing reactions and custom emoji URLs on mount
   useEffect(() => {
-    const loadMyReactions = async () => {
-      if (!token) return;
-
+    const loadReactionData = async () => {
       try {
-        const reactions = await getMyReactions(note.id, token);
-        setMyReactions(reactions.map((r) => r.reaction));
+        // Load custom emoji URLs
+        const reactionData = await getReactionCountsWithEmojis(note.id);
+        if (Object.keys(reactionData.counts).length > 0) {
+          setLocalReactions(reactionData.counts);
+        }
+        if (Object.keys(reactionData.emojis).length > 0) {
+          setReactionEmojis(reactionData.emojis);
+        }
+
+        // Load user's own reactions if logged in
+        if (token) {
+          const reactions = await getMyReactions(note.id, token);
+          setMyReactions(reactions.map((r) => r.reaction));
+        }
       } catch (error) {
-        console.error('Failed to load user reactions:', error);
+        console.error('Failed to load reaction data:', error);
       }
     };
 
-    loadMyReactions();
+    loadReactionData();
   }, [note.id, token]);
 
   const handleReaction = async (reaction: string) => {
@@ -392,23 +403,38 @@ function NoteCardComponent({
           />
           {localReactions && Object.keys(localReactions).length > 0 && (
             <div className="flex items-center gap-1 text-sm text-gray-600" role="group" aria-label="Reactions">
-              {Object.entries(localReactions).map(([emoji, count]) => (
-                <button
-                  key={emoji}
-                  onClick={() => handleReaction(emoji)}
-                  disabled={isReacting}
-                  className={`
-                    flex items-center gap-1 px-2 py-1 rounded-full
-                    transition-all hover:bg-gray-100
-                    ${myReactions.includes(emoji) ? 'bg-primary-100 ring-1 ring-primary-500' : 'bg-gray-50'}
-                  `}
-                  aria-label={`${myReactions.includes(emoji) ? 'Remove' : 'Add'} ${emoji} reaction. ${count} ${count === 1 ? 'reaction' : 'reactions'}`}
-                  aria-pressed={myReactions.includes(emoji)}
-                >
-                  <span aria-hidden="true">{emoji}</span>
-                  <span className="text-xs font-medium">{count}</span>
-                </button>
-              ))}
+              {Object.entries(localReactions).map(([emoji, count]) => {
+                // Check if this is a custom emoji (format: :emoji_name:)
+                const isCustomEmoji = emoji.startsWith(':') && emoji.endsWith(':');
+                const customEmojiUrl = reactionEmojis[emoji];
+
+                return (
+                  <button
+                    key={emoji}
+                    onClick={() => handleReaction(emoji)}
+                    disabled={isReacting}
+                    className={`
+                      flex items-center gap-1 px-2 py-1 rounded-full
+                      transition-all hover:bg-gray-100
+                      ${myReactions.includes(emoji) ? 'bg-primary-100 ring-1 ring-primary-500' : 'bg-gray-50'}
+                    `}
+                    aria-label={`${myReactions.includes(emoji) ? 'Remove' : 'Add'} ${emoji} reaction. ${count} ${count === 1 ? 'reaction' : 'reactions'}`}
+                    aria-pressed={myReactions.includes(emoji)}
+                  >
+                    {isCustomEmoji && customEmojiUrl ? (
+                      <img
+                        src={customEmojiUrl}
+                        alt={emoji}
+                        className="w-5 h-5 object-contain"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span aria-hidden="true">{emoji}</span>
+                    )}
+                    <span className="text-xs font-medium">{count}</span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
