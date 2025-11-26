@@ -235,15 +235,36 @@ GET /health/ready    → { status: 'ok'|'degraded'|'unhealthy', checks: { databa
 
 ---
 
-### 3.3 Input Validation Audit (Medium Priority)
+### 3.3 Input Validation Audit (Medium Priority) ✅ COMPLETE
 
 **Tasks:**
-- [ ] Review all API endpoints for input validation
-- [ ] Add Zod schemas for all request bodies
-- [ ] Validate URL parameters and query strings
-- [ ] Sanitize HTML in user-generated content
+- [x] Review all API endpoints for input validation
+- [x] Add Zod schemas for all request bodies
+- [x] Validate URL parameters and query strings
+- [x] Create reusable validation middleware
+- [ ] Sanitize HTML in user-generated content (future enhancement)
 
-**Estimated Impact:** Prevents injection attacks
+**Files Created:**
+- `packages/backend/src/lib/validation.ts` - Centralized Zod validation schemas
+- `packages/backend/src/middleware/validator.ts` - Reusable validation middleware
+
+**Validation Coverage:**
+- Auth: register, login schemas with username/email/password validation
+- Notes: create, show, delete, timeline query schemas
+- Users: create, show, resolve, update profile schemas
+- Reactions: create, delete, query schemas
+- Following: follow, unfollow, exists, followers/following query schemas
+- Drive: files query, show, update, delete schemas
+
+**Features:**
+- `validateJson()` - JSON body validation middleware
+- `validateQuery()` - Query parameter validation middleware
+- `validateParam()` - URL parameter validation middleware
+- `validateForm()` - Form data validation middleware
+- Consistent error response format with field-level details
+- Type-safe validated data via `c.req.valid()`
+
+**Estimated Impact:** Prevents injection attacks ✅ Achieved
 
 ---
 
@@ -399,11 +420,11 @@ GET /health/ready    → { status: 'ok'|'degraded'|'unhealthy', checks: { databa
    - Test queue behavior
    - Ensure reliability
 
-### Sprint 4: Polish & Documentation (Week 4)
+### Sprint 4: Polish & Documentation (Week 4) - IN PROGRESS
 
-10. **Input Validation Audit** (3.3)
+10. **Input Validation Audit** (3.3) ✅
     - Review all endpoints
-    - Add missing validation
+    - Add Zod validation schemas
 
 11. **Error Tracking** (2.3)
     - Sentry integration
@@ -427,6 +448,7 @@ GET /health/ready    → { status: 'ok'|'degraded'|'unhealthy', checks: { databa
 | Inbox test coverage | 11 activity types | ✅ Complete (53 tests) |
 | Delivery queue tests | Queue behavior | ✅ Complete (20 tests) |
 | Unit test count | >150 tests | ✅ Complete (180 tests) |
+| Input validation | Zod schemas | ✅ Complete (20+ schemas) |
 | Documentation | Complete deployment guide | Pending |
 
 ---
