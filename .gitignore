@@ -62,6 +62,7 @@ Thumbs.db
 # typedoc
 typedoc/
 
-# Test scripts
+# Temporary debug/test scripts (not actual test files)
+# Note: Actual tests in src/tests/ are tracked - these are ad-hoc debugging scripts
 packages/backend/test-*.ts
 packages/backend/check-*.ts

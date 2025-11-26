@@ -240,4 +240,6 @@ MIT
 - [Contributing Guidelines](./CONTRIBUTING.md)
 - [Project Specification](./docs/project/v1.md) (Japanese)
 - [Implementation Guide](./docs/implementation/README.md)
+- [Testing Guide](./docs/development/testing.md)
+- [Deployment Guide](./docs/deployment/README.md)
 - [API Documentation](./docs/api/) (Coming soon)
