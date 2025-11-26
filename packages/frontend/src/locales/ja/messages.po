@@ -140,7 +140,7 @@ msgstr "{0}にブロック"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "インスタンスをブロックすると、そのサーバーとの連携がすべて停止されます。ブロックされたインスタンスのユーザーはこのサーバーとやり取りできなくなります。"
 
-#: src/components/user/UserProfile.tsx:332
+#: src/components/user/UserProfile.tsx:363
 msgid "Bot"
 msgstr "Bot"
 
@@ -314,7 +314,7 @@ msgstr "下書きを破棄しました"
 msgid "Draft restored"
 msgstr "下書きを復元しました"
 
-#: src/components/user/UserProfile.tsx:293
+#: src/components/user/UserProfile.tsx:324
 msgid "Edit Profile"
 msgstr "プロフィールを編集"
 
@@ -354,7 +354,7 @@ msgstr "登録には招待コードを入力してください"
 msgid "Error loading timeline"
 msgstr "タイムラインの読み込みに失敗しました"
 
-#: src/components/user/UserProfile.tsx:230
+#: src/components/user/UserProfile.tsx:261
 msgid "Error loading user profile"
 msgstr "ユーザープロフィールの読み込みに失敗しました"
 
@@ -441,18 +441,18 @@ msgid "Federated"
 msgstr "分散型"
 
 #: src/components/note/NoteCard.tsx:265
-#: src/components/user/UserProfile.tsx:310
+#: src/components/user/UserProfile.tsx:341
 msgid "Follow"
 msgstr "フォロー"
 
 #: src/components/note/NoteComposer.tsx:270
-#: src/components/user/UserProfile.tsx:353
+#: src/components/user/UserProfile.tsx:390
 msgid "Followers"
 msgstr "フォロワー"
 
 #: src/components/note/NoteCard.tsx:265
-#: src/components/user/UserProfile.tsx:308
-#: src/components/user/UserProfile.tsx:359
+#: src/components/user/UserProfile.tsx:339
+#: src/components/user/UserProfile.tsx:396
 msgid "Following"
 msgstr "フォロー中"
 
@@ -460,7 +460,7 @@ msgstr "フォロー中"
 msgid "Following successfully"
 msgstr "フォローしました"
 
-#: src/components/user/UserProfile.tsx:305
+#: src/components/user/UserProfile.tsx:336
 msgid "Following..."
 msgstr "フォロー中..."
 
@@ -570,7 +570,7 @@ msgid "Lightweight"
 msgstr "軽量"
 
 #: src/components/timeline/Timeline.tsx:187
-#: src/components/user/UserProfile.tsx:408
+#: src/components/user/UserProfile.tsx:445
 msgid "Load more"
 msgstr "もっと読み込む"
 
@@ -582,7 +582,7 @@ msgstr "投稿を読み込み中..."
 msgid "Loading posts..."
 msgstr "投稿を読み込み中..."
 
-#: src/components/user/UserProfile.tsx:404
+#: src/components/user/UserProfile.tsx:441
 msgid "Loading..."
 msgstr "読み込み中..."
 
@@ -658,7 +658,7 @@ msgstr "まだ投稿がありません"
 msgid "No pending reports to review"
 msgstr "確認待ちの報告はありません"
 
-#: src/components/user/UserProfile.tsx:384
+#: src/components/user/UserProfile.tsx:421
 msgid "No posts yet"
 msgstr "まだ投稿がありません"
 
@@ -764,8 +764,8 @@ msgstr "投稿"
 msgid "Posting..."
 msgstr "投稿中..."
 
-#: src/components/user/UserProfile.tsx:347
-#: src/components/user/UserProfile.tsx:369
+#: src/components/user/UserProfile.tsx:384
+#: src/components/user/UserProfile.tsx:406
 msgid "Posts"
 msgstr "投稿"
 
@@ -1154,7 +1154,7 @@ msgstr "このインスタンスは現在新規登録を受け付けていませ
 msgid "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
 msgstr "これはRoxインスタンスです - あなたを分散型ソーシャルネットワークに接続する、モダンで軽量なActivityPubサーバーです。"
 
-#: src/components/user/UserProfile.tsx:390
+#: src/components/user/UserProfile.tsx:427
 msgid "This user hasn't posted anything yet"
 msgstr "このユーザーはまだ何も投稿していません"
 
@@ -1191,7 +1191,7 @@ msgstr "ブロック解除"
 msgid "Unfollowed successfully"
 msgstr "フォロー解除しました"
 
-#: src/components/user/UserProfile.tsx:305
+#: src/components/user/UserProfile.tsx:336
 msgid "Unfollowing..."
 msgstr "フォロー解除中..."
 
@@ -1215,7 +1215,7 @@ msgstr "アップロード中..."
 msgid "Used"
 msgstr "使用済み"
 
-#: src/components/user/UserProfile.tsx:231
+#: src/components/user/UserProfile.tsx:262
 msgid "User not found"
 msgstr "ユーザーが見つかりません"
 
@@ -1276,11 +1276,11 @@ msgstr "既に報告済みです"
 msgid "You have an unsaved draft"
 msgstr "未保存の下書きがあります"
 
-#: src/components/user/UserProfile.tsx:388
+#: src/components/user/UserProfile.tsx:425
 msgid "You haven't posted anything yet"
 msgstr "まだ何も投稿していません"
 
-#: src/components/user/UserProfile.tsx:417
+#: src/components/user/UserProfile.tsx:454
 msgid "You've reached the end"
 msgstr "最後まで到達しました"
 

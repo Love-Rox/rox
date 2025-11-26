@@ -15,6 +15,17 @@ import { ErrorMessage } from '../ui/ErrorMessage';
 import { TimelineSkeleton } from '../ui/Skeleton';
 import { Layout } from '../layout/Layout';
 import { ReportDialog } from '../report/ReportDialog';
+import { RoleBadgeList } from './RoleBadge';
+
+/**
+ * Public role type returned from the API
+ */
+interface PublicRole {
+  id: string;
+  name: string;
+  color: string | null;
+  iconUrl: string | null;
+}
 
 /**
  * Sanitize and scope user custom CSS to prevent XSS and global style leakage
@@ -89,6 +100,7 @@ export function UserProfile({ username }: UserProfileProps) {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [showReportDialog, setShowReportDialog] = useState(false);
+  const [publicRoles, setPublicRoles] = useState<PublicRole[]>([]);
 
   // Generate unique ID for custom CSS scoping
   const profileContainerId = useId().replace(/:/g, '-');
@@ -137,6 +149,25 @@ export function UserProfile({ username }: UserProfileProps) {
     };
 
     loadNotes();
+  }, [user]);
+
+  // Load user's public roles
+  useEffect(() => {
+    const loadPublicRoles = async () => {
+      if (!user) return;
+
+      try {
+        const response = await apiClient.get<{ roles: PublicRole[] }>(
+          `/api/users/${user.id}/public-roles`
+        );
+        setPublicRoles(response.roles);
+      } catch (err) {
+        // Non-critical - just log and continue
+        console.error('Failed to load public roles:', err);
+      }
+    };
+
+    loadPublicRoles();
   }, [user]);
 
   // Load more notes
@@ -325,7 +356,7 @@ export function UserProfile({ username }: UserProfileProps) {
 
           {/* User Info */}
           <div className="mt-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-bold text-gray-900">{user.displayName || user.username}</h1>
               {user.isBot && (
                 <span className="px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 rounded">
@@ -334,6 +365,12 @@ export function UserProfile({ username }: UserProfileProps) {
               )}
             </div>
             <p className="text-gray-600">@{user.username}</p>
+            {/* Public Role Badges */}
+            {publicRoles.length > 0 && (
+              <div className="mt-2">
+                <RoleBadgeList roles={publicRoles} size="sm" />
+              </div>
+            )}
           </div>
 
           {/* Bio */}

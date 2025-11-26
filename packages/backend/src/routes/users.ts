@@ -286,6 +286,60 @@ app.get('/resolve', async (c) => {
 });
 
 /**
+ * Get User's Public Roles
+ *
+ * GET /api/users/:id/public-roles
+ *
+ * Retrieves public roles assigned to a user.
+ * Only returns roles that have isPublic=true.
+ *
+ * @remarks
+ * Response (200):
+ * ```json
+ * {
+ *   "roles": [
+ *     {
+ *       "id": "...",
+ *       "name": "Admin",
+ *       "color": "#ff0000",
+ *       "iconUrl": null
+ *     }
+ *   ]
+ * }
+ * ```
+ *
+ * Errors:
+ * - 404: User not found
+ */
+app.get('/:id/public-roles', async (c) => {
+  const userId = c.req.param('id');
+  const userRepository = c.get('userRepository');
+  const roleAssignmentRepository = c.get('roleAssignmentRepository');
+
+  // Check if user exists
+  const user = await userRepository.findById(userId);
+  if (!user) {
+    return c.json({ error: 'User not found' }, 404);
+  }
+
+  // Get all roles for user
+  const allRoles = await roleAssignmentRepository.findRolesByUserId(userId);
+
+  // Filter to only public roles and return minimal info
+  const publicRoles = allRoles
+    .filter((role) => role.isPublic)
+    .sort((a, b) => a.displayOrder - b.displayOrder)
+    .map((role) => ({
+      id: role.id,
+      name: role.name,
+      color: role.color,
+      iconUrl: role.iconUrl,
+    }));
+
+  return c.json({ roles: publicRoles });
+});
+
+/**
  * Get User Information
  *
  * GET /api/users/:id

@@ -140,7 +140,7 @@ msgstr "Blocked on {0}"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 
-#: src/components/user/UserProfile.tsx:332
+#: src/components/user/UserProfile.tsx:363
 msgid "Bot"
 msgstr "Bot"
 
@@ -314,7 +314,7 @@ msgstr "Draft discarded"
 msgid "Draft restored"
 msgstr "Draft restored"
 
-#: src/components/user/UserProfile.tsx:293
+#: src/components/user/UserProfile.tsx:324
 msgid "Edit Profile"
 msgstr "Edit Profile"
 
@@ -354,7 +354,7 @@ msgstr "Enter your invitation code to register"
 msgid "Error loading timeline"
 msgstr "Error loading timeline"
 
-#: src/components/user/UserProfile.tsx:230
+#: src/components/user/UserProfile.tsx:261
 msgid "Error loading user profile"
 msgstr "Error loading user profile"
 
@@ -441,18 +441,18 @@ msgid "Federated"
 msgstr "Federated"
 
 #: src/components/note/NoteCard.tsx:265
-#: src/components/user/UserProfile.tsx:310
+#: src/components/user/UserProfile.tsx:341
 msgid "Follow"
 msgstr "Follow"
 
 #: src/components/note/NoteComposer.tsx:270
-#: src/components/user/UserProfile.tsx:353
+#: src/components/user/UserProfile.tsx:390
 msgid "Followers"
 msgstr "Followers"
 
 #: src/components/note/NoteCard.tsx:265
-#: src/components/user/UserProfile.tsx:308
-#: src/components/user/UserProfile.tsx:359
+#: src/components/user/UserProfile.tsx:339
+#: src/components/user/UserProfile.tsx:396
 msgid "Following"
 msgstr "Following"
 
@@ -460,7 +460,7 @@ msgstr "Following"
 msgid "Following successfully"
 msgstr "Following successfully"
 
-#: src/components/user/UserProfile.tsx:305
+#: src/components/user/UserProfile.tsx:336
 msgid "Following..."
 msgstr "Following..."
 
@@ -570,7 +570,7 @@ msgid "Lightweight"
 msgstr "Lightweight"
 
 #: src/components/timeline/Timeline.tsx:187
-#: src/components/user/UserProfile.tsx:408
+#: src/components/user/UserProfile.tsx:445
 msgid "Load more"
 msgstr "Load more"
 
@@ -582,7 +582,7 @@ msgstr "Loading more posts..."
 msgid "Loading posts..."
 msgstr "Loading posts..."
 
-#: src/components/user/UserProfile.tsx:404
+#: src/components/user/UserProfile.tsx:441
 msgid "Loading..."
 msgstr "Loading..."
 
@@ -658,7 +658,7 @@ msgstr "No notes yet"
 msgid "No pending reports to review"
 msgstr "No pending reports to review"
 
-#: src/components/user/UserProfile.tsx:384
+#: src/components/user/UserProfile.tsx:421
 msgid "No posts yet"
 msgstr "No posts yet"
 
@@ -764,8 +764,8 @@ msgstr "Post"
 msgid "Posting..."
 msgstr "Posting..."
 
-#: src/components/user/UserProfile.tsx:347
-#: src/components/user/UserProfile.tsx:369
+#: src/components/user/UserProfile.tsx:384
+#: src/components/user/UserProfile.tsx:406
 msgid "Posts"
 msgstr "Posts"
 
@@ -1154,7 +1154,7 @@ msgstr "This instance is not accepting new registrations at this time."
 msgid "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
 msgstr "This is a Rox instance - a modern, lightweight ActivityPub server that connects you to a decentralized social network."
 
-#: src/components/user/UserProfile.tsx:390
+#: src/components/user/UserProfile.tsx:427
 msgid "This user hasn't posted anything yet"
 msgstr "This user hasn't posted anything yet"
 
@@ -1191,7 +1191,7 @@ msgstr "Unblock instance"
 msgid "Unfollowed successfully"
 msgstr "Unfollowed successfully"
 
-#: src/components/user/UserProfile.tsx:305
+#: src/components/user/UserProfile.tsx:336
 msgid "Unfollowing..."
 msgstr "Unfollowing..."
 
@@ -1215,7 +1215,7 @@ msgstr "Uploading..."
 msgid "Used"
 msgstr "Used"
 
-#: src/components/user/UserProfile.tsx:231
+#: src/components/user/UserProfile.tsx:262
 msgid "User not found"
 msgstr "User not found"
 
@@ -1276,11 +1276,11 @@ msgstr "You have already reported this"
 msgid "You have an unsaved draft"
 msgstr "You have an unsaved draft"
 
-#: src/components/user/UserProfile.tsx:388
+#: src/components/user/UserProfile.tsx:425
 msgid "You haven't posted anything yet"
 msgstr "You haven't posted anything yet"
 
-#: src/components/user/UserProfile.tsx:417
+#: src/components/user/UserProfile.tsx:454
 msgid "You've reached the end"
 msgstr "You've reached the end"
 
