@@ -93,6 +93,7 @@ msgstr "Already have an account? Sign in"
 msgid "Authentication required"
 msgstr "Authentication required"
 
+#: src/components/settings/InvitationCodeSection.tsx:250
 #: src/pages/admin/invitations.tsx:375
 msgid "Available"
 msgstr "Available"
@@ -113,7 +114,7 @@ msgstr "Banner URL"
 msgid "Be the first to post something!"
 msgstr "Be the first to post something!"
 
-#: src/pages/settings.tsx:162
+#: src/pages/settings.tsx:163
 msgid "Bio"
 msgstr "Bio"
 
@@ -162,7 +163,7 @@ msgstr "Can suspend users"
 
 #: src/components/report/ReportDialog.tsx:181
 #: src/pages/admin/roles.tsx:530
-#: src/pages/settings.tsx:260
+#: src/pages/settings.tsx:261
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -175,6 +176,7 @@ msgstr "Choose your preferred sign-in method"
 msgid "Close"
 msgstr "Close"
 
+#: src/components/settings/InvitationCodeSection.tsx:131
 #: src/pages/admin/invitations.tsx:174
 msgid "Code copied to clipboard"
 msgstr "Code copied to clipboard"
@@ -207,6 +209,7 @@ msgstr "Control your data and choose who sees your posts"
 msgid "Conversation thread"
 msgstr "Conversation thread"
 
+#: src/components/settings/InvitationCodeSection.tsx:268
 #: src/pages/admin/invitations.tsx:396
 msgid "Copy code"
 msgstr "Copy code"
@@ -215,6 +218,7 @@ msgstr "Copy code"
 msgid "Create and manage user roles with custom permissions"
 msgstr "Create and manage user roles with custom permissions"
 
+#: src/components/settings/InvitationCodeSection.tsx:207
 #: src/pages/admin/invitations.tsx:252
 #: src/pages/admin/invitations.tsx:316
 msgid "Create Invitation Code"
@@ -244,11 +248,11 @@ msgstr "Creating account..."
 msgid "Custom Code (optional)"
 msgstr "Custom Code (optional)"
 
-#: src/pages/settings.tsx:205
+#: src/pages/settings.tsx:206
 msgid "Custom CSS"
 msgstr "Custom CSS"
 
-#: src/pages/settings.tsx:219
+#: src/pages/settings.tsx:220
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "Custom CSS for your profile page (max 10KB)"
 
@@ -272,6 +276,7 @@ msgstr "Default Color Mode"
 msgid "Default Roles"
 msgstr "Default Roles"
 
+#: src/components/settings/InvitationCodeSection.tsx:276
 #: src/pages/admin/invitations.tsx:404
 msgid "Delete code"
 msgstr "Delete code"
@@ -297,7 +302,7 @@ msgstr "Direct"
 msgid "Discard"
 msgstr "Discard"
 
-#: src/pages/settings.tsx:142
+#: src/pages/settings.tsx:143
 #: src/pages/signup.tsx:189
 msgid "Display Name"
 msgstr "Display Name"
@@ -362,6 +367,7 @@ msgstr "Error loading user profile"
 msgid "example.com"
 msgstr "example.com"
 
+#: src/components/settings/InvitationCodeSection.tsx:240
 #: src/pages/admin/invitations.tsx:365
 msgid "Expired"
 msgstr "Expired"
@@ -370,7 +376,9 @@ msgstr "Expired"
 msgid "Expires In"
 msgstr "Expires In"
 
+#. placeholder {0}: formatDate(code.expiresAt)
 #. placeholder {0}: formatDate(invitation.expiresAt)
+#: src/components/settings/InvitationCodeSection.tsx:258
 #: src/pages/admin/invitations.tsx:383
 msgid "Expires: {0}"
 msgstr "Expires: {0}"
@@ -383,10 +391,12 @@ msgstr "Failed to add reaction"
 msgid "Failed to block instance"
 msgstr "Failed to block instance"
 
+#: src/components/settings/InvitationCodeSection.tsx:99
 #: src/pages/admin/invitations.tsx:141
 msgid "Failed to create invitation code"
 msgstr "Failed to create invitation code"
 
+#: src/components/settings/InvitationCodeSection.tsx:122
 #: src/pages/admin/invitations.tsx:165
 msgid "Failed to delete invitation code"
 msgstr "Failed to delete invitation code"
@@ -522,10 +532,12 @@ msgstr "Instance unblocked"
 msgid "Invitation Code"
 msgstr "Invitation Code"
 
+#: src/components/settings/InvitationCodeSection.tsx:88
 #: src/pages/admin/invitations.tsx:128
 msgid "Invitation code created"
 msgstr "Invitation code created"
 
+#: src/components/settings/InvitationCodeSection.tsx:117
 #: src/pages/admin/invitations.tsx:157
 msgid "Invitation code deleted"
 msgstr "Invitation code deleted"
@@ -534,6 +546,7 @@ msgstr "Invitation code deleted"
 msgid "Invitation code is required"
 msgstr "Invitation code is required"
 
+#: src/components/settings/InvitationCodeSection.tsx:172
 #: src/pages/admin/invitations.tsx:218
 #: src/pages/admin/invitations.tsx:327
 msgid "Invitation Codes"
@@ -606,7 +619,7 @@ msgstr "Maintainer Email"
 msgid "Manage invitation codes for new user registration"
 msgstr "Manage invitation codes for new user registration"
 
-#: src/pages/settings.tsx:132
+#: src/pages/settings.tsx:133
 msgid "Manage your profile information"
 msgstr "Manage your profile information"
 
@@ -646,6 +659,7 @@ msgstr "No blocked instances"
 msgid "No emojis found"
 msgstr "No emojis found"
 
+#: src/components/settings/InvitationCodeSection.tsx:215
 #: src/pages/admin/invitations.tsx:340
 msgid "No invitation codes yet"
 msgstr "No invitation codes yet"
@@ -702,7 +716,7 @@ msgstr "Note renoted"
 msgid "Note Report"
 msgstr "Note Report"
 
-#: src/pages/settings.tsx:226
+#: src/pages/settings.tsx:227
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
 msgstr "Note: Custom CSS is sanitized and some properties may be restricted for security."
 
@@ -752,7 +766,7 @@ msgstr "Permissions"
 msgid "Please enter text or attach files"
 msgstr "Please enter text or attach files"
 
-#: src/pages/settings.tsx:76
+#: src/pages/settings.tsx:77
 msgid "Please log in to update your profile"
 msgstr "Please log in to update your profile"
 
@@ -805,7 +819,7 @@ msgstr "Privacy Policy URL"
 msgid "Profile"
 msgstr "Profile"
 
-#: src/pages/settings.tsx:96
+#: src/pages/settings.tsx:97
 msgid "Profile updated successfully"
 msgstr "Profile updated successfully"
 
@@ -841,6 +855,10 @@ msgstr "Reason (optional)"
 #: src/pages/timeline.tsx:84
 msgid "Recent posts from your community"
 msgstr "Recent posts from your community"
+
+#: src/components/settings/InvitationCodeSection.tsx:178
+msgid "Refresh"
+msgstr "Refresh"
 
 #: src/pages/admin/settings.tsx:211
 msgid "Registration"
@@ -1027,7 +1045,7 @@ msgstr "Role updated"
 msgid "Roles"
 msgstr "Roles"
 
-#: src/pages/settings.tsx:248
+#: src/pages/settings.tsx:249
 msgid "Save Changes"
 msgstr "Save Changes"
 
@@ -1043,7 +1061,7 @@ msgstr "Save Registration Settings"
 msgid "Save Theme Settings"
 msgstr "Save Theme Settings"
 
-#: src/pages/settings.tsx:244
+#: src/pages/settings.tsx:245
 msgid "Saving..."
 msgstr "Saving..."
 
@@ -1056,7 +1074,7 @@ msgid "Secondary"
 msgstr "Secondary"
 
 #: src/components/layout/Sidebar.tsx:46
-#: src/pages/settings.tsx:129
+#: src/pages/settings.tsx:130
 msgid "Settings"
 msgstr "Settings"
 
@@ -1114,7 +1132,7 @@ msgstr "Suspend Users"
 msgid "System"
 msgstr "System"
 
-#: src/pages/settings.tsx:168
+#: src/pages/settings.tsx:169
 msgid "Tell us about yourself..."
 msgstr "Tell us about yourself..."
 
@@ -1211,6 +1229,7 @@ msgstr "Uploading files..."
 msgid "Uploading..."
 msgstr "Uploading..."
 
+#: src/components/settings/InvitationCodeSection.tsx:245
 #: src/pages/admin/invitations.tsx:370
 msgid "Used"
 msgstr "Used"
@@ -1224,12 +1243,12 @@ msgid "User Report"
 msgstr "User Report"
 
 #: src/pages/login.tsx:143
-#: src/pages/settings.tsx:187
+#: src/pages/settings.tsx:188
 #: src/pages/signup.tsx:160
 msgid "Username"
 msgstr "Username"
 
-#: src/pages/settings.tsx:198
+#: src/pages/settings.tsx:199
 msgid "Username cannot be changed"
 msgstr "Username cannot be changed"
 
@@ -1242,8 +1261,11 @@ msgstr "Username is required"
 msgid "Users can still override this with their own preference"
 msgstr "Users can still override this with their own preference"
 
+#. placeholder {0}: code.useCount
 #. placeholder {0}: invitation.useCount
+#. placeholder {1}: code.maxUses
 #. placeholder {1}: invitation.maxUses
+#: src/components/settings/InvitationCodeSection.tsx:255
 #: src/pages/admin/invitations.tsx:380
 msgid "Uses: {0}/{1}"
 msgstr "Uses: {0}/{1}"
@@ -1268,6 +1290,16 @@ msgstr "Why is this instance being blocked?"
 msgid "Why Join?"
 msgstr "Why Join?"
 
+#: src/components/settings/InvitationCodeSection.tsx:187
+msgid "You can create unlimited invitation codes"
+msgstr "You can create unlimited invitation codes"
+
+#. placeholder {0}: permissions.inviteLimit
+#. placeholder {1}: permissions.inviteLimitCycle
+#: src/components/settings/InvitationCodeSection.tsx:189
+msgid "You can create up to {0} invitation codes per {1} hours"
+msgstr "You can create up to {0} invitation codes per {1} hours"
+
 #: src/components/report/ReportDialog.tsx:81
 msgid "You have already reported this"
 msgstr "You have already reported this"
@@ -1275,6 +1307,10 @@ msgstr "You have already reported this"
 #: src/components/note/NoteComposer.tsx:299
 msgid "You have an unsaved draft"
 msgstr "You have an unsaved draft"
+
+#: src/components/settings/InvitationCodeSection.tsx:94
+msgid "You have reached your invitation limit"
+msgstr "You have reached your invitation limit"
 
 #: src/components/user/UserProfile.tsx:425
 msgid "You haven't posted anything yet"
@@ -1292,10 +1328,10 @@ msgstr "You've reached the end of the timeline"
 msgid "Your account will need to be approved by an administrator before you can use it."
 msgstr "Your account will need to be approved by an administrator before you can use it."
 
-#: src/pages/settings.tsx:176
+#: src/pages/settings.tsx:177
 msgid "Your bio (max 500 characters)"
 msgstr "Your bio (max 500 characters)"
 
-#: src/pages/settings.tsx:155
+#: src/pages/settings.tsx:156
 msgid "Your public display name (max 50 characters)"
 msgstr "Your public display name (max 50 characters)"

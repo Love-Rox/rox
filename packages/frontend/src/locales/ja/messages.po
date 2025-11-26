@@ -93,6 +93,7 @@ msgstr "すでにアカウントをお持ちですか？サインイン"
 msgid "Authentication required"
 msgstr "認証が必要です"
 
+#: src/components/settings/InvitationCodeSection.tsx:250
 #: src/pages/admin/invitations.tsx:375
 msgid "Available"
 msgstr "利用可能"
@@ -113,7 +114,7 @@ msgstr "バナーURL"
 msgid "Be the first to post something!"
 msgstr "最初の投稿をしてみましょう！"
 
-#: src/pages/settings.tsx:162
+#: src/pages/settings.tsx:163
 msgid "Bio"
 msgstr "自己紹介"
 
@@ -162,7 +163,7 @@ msgstr "ユーザーを凍結可能"
 
 #: src/components/report/ReportDialog.tsx:181
 #: src/pages/admin/roles.tsx:530
-#: src/pages/settings.tsx:260
+#: src/pages/settings.tsx:261
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -175,6 +176,7 @@ msgstr "サインイン方法を選択してください"
 msgid "Close"
 msgstr "閉じる"
 
+#: src/components/settings/InvitationCodeSection.tsx:131
 #: src/pages/admin/invitations.tsx:174
 msgid "Code copied to clipboard"
 msgstr "コードをクリップボードにコピーしました"
@@ -207,6 +209,7 @@ msgstr "データを管理し、誰が投稿を見るかを選択できます"
 msgid "Conversation thread"
 msgstr "会話スレッド"
 
+#: src/components/settings/InvitationCodeSection.tsx:268
 #: src/pages/admin/invitations.tsx:396
 msgid "Copy code"
 msgstr "コードをコピー"
@@ -215,6 +218,7 @@ msgstr "コードをコピー"
 msgid "Create and manage user roles with custom permissions"
 msgstr "カスタム権限を持つユーザーロールを作成・管理"
 
+#: src/components/settings/InvitationCodeSection.tsx:207
 #: src/pages/admin/invitations.tsx:252
 #: src/pages/admin/invitations.tsx:316
 msgid "Create Invitation Code"
@@ -244,11 +248,11 @@ msgstr "アカウント作成中..."
 msgid "Custom Code (optional)"
 msgstr "カスタムコード（任意）"
 
-#: src/pages/settings.tsx:205
+#: src/pages/settings.tsx:206
 msgid "Custom CSS"
 msgstr "カスタムCSS"
 
-#: src/pages/settings.tsx:219
+#: src/pages/settings.tsx:220
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 
@@ -272,6 +276,7 @@ msgstr "デフォルトカラーモード"
 msgid "Default Roles"
 msgstr "デフォルトロール数"
 
+#: src/components/settings/InvitationCodeSection.tsx:276
 #: src/pages/admin/invitations.tsx:404
 msgid "Delete code"
 msgstr "コードを削除"
@@ -297,7 +302,7 @@ msgstr "ダイレクト"
 msgid "Discard"
 msgstr "破棄"
 
-#: src/pages/settings.tsx:142
+#: src/pages/settings.tsx:143
 #: src/pages/signup.tsx:189
 msgid "Display Name"
 msgstr "表示名"
@@ -362,6 +367,7 @@ msgstr "ユーザープロフィールの読み込みに失敗しました"
 msgid "example.com"
 msgstr "example.com"
 
+#: src/components/settings/InvitationCodeSection.tsx:240
 #: src/pages/admin/invitations.tsx:365
 msgid "Expired"
 msgstr "期限切れ"
@@ -370,7 +376,9 @@ msgstr "期限切れ"
 msgid "Expires In"
 msgstr "有効期限"
 
+#. placeholder {0}: formatDate(code.expiresAt)
 #. placeholder {0}: formatDate(invitation.expiresAt)
+#: src/components/settings/InvitationCodeSection.tsx:258
 #: src/pages/admin/invitations.tsx:383
 msgid "Expires: {0}"
 msgstr "有効期限: {0}"
@@ -383,10 +391,12 @@ msgstr "リアクションの追加に失敗しました"
 msgid "Failed to block instance"
 msgstr "インスタンスのブロックに失敗しました"
 
+#: src/components/settings/InvitationCodeSection.tsx:99
 #: src/pages/admin/invitations.tsx:141
 msgid "Failed to create invitation code"
 msgstr "招待コードの作成に失敗しました"
 
+#: src/components/settings/InvitationCodeSection.tsx:122
 #: src/pages/admin/invitations.tsx:165
 msgid "Failed to delete invitation code"
 msgstr "招待コードの削除に失敗しました"
@@ -522,10 +532,12 @@ msgstr "インスタンスのブロックを解除しました"
 msgid "Invitation Code"
 msgstr "招待コード"
 
+#: src/components/settings/InvitationCodeSection.tsx:88
 #: src/pages/admin/invitations.tsx:128
 msgid "Invitation code created"
 msgstr "招待コードを作成しました"
 
+#: src/components/settings/InvitationCodeSection.tsx:117
 #: src/pages/admin/invitations.tsx:157
 msgid "Invitation code deleted"
 msgstr "招待コードを削除しました"
@@ -534,6 +546,7 @@ msgstr "招待コードを削除しました"
 msgid "Invitation code is required"
 msgstr "招待コードを入力してください"
 
+#: src/components/settings/InvitationCodeSection.tsx:172
 #: src/pages/admin/invitations.tsx:218
 #: src/pages/admin/invitations.tsx:327
 msgid "Invitation Codes"
@@ -606,7 +619,7 @@ msgstr "管理者メールアドレス"
 msgid "Manage invitation codes for new user registration"
 msgstr "新規ユーザー登録用の招待コードを管理"
 
-#: src/pages/settings.tsx:132
+#: src/pages/settings.tsx:133
 msgid "Manage your profile information"
 msgstr "プロフィール情報を管理"
 
@@ -646,6 +659,7 @@ msgstr "ブロック中のインスタンスはありません"
 msgid "No emojis found"
 msgstr "絵文字が見つかりません"
 
+#: src/components/settings/InvitationCodeSection.tsx:215
 #: src/pages/admin/invitations.tsx:340
 msgid "No invitation codes yet"
 msgstr "招待コードがまだありません"
@@ -702,7 +716,7 @@ msgstr "リノートしました"
 msgid "Note Report"
 msgstr "ノートの報告"
 
-#: src/pages/settings.tsx:226
+#: src/pages/settings.tsx:227
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
 msgstr "注意: カスタムCSSはセキュリティのため一部のプロパティが制限されます。"
 
@@ -752,7 +766,7 @@ msgstr "権限"
 msgid "Please enter text or attach files"
 msgstr "テキストを入力するかファイルを添付してください"
 
-#: src/pages/settings.tsx:76
+#: src/pages/settings.tsx:77
 msgid "Please log in to update your profile"
 msgstr "プロフィールを更新するにはログインしてください"
 
@@ -805,7 +819,7 @@ msgstr "プライバシーポリシーURL"
 msgid "Profile"
 msgstr "プロフィール"
 
-#: src/pages/settings.tsx:96
+#: src/pages/settings.tsx:97
 msgid "Profile updated successfully"
 msgstr "プロフィールを更新しました"
 
@@ -841,6 +855,10 @@ msgstr "理由（任意）"
 #: src/pages/timeline.tsx:84
 msgid "Recent posts from your community"
 msgstr "コミュニティの最新投稿"
+
+#: src/components/settings/InvitationCodeSection.tsx:178
+msgid "Refresh"
+msgstr "更新"
 
 #: src/pages/admin/settings.tsx:211
 msgid "Registration"
@@ -1027,7 +1045,7 @@ msgstr "ロールを更新しました"
 msgid "Roles"
 msgstr "ロール"
 
-#: src/pages/settings.tsx:248
+#: src/pages/settings.tsx:249
 msgid "Save Changes"
 msgstr "変更を保存"
 
@@ -1043,7 +1061,7 @@ msgstr "登録設定を保存"
 msgid "Save Theme Settings"
 msgstr "テーマ設定を保存"
 
-#: src/pages/settings.tsx:244
+#: src/pages/settings.tsx:245
 msgid "Saving..."
 msgstr "保存中..."
 
@@ -1056,7 +1074,7 @@ msgid "Secondary"
 msgstr "セカンダリ"
 
 #: src/components/layout/Sidebar.tsx:46
-#: src/pages/settings.tsx:129
+#: src/pages/settings.tsx:130
 msgid "Settings"
 msgstr "設定"
 
@@ -1114,7 +1132,7 @@ msgstr "ユーザー凍結"
 msgid "System"
 msgstr "システム"
 
-#: src/pages/settings.tsx:168
+#: src/pages/settings.tsx:169
 msgid "Tell us about yourself..."
 msgstr "自己紹介を入力..."
 
@@ -1211,6 +1229,7 @@ msgstr "ファイルをアップロード中..."
 msgid "Uploading..."
 msgstr "アップロード中..."
 
+#: src/components/settings/InvitationCodeSection.tsx:245
 #: src/pages/admin/invitations.tsx:370
 msgid "Used"
 msgstr "使用済み"
@@ -1224,12 +1243,12 @@ msgid "User Report"
 msgstr "ユーザーの報告"
 
 #: src/pages/login.tsx:143
-#: src/pages/settings.tsx:187
+#: src/pages/settings.tsx:188
 #: src/pages/signup.tsx:160
 msgid "Username"
 msgstr "ユーザー名"
 
-#: src/pages/settings.tsx:198
+#: src/pages/settings.tsx:199
 msgid "Username cannot be changed"
 msgstr "ユーザー名は変更できません"
 
@@ -1242,8 +1261,11 @@ msgstr "ユーザー名を入力してください"
 msgid "Users can still override this with their own preference"
 msgstr "ユーザーは自分の設定で上書きできます"
 
+#. placeholder {0}: code.useCount
 #. placeholder {0}: invitation.useCount
+#. placeholder {1}: code.maxUses
 #. placeholder {1}: invitation.maxUses
+#: src/components/settings/InvitationCodeSection.tsx:255
 #: src/pages/admin/invitations.tsx:380
 msgid "Uses: {0}/{1}"
 msgstr "使用回数: {0}/{1}"
@@ -1268,6 +1290,16 @@ msgstr "このインスタンスをブロックする理由は？"
 msgid "Why Join?"
 msgstr "なぜ参加するの？"
 
+#: src/components/settings/InvitationCodeSection.tsx:187
+msgid "You can create unlimited invitation codes"
+msgstr "招待コードを無制限に作成できます"
+
+#. placeholder {0}: permissions.inviteLimit
+#. placeholder {1}: permissions.inviteLimitCycle
+#: src/components/settings/InvitationCodeSection.tsx:189
+msgid "You can create up to {0} invitation codes per {1} hours"
+msgstr "{1}時間あたり最大{0}個の招待コードを作成できます"
+
 #: src/components/report/ReportDialog.tsx:81
 msgid "You have already reported this"
 msgstr "既に報告済みです"
@@ -1275,6 +1307,10 @@ msgstr "既に報告済みです"
 #: src/components/note/NoteComposer.tsx:299
 msgid "You have an unsaved draft"
 msgstr "未保存の下書きがあります"
+
+#: src/components/settings/InvitationCodeSection.tsx:94
+msgid "You have reached your invitation limit"
+msgstr "招待コードの作成上限に達しました"
 
 #: src/components/user/UserProfile.tsx:425
 msgid "You haven't posted anything yet"
@@ -1292,10 +1328,10 @@ msgstr "タイムラインの最後に到達しました"
 msgid "Your account will need to be approved by an administrator before you can use it."
 msgstr "アカウントは管理者の承認後に使用可能になります。"
 
-#: src/pages/settings.tsx:176
+#: src/pages/settings.tsx:177
 msgid "Your bio (max 500 characters)"
 msgstr "自己紹介（最大500文字）"
 
-#: src/pages/settings.tsx:155
+#: src/pages/settings.tsx:156
 msgid "Your public display name (max 50 characters)"
 msgstr "表示名（最大50文字）"

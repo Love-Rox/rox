@@ -12,6 +12,7 @@ import { Spinner } from '../components/ui/Spinner';
 import { InlineError } from '../components/ui/ErrorMessage';
 import { addToastAtom } from '../lib/atoms/toast';
 import { Layout } from '../components/layout/Layout';
+import { InvitationCodeSection } from '../components/settings/InvitationCodeSection';
 
 /**
  * Settings page
@@ -263,6 +264,11 @@ export default function SettingsPage() {
           </form>
         </CardContent>
       </Card>
+
+      {/* Invitation Codes Section - only shown if user has permission */}
+      <div className="mt-6">
+        <InvitationCodeSection />
+      </div>
     </Layout>
   );
 }
