@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { diMiddleware, errorHandler, securityHeaders, requestLogger } from './middleware/index.js';
+import { diMiddleware, errorHandler, securityHeaders, requestLogger, metricsMiddleware } from './middleware/index.js';
 import { logger } from './lib/logger.js';
+import metricsRoute from './routes/metrics.js';
 import usersRoute from './routes/users.js';
 import authRoute from './routes/auth.js';
 import driveRoute from './routes/drive.js';
@@ -25,14 +26,16 @@ import { getContainer } from './di/container.js';
 const app = new Hono();
 
 // Global middleware
+app.use('*', metricsMiddleware());
 app.use('*', requestLogger());
 app.use('*', errorHandler);
 app.use('*', securityHeaders());
 app.use('*', cors());
 app.use('*', diMiddleware());
 
-// Health check routes
+// Health check and metrics routes
 app.route('/health', healthRoute);
+app.route('/metrics', metricsRoute);
 
 // ルートエンドポイント
 app.get('/', (c) => {
