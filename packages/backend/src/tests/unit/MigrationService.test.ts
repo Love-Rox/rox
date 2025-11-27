@@ -31,7 +31,6 @@ describe('MigrationService', () => {
   // Mock repositories
   let mockUserRepository: any;
   let mockFollowRepository: any;
-  let mockRemoteActorService: any;
 
   // Test users
   const localUser: MockUser = {
@@ -64,9 +63,8 @@ describe('MigrationService', () => {
       findByFolloweeId: mock(() => Promise.resolve([])),
     };
 
-    mockRemoteActorService = {
-      resolveActor: mock(() => Promise.resolve(remoteUser)),
-    };
+    // mockRemoteActorService would be used in integration tests
+    // Currently not needed for these unit tests
   });
 
   describe('Alias Management', () => {
@@ -216,7 +214,7 @@ describe('MigrationService', () => {
     describe('validateMigration', () => {
       test('should validate bi-directional alsoKnownAs', () => {
         const sourceUri = 'https://example.com/users/localuser';
-        const targetUri = 'https://remote.example.com/users/remoteuser';
+        // targetUri would be used when fetching target actor document
 
         // Target has source in alsoKnownAs
         const target = {
