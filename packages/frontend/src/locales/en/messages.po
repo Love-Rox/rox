@@ -18,6 +18,16 @@ msgstr ""
 msgid "{0} categories"
 msgstr "{0} categories"
 
+#. placeholder {0}: checkResult.host
+#: src/pages/mod/instances.tsx:291
+msgid "{0} is blocked"
+msgstr "{0} is blocked"
+
+#. placeholder {0}: checkResult.host
+#: src/pages/mod/instances.tsx:298
+msgid "{0} is not blocked"
+msgstr "{0} is not blocked"
+
 #. placeholder {0}: selectedUser.reports.total
 #: src/pages/mod/users.tsx:258
 msgid "{0} reports against this user"
@@ -216,6 +226,8 @@ msgstr "Bio"
 
 #: src/pages/admin/blocks.tsx:223
 #: src/pages/admin/blocks.tsx:282
+#: src/pages/mod/instances.tsx:325
+#: src/pages/mod/instances.tsx:381
 msgid "Block Instance"
 msgstr "Block Instance"
 
@@ -223,8 +235,18 @@ msgstr "Block Instance"
 msgid "Block instances from federating with this server"
 msgstr "Block instances from federating with this server"
 
+#: src/pages/mod/instances.tsx:338
+msgid "Block New Instance"
+msgstr "Block New Instance"
+
+#: src/pages/mod/instances.tsx:308
+msgid "Blocked at:"
+msgstr "Blocked at:"
+
 #: src/pages/admin/blocks.tsx:211
 #: src/pages/admin/blocks.tsx:293
+#: src/pages/mod/instances.tsx:252
+#: src/pages/mod/instances.tsx:320
 msgid "Blocked Instances"
 msgstr "Blocked Instances"
 
@@ -232,6 +254,10 @@ msgstr "Blocked Instances"
 #: src/pages/admin/blocks.tsx:334
 msgid "Blocked on {0}"
 msgstr "Blocked on {0}"
+
+#: src/pages/mod/instances.tsx:417
+msgid "Blocked:"
+msgstr "Blocked:"
 
 #: src/pages/admin/blocks.tsx:231
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
@@ -264,6 +290,7 @@ msgstr "Can suspend users"
 #: src/components/report/ReportDialog.tsx:181
 #: src/pages/admin/emojis.tsx:555
 #: src/pages/admin/roles.tsx:547
+#: src/pages/mod/instances.tsx:374
 #: src/pages/settings.tsx:263
 msgid "Cancel"
 msgstr "Cancel"
@@ -271,6 +298,14 @@ msgstr "Cancel"
 #: src/pages/admin/emojis.tsx:463
 msgid "Category"
 msgstr "Category"
+
+#: src/pages/mod/instances.tsx:281
+msgid "Check"
+msgstr "Check"
+
+#: src/pages/mod/instances.tsx:265
+msgid "Check Instance"
+msgstr "Check Instance"
 
 #: src/pages/login.tsx:93
 msgid "Choose your preferred sign-in method"
@@ -540,6 +575,10 @@ msgstr "Emojis"
 msgid "Enable Registration"
 msgstr "Enable Registration"
 
+#: src/pages/mod/instances.tsx:276
+msgid "Enter instance hostname (e.g., spam.example.com)"
+msgstr "Enter instance hostname (e.g., spam.example.com)"
+
 #: src/pages/mod/users.tsx:300
 msgid "Enter reason for action..."
 msgstr "Enter reason for action..."
@@ -597,8 +636,13 @@ msgid "Failed to add reaction"
 msgstr "Failed to add reaction"
 
 #: src/pages/admin/blocks.tsx:131
+#: src/pages/mod/instances.tsx:148
 msgid "Failed to block instance"
 msgstr "Failed to block instance"
+
+#: src/pages/mod/instances.tsx:190
+msgid "Failed to check instance"
+msgstr "Failed to check instance"
 
 #: src/components/settings/InvitationCodeSection.tsx:99
 #: src/pages/admin/invitations.tsx:141
@@ -669,6 +713,7 @@ msgid "Failed to suspend user"
 msgstr "Failed to suspend user"
 
 #: src/pages/admin/blocks.tsx:155
+#: src/pages/mod/instances.tsx:171
 msgid "Failed to unblock instance"
 msgstr "Failed to unblock instance"
 
@@ -779,7 +824,12 @@ msgstr "Instance"
 msgid "Instance blocked"
 msgstr "Instance blocked"
 
+#: src/pages/mod/instances.tsx:137
+msgid "Instance blocked successfully"
+msgstr "Instance blocked successfully"
+
 #: src/pages/admin/blocks.tsx:190
+#: src/pages/mod/instances.tsx:232
 msgid "Instance Blocks"
 msgstr "Instance Blocks"
 
@@ -790,6 +840,10 @@ msgstr "Instance Details"
 #: src/pages/admin/blocks.tsx:241
 msgid "Instance Domain"
 msgstr "Instance Domain"
+
+#: src/pages/mod/instances.tsx:350
+msgid "Instance Hostname"
+msgstr "Instance Hostname"
 
 #: src/pages/admin/settings.tsx:232
 msgid "Instance Information"
@@ -806,6 +860,10 @@ msgstr "Instance settings saved"
 #: src/pages/admin/blocks.tsx:147
 msgid "Instance unblocked"
 msgstr "Instance unblocked"
+
+#: src/pages/mod/instances.tsx:164
+msgid "Instance unblocked successfully"
+msgstr "Instance unblocked successfully"
 
 #: src/pages/admin/emojis.tsx:146
 msgid "Invalid file type. Allowed: PNG, GIF, WebP, APNG"
@@ -915,6 +973,10 @@ msgstr "Lowercase letters, numbers, and underscores only"
 msgid "Maintainer Email"
 msgstr "Maintainer Email"
 
+#: src/pages/mod/instances.tsx:235
+msgid "Manage blocked instances"
+msgstr "Manage blocked instances"
+
 #: src/pages/admin/invitations.tsx:221
 msgid "Manage invitation codes for new user registration"
 msgstr "Manage invitation codes for new user registration"
@@ -1009,6 +1071,10 @@ msgstr "No emojis found"
 #: src/pages/admin/emojis.tsx:601
 msgid "No emojis match your search"
 msgstr "No emojis match your search"
+
+#: src/pages/mod/instances.tsx:392
+msgid "No instances blocked"
+msgstr "No instances blocked"
 
 #: src/components/settings/InvitationCodeSection.tsx:215
 #: src/pages/admin/invitations.tsx:340
@@ -1229,11 +1295,17 @@ msgid "Reason"
 msgstr "Reason"
 
 #: src/pages/admin/blocks.tsx:260
+#: src/pages/mod/instances.tsx:362
 #: src/pages/mod/users.tsx:295
 msgid "Reason (optional)"
 msgstr "Reason (optional)"
 
+#: src/pages/mod/instances.tsx:367
+msgid "Reason for blocking this instance..."
+msgstr "Reason for blocking this instance..."
+
 #: src/pages/mod/audit-logs.tsx:293
+#: src/pages/mod/instances.tsx:306
 msgid "Reason:"
 msgstr "Reason:"
 
@@ -1547,6 +1619,7 @@ msgstr "Show content"
 #. placeholder {0}: offset + 1
 #. placeholder {1}: Math.min(offset + limit, total)
 #: src/pages/mod/audit-logs.tsx:313
+#: src/pages/mod/instances.tsx:437
 msgid "Showing {0} - {1} of {total}"
 msgstr "Showing {0} - {1} of {total}"
 
@@ -1583,6 +1656,10 @@ msgstr "Social"
 #: src/components/LandingPage.tsx:238
 msgid "Software"
 msgstr "Software"
+
+#: src/pages/mod/instances.tsx:356
+msgid "spam.example.com"
+msgstr "spam.example.com"
 
 #: src/components/ui/EmojiPicker.tsx:404
 msgid "Standard Emojis"
@@ -1712,6 +1789,10 @@ msgstr "Try adjusting your filter"
 #: src/components/settings/UISettingsSection.tsx:141
 msgid "UI settings saved"
 msgstr "UI settings saved"
+
+#: src/pages/mod/instances.tsx:426
+msgid "Unblock"
+msgstr "Unblock"
 
 #: src/pages/admin/blocks.tsx:341
 msgid "Unblock instance"

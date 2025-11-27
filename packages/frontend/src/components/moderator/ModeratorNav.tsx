@@ -6,7 +6,7 @@
  * Provides navigation between moderator pages.
  */
 
-import { ClipboardList, FileText, Users, History } from 'lucide-react';
+import { ClipboardList, FileText, Users, History, Globe } from 'lucide-react';
 
 /**
  * Moderator navigation items
@@ -15,6 +15,7 @@ const MODERATOR_NAV_ITEMS = [
   { href: '/mod/reports', icon: ClipboardList, label: 'Reports' },
   { href: '/mod/notes', icon: FileText, label: 'Notes' },
   { href: '/mod/users', icon: Users, label: 'Users' },
+  { href: '/mod/instances', icon: Globe, label: 'Instances' },
   { href: '/mod/audit-logs', icon: History, label: 'Audit Logs' },
 ];
 

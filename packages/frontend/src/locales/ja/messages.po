@@ -18,10 +18,20 @@ msgstr ""
 msgid "{0} categories"
 msgstr "{0}カテゴリ"
 
+#. placeholder {0}: checkResult.host
+#: src/pages/mod/instances.tsx:291
+msgid "{0} is blocked"
+msgstr "{0}はブロック済みです"
+
+#. placeholder {0}: checkResult.host
+#: src/pages/mod/instances.tsx:298
+msgid "{0} is not blocked"
+msgstr "{0}はブロックされていません"
+
 #. placeholder {0}: selectedUser.reports.total
 #: src/pages/mod/users.tsx:258
 msgid "{0} reports against this user"
-msgstr ""
+msgstr "このユーザーに対する通報: {0}件"
 
 #: src/pages/admin/invitations.tsx:299
 msgid "1 Day"
@@ -70,11 +80,11 @@ msgstr "アカウント引っ越し"
 
 #: src/pages/mod/audit-logs.tsx:232
 msgid "Action Log"
-msgstr ""
+msgstr "アクションログ"
 
 #: src/pages/mod/users.tsx:290
 msgid "Actions"
-msgstr ""
+msgstr "アクション"
 
 #: src/components/settings/AccountMigrationSection.tsx:254
 msgid "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
@@ -121,7 +131,7 @@ msgstr "管理設定"
 
 #: src/pages/mod/users.tsx:346
 msgid "Admin users cannot be suspended"
-msgstr ""
+msgstr "管理者ユーザーは停止できません"
 
 #: src/components/settings/AccountMigrationSection.tsx:96
 msgid "Alias added successfully"
@@ -142,7 +152,7 @@ msgstr "すべて"
 
 #: src/pages/mod/audit-logs.tsx:240
 msgid "All Actions"
-msgstr ""
+msgstr "すべてのアクション"
 
 #: src/pages/admin/emojis.tsx:578
 msgid "All Categories"
@@ -154,7 +164,7 @@ msgstr "すべてのインスタンスがこのサーバーと連携できます
 
 #: src/pages/mod/audit-logs.tsx:253
 msgid "All Types"
-msgstr ""
+msgstr "すべてのタイプ"
 
 #: src/pages/admin/settings.tsx:385
 msgid "Allow new users to register accounts"
@@ -179,7 +189,7 @@ msgstr "アカウントを引っ越ししてもよろしいですか？この操
 
 #: src/pages/mod/audit-logs.tsx:202
 msgid "Audit Logs"
-msgstr ""
+msgstr "監査ログ"
 
 #: src/components/note/NoteComposer.tsx:191
 msgid "Authentication required"
@@ -216,6 +226,8 @@ msgstr "自己紹介"
 
 #: src/pages/admin/blocks.tsx:223
 #: src/pages/admin/blocks.tsx:282
+#: src/pages/mod/instances.tsx:325
+#: src/pages/mod/instances.tsx:381
 msgid "Block Instance"
 msgstr "インスタンスをブロック"
 
@@ -223,8 +235,18 @@ msgstr "インスタンスをブロック"
 msgid "Block instances from federating with this server"
 msgstr "インスタンスの連携をブロックします"
 
+#: src/pages/mod/instances.tsx:338
+msgid "Block New Instance"
+msgstr "新しいインスタンスをブロック"
+
+#: src/pages/mod/instances.tsx:308
+msgid "Blocked at:"
+msgstr "ブロック日時:"
+
 #: src/pages/admin/blocks.tsx:211
 #: src/pages/admin/blocks.tsx:293
+#: src/pages/mod/instances.tsx:252
+#: src/pages/mod/instances.tsx:320
 msgid "Blocked Instances"
 msgstr "ブロック中のインスタンス"
 
@@ -232,6 +254,10 @@ msgstr "ブロック中のインスタンス"
 #: src/pages/admin/blocks.tsx:334
 msgid "Blocked on {0}"
 msgstr "{0}にブロック"
+
+#: src/pages/mod/instances.tsx:417
+msgid "Blocked:"
+msgstr "ブロック:"
 
 #: src/pages/admin/blocks.tsx:231
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
@@ -264,6 +290,7 @@ msgstr "ユーザーを凍結可能"
 #: src/components/report/ReportDialog.tsx:181
 #: src/pages/admin/emojis.tsx:555
 #: src/pages/admin/roles.tsx:547
+#: src/pages/mod/instances.tsx:374
 #: src/pages/settings.tsx:263
 msgid "Cancel"
 msgstr "キャンセル"
@@ -271,6 +298,14 @@ msgstr "キャンセル"
 #: src/pages/admin/emojis.tsx:463
 msgid "Category"
 msgstr "カテゴリ"
+
+#: src/pages/mod/instances.tsx:281
+msgid "Check"
+msgstr "確認"
+
+#: src/pages/mod/instances.tsx:265
+msgid "Check Instance"
+msgstr "インスタンスを確認"
 
 #: src/pages/login.tsx:93
 msgid "Choose your preferred sign-in method"
@@ -421,7 +456,11 @@ msgstr "コードを削除"
 
 #: src/pages/mod/audit-logs.tsx:241
 msgid "Delete Note"
-msgstr ""
+msgstr "ノートを削除"
+
+#: src/pages/mod/audit-logs.tsx:241
+#~ msgid "Delete NotePLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/roles.tsx:621
 msgid "Delete Notes"
@@ -434,12 +473,21 @@ msgstr "ロールを削除"
 #: src/pages/mod/notes.tsx:177
 #: src/pages/mod/notes.tsx:188
 msgid "Deleted Notes"
-msgstr ""
+msgstr "削除されたノート"
+
+#: src/pages/mod/notes.tsx:177
+#: src/pages/mod/notes.tsx:188
+#~ msgid "Deleted NotesPLACEHOLDER"
+#~ msgstr ""
 
 #. placeholder {0}: formatDate(note.deletedAt)
 #: src/pages/mod/notes.tsx:260
 msgid "Deleted: {0}"
-msgstr ""
+msgstr "削除日時: {0}"
+
+#: src/pages/mod/notes.tsx:260
+#~ msgid "Deleted: {0}PLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/roles.tsx:385
 #: src/pages/admin/settings.tsx:253
@@ -540,9 +588,21 @@ msgstr "絵文字"
 msgid "Enable Registration"
 msgstr "登録を有効化"
 
+#: src/pages/mod/instances.tsx:276
+msgid "Enter instance hostname (e.g., spam.example.com)"
+msgstr "インスタンスのホスト名を入力（例: spam.example.com）"
+
+#: src/pages/mod/instances.tsx:276
+#~ msgid "Enter instance hostname (e.g., spam.example.com)PLACEHOLDER"
+#~ msgstr ""
+
 #: src/pages/mod/users.tsx:300
 msgid "Enter reason for action..."
-msgstr ""
+msgstr "アクションの理由を入力..."
+
+#: src/pages/mod/users.tsx:300
+#~ msgid "Enter reason for action...PLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/blocks.tsx:254
 msgid "Enter the domain without https:// prefix"
@@ -550,7 +610,11 @@ msgstr "https://を除いたドメインを入力してください"
 
 #: src/pages/mod/users.tsx:188
 msgid "Enter username (e.g., alice or alice@remote.server)"
-msgstr ""
+msgstr "ユーザー名を入力（例: alice または alice@remote.server）"
+
+#: src/pages/mod/users.tsx:188
+#~ msgid "Enter username (e.g., alice or alice@remote.server)PLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/signup.tsx:152
 msgid "Enter your invitation code to register"
@@ -597,8 +661,17 @@ msgid "Failed to add reaction"
 msgstr "リアクションの追加に失敗しました"
 
 #: src/pages/admin/blocks.tsx:131
+#: src/pages/mod/instances.tsx:148
 msgid "Failed to block instance"
 msgstr "インスタンスのブロックに失敗しました"
+
+#: src/pages/mod/instances.tsx:190
+msgid "Failed to check instance"
+msgstr "インスタンスの確認に失敗しました"
+
+#: src/pages/mod/instances.tsx:190
+#~ msgid "Failed to check instancePLACEHOLDER"
+#~ msgstr ""
 
 #: src/components/settings/InvitationCodeSection.tsx:99
 #: src/pages/admin/invitations.tsx:141
@@ -620,7 +693,11 @@ msgstr "ロールの削除に失敗しました"
 
 #: src/pages/mod/users.tsx:90
 msgid "Failed to find user"
-msgstr ""
+msgstr "ユーザーが見つかりませんでした"
+
+#: src/pages/mod/users.tsx:90
+#~ msgid "Failed to find userPLACEHOLDER"
+#~ msgstr ""
 
 #: src/components/settings/AccountMigrationSection.tsx:176
 msgid "Failed to initiate migration"
@@ -650,7 +727,11 @@ msgstr "リノートに失敗しました"
 
 #: src/pages/mod/notes.tsx:121
 msgid "Failed to restore note"
-msgstr ""
+msgstr "ノートの復元に失敗しました"
+
+#: src/pages/mod/notes.tsx:121
+#~ msgid "Failed to restore notePLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/roles.tsx:217
 msgid "Failed to save role"
@@ -666,15 +747,24 @@ msgstr "報告の送信に失敗しました"
 
 #: src/pages/mod/users.tsx:119
 msgid "Failed to suspend user"
-msgstr ""
+msgstr "ユーザーの停止に失敗しました"
+
+#: src/pages/mod/users.tsx:119
+#~ msgid "Failed to suspend userPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/blocks.tsx:155
+#: src/pages/mod/instances.tsx:171
 msgid "Failed to unblock instance"
 msgstr "インスタンスのブロック解除に失敗しました"
 
 #: src/pages/mod/users.tsx:148
 msgid "Failed to unsuspend user"
-msgstr ""
+msgstr "ユーザーの停止解除に失敗しました"
+
+#: src/pages/mod/users.tsx:148
+#~ msgid "Failed to unsuspend userPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/emojis.tsx:260
 msgid "Failed to update emoji"
@@ -779,7 +869,16 @@ msgstr "インスタンス"
 msgid "Instance blocked"
 msgstr "インスタンスをブロックしました"
 
+#: src/pages/mod/instances.tsx:137
+msgid "Instance blocked successfully"
+msgstr "インスタンスをブロックしました"
+
+#: src/pages/mod/instances.tsx:137
+#~ msgid "Instance blocked successfullyPLACEHOLDER"
+#~ msgstr ""
+
 #: src/pages/admin/blocks.tsx:190
+#: src/pages/mod/instances.tsx:232
 msgid "Instance Blocks"
 msgstr "インスタンスブロック"
 
@@ -790,6 +889,14 @@ msgstr "インスタンス詳細"
 #: src/pages/admin/blocks.tsx:241
 msgid "Instance Domain"
 msgstr "インスタンスドメイン"
+
+#: src/pages/mod/instances.tsx:350
+msgid "Instance Hostname"
+msgstr "インスタンスのホスト名"
+
+#: src/pages/mod/instances.tsx:350
+#~ msgid "Instance HostnamePLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/settings.tsx:232
 msgid "Instance Information"
@@ -806,6 +913,14 @@ msgstr "インスタンス設定を保存しました"
 #: src/pages/admin/blocks.tsx:147
 msgid "Instance unblocked"
 msgstr "インスタンスのブロックを解除しました"
+
+#: src/pages/mod/instances.tsx:164
+msgid "Instance unblocked successfully"
+msgstr "インスタンスのブロックを解除しました"
+
+#: src/pages/mod/instances.tsx:164
+#~ msgid "Instance unblocked successfullyPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/emojis.tsx:146
 msgid "Invalid file type. Allowed: PNG, GIF, WebP, APNG"
@@ -856,7 +971,11 @@ msgstr "Roxに参加して共有を始めましょう"
 #. placeholder {0}: formatDate(selectedUser.user.createdAt)
 #: src/pages/mod/users.tsx:247
 msgid "Joined: {0}"
-msgstr ""
+msgstr "登録日: {0}"
+
+#: src/pages/mod/users.tsx:247
+#~ msgid "Joined: {0}PLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/invitations.tsx:264
 msgid "Leave empty for auto-generated code"
@@ -915,6 +1034,14 @@ msgstr "小文字、数字、アンダースコアのみ使用可"
 msgid "Maintainer Email"
 msgstr "管理者メールアドレス"
 
+#: src/pages/mod/instances.tsx:235
+msgid "Manage blocked instances"
+msgstr "ブロック済みインスタンスを管理"
+
+#: src/pages/mod/instances.tsx:235
+#~ msgid "Manage blocked instancesPLACEHOLDER"
+#~ msgstr ""
+
 #: src/pages/admin/invitations.tsx:221
 msgid "Manage invitation codes for new user registration"
 msgstr "新規ユーザー登録用の招待コードを管理"
@@ -951,11 +1078,19 @@ msgstr "最低8文字"
 
 #: src/pages/mod/reports.tsx:233
 msgid "Moderation Dashboard"
-msgstr ""
+msgstr "モデレーションダッシュボード"
+
+#: src/pages/mod/reports.tsx:233
+#~ msgid "Moderation DashboardPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/mod/users.tsx:88
 msgid "Moderator access required"
-msgstr ""
+msgstr "モデレーター権限が必要です"
+
+#: src/pages/mod/users.tsx:88
+#~ msgid "Moderator access requiredPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/roles.tsx:439
 msgid "Moderator Role"
@@ -988,7 +1123,11 @@ msgstr "エイリアスが設定されていません"
 
 #: src/pages/mod/audit-logs.tsx:268
 msgid "No audit logs found"
-msgstr ""
+msgstr "監査ログがありません"
+
+#: src/pages/mod/audit-logs.tsx:268
+#~ msgid "No audit logs foundPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/blocks.tsx:308
 msgid "No blocked instances"
@@ -1000,7 +1139,11 @@ msgstr "カスタム絵文字がまだありません"
 
 #: src/pages/mod/notes.tsx:199
 msgid "No deleted notes"
-msgstr ""
+msgstr "削除されたノートはありません"
+
+#: src/pages/mod/notes.tsx:199
+#~ msgid "No deleted notesPLACEHOLDER"
+#~ msgstr ""
 
 #: src/components/ui/EmojiPicker.tsx:427
 msgid "No emojis found"
@@ -1009,6 +1152,14 @@ msgstr "絵文字が見つかりません"
 #: src/pages/admin/emojis.tsx:601
 msgid "No emojis match your search"
 msgstr "検索に一致する絵文字がありません"
+
+#: src/pages/mod/instances.tsx:392
+msgid "No instances blocked"
+msgstr "ブロック済みのインスタンスはありません"
+
+#: src/pages/mod/instances.tsx:392
+#~ msgid "No instances blockedPLACEHOLDER"
+#~ msgstr ""
 
 #: src/components/settings/InvitationCodeSection.tsx:215
 #: src/pages/admin/invitations.tsx:340
@@ -1056,7 +1207,11 @@ msgstr "ノートを削除しました"
 
 #: src/pages/mod/notes.tsx:158
 msgid "Note Moderation"
-msgstr ""
+msgstr "ノートのモデレーション"
+
+#: src/pages/mod/notes.tsx:158
+#~ msgid "Note ModerationPLACEHOLDER"
+#~ msgstr ""
 
 #: src/components/pages/NoteDetailPageClient.tsx:95
 msgid "Note not found"
@@ -1077,7 +1232,11 @@ msgstr "ノートの報告"
 
 #: src/pages/mod/notes.tsx:114
 msgid "Note restored successfully"
-msgstr ""
+msgstr "ノートを復元しました"
+
+#: src/pages/mod/notes.tsx:114
+#~ msgid "Note restored successfullyPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/settings.tsx:229
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
@@ -1089,11 +1248,19 @@ msgstr "注意: セキュリティのため一部のCSSプロパティは制限�
 
 #: src/pages/mod/audit-logs.tsx:254
 msgid "Notes"
-msgstr ""
+msgstr "ノート"
 
 #: src/pages/mod/notes.tsx:202
 msgid "Notes deleted by moderators will appear here"
-msgstr ""
+msgstr "モデレーターが削除したノートがここに表示されます"
+
+#: src/pages/mod/notes.tsx:202
+#~ msgid "Notes deleted by moderators will appear herePLACEHOLDER"
+#~ msgstr ""
+
+#: src/pages/mod/audit-logs.tsx:254
+#~ msgid "NotesPLACEHOLDER"
+#~ msgstr ""
 
 #: src/components/LandingPage.tsx:106
 msgid "Open Registration"
@@ -1229,22 +1396,45 @@ msgid "Reason"
 msgstr "報告理由"
 
 #: src/pages/admin/blocks.tsx:260
+#: src/pages/mod/instances.tsx:362
 #: src/pages/mod/users.tsx:295
 msgid "Reason (optional)"
 msgstr "理由（任意）"
 
+#: src/pages/mod/instances.tsx:367
+msgid "Reason for blocking this instance..."
+msgstr "このインスタンスをブロックする理由..."
+
+#: src/pages/mod/instances.tsx:367
+#~ msgid "Reason for blocking this instance...PLACEHOLDER"
+#~ msgstr ""
+
 #: src/pages/mod/audit-logs.tsx:293
+#: src/pages/mod/instances.tsx:306
 msgid "Reason:"
-msgstr ""
+msgstr "理由:"
 
 #. placeholder {0}: note.deletionReason
 #: src/pages/mod/notes.tsx:264
 msgid "Reason: {0}"
-msgstr ""
+msgstr "理由: {0}"
+
+#: src/pages/mod/notes.tsx:264
+#~ msgid "Reason: {0}PLACEHOLDER"
+#~ msgstr ""
+
+#: src/pages/mod/audit-logs.tsx:293
+#: src/pages/mod/instances.tsx:306
+#~ msgid "Reason:PLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/mod/users.tsx:268
 msgid "Recent Moderation History"
-msgstr ""
+msgstr "最近のモデレーション履歴"
+
+#: src/pages/mod/users.tsx:268
+#~ msgid "Recent Moderation HistoryPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/timeline.tsx:84
 msgid "Recent posts from your community"
@@ -1284,7 +1474,11 @@ msgstr "却下"
 
 #: src/pages/mod/audit-logs.tsx:246
 msgid "Reject Report"
-msgstr ""
+msgstr "通報を却下"
+
+#: src/pages/mod/audit-logs.tsx:246
+#~ msgid "Reject ReportPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/reports.tsx:302
 #: src/pages/mod/reports.tsx:289
@@ -1415,7 +1609,11 @@ msgstr "解決"
 
 #: src/pages/mod/audit-logs.tsx:245
 msgid "Resolve Report"
-msgstr ""
+msgstr "通報を解決"
+
+#: src/pages/mod/audit-logs.tsx:245
+#~ msgid "Resolve ReportPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/reports.tsx:301
 #: src/pages/mod/reports.tsx:288
@@ -1435,7 +1633,11 @@ msgstr "復元"
 
 #: src/pages/mod/audit-logs.tsx:242
 msgid "Restore Note"
-msgstr ""
+msgstr "ノートを復元"
+
+#: src/pages/mod/audit-logs.tsx:242
+#~ msgid "Restore NotePLACEHOLDER"
+#~ msgstr ""
 
 #: src/components/ui/ErrorMessage.tsx:88
 msgid "Retry"
@@ -1505,7 +1707,7 @@ msgstr "保存中..."
 
 #: src/pages/mod/users.tsx:193
 msgid "Search"
-msgstr ""
+msgstr "検索"
 
 #: src/components/ui/EmojiPicker.tsx:322
 msgid "Search emoji..."
@@ -1517,11 +1719,23 @@ msgstr "絵文字を検索..."
 
 #: src/pages/mod/users.tsx:167
 msgid "Search for users and manage suspensions"
-msgstr ""
+msgstr "ユーザーを検索して停止を管理"
+
+#: src/pages/mod/users.tsx:167
+#~ msgid "Search for users and manage suspensionsPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/mod/users.tsx:177
 msgid "Search User"
-msgstr ""
+msgstr "ユーザーを検索"
+
+#: src/pages/mod/users.tsx:177
+#~ msgid "Search UserPLACEHOLDER"
+#~ msgstr ""
+
+#: src/pages/mod/users.tsx:193
+#~ msgid "SearchPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/settings.tsx:580
 msgid "Secondary"
@@ -1547,8 +1761,14 @@ msgstr "内容を表示"
 #. placeholder {0}: offset + 1
 #. placeholder {1}: Math.min(offset + limit, total)
 #: src/pages/mod/audit-logs.tsx:313
+#: src/pages/mod/instances.tsx:437
 msgid "Showing {0} - {1} of {total}"
-msgstr ""
+msgstr "{total}件中 {0} - {1}を表示"
+
+#: src/pages/mod/audit-logs.tsx:313
+#: src/pages/mod/instances.tsx:437
+#~ msgid "Showing {0} - {1} of {total}PLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/login.tsx:171
 #: src/pages/signup.tsx:226
@@ -1584,6 +1804,14 @@ msgstr "ソーシャル"
 msgid "Software"
 msgstr "ソフトウェア"
 
+#: src/pages/mod/instances.tsx:356
+msgid "spam.example.com"
+msgstr "spam.example.com"
+
+#: src/pages/mod/instances.tsx:356
+#~ msgid "spam.example.comPLACEHOLDER"
+#~ msgstr ""
+
 #: src/components/ui/EmojiPicker.tsx:404
 msgid "Standard Emojis"
 msgstr "標準絵文字"
@@ -1595,7 +1823,12 @@ msgstr "報告を送信"
 #: src/pages/mod/audit-logs.tsx:243
 #: src/pages/mod/users.tsx:332
 msgid "Suspend User"
-msgstr ""
+msgstr "ユーザーを停止"
+
+#: src/pages/mod/audit-logs.tsx:243
+#: src/pages/mod/users.tsx:332
+#~ msgid "Suspend UserPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/roles.tsx:626
 msgid "Suspend Users"
@@ -1603,7 +1836,11 @@ msgstr "ユーザー凍結"
 
 #: src/pages/mod/users.tsx:238
 msgid "Suspended"
-msgstr ""
+msgstr "停止中"
+
+#: src/pages/mod/users.tsx:238
+#~ msgid "SuspendedPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/settings.tsx:523
 msgid "System"
@@ -1619,7 +1856,11 @@ msgstr "移行先アカウントURI"
 
 #: src/pages/mod/audit-logs.tsx:298
 msgid "Target ID:"
-msgstr ""
+msgstr "対象ID:"
+
+#: src/pages/mod/audit-logs.tsx:298
+#~ msgid "Target ID:PLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/settings.tsx:171
 msgid "Tell us about yourself..."
@@ -1681,7 +1922,11 @@ msgstr "タイムライン"
 
 #: src/pages/mod/audit-logs.tsx:221
 msgid "Total Actions"
-msgstr ""
+msgstr "合計アクション数"
+
+#: src/pages/mod/audit-logs.tsx:221
+#~ msgid "Total ActionsPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/invitations.tsx:234
 msgid "Total Codes"
@@ -1713,9 +1958,17 @@ msgstr "フィルターを調整してみてください"
 msgid "UI settings saved"
 msgstr "表示設定を保存しました"
 
+#: src/pages/mod/instances.tsx:426
+msgid "Unblock"
+msgstr "ブロック解除"
+
 #: src/pages/admin/blocks.tsx:341
 msgid "Unblock instance"
 msgstr "ブロック解除"
+
+#: src/pages/mod/instances.tsx:426
+#~ msgid "UnblockPLACEHOLDER"
+#~ msgstr ""
 
 #: src/components/note/NoteCard.tsx:170
 msgid "Unfollowed successfully"
@@ -1731,12 +1984,21 @@ msgstr "不明"
 
 #: src/pages/mod/notes.tsx:232
 msgid "Unknown User"
-msgstr ""
+msgstr "不明なユーザー"
+
+#: src/pages/mod/notes.tsx:232
+#~ msgid "Unknown UserPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/mod/audit-logs.tsx:244
 #: src/pages/mod/users.tsx:317
 msgid "Unsuspend User"
-msgstr ""
+msgstr "ユーザーの停止を解除"
+
+#: src/pages/mod/audit-logs.tsx:244
+#: src/pages/mod/users.tsx:317
+#~ msgid "Unsuspend UserPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/admin/emojis.tsx:549
 msgid "Update Emoji"
@@ -1762,11 +2024,19 @@ msgstr "使用済み"
 
 #: src/pages/mod/users.tsx:210
 msgid "User Details"
-msgstr ""
+msgstr "ユーザー詳細"
+
+#: src/pages/mod/users.tsx:210
+#~ msgid "User DetailsPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/mod/users.tsx:164
 msgid "User Moderation"
-msgstr ""
+msgstr "ユーザーのモデレーション"
+
+#: src/pages/mod/users.tsx:164
+#~ msgid "User ModerationPLACEHOLDER"
+#~ msgstr ""
 
 #: src/components/user/UserProfile.tsx:263
 #: src/pages/mod/users.tsx:86
@@ -1780,11 +2050,19 @@ msgstr "ユーザーの報告"
 
 #: src/pages/mod/users.tsx:109
 msgid "User suspended successfully"
-msgstr ""
+msgstr "ユーザーを停止しました"
+
+#: src/pages/mod/users.tsx:109
+#~ msgid "User suspended successfullyPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/mod/users.tsx:138
 msgid "User unsuspended successfully"
-msgstr ""
+msgstr "ユーザーの停止を解除しました"
+
+#: src/pages/mod/users.tsx:138
+#~ msgid "User unsuspended successfullyPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/login.tsx:143
 #: src/pages/settings.tsx:190
@@ -1803,11 +2081,15 @@ msgstr "ユーザー名を入力してください"
 
 #: src/pages/mod/audit-logs.tsx:255
 msgid "Users"
-msgstr ""
+msgstr "ユーザー"
 
 #: src/pages/admin/settings.tsx:557
 msgid "Users can still override this with their own preference"
 msgstr "ユーザーは自分の設定で上書きできます"
+
+#: src/pages/mod/audit-logs.tsx:255
+#~ msgid "UsersPLACEHOLDER"
+#~ msgstr ""
 
 #. placeholder {0}: code.useCount
 #. placeholder {0}: invitation.useCount
@@ -1828,11 +2110,19 @@ msgstr "検証に失敗しました"
 
 #: src/pages/mod/audit-logs.tsx:205
 msgid "View all moderation actions"
-msgstr ""
+msgstr "すべてのモデレーションアクションを表示"
+
+#: src/pages/mod/audit-logs.tsx:205
+#~ msgid "View all moderation actionsPLACEHOLDER"
+#~ msgstr ""
 
 #: src/pages/mod/notes.tsx:161
 msgid "View and restore deleted notes"
-msgstr ""
+msgstr "削除されたノートを表示・復元"
+
+#: src/pages/mod/notes.tsx:161
+#~ msgid "View and restore deleted notesPLACEHOLDER"
+#~ msgstr ""
 
 #: src/components/LandingPage.tsx:259
 msgid "View Policy"

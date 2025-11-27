@@ -506,6 +506,160 @@ app.get('/audit-logs/:id', async (c) => {
 });
 
 // ============================================================================
+// Instance Block Endpoints
+// ============================================================================
+
+/**
+ * List Blocked Instances
+ *
+ * GET /api/mod/instance-blocks
+ *
+ * Returns a paginated list of blocked instances.
+ *
+ * Query Parameters:
+ * - limit: Maximum number of blocks (default: 100)
+ * - offset: Number of blocks to skip (default: 0)
+ */
+app.get('/instance-blocks', async (c) => {
+  const instanceBlockRepository = c.get('instanceBlockRepository');
+
+  const limit = Math.min(parseInt(c.req.query('limit') || '100'), 1000);
+  const offset = parseInt(c.req.query('offset') || '0');
+
+  const blocks = await instanceBlockRepository.findAll(limit, offset);
+  const total = await instanceBlockRepository.count();
+
+  return c.json({ blocks, total });
+});
+
+/**
+ * Check if Instance is Blocked
+ *
+ * GET /api/mod/instance-blocks/check
+ *
+ * Checks if a specific instance host is blocked.
+ *
+ * Query Parameters:
+ * - host: Instance hostname to check
+ */
+app.get('/instance-blocks/check', async (c) => {
+  const instanceBlockRepository = c.get('instanceBlockRepository');
+  const host = c.req.query('host');
+
+  if (!host) {
+    return c.json({ error: 'host parameter is required' }, 400);
+  }
+
+  const isBlocked = await instanceBlockRepository.isBlocked(host);
+  const block = isBlocked ? await instanceBlockRepository.findByHost(host) : null;
+
+  return c.json({ host, isBlocked, block });
+});
+
+/**
+ * Block an Instance
+ *
+ * POST /api/mod/instance-blocks
+ *
+ * Adds a new instance to the block list.
+ *
+ * Request Body:
+ * ```json
+ * {
+ *   "host": "spam.instance.com",
+ *   "reason": "Spam and harassment"
+ * }
+ * ```
+ */
+app.post('/instance-blocks', async (c) => {
+  const instanceBlockRepository = c.get('instanceBlockRepository');
+  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
+  const moderator = c.get('user');
+
+  const body = await c.req.json();
+
+  if (!body.host || typeof body.host !== 'string') {
+    return c.json({ error: 'host is required' }, 400);
+  }
+
+  // Normalize hostname (lowercase, no protocol)
+  const host = body.host.toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+
+  // Check if already blocked
+  const existing = await instanceBlockRepository.findByHost(host);
+  if (existing) {
+    return c.json({ error: `Instance ${host} is already blocked` }, 409);
+  }
+
+  const block = await instanceBlockRepository.create({
+    host,
+    reason: body.reason || null,
+    blockedById: moderator!.id,
+  });
+
+  // Log moderation action
+  await moderationAuditLogRepository.create({
+    moderatorId: moderator!.id,
+    action: 'block_instance',
+    targetType: 'instance',
+    targetId: host,
+    reason: body.reason || undefined,
+  });
+
+  return c.json(block, 201);
+});
+
+/**
+ * Unblock an Instance
+ *
+ * DELETE /api/mod/instance-blocks/:host
+ *
+ * Removes an instance from the block list.
+ *
+ * Request Body (optional):
+ * ```json
+ * {
+ *   "reason": "Block was applied in error"
+ * }
+ * ```
+ */
+app.delete('/instance-blocks/:host', async (c) => {
+  const instanceBlockRepository = c.get('instanceBlockRepository');
+  const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
+  const moderator = c.get('user');
+  const host = c.req.param('host');
+
+  const body = await c.req.json().catch(() => ({}));
+  const reason = body.reason as string | undefined;
+
+  // Get block details before deletion for audit log
+  const block = await instanceBlockRepository.findByHost(host);
+  if (!block) {
+    return c.json({ error: `Instance ${host} is not blocked` }, 404);
+  }
+
+  const deleted = await instanceBlockRepository.deleteByHost(host);
+  if (!deleted) {
+    return c.json({ error: `Failed to unblock instance ${host}` }, 500);
+  }
+
+  // Log moderation action
+  await moderationAuditLogRepository.create({
+    moderatorId: moderator!.id,
+    action: 'unblock_instance',
+    targetType: 'instance',
+    targetId: host,
+    reason,
+    details: {
+      previousReason: block.reason,
+      blockedAt: block.createdAt,
+    },
+  });
+
+  return c.json({ success: true, message: `Instance ${host} has been unblocked` });
+});
+
+// ============================================================================
 // Statistics Endpoint
 // ============================================================================
 
@@ -520,6 +674,7 @@ app.get('/stats', async (c) => {
   const userReportRepository = c.get('userReportRepository');
   const moderationAuditLogRepository = c.get('moderationAuditLogRepository');
   const userRepository = c.get('userRepository');
+  const instanceBlockRepository = c.get('instanceBlockRepository');
 
   const [
     pendingReports,
@@ -528,6 +683,7 @@ app.get('/stats', async (c) => {
     rejectedReports,
     totalAuditLogs,
     suspendedUsers,
+    blockedInstances,
   ] = await Promise.all([
     userReportRepository.count({ status: 'pending' }),
     userReportRepository.count({}),
@@ -539,6 +695,7 @@ app.get('/stats', async (c) => {
       const users = await userRepository.findAll({ isSuspended: true, limit: 10000 });
       return users.length;
     }),
+    instanceBlockRepository.count(),
   ]);
 
   return c.json({
@@ -553,6 +710,9 @@ app.get('/stats', async (c) => {
     },
     users: {
       suspended: suspendedUsers,
+    },
+    instances: {
+      blocked: blockedInstances,
     },
   });
 });

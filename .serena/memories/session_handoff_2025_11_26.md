@@ -124,8 +124,55 @@ bun test src/tests/unit/           # Unit tests only
 bun test src/tests/integration/    # Integration tests
 ```
 
+## Session Update - 2025-11-28
+
+### Phase 5: Moderation Features ✅
+
+Implemented comprehensive moderation system:
+
+**Backend:**
+- `ModerationAuditLogRepository.ts` - Audit log storage and querying
+- `moderator.ts` - Moderator API routes (`/api/mod/*`)
+- Soft-delete for notes with moderation logging
+- Role-based access control via `requireModeratorRole` middleware
+
+**Moderator API Endpoints:**
+- `GET /api/mod/reports` - List reports with filtering
+- `GET /api/mod/reports/:id` - Report details
+- `POST /api/mod/reports/:id/resolve` - Resolve/reject reports
+- `DELETE /api/mod/notes/:id` - Soft-delete notes
+- `POST /api/mod/notes/:id/restore` - Restore deleted notes
+- `GET /api/mod/notes/deleted` - List deleted notes
+- `POST /api/mod/users/:id/suspend` - Suspend users
+- `POST /api/mod/users/:id/unsuspend` - Unsuspend users
+- `GET /api/mod/users/:id` - User moderation details
+- `GET /api/mod/audit-logs` - Audit log history
+- `GET /api/mod/stats` - Moderation statistics
+
+**Frontend:**
+- `ModeratorNav.tsx` - Navigation component
+- `/mod/reports` - Report queue management
+- `/mod/notes` - Deleted notes management
+- `/mod/users` - User suspension management
+- `/mod/audit-logs` - Audit log viewer
+
+**Database:**
+- Migration 0015: `moderation_audit_logs` table
+- Migration 0016: Soft-delete fields on notes
+
+**Tests:**
+- `ModeratorMiddleware.test.ts` (role-based access control)
+- `ModerationAuditLogRepository.test.ts` (audit log CRUD)
+
+**Commits:**
+- `6580f54` feat: implement moderator dashboard with soft-delete for notes
+
+### Current Test Count
+- **435 unit tests** passing (1 pre-existing failure in FollowHandler.test.ts)
+
 ## Next Steps
 
-1. Wait for CI to pass
-2. Continue Phase 5 (moderation features)
-3. Image optimization (already implemented via ImageProcessor.ts)
+1. Instance blocking feature
+2. User warning system
+3. Rate limiting for API endpoints
+4. Image optimization improvements
