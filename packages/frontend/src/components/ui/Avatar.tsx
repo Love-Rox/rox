@@ -79,10 +79,36 @@ function isExternalUrl(url: string): boolean {
 }
 
 /**
+ * Check if URL points to a local/development domain that shouldn't be proxied
+ */
+function isLocalDevelopmentUrl(url: string): boolean {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.toLowerCase();
+    return (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '::1' ||
+      hostname.endsWith('.local') ||
+      hostname.endsWith('.localhost') ||
+      hostname.startsWith('192.168.') ||
+      hostname.startsWith('10.') ||
+      hostname.startsWith('172.')
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Get proxied URL for external images
+ * In development/local environments, return the original URL to avoid proxy restrictions
  */
 function getProxiedUrl(url: string): string {
   if (!url || !isExternalUrl(url)) return url;
+  // Don't proxy local development URLs - they would be blocked by the proxy anyway
+  if (isLocalDevelopmentUrl(url)) return url;
   return `/proxy?url=${encodeURIComponent(url)}`;
 }
 
