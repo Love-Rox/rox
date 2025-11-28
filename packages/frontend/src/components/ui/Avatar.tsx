@@ -110,7 +110,8 @@ function getProxiedUrl(url: string): string {
   if (!url || !isExternalUrl(url)) return url;
   // Don't proxy local development URLs - they would be blocked by the proxy anyway
   if (isLocalDevelopmentUrl(url)) return url;
-  return `/proxy?url=${encodeURIComponent(url)}`;
+  // Use /api/proxy to ensure the request is routed to the backend API
+  return `/api/proxy?url=${encodeURIComponent(url)}`;
 }
 
 export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps) {

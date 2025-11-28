@@ -72,7 +72,8 @@ app.route('/api/i/migration', migrationRoute);
 app.route('/api/notifications', notificationsRoute);
 app.route('/api/push', pushRoute);
 
-// Media Proxy
+// Media Proxy (both paths for backward compatibility)
+app.route('/api/proxy', proxyRoute);
 app.route('/proxy', proxyRoute);
 
 // ActivityPubルート
