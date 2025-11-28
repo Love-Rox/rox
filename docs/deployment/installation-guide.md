@@ -6,16 +6,17 @@ Complete step-by-step guide for deploying Rox on a VPS with Nginx.
 
 1. [Overview](#overview)
 2. [Prerequisites](#prerequisites)
-3. [Server Preparation](#server-preparation)
-4. [Database Setup](#database-setup)
-5. [Dragonfly Setup](#dragonfly-setup)
-6. [Application Installation](#application-installation)
-7. [Nginx Configuration](#nginx-configuration)
-8. [SSL Certificate](#ssl-certificate)
-9. [Service Management](#service-management)
-10. [Initial Setup](#initial-setup)
-11. [Verification](#verification)
-12. [Post-Installation](#post-installation)
+3. [Configuration Variables](#configuration-variables)
+4. [Server Preparation](#server-preparation)
+5. [Database Setup](#database-setup)
+6. [Dragonfly Setup](#dragonfly-setup)
+7. [Application Installation](#application-installation)
+8. [Nginx Configuration](#nginx-configuration)
+9. [SSL Certificate](#ssl-certificate)
+10. [Service Management](#service-management)
+11. [Initial Setup](#initial-setup)
+12. [Verification](#verification)
+13. [Post-Installation](#post-installation)
 
 ---
 
@@ -98,6 +99,43 @@ Before starting, configure DNS for your domain:
 
 ---
 
+## Configuration Variables
+
+> **IMPORTANT**: Set these variables ONCE at the beginning of your installation session.
+> All subsequent commands will use these values automatically.
+
+Open a terminal and set the following environment variables:
+
+```bash
+# ============================================
+# SET THESE VALUES FOR YOUR INSTALLATION
+# ============================================
+
+# Your domain name (without https://)
+export ROX_DOMAIN="rox.example.com"
+
+# Generate a secure database password (or set your own)
+export ROX_DB_PASSWORD=$(openssl rand -base64 32)
+
+# Your email address (for SSL certificate notifications)
+export ROX_ADMIN_EMAIL="admin@example.com"
+
+# ============================================
+# VERIFY YOUR SETTINGS
+# ============================================
+echo "Domain: $ROX_DOMAIN"
+echo "Database Password: $ROX_DB_PASSWORD"
+echo "Admin Email: $ROX_ADMIN_EMAIL"
+```
+
+> **Save the database password!** You will need it if you lose your terminal session.
+> Run `echo $ROX_DB_PASSWORD` to display it.
+
+These variables will be used throughout the installation process. If you close your terminal,
+you'll need to set them again before continuing.
+
+---
+
 ## Server Preparation
 
 ### 1. Update System
@@ -144,8 +182,17 @@ sudo ufw status
 ### 5. Create Application User
 
 ```bash
+# Create rox user with home directory at /opt/rox
 sudo useradd -r -m -d /opt/rox -s /bin/bash rox
+
+# Install Bun for the rox user
+sudo -u rox bash -c 'curl -fsSL https://bun.sh/install | bash'
+
+# Verify bun installation
+sudo -u rox /opt/rox/.bun/bin/bun --version
 ```
+
+> **Note**: Bun is installed to `/opt/rox/.bun/bin/bun` because the rox user's home directory is `/opt/rox`.
 
 ---
 
@@ -160,21 +207,20 @@ sudo systemctl enable postgresql
 
 # Create database and user
 sudo -u postgres psql << EOF
-CREATE USER rox WITH PASSWORD 'your-secure-password';
+CREATE USER rox WITH PASSWORD '${ROX_DB_PASSWORD}';
 CREATE DATABASE rox OWNER rox;
 GRANT ALL PRIVILEGES ON DATABASE rox TO rox;
 \q
 EOF
 ```
 
-> **Important**: Replace `'your-secure-password'` with a strong password.
-> Generate one with: `openssl rand -base64 32`
-
 ### 2. Verify Database Connection
 
 ```bash
-psql -U rox -h localhost -d rox -c "SELECT 1;"
+PGPASSWORD="${ROX_DB_PASSWORD}" psql -U rox -h localhost -d rox -c "SELECT 1;"
 ```
+
+Expected output: A table showing `1`.
 
 ---
 
@@ -283,15 +329,15 @@ EOF
 Create the environment file:
 
 ```bash
-sudo -u rox tee /opt/rox/app/.env << 'EOF'
+sudo -u rox tee /opt/rox/app/.env << EOF
 # Server Configuration
 NODE_ENV=production
 PORT=3000
-URL=https://rox.example.com
+URL=https://${ROX_DOMAIN}
 
 # Database
 DB_TYPE=postgres
-DATABASE_URL=postgresql://rox:your-secure-password@localhost:5432/rox
+DATABASE_URL=postgresql://rox:${ROX_DB_PASSWORD}@localhost:5432/rox
 
 # Cache & Queue (Dragonfly)
 DRAGONFLY_URL=redis://localhost:6379
@@ -310,8 +356,7 @@ LOG_LEVEL=info
 EOF
 ```
 
-> **Important**: Update `URL` and `DATABASE_URL` with your actual values.
-> If Dragonfly is not installed, remove or comment out `DRAGONFLY_URL` and set `USE_QUEUE=false`.
+> **Note**: If Dragonfly is not installed, edit the `.env` file to remove `DRAGONFLY_URL` and set `USE_QUEUE=false`.
 
 ### 4. Create Upload Directory
 
@@ -323,9 +368,10 @@ sudo chown rox:rox /opt/rox/uploads
 ### 5. Run Database Migrations
 
 ```bash
-sudo -u rox bash << 'EOF'
+sudo -u rox bash << EOF
 cd /opt/rox/app
-bun run db:migrate
+DB_TYPE=postgres DATABASE_URL="postgresql://rox:${ROX_DB_PASSWORD}@localhost:5432/rox" \
+  bun run --filter hono_rox db:migrate
 EOF
 ```
 
@@ -352,7 +398,7 @@ EOF
 ### 1. Create Nginx Configuration
 
 ```bash
-sudo tee /etc/nginx/sites-available/rox << 'EOF'
+sudo tee /etc/nginx/sites-available/rox << EOF
 # Upstream definitions
 upstream rox_backend {
     server 127.0.0.1:3000;
@@ -365,14 +411,14 @@ upstream rox_frontend {
 }
 
 # Rate limiting
-limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
-limit_req_zone $binary_remote_addr zone=auth_limit:10m rate=5r/m;
-limit_conn_zone $binary_remote_addr zone=sse_conn:10m;
+limit_req_zone \$binary_remote_addr zone=api_limit:10m rate=10r/s;
+limit_req_zone \$binary_remote_addr zone=auth_limit:10m rate=5r/m;
+limit_conn_zone \$binary_remote_addr zone=sse_conn:10m;
 
 server {
     listen 80;
     listen [::]:80;
-    server_name rox.example.com;
+    server_name ${ROX_DOMAIN};
 
     # Let's Encrypt challenge
     location /.well-known/acme-challenge/ {
@@ -381,18 +427,18 @@ server {
 
     # Redirect to HTTPS
     location / {
-        return 301 https://$server_name$request_uri;
+        return 301 https://\$server_name\$request_uri;
     }
 }
 
 server {
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
-    server_name rox.example.com;
+    server_name ${ROX_DOMAIN};
 
     # SSL (will be configured by certbot)
-    ssl_certificate /etc/letsencrypt/live/rox.example.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/rox.example.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/${ROX_DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${ROX_DOMAIN}/privkey.pem;
 
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;
@@ -421,10 +467,10 @@ server {
 
         proxy_pass http://rox_backend;
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Connection "";
     }
 
@@ -434,10 +480,10 @@ server {
 
         proxy_pass http://rox_backend;
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Connection "";
 
         # SSE-specific settings
@@ -453,10 +499,10 @@ server {
 
         proxy_pass http://rox_backend;
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header Connection "";
     }
 
@@ -467,46 +513,46 @@ server {
     location /.well-known/webfinger {
         proxy_pass http://rox_backend;
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     location /.well-known/nodeinfo {
         proxy_pass http://rox_backend;
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     location /nodeinfo/ {
         proxy_pass http://rox_backend;
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     location /users/ {
         proxy_pass http://rox_backend;
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     location /notes/ {
         proxy_pass http://rox_backend;
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     # ===========================================
@@ -516,10 +562,10 @@ server {
     location /health {
         proxy_pass http://rox_backend;
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     # ===========================================
@@ -539,18 +585,16 @@ server {
     location / {
         proxy_pass http://rox_frontend;
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
     }
 }
 EOF
 ```
-
-> **Important**: Replace `rox.example.com` with your actual domain.
 
 ### 2. Enable Site
 
@@ -575,23 +619,50 @@ sudo nginx -t
 sudo mkdir -p /var/www/certbot
 ```
 
-### 2. Temporarily Allow HTTP
+### 2. Temporarily Modify Nginx for HTTP-only
 
-Comment out the SSL lines in nginx config temporarily, then:
+Before obtaining the SSL certificate, we need to temporarily remove the HTTPS server block:
 
 ```bash
+# Create a temporary HTTP-only config
+sudo tee /etc/nginx/sites-available/rox-temp << EOF
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${ROX_DOMAIN};
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 200 'SSL setup in progress';
+        add_header Content-Type text/plain;
+    }
+}
+EOF
+
+# Use temporary config
+sudo ln -sf /etc/nginx/sites-available/rox-temp /etc/nginx/sites-enabled/rox
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
 ### 3. Obtain Certificate
 
 ```bash
-sudo certbot --nginx -d rox.example.com
+sudo certbot certonly --webroot -w /var/www/certbot -d ${ROX_DOMAIN} --email ${ROX_ADMIN_EMAIL} --agree-tos --non-interactive
 ```
 
-Follow the prompts and enter your email for renewal notifications.
+### 4. Restore Full Configuration
 
-### 4. Verify Auto-Renewal
+```bash
+# Restore full config with SSL
+sudo ln -sf /etc/nginx/sites-available/rox /etc/nginx/sites-enabled/rox
+sudo rm /etc/nginx/sites-available/rox-temp
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+### 5. Verify Auto-Renewal
 
 ```bash
 sudo certbot renew --dry-run
@@ -615,10 +686,10 @@ Type=simple
 User=rox
 Group=rox
 WorkingDirectory=/opt/rox/app/packages/backend
-ExecStart=/home/rox/.bun/bin/bun run src/index.ts
+ExecStart=/opt/rox/.bun/bin/bun run src/index.ts
 Restart=always
 RestartSec=5
-Environment=NODE_ENV=production
+EnvironmentFile=/opt/rox/app/.env
 
 # Resource limits
 MemoryMax=1G
@@ -650,7 +721,7 @@ Type=simple
 User=rox
 Group=rox
 WorkingDirectory=/opt/rox/app/packages/frontend
-ExecStart=/home/rox/.bun/bin/bun run start
+ExecStart=/opt/rox/.bun/bin/bun run start
 Restart=always
 RestartSec=5
 Environment=NODE_ENV=production
@@ -694,10 +765,10 @@ sudo systemctl status rox-frontend
 
 ```bash
 # Check health endpoint
-curl -s https://rox.example.com/health | jq
+curl -s https://${ROX_DOMAIN}/health | jq
 
 # Check SSE health
-curl -s https://rox.example.com/health/sse | jq
+curl -s https://${ROX_DOMAIN}/health/sse | jq
 ```
 
 Expected response:
@@ -712,14 +783,16 @@ Expected response:
 ### 2. Register First User (Admin)
 
 ```bash
-curl -X POST https://rox.example.com/api/auth/register \
+curl -X POST https://${ROX_DOMAIN}/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin",
-    "email": "admin@example.com",
-    "password": "your-secure-password"
+    "email": "'"${ROX_ADMIN_EMAIL}"'",
+    "password": "your-admin-password"
   }'
 ```
+
+> **Note**: Replace `your-admin-password` with a strong password for your admin account.
 
 ### 3. Disable Registration
 
@@ -755,15 +828,15 @@ redis-cli ping
 
 ```bash
 # WebFinger
-curl -s "https://rox.example.com/.well-known/webfinger?resource=acct:admin@rox.example.com" | jq
+curl -s "https://${ROX_DOMAIN}/.well-known/webfinger?resource=acct:admin@${ROX_DOMAIN}" | jq
 
 # NodeInfo
-curl -s "https://rox.example.com/.well-known/nodeinfo" | jq
+curl -s "https://${ROX_DOMAIN}/.well-known/nodeinfo" | jq
 ```
 
 ### 3. Access Web Interface
 
-Open `https://rox.example.com` in your browser and log in with the admin account.
+Open `https://YOUR_DOMAIN` in your browser and log in with the admin account.
 
 ---
 
@@ -777,24 +850,36 @@ Open `https://rox.example.com` in your browser and log in with the admin account
 - [ ] SSL certificate active and auto-renewing
 - [ ] Server updates enabled (`sudo apt install unattended-upgrades`)
 
+### Save Your Configuration
+
+Save these values securely - you'll need them for maintenance:
+
+```bash
+echo "=== ROX INSTALLATION DETAILS ==="
+echo "Domain: ${ROX_DOMAIN}"
+echo "Database Password: ${ROX_DB_PASSWORD}"
+echo "Admin Email: ${ROX_ADMIN_EMAIL}"
+echo "================================"
+```
+
 ### Recommended: Automatic Backups
 
 ```bash
 # Create backup script
-sudo tee /opt/rox/backup.sh << 'EOF'
+sudo tee /opt/rox/backup.sh << EOF
 #!/bin/bash
 BACKUP_DIR="/opt/rox/backups"
-DATE=$(date +%Y%m%d_%H%M%S)
-mkdir -p $BACKUP_DIR
+DATE=\$(date +%Y%m%d_%H%M%S)
+mkdir -p \$BACKUP_DIR
 
 # Database backup
-pg_dump -U rox -h localhost rox | gzip > $BACKUP_DIR/db_$DATE.sql.gz
+PGPASSWORD="${ROX_DB_PASSWORD}" pg_dump -U rox -h localhost rox | gzip > \$BACKUP_DIR/db_\$DATE.sql.gz
 
 # Uploads backup
-tar -czf $BACKUP_DIR/uploads_$DATE.tar.gz /opt/rox/uploads
+tar -czf \$BACKUP_DIR/uploads_\$DATE.tar.gz /opt/rox/uploads
 
 # Keep only last 7 days
-find $BACKUP_DIR -mtime +7 -delete
+find \$BACKUP_DIR -mtime +7 -delete
 EOF
 
 sudo chmod +x /opt/rox/backup.sh
@@ -809,7 +894,12 @@ echo "0 3 * * * /opt/rox/backup.sh" | sudo crontab -
 cd /opt/rox/app
 sudo -u rox git pull
 sudo -u rox bun install
-sudo -u rox bun run db:migrate
+
+# Run migrations (uses .env file for credentials)
+sudo -u rox bash -c 'source /opt/rox/app/.env && \
+  DB_TYPE=$DB_TYPE DATABASE_URL=$DATABASE_URL bun run --filter hono_rox db:migrate'
+
+# Build
 cd packages/backend && sudo -u rox bun run build
 cd ../frontend && sudo -u rox bun run build
 sudo systemctl restart rox-backend rox-frontend
@@ -828,12 +918,23 @@ htop
 df -h
 
 # SSE connections
-curl -s https://rox.example.com/health/sse | jq '.metrics'
+curl -s https://${ROX_DOMAIN}/health/sse | jq '.metrics'
 ```
 
 ---
 
 ## Troubleshooting
+
+### Session Lost - Re-set Variables
+
+If you closed your terminal and need to continue:
+
+```bash
+# Set your values again
+export ROX_DOMAIN="rox.example.com"
+export ROX_DB_PASSWORD="your-saved-password"
+export ROX_ADMIN_EMAIL="admin@example.com"
+```
 
 ### Services Won't Start
 
@@ -846,7 +947,7 @@ sudo journalctl -u rox-frontend -n 50 --no-pager
 sudo -u rox cat /opt/rox/app/.env
 
 # Test database connection
-sudo -u rox psql -U rox -h localhost -d rox -c "SELECT 1;"
+PGPASSWORD="${ROX_DB_PASSWORD}" psql -U rox -h localhost -d rox -c "SELECT 1;"
 ```
 
 ### 502 Bad Gateway
@@ -868,6 +969,19 @@ sudo certbot certificates
 
 # Force renewal
 sudo certbot renew --force-renewal
+```
+
+### Database Connection Failed
+
+```bash
+# Verify PostgreSQL is running
+sudo systemctl status postgresql
+
+# Check password (ensure it matches .env)
+grep DATABASE_URL /opt/rox/app/.env
+
+# Test connection manually
+PGPASSWORD="${ROX_DB_PASSWORD}" psql -U rox -h localhost -d rox -c "SELECT 1;"
 ```
 
 ---

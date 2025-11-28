@@ -10,6 +10,36 @@ This guide covers deploying Rox directly on a Linux server without Docker.
 - A domain name pointing to your server
 - Ports 80 and 443 available
 
+## Configuration Variables
+
+> **IMPORTANT**: Set these variables ONCE at the beginning of your installation session.
+> All subsequent commands will use these values automatically.
+
+```bash
+# ============================================
+# SET THESE VALUES FOR YOUR INSTALLATION
+# ============================================
+
+# Your domain name (without https://)
+export ROX_DOMAIN="rox.example.com"
+
+# Generate a secure database password (or set your own)
+export ROX_DB_PASSWORD=$(openssl rand -base64 32)
+
+# Your email address (for SSL certificate notifications)
+export ROX_ADMIN_EMAIL="admin@example.com"
+
+# ============================================
+# VERIFY YOUR SETTINGS
+# ============================================
+echo "Domain: $ROX_DOMAIN"
+echo "Database Password: $ROX_DB_PASSWORD"
+echo "Admin Email: $ROX_ADMIN_EMAIL"
+```
+
+> **Save the database password!** You will need it if you lose your terminal session.
+> Run `echo $ROX_DB_PASSWORD` to display it.
+
 ## Quick Start
 
 ```bash
@@ -23,9 +53,7 @@ cd rox
 bun install
 bun run build
 
-# 3. Configure
-cp .env.example .env
-nano .env  # Edit your settings
+# 3. Configure (see detailed steps below)
 
 # 4. Start
 bun run start
@@ -50,7 +78,7 @@ sudo apt install -y curl git build-essential
 ### 2. Install Bun Runtime
 
 ```bash
-# Install Bun
+# Install Bun for your current user
 curl -fsSL https://bun.sh/install | bash
 
 # Add to PATH (or restart shell)
@@ -59,6 +87,11 @@ source ~/.bashrc
 # Verify installation
 bun --version
 ```
+
+> **Note**: If you're running the application as a dedicated user (e.g., `rox`), install Bun for that user as well:
+> ```bash
+> sudo -u rox bash -c 'curl -fsSL https://bun.sh/install | bash'
+> ```
 
 ### 3. Install PostgreSQL
 
@@ -71,14 +104,14 @@ sudo systemctl start postgresql
 sudo systemctl enable postgresql
 
 # Create database and user
-sudo -u postgres psql <<EOF
-CREATE USER rox WITH PASSWORD 'your-secure-password';
+sudo -u postgres psql << EOF
+CREATE USER rox WITH PASSWORD '${ROX_DB_PASSWORD}';
 CREATE DATABASE rox OWNER rox;
 GRANT ALL PRIVILEGES ON DATABASE rox TO rox;
 EOF
 
 # Test connection
-psql -U rox -h localhost -d rox -c "SELECT 1;"
+PGPASSWORD="${ROX_DB_PASSWORD}" psql -U rox -h localhost -d rox -c "SELECT 1;"
 ```
 
 ### 4. Install Dragonfly (Optional, for Queue)
@@ -144,15 +177,15 @@ bun run build
 
 ```bash
 # Create environment file
-cat > .env <<EOF
+cat > .env << EOF
 # Server
 NODE_ENV=production
 PORT=3000
-URL=https://rox.example.com
+URL=https://${ROX_DOMAIN}
 
 # Database
 DB_TYPE=postgres
-DATABASE_URL=postgresql://rox:your-secure-password@localhost:5432/rox
+DATABASE_URL=postgresql://rox:${ROX_DB_PASSWORD}@localhost:5432/rox
 
 # Cache/Queue (optional)
 DRAGONFLY_URL=redis://localhost:6379
@@ -177,7 +210,10 @@ mkdir -p /opt/rox/uploads
 
 ```bash
 cd /opt/rox
-bun run db:migrate
+
+# Run migrations (uses environment variable)
+DB_TYPE=postgres DATABASE_URL="postgresql://rox:${ROX_DB_PASSWORD}@localhost:5432/rox" \
+  bun run --filter hono_rox db:migrate
 ```
 
 ### 8. Create Systemd Service
@@ -232,8 +268,8 @@ sudo apt update
 sudo apt install caddy
 
 # Configure Caddy
-sudo tee /etc/caddy/Caddyfile > /dev/null <<EOF
-rox.example.com {
+sudo tee /etc/caddy/Caddyfile > /dev/null << EOF
+${ROX_DOMAIN} {
     reverse_proxy localhost:3000
 
     header {
@@ -265,24 +301,24 @@ sudo systemctl restart caddy
 sudo apt install -y nginx certbot python3-certbot-nginx
 
 # Create Nginx config
-sudo tee /etc/nginx/sites-available/rox > /dev/null <<'EOF'
+sudo tee /etc/nginx/sites-available/rox > /dev/null << EOF
 server {
     listen 80;
-    server_name rox.example.com;
+    server_name ${ROX_DOMAIN};
 
     location / {
         proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
 
         # ActivityPub requires these
-        proxy_set_header Accept $http_accept;
+        proxy_set_header Accept \$http_accept;
     }
 
     # Increase body size for file uploads
@@ -297,7 +333,7 @@ sudo nginx -t
 sudo systemctl reload nginx
 
 # Get SSL certificate
-sudo certbot --nginx -d rox.example.com --non-interactive --agree-tos -m admin@example.com
+sudo certbot --nginx -d ${ROX_DOMAIN} --non-interactive --agree-tos -m ${ROX_ADMIN_EMAIL}
 ```
 
 ### 10. Configure Firewall
@@ -317,10 +353,10 @@ sudo ufw enable
 sudo systemctl status rox
 
 # Test health endpoint
-curl -s https://rox.example.com/health | jq
+curl -s https://${ROX_DOMAIN}/health | jq
 
 # Test readiness
-curl -s https://rox.example.com/health/ready | jq
+curl -s https://${ROX_DOMAIN}/health/ready | jq
 ```
 
 ## Architecture
@@ -344,7 +380,30 @@ curl -s https://rox.example.com/health/ready | jq
     └───────────┘   └───────────┘   └─────────────┘
 ```
 
+## Save Your Configuration
+
+Save these values securely - you'll need them for maintenance:
+
+```bash
+echo "=== ROX INSTALLATION DETAILS ==="
+echo "Domain: ${ROX_DOMAIN}"
+echo "Database Password: ${ROX_DB_PASSWORD}"
+echo "Admin Email: ${ROX_ADMIN_EMAIL}"
+echo "================================"
+```
+
 ## Common Operations
+
+### Session Lost - Re-set Variables
+
+If you closed your terminal and need to continue:
+
+```bash
+# Set your values again
+export ROX_DOMAIN="rox.example.com"
+export ROX_DB_PASSWORD="your-saved-password"
+export ROX_ADMIN_EMAIL="admin@example.com"
+```
 
 ### View Logs
 
@@ -383,8 +442,9 @@ git pull origin main
 # Install dependencies
 bun install
 
-# Run migrations
-bun run db:migrate
+# Run migrations (source .env for credentials)
+source /opt/rox/.env
+DB_TYPE=$DB_TYPE DATABASE_URL=$DATABASE_URL bun run --filter hono_rox db:migrate
 
 # Start service
 sudo systemctl start rox
@@ -393,11 +453,11 @@ sudo systemctl start rox
 ### Database Backup
 
 ```bash
-# Create backup
-pg_dump -U rox -h localhost rox > /backup/rox_$(date +%Y%m%d_%H%M%S).sql
+# Create backup (uses environment variable)
+PGPASSWORD="${ROX_DB_PASSWORD}" pg_dump -U rox -h localhost rox > /backup/rox_$(date +%Y%m%d_%H%M%S).sql
 
 # Automated daily backup (add to crontab)
-# 0 2 * * * pg_dump -U rox -h localhost rox > /backup/rox_$(date +\%Y\%m\%d).sql
+# 0 2 * * * PGPASSWORD="your-saved-password" pg_dump -U rox -h localhost rox > /backup/rox_$(date +\%Y\%m\%d).sql
 ```
 
 ### Database Restore
@@ -407,7 +467,7 @@ pg_dump -U rox -h localhost rox > /backup/rox_$(date +%Y%m%d_%H%M%S).sql
 sudo systemctl stop rox
 
 # Restore
-psql -U rox -h localhost rox < /backup/rox_20251126.sql
+PGPASSWORD="${ROX_DB_PASSWORD}" psql -U rox -h localhost rox < /backup/rox_20251126.sql
 
 # Start Rox
 sudo systemctl start rox
@@ -474,7 +534,7 @@ sudo -u postgres psql -c "SELECT count(*) FROM pg_stat_activity;"
 Rox exposes metrics at `/metrics`:
 
 ```bash
-curl -s https://rox.example.com/metrics
+curl -s https://${ROX_DOMAIN}/metrics
 ```
 
 ## Troubleshooting
@@ -500,7 +560,7 @@ bun run --cwd packages/backend src/index.ts
 sudo systemctl status postgresql
 
 # Test connection
-psql -U rox -h localhost -d rox -c "SELECT 1;"
+PGPASSWORD="${ROX_DB_PASSWORD}" psql -U rox -h localhost -d rox -c "SELECT 1;"
 
 # Check pg_hba.conf if authentication fails
 sudo nano /etc/postgresql/16/main/pg_hba.conf
