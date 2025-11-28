@@ -127,7 +127,11 @@ export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps
         src={imageUrl}
         alt={alt}
         className={'inline-block ' + avatarVariants({ size, className })}
-        onError={() => setHasError(true)}
+        onError={(e) => {
+          console.error('Avatar image load error:', imageUrl, e);
+          setHasError(true);
+        }}
+        crossOrigin="anonymous"
       />
     );
   }
