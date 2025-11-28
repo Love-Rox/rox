@@ -83,7 +83,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-8">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-8">
       <Card className="w-full max-w-md" padding="lg">
         <CardHeader>
           <CardTitle className="text-center text-2xl">
@@ -127,10 +127,10 @@ export default function LoginPage() {
           {(hasPasskey || hasOAuth) && (
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
+                <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-white px-2 text-gray-500">
+                <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">
                   <Trans>Or continue with password</Trans>
                 </span>
               </div>
@@ -158,7 +158,7 @@ export default function LoginPage() {
             />
 
             {error && (
-              <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+              <div className="rounded-md bg-red-50 dark:bg-red-900/30 p-3 text-sm text-red-600 dark:text-red-400">
                 {error}
               </div>
             )}
@@ -172,9 +172,9 @@ export default function LoginPage() {
             </Button>
           </Form>
 
-          <div className="mt-4 text-center text-sm text-gray-600">
+          <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
             <Trans>Don't have an account?</Trans>{' '}
-            <a href="/signup" className="font-medium text-primary-600 hover:text-primary-500">
+            <a href="/signup" className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
               <Trans>Sign up</Trans>
             </a>
           </div>

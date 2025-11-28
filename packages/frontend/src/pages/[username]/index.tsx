@@ -14,7 +14,7 @@ export default async function UserPage({ username }: PageProps<'/[username]'>) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">User not found</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">User not found</h1>
         </div>
       </div>
     );

@@ -64,7 +64,7 @@ interface RolesResponse {
 }
 
 export default function AdminRolesPage() {
-  const [_currentUser] = useAtom(currentUserAtom);
+  const [, setCurrentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
@@ -119,12 +119,15 @@ export default function AdminRolesPage() {
       try {
         apiClient.setToken(token);
 
-        // Check if user is admin
+        // Check if user is admin and restore session
         const sessionResponse = await apiClient.get<{ user: any }>('/api/auth/session');
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = '/timeline';
           return;
         }
+
+        // Update currentUser atom to ensure sidebar shows
+        setCurrentUser(sessionResponse.user);
 
         await loadRoles();
       } catch (err) {
@@ -135,7 +138,7 @@ export default function AdminRolesPage() {
     };
 
     checkAccess();
-  }, [token, loadRoles]);
+  }, [token, loadRoles, setCurrentUser]);
 
   const handleCreateRole = async () => {
     if (!token || !formData.name) return;
@@ -284,7 +287,7 @@ export default function AdminRolesPage() {
   const getRoleIcon = (role: Role) => {
     if (role.isAdminRole) return <ShieldCheck className="w-4 h-4 text-red-500" />;
     if (role.isModeratorRole) return <Shield className="w-4 h-4 text-green-500" />;
-    return <Users className="w-4 h-4 text-gray-500" />;
+    return <Users className="w-4 h-4 text-gray-500 dark:text-gray-400" />;
   };
 
   if (isLoading) {

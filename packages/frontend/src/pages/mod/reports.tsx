@@ -186,7 +186,7 @@ export default function ModeratorReportsPage() {
       case 'resolved':
         return <CheckCircle className="w-4 h-4 text-green-500" />;
       case 'rejected':
-        return <XCircle className="w-4 h-4 text-gray-500" />;
+        return <XCircle className="w-4 h-4 text-gray-500 dark:text-gray-400" />;
       default:
         return null;
     }

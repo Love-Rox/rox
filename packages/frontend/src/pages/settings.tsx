@@ -120,7 +120,7 @@ export default function SettingsPage() {
 
   if (isLoading || !currentUser) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
         <Spinner size="lg" />
       </div>
     );
@@ -129,10 +129,10 @@ export default function SettingsPage() {
   return (
     <Layout>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
           <Trans>Settings</Trans>
         </h1>
-        <p className="mt-2 text-gray-600">
+        <p className="mt-2 text-gray-600 dark:text-gray-400">
           <Trans>Manage your profile information</Trans>
         </p>
       </div>
@@ -142,7 +142,7 @@ export default function SettingsPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Display Name */}
             <div>
-              <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Trans>Display Name</Trans>
               </label>
               <input
@@ -152,17 +152,17 @@ export default function SettingsPage() {
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder={currentUser.username}
                 maxLength={50}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 disabled={isSubmitting}
               />
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 <Trans>Your public display name (max 50 characters)</Trans>
               </p>
             </div>
 
             {/* Bio */}
             <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Trans>Bio</Trans>
               </label>
               <textarea
@@ -172,10 +172,10 @@ export default function SettingsPage() {
                 placeholder={t`Tell us about yourself...`}
                 maxLength={500}
                 rows={4}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
                 disabled={isSubmitting}
               />
-              <div className="mt-1 flex items-center justify-between text-sm text-gray-500">
+              <div className="mt-1 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                 <span>
                   <Trans>Your bio (max 500 characters)</Trans>
                 </span>
@@ -187,7 +187,7 @@ export default function SettingsPage() {
 
             {/* Username (read-only) */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Trans>Username</Trans>
               </label>
               <input
@@ -196,16 +196,16 @@ export default function SettingsPage() {
                 value={currentUser.username}
                 readOnly
                 disabled
-                className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 text-gray-500 cursor-not-allowed"
+                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
               />
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 <Trans>Username cannot be changed</Trans>
               </p>
             </div>
 
             {/* Custom CSS */}
             <div>
-              <label htmlFor="customCss" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="customCss" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 <Trans>Custom CSS</Trans>
               </label>
               <textarea
@@ -215,10 +215,10 @@ export default function SettingsPage() {
                 placeholder="/* Custom CSS */\n.profile-header {\n  background: #333;\n}"
                 maxLength={10240}
                 rows={6}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm"
+                className="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none font-mono text-sm"
                 disabled={isSubmitting}
               />
-              <div className="mt-1 flex items-center justify-between text-sm text-gray-500">
+              <div className="mt-1 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                 <span>
                   <Trans>Custom CSS for your profile page (max 10KB)</Trans>
                 </span>
@@ -226,7 +226,7 @@ export default function SettingsPage() {
                   {customCss.length.toLocaleString()}/10,240
                 </span>
               </div>
-              <p className="mt-1 text-xs text-gray-400">
+              <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                 <Trans>Note: Custom CSS is sanitized and some properties may be restricted for security.</Trans>
               </p>
             </div>

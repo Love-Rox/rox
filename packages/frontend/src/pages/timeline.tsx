@@ -68,7 +68,7 @@ export default function TimelinePage() {
   // Show loading while checking auth
   if (isLoading || !currentUser) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>
     );
@@ -77,23 +77,23 @@ export default function TimelinePage() {
   return (
     <Layout>
       <div className="mb-6">
-        <h1 className="text-4xl font-bold text-gray-900">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">
           <Trans>Timeline</Trans>
         </h1>
-        <p className="mt-2 text-gray-600">
+        <p className="mt-2 text-gray-600 dark:text-gray-400">
           <Trans>Recent posts from your community</Trans>
         </p>
       </div>
 
       {/* Timeline Type Tabs */}
-      <div className="mb-6 border-b border-gray-200" role="tablist" aria-label="Timeline types">
+      <div className="mb-6 border-b border-gray-200 dark:border-gray-700" role="tablist" aria-label="Timeline types">
         <div className="flex gap-6">
           <button
             onClick={() => setTimelineType('local')}
             className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
               timelineType === 'local'
-                ? 'border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500'
             }`}
             role="tab"
             aria-selected={timelineType === 'local'}
@@ -106,8 +106,8 @@ export default function TimelinePage() {
             onClick={() => setTimelineType('social')}
             className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
               timelineType === 'social'
-                ? 'border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500'
             }`}
             role="tab"
             aria-selected={timelineType === 'social'}
@@ -120,8 +120,8 @@ export default function TimelinePage() {
             onClick={() => setTimelineType('home')}
             className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
               timelineType === 'home'
-                ? 'border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500'
             }`}
             role="tab"
             aria-selected={timelineType === 'home'}

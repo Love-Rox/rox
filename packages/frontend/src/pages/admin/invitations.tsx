@@ -40,7 +40,7 @@ interface InvitationsResponse {
 }
 
 export default function AdminInvitationsPage() {
-  const [_currentUser] = useAtom(currentUserAtom);
+  const [, setCurrentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
@@ -84,12 +84,15 @@ export default function AdminInvitationsPage() {
       try {
         apiClient.setToken(token);
 
-        // Check if user is admin
+        // Check if user is admin and restore session
         const sessionResponse = await apiClient.get<{ user: any }>('/api/auth/session');
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = '/timeline';
           return;
         }
+
+        // Update currentUser atom to ensure sidebar shows
+        setCurrentUser(sessionResponse.user);
 
         await loadInvitations();
       } catch (err) {
@@ -100,7 +103,7 @@ export default function AdminInvitationsPage() {
     };
 
     checkAccess();
-  }, [token, loadInvitations]);
+  }, [token, loadInvitations, setCurrentUser]);
 
   const handleCreateInvitation = async () => {
     if (!token) return;
