@@ -82,13 +82,15 @@ function sanitizeCustomCss(css: string, containerId: string): string {
 export interface UserProfileProps {
   /** Username to display */
   username: string;
+  /** Host for remote users (optional) */
+  host?: string | null;
 }
 
 /**
  * User profile component
  * Displays user information, stats, and their notes
  */
-export function UserProfile({ username }: UserProfileProps) {
+export function UserProfile({ username, host }: UserProfileProps) {
   const [currentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [user, setUser] = useState<User | null>(null);
@@ -119,7 +121,7 @@ export function UserProfile({ username }: UserProfileProps) {
       try {
         setLoading(true);
         setError(null);
-        const userData = await usersApi.getByUsername(username);
+        const userData = await usersApi.getByUsername(username, host);
         setUser(userData);
         setIsFollowing(userData.isFollowed ?? false);
       } catch (err) {
@@ -130,7 +132,7 @@ export function UserProfile({ username }: UserProfileProps) {
     };
 
     loadUser();
-  }, [username]);
+  }, [username, host]);
 
   // Load user's notes
   useEffect(() => {

@@ -356,7 +356,11 @@ export default function SearchPage() {
                     />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-(--text-primary) truncate">
-                        {resolvedRemoteUser.displayName || resolvedRemoteUser.username}
+                        {resolvedRemoteUser.displayName ? (
+                          <MfmRenderer text={resolvedRemoteUser.displayName} plain />
+                        ) : (
+                          resolvedRemoteUser.username
+                        )}
                       </p>
                       <p className="text-sm text-(--text-muted) truncate">
                         {formatHandle(resolvedRemoteUser)}
@@ -398,7 +402,11 @@ export default function SearchPage() {
                   />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-(--text-primary) truncate">
-                      {user.displayName || user.username}
+                      {user.displayName ? (
+                        <MfmRenderer text={user.displayName} plain />
+                      ) : (
+                        user.username
+                      )}
                     </p>
                     <p className="text-sm text-(--text-muted) truncate">
                       {formatHandle(user)}

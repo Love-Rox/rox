@@ -38,9 +38,15 @@ export const usersApi = {
    * Get user by username
    *
    * @param username - Username
+   * @param host - Optional host for remote users
    * @returns User data
    */
-  async getByUsername(username: string): Promise<User> {
+  async getByUsername(username: string, host?: string | null): Promise<User> {
+    if (host) {
+      // For remote users, use resolve endpoint
+      const acct = `${username}@${host}`;
+      return apiClient.get<User>(`/api/users/resolve?acct=${encodeURIComponent(acct)}`);
+    }
     return apiClient.get<User>(`/api/users/show?username=${username}`);
   },
 
