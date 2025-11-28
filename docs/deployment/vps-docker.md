@@ -9,6 +9,35 @@ This guide covers deploying Rox on a VPS (Virtual Private Server) using Docker C
 - A domain name pointing to your server's IP
 - Ports 80 and 443 available
 
+## Configuration Variables
+
+> **IMPORTANT**: Set these variables ONCE at the beginning of your installation session.
+> All subsequent commands will use these values automatically.
+
+```bash
+# ============================================
+# SET THESE VALUES FOR YOUR INSTALLATION
+# ============================================
+
+# Your domain name (without https://)
+export ROX_DOMAIN="rox.example.com"
+
+# Generate a secure database password (or set your own)
+export ROX_DB_PASSWORD=$(openssl rand -base64 32)
+
+# Your email address (for SSL certificate notifications)
+export ROX_ADMIN_EMAIL="admin@example.com"
+
+# ============================================
+# VERIFY YOUR SETTINGS
+# ============================================
+echo "Domain: $ROX_DOMAIN"
+echo "Database Password: $ROX_DB_PASSWORD"
+echo "Admin Email: $ROX_ADMIN_EMAIL"
+```
+
+> **Save the database password!** You will need it if you lose your terminal session.
+
 ## Quick Start
 
 ```bash
@@ -16,16 +45,21 @@ This guide covers deploying Rox on a VPS (Virtual Private Server) using Docker C
 git clone https://github.com/your-org/rox.git
 cd rox
 
-# 2. Configure environment
-cp docker/.env.production.example docker/.env.production
-nano docker/.env.production  # Edit your settings
+# 2. Configure environment (using variables)
+cat > docker/.env.production << EOF
+ROX_DOMAIN=${ROX_DOMAIN}
+ROX_URL=https://${ROX_DOMAIN}
+POSTGRES_PASSWORD=${ROX_DB_PASSWORD}
+ACME_EMAIL=${ROX_ADMIN_EMAIL}
+ENABLE_REGISTRATION=true
+EOF
 
 # 3. Deploy
 docker compose -f docker/docker-compose.prod.yml up -d
 
 # 4. Verify
 docker compose -f docker/docker-compose.prod.yml ps
-curl https://your-domain.com/health
+curl https://${ROX_DOMAIN}/health
 ```
 
 ## Detailed Setup
@@ -74,28 +108,24 @@ Wait for DNS propagation (can take up to 48 hours, usually 5-15 minutes).
 
 ```bash
 cd /path/to/rox
-cp docker/.env.production.example docker/.env.production
-```
 
-Edit `docker/.env.production`:
-
-```ini
+# Create environment file using shell variables
+cat > docker/.env.production << EOF
 # Required Settings
-ROX_DOMAIN=rox.example.com
-ROX_URL=https://rox.example.com
-POSTGRES_PASSWORD=your-strong-password-here
-ACME_EMAIL=admin@example.com
+ROX_DOMAIN=${ROX_DOMAIN}
+ROX_URL=https://${ROX_DOMAIN}
+POSTGRES_PASSWORD=${ROX_DB_PASSWORD}
+ACME_EMAIL=${ROX_ADMIN_EMAIL}
 
 # Enable registration for initial setup
 ENABLE_REGISTRATION=true
+EOF
+
+# Verify the file was created correctly
+cat docker/.env.production
 ```
 
-#### Generate Strong Password
-
-```bash
-# Generate a 32-character random password
-openssl rand -base64 32
-```
+> **Note**: The password was automatically generated when you set `ROX_DB_PASSWORD` earlier.
 
 ### 4. Deploy
 
@@ -114,7 +144,7 @@ docker compose -f docker/docker-compose.prod.yml ps
 
 ```bash
 # Health check
-curl -s https://your-domain.com/health | jq
+curl -s https://${ROX_DOMAIN}/health | jq
 
 # Expected response:
 # {
@@ -124,7 +154,7 @@ curl -s https://your-domain.com/health | jq
 # }
 
 # Detailed health check
-curl -s https://your-domain.com/health/ready | jq
+curl -s https://${ROX_DOMAIN}/health/ready | jq
 
 # Expected response:
 # {
@@ -141,20 +171,22 @@ curl -s https://your-domain.com/health/ready | jq
 Register your first (admin) user:
 
 ```bash
-curl -X POST https://your-domain.com/api/auth/register \
+curl -X POST https://${ROX_DOMAIN}/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin",
-    "email": "admin@example.com",
-    "password": "your-secure-password"
+    "email": "'"${ROX_ADMIN_EMAIL}"'",
+    "password": "your-admin-password"
   }'
 ```
+
+> **Note**: Replace `your-admin-password` with a strong password for your admin account.
 
 After creating your admin account, disable registration:
 
 ```bash
-# Edit .env.production
-ENABLE_REGISTRATION=false
+# Edit .env.production to disable registration
+sed -i 's/ENABLE_REGISTRATION=true/ENABLE_REGISTRATION=false/' docker/.env.production
 
 # Restart to apply
 docker compose -f docker/docker-compose.prod.yml restart rox
@@ -291,6 +323,29 @@ S3_REGION=auto
 S3_PUBLIC_URL=https://cdn.your-domain.com
 ```
 
+## Save Your Configuration
+
+Save these values securely - you'll need them for maintenance:
+
+```bash
+echo "=== ROX INSTALLATION DETAILS ==="
+echo "Domain: ${ROX_DOMAIN}"
+echo "Database Password: ${ROX_DB_PASSWORD}"
+echo "Admin Email: ${ROX_ADMIN_EMAIL}"
+echo "================================"
+```
+
+## Session Lost - Re-set Variables
+
+If you closed your terminal and need to continue:
+
+```bash
+# Set your values again
+export ROX_DOMAIN="rox.example.com"
+export ROX_DB_PASSWORD="your-saved-password"
+export ROX_ADMIN_EMAIL="admin@example.com"
+```
+
 ## Troubleshooting
 
 See [Troubleshooting Guide](./troubleshooting.md) for common issues and solutions.
@@ -313,9 +368,10 @@ docker exec rox-caddy caddy list-certificates
 
 ## Security Checklist
 
-- [ ] Strong PostgreSQL password generated
+- [ ] Strong PostgreSQL password generated (auto-generated with `ROX_DB_PASSWORD`)
 - [ ] Registration disabled after admin account created
 - [ ] Firewall configured (only 80, 443 open)
 - [ ] Regular backups scheduled
 - [ ] SSL certificate verified (Caddy auto-manages)
 - [ ] Server updates enabled
+- [ ] Configuration values saved securely

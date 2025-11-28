@@ -136,8 +136,10 @@ export class ActivityDeliveryQueue {
 
     try {
       // Attempt to connect to Redis
+      // Note: maxRetriesPerRequest must be null for BullMQ compatibility
+      // BullMQ handles its own retry logic and requires this setting
       this.redis = new Redis(redisUrl, {
-        maxRetriesPerRequest: 3,
+        maxRetriesPerRequest: null, // Required for BullMQ
         retryStrategy: (times) => {
           if (times > 3) return null; // Give up after 3 attempts
           return Math.min(times * 100, 1000); // Exponential backoff up to 1 second
