@@ -83,7 +83,7 @@ function isExternalUrl(url: string): boolean {
  */
 function getProxiedUrl(url: string): string {
   if (!url || !isExternalUrl(url)) return url;
-  return `/proxy/avatar?url=${encodeURIComponent(url)}`;
+  return `/proxy?url=${encodeURIComponent(url)}`;
 }
 
 export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps) {
