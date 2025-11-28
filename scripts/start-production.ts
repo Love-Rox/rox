@@ -12,6 +12,10 @@ import { join } from 'path';
 
 const ROOT_DIR = join(import.meta.dir, '..');
 
+// Get the full path to the bun executable
+// This is needed because systemd doesn't inherit PATH
+const BUN_PATH = process.execPath;
+
 interface ProcessInfo {
   name: string;
   process: Subprocess;
@@ -120,7 +124,7 @@ async function main(): Promise<void> {
 
   // Start backend (API server on port 3000)
   startProcess('Backend (API)', join(ROOT_DIR, 'packages/backend'), [
-    'bun',
+    BUN_PATH,
     'run',
     'src/index.ts',
   ]);
@@ -130,7 +134,7 @@ async function main(): Promise<void> {
 
   // Start frontend (Waku on port 3001)
   startProcess('Frontend (Waku)', join(ROOT_DIR, 'packages/frontend'), [
-    'bun',
+    BUN_PATH,
     'run',
     'start',
   ]);
