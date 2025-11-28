@@ -60,7 +60,7 @@ const COLOR_PRESETS = [
 ];
 
 export default function AdminSettingsPage() {
-  const [currentUser] = useAtom(currentUserAtom);
+  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
@@ -81,12 +81,15 @@ export default function AdminSettingsPage() {
       try {
         apiClient.setToken(token);
 
-        // Check if user is admin
+        // Check if user is admin and restore session
         const sessionResponse = await apiClient.get<{ user: any }>('/api/auth/session');
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = '/timeline';
           return;
         }
+
+        // Update currentUser atom to ensure sidebar shows
+        setCurrentUser(sessionResponse.user);
 
         // Load admin settings
         const settingsResponse = await apiClient.get<AdminSettings>('/api/admin/settings');
@@ -100,7 +103,7 @@ export default function AdminSettingsPage() {
     };
 
     loadSettings();
-  }, [token]);
+  }, [token, setCurrentUser]);
 
   const handleSaveInstance = async () => {
     if (!settings) return;

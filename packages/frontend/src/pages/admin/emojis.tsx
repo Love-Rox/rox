@@ -41,7 +41,7 @@ interface CategoriesResponse {
 }
 
 export default function AdminEmojisPage() {
-  const [_currentUser] = useAtom(currentUserAtom);
+  const [, setCurrentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
@@ -103,12 +103,15 @@ export default function AdminEmojisPage() {
       try {
         apiClient.setToken(token);
 
-        // Check if user is admin
+        // Check if user is admin and restore session
         const sessionResponse = await apiClient.get<{ user: { isAdmin?: boolean } }>('/api/auth/session');
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = '/timeline';
           return;
         }
+
+        // Update currentUser atom to ensure sidebar shows
+        setCurrentUser(sessionResponse.user as any);
 
         await Promise.all([loadEmojis(), loadCategories()]);
       } catch (err) {
@@ -120,7 +123,7 @@ export default function AdminEmojisPage() {
     };
 
     checkAccess();
-  }, [token, loadEmojis, loadCategories]);
+  }, [token, loadEmojis, loadCategories, setCurrentUser]);
 
   const resetForm = () => {
     setName('');
@@ -380,7 +383,7 @@ export default function AdminEmojisPage() {
                   <h3 className="font-semibold">
                     {editingEmoji ? <Trans>Edit Emoji</Trans> : <Trans>Add New Emoji</Trans>}
                   </h3>
-                  <button onClick={resetForm} className="text-gray-500 hover:text-gray-700">
+                  <button onClick={resetForm} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
@@ -398,7 +401,7 @@ export default function AdminEmojisPage() {
                       className="w-full px-3 py-2 border rounded-md"
                       pattern="[a-z0-9_]+"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       <Trans>Lowercase letters, numbers, and underscores only</Trans>
                     </p>
                   </div>
@@ -408,13 +411,13 @@ export default function AdminEmojisPage() {
                       <Trans>Image</Trans> *
                     </label>
                     {editingEmoji ? (
-                      <div className="flex items-center gap-2 px-3 py-2 border rounded-md bg-gray-50">
+                      <div className="flex items-center gap-2 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
                         <img src={url} alt="" className="w-6 h-6 object-contain" />
-                        <span className="text-sm text-gray-500 truncate">{url}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 truncate">{url}</span>
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        <label className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed rounded-md cursor-pointer hover:border-primary-500 hover:bg-primary-50 transition-colors">
+                        <label className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed rounded-md cursor-pointer hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors">
                           <input
                             type="file"
                             accept="image/png,image/gif,image/webp"
@@ -438,8 +441,8 @@ export default function AdminEmojisPage() {
                             </>
                           ) : (
                             <>
-                              <Upload className="w-5 h-5 text-gray-400" />
-                              <span className="text-sm text-gray-500">
+                              <Upload className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                              <span className="text-sm text-gray-500 dark:text-gray-400">
                                 <Trans>Click to upload (PNG, GIF, WebP, max 256KB)</Trans>
                               </span>
                             </>
@@ -519,7 +522,7 @@ export default function AdminEmojisPage() {
 
                 {/* Preview */}
                 {url && (
-                  <div className="mt-4 p-3 bg-white rounded border">
+                  <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded border dark:border-gray-600">
                     <p className="text-sm font-medium mb-2">
                       <Trans>Preview</Trans>
                     </p>
@@ -532,7 +535,7 @@ export default function AdminEmojisPage() {
                           (e.target as HTMLImageElement).style.display = 'none';
                         }}
                       />
-                      <span className="text-gray-600">:{name || 'emoji_name'}:</span>
+                      <span className="text-gray-600 dark:text-gray-400">:{name || 'emoji_name'}:</span>
                     </div>
                   </div>
                 )}
@@ -588,16 +591,16 @@ export default function AdminEmojisPage() {
             {/* Emoji List */}
             {emojis.length === 0 ? (
               <div className="text-center py-12">
-                <Smile className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p className="text-gray-500">
+                <Smile className="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+                <p className="text-gray-500 dark:text-gray-400">
                   <Trans>No custom emojis yet</Trans>
                 </p>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
                   <Trans>Add your first custom emoji to get started</Trans>
                 </p>
               </div>
             ) : filteredEmojis.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <Trans>No emojis match your search</Trans>
               </div>
             ) : (
@@ -606,7 +609,7 @@ export default function AdminEmojisPage() {
                   .sort(([a], [b]) => a.localeCompare(b))
                   .map(([categoryName, categoryEmojis]) => (
                     <div key={categoryName}>
-                      <h3 className="text-sm font-medium text-gray-500 mb-2">{categoryName}</h3>
+                      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">{categoryName}</h3>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                         {categoryEmojis.map((emoji) => (
                           <div
@@ -628,14 +631,14 @@ export default function AdminEmojisPage() {
                             <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button
                                 onClick={() => handleEditEmoji(emoji)}
-                                className="p-1 bg-white rounded shadow hover:bg-gray-100"
+                                className="p-1 bg-white dark:bg-gray-700 rounded shadow hover:bg-gray-100 dark:hover:bg-gray-600"
                                 title={t`Edit`}
                               >
                                 <Edit2 className="w-3 h-3" />
                               </button>
                               <button
                                 onClick={() => handleDeleteEmoji(emoji)}
-                                className="p-1 bg-white rounded shadow hover:bg-red-100 text-red-500"
+                                className="p-1 bg-white dark:bg-gray-700 rounded shadow hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500"
                                 title={t`Delete`}
                               >
                                 <Trash2 className="w-3 h-3" />
@@ -650,7 +653,7 @@ export default function AdminEmojisPage() {
             )}
 
             {/* Stats */}
-            <div className="mt-6 pt-4 border-t text-sm text-gray-500">
+            <div className="mt-6 pt-4 border-t dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
               <Trans>Total: {emojis.length} emojis</Trans>
               {categories.length > 0 && (
                 <span className="ml-4">

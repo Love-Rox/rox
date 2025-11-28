@@ -36,7 +36,7 @@ interface BlocksResponse {
 }
 
 export default function AdminBlocksPage() {
-  const [_currentUser] = useAtom(currentUserAtom);
+  const [, setCurrentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
@@ -77,12 +77,15 @@ export default function AdminBlocksPage() {
       try {
         apiClient.setToken(token);
 
-        // Check if user is admin
+        // Check if user is admin and restore session
         const sessionResponse = await apiClient.get<{ user: any }>('/api/auth/session');
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = '/timeline';
           return;
         }
+
+        // Update currentUser atom to ensure sidebar shows
+        setCurrentUser(sessionResponse.user);
 
         await loadBlocks();
       } catch (err) {
@@ -93,7 +96,7 @@ export default function AdminBlocksPage() {
     };
 
     checkAccess();
-  }, [token, loadBlocks]);
+  }, [token, loadBlocks, setCurrentUser]);
 
   const handleAddBlock = async () => {
     if (!token || !host.trim()) return;

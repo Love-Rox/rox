@@ -66,7 +66,7 @@ const REASON_LABELS: Record<string, string> = {
 };
 
 export default function AdminReportsPage() {
-  const [_currentUser] = useAtom(currentUserAtom);
+  const [, setCurrentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
@@ -119,12 +119,15 @@ export default function AdminReportsPage() {
       try {
         apiClient.setToken(token);
 
-        // Check if user is admin
+        // Check if user is admin and restore session
         const sessionResponse = await apiClient.get<{ user: any }>('/api/auth/session');
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = '/timeline';
           return;
         }
+
+        // Update currentUser atom to ensure sidebar shows
+        setCurrentUser(sessionResponse.user);
 
         await loadReports();
       } catch (err) {
@@ -135,7 +138,7 @@ export default function AdminReportsPage() {
     };
 
     checkAccess();
-  }, [token, loadReports]);
+  }, [token, loadReports, setCurrentUser]);
 
   const loadReportDetail = async (id: string) => {
     if (!token) return;
@@ -195,7 +198,7 @@ export default function AdminReportsPage() {
       case 'resolved':
         return <CheckCircle className="w-4 h-4 text-green-500" />;
       case 'rejected':
-        return <XCircle className="w-4 h-4 text-gray-500" />;
+        return <XCircle className="w-4 h-4 text-gray-500 dark:text-gray-400" />;
       default:
         return null;
     }
