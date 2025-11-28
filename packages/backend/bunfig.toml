@@ -1,0 +1,3 @@
+# Bun configuration
+# E2E tests are excluded via package.json scripts
+# Run `bun run test:e2e` to execute E2E tests separately

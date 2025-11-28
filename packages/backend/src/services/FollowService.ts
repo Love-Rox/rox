@@ -12,6 +12,7 @@ import type { IUserRepository } from '../interfaces/repositories/IUserRepository
 import type { Follow } from '../../../shared/src/types/user.js';
 import { generateId } from '../../../shared/src/utils/id.js';
 import type { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
+import type { NotificationService } from './NotificationService.js';
 
 /**
  * Follow Service
@@ -35,11 +36,13 @@ export class FollowService {
    * @param followRepository - Follow repository
    * @param userRepository - User repository
    * @param deliveryService - ActivityPub delivery service (optional, for federation)
+   * @param notificationService - Notification service (optional, for notifications)
    */
   constructor(
     private readonly followRepository: IFollowRepository,
     private readonly userRepository: IUserRepository,
     private readonly deliveryService?: ActivityPubDeliveryService,
+    private readonly notificationService?: NotificationService,
   ) {}
 
   /**
@@ -96,6 +99,13 @@ export class FollowService {
       // Fire-and-forget delivery (don't await to avoid blocking)
       this.deliveryService.deliverFollow(follower, followee).catch((error) => {
         console.error(`Failed to deliver Follow activity:`, error);
+      });
+    }
+
+    // Create notification for the followee (only for local users)
+    if (this.notificationService && !followee.host) {
+      this.notificationService.createFollowNotification(followeeId, followerId).catch((error) => {
+        console.error(`Failed to create follow notification:`, error);
       });
     }
 

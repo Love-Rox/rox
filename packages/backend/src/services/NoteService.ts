@@ -17,6 +17,7 @@ import type { Visibility } from '../../../shared/src/types/common.js';
 import { generateId } from '../../../shared/src/utils/id.js';
 import type { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
 import { CacheTTL, CachePrefix } from '../adapters/cache/DragonflyCacheAdapter.js';
+import type { NotificationService } from './NotificationService.js';
 
 /**
  * Note creation input data
@@ -84,6 +85,7 @@ export class NoteService {
    * @param userRepository - User repository
    * @param deliveryService - ActivityPub delivery service (injected via DI)
    * @param cacheService - Optional cache service for timeline caching
+   * @param notificationService - Optional notification service for notifications
    */
   constructor(
     private readonly noteRepository: INoteRepository,
@@ -92,6 +94,7 @@ export class NoteService {
     private readonly userRepository: IUserRepository,
     private readonly deliveryService: ActivityPubDeliveryService,
     cacheService?: ICacheService,
+    private readonly notificationService?: NotificationService,
   ) {
     this.cacheService = cacheService ?? null;
   }
@@ -223,6 +226,13 @@ export class NoteService {
     if (this.cacheService?.isAvailable() && visibility === 'public') {
       this.cacheService.deletePattern(`${CachePrefix.TIMELINE_LOCAL}:*`).catch((error) => {
         console.warn('Failed to invalidate timeline cache:', error);
+      });
+    }
+
+    // Create notifications (async, non-blocking)
+    if (this.notificationService) {
+      this.createNotifications(note, userId, mentions, replyId, renoteId, renoteTarget).catch((error) => {
+        console.error(`Failed to create notifications for note ${noteId}:`, error);
       });
     }
 
@@ -531,5 +541,96 @@ export class NoteService {
     }
 
     return limit;
+  }
+
+  /**
+   * Create notifications for a note
+   *
+   * Sends notifications for mentions, replies, renotes, and quotes.
+   *
+   * @param note - Created note
+   * @param authorId - Note author ID
+   * @param mentions - Mentioned usernames
+   * @param replyId - Reply target note ID
+   * @param renoteId - Renote target note ID
+   * @param renoteTarget - Renote target note (if available)
+   *
+   * @private
+   */
+  private async createNotifications(
+    note: Note,
+    authorId: string,
+    mentions: string[],
+    replyId: string | null | undefined,
+    renoteId: string | null | undefined,
+    renoteTarget: Note | null
+  ): Promise<void> {
+    if (!this.notificationService) return;
+
+    // Reply notification
+    if (replyId) {
+      const replyTarget = await this.noteRepository.findById(replyId);
+      if (replyTarget && replyTarget.userId !== authorId) {
+        // Only notify if reply target author is a local user
+        const targetUser = await this.userRepository.findById(replyTarget.userId);
+        if (targetUser && !targetUser.host) {
+          await this.notificationService.createReplyNotification(
+            replyTarget.userId,
+            authorId,
+            note.id
+          );
+        }
+      }
+    }
+
+    // Renote notification (pure renote without text)
+    if (renoteId && renoteTarget && !note.text) {
+      if (renoteTarget.userId !== authorId) {
+        const targetUser = await this.userRepository.findById(renoteTarget.userId);
+        if (targetUser && !targetUser.host) {
+          await this.notificationService.createRenoteNotification(
+            renoteTarget.userId,
+            authorId,
+            note.id
+          );
+        }
+      }
+    }
+
+    // Quote notification (renote with text)
+    if (renoteId && renoteTarget && note.text) {
+      if (renoteTarget.userId !== authorId) {
+        const targetUser = await this.userRepository.findById(renoteTarget.userId);
+        if (targetUser && !targetUser.host) {
+          await this.notificationService.createQuoteNotification(
+            renoteTarget.userId,
+            authorId,
+            note.id
+          );
+        }
+      }
+    }
+
+    // Mention notifications
+    if (mentions.length > 0) {
+      // Resolve usernames to user IDs
+      for (const username of mentions) {
+        const mentionedUser = await this.userRepository.findByUsername(username);
+        if (mentionedUser && !mentionedUser.host && mentionedUser.id !== authorId) {
+          // Skip if this is also a reply (to avoid duplicate notification)
+          if (replyId) {
+            const replyTarget = await this.noteRepository.findById(replyId);
+            if (replyTarget && replyTarget.userId === mentionedUser.id) {
+              continue;
+            }
+          }
+          await this.notificationService.createMentionNotification(
+            mentionedUser.id,
+            authorId,
+            note.id
+          );
+        }
+      }
+    }
   }
 }

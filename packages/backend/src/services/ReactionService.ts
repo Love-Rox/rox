@@ -13,6 +13,7 @@ import type { IUserRepository } from '../interfaces/repositories/IUserRepository
 import type { Reaction } from '../../../shared/src/types/reaction.js';
 import { generateId } from '../../../shared/src/utils/id.js';
 import type { ActivityPubDeliveryService } from './ap/ActivityPubDeliveryService.js';
+import type { NotificationService } from './NotificationService.js';
 
 /**
  * Reaction creation input data
@@ -51,12 +52,14 @@ export class ReactionService {
    * @param noteRepository - Note repository
    * @param userRepository - User repository
    * @param deliveryService - ActivityPub delivery service (injected via DI)
+   * @param notificationService - Notification service (optional, for notifications)
    */
   constructor(
     private readonly reactionRepository: IReactionRepository,
     private readonly noteRepository: INoteRepository,
     private readonly userRepository: IUserRepository,
     private readonly deliveryService: ActivityPubDeliveryService,
+    private readonly notificationService?: NotificationService,
   ) {}
 
   /**
@@ -141,6 +144,13 @@ export class ReactionService {
         reactor
       ).catch((error) => {
         console.error(`Failed to deliver Like activity for reaction ${newReaction.id}:`, error);
+      });
+    }
+
+    // Create notification for the note author (only for local users and not self-reaction)
+    if (this.notificationService && noteAuthor && !noteAuthor.host && noteAuthor.id !== userId) {
+      this.notificationService.createReactionNotification(noteAuthor.id, userId, noteId, reaction).catch((error) => {
+        console.error(`Failed to create reaction notification:`, error);
       });
     }
 

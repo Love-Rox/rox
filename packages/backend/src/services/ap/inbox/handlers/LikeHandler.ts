@@ -74,6 +74,17 @@ export class LikeHandler extends BaseHandler {
       });
 
       this.log('✅', `Reaction created: ${remoteActor.username}@${remoteActor.host} ${reaction} note ${note.id}`);
+
+      // Create notification for the note author (fire-and-forget)
+      try {
+        const notificationService = this.getNotificationService(c);
+        if (notificationService) {
+          await notificationService.createReactionNotification(note.userId, remoteActor.id, note.id, reaction);
+        }
+      } catch (notifError) {
+        this.warn(`Failed to create reaction notification: ${notifError}`);
+      }
+
       return this.success(`Reaction created: ${reaction}`);
     } catch (error) {
       this.error('Failed to handle Like activity:', error as Error);

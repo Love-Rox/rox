@@ -81,6 +81,13 @@ export abstract class BaseHandler implements IActivityHandler {
   }
 
   /**
+   * Get notification service from context
+   */
+  protected getNotificationService(c: Context) {
+    return c.get('notificationService');
+  }
+
+  /**
    * Resolve remote actor from URI
    *
    * @param actorUri - Actor URI to resolve

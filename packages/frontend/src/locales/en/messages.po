@@ -65,6 +65,10 @@ msgstr "About This Instance"
 #~ msgid "About This Server"
 #~ msgstr "About This Server"
 
+#: src/components/notification/NotificationItem.tsx:107
+msgid "accepted your follow request"
+msgstr "accepted your follow request"
+
 #: src/components/settings/AccountMigrationSection.tsx:251
 msgid "Account Aliases"
 msgstr "Account Aliases"
@@ -117,7 +121,7 @@ msgstr "Additional Comment"
 msgid "Additional Details (optional)"
 msgstr "Additional Details (optional)"
 
-#: src/components/layout/Sidebar.tsx:56
+#: src/components/layout/Sidebar.tsx:63
 msgid "Admin"
 msgstr "Admin"
 
@@ -220,7 +224,7 @@ msgstr "Be the first to post something!"
 msgid "Before migrating, make sure to add this account as an alias on your target account."
 msgstr "Before migrating, make sure to add this account as an alias on your target account."
 
-#: src/pages/settings.tsx:165
+#: src/pages/settings.tsx:166
 msgid "Bio"
 msgstr "Bio"
 
@@ -267,6 +271,10 @@ msgstr "Blocking an instance will prevent all federation with that server. Users
 msgid "Bot"
 msgstr "Bot"
 
+#: src/pages/notifications.tsx:232
+msgid "By type"
+msgstr "By type"
+
 #: src/pages/admin/roles.tsx:494
 msgid "Can delete notes"
 msgstr "Can delete notes"
@@ -292,7 +300,7 @@ msgstr "Can suspend users"
 #: src/pages/admin/roles.tsx:547
 #: src/pages/mod/instances.tsx:374
 #: src/pages/mod/users.tsx:545
-#: src/pages/settings.tsx:263
+#: src/pages/settings.tsx:264
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -311,6 +319,10 @@ msgstr "Check Instance"
 #: src/pages/login.tsx:93
 msgid "Choose your preferred sign-in method"
 msgstr "Choose your preferred sign-in method"
+
+#: src/pages/notifications.tsx:224
+msgid "Clear all"
+msgstr "Clear all"
 
 #: src/pages/admin/emojis.tsx:443
 msgid "Click to upload (PNG, GIF, WebP, max 256KB)"
@@ -351,7 +363,7 @@ msgstr "Contact"
 msgid "Content Warning"
 msgstr "Content Warning"
 
-#: src/components/settings/UISettingsSection.tsx:215
+#: src/components/settings/UISettingsSection.tsx:232
 msgid "Content Width"
 msgstr "Content Width"
 
@@ -405,19 +417,19 @@ msgstr "Creating account..."
 msgid "Custom Code (optional)"
 msgstr "Custom Code (optional)"
 
-#: src/pages/settings.tsx:208
+#: src/pages/settings.tsx:209
 msgid "Custom CSS"
 msgstr "Custom CSS"
 
-#: src/components/settings/UISettingsSection.tsx:237
+#: src/components/settings/UISettingsSection.tsx:295
 msgid "Custom CSS (App-wide)"
 msgstr "Custom CSS (App-wide)"
 
-#: src/components/settings/UISettingsSection.tsx:250
+#: src/components/settings/UISettingsSection.tsx:308
 msgid "Custom CSS applied to the entire app (max 10KB)"
 msgstr "Custom CSS applied to the entire app (max 10KB)"
 
-#: src/pages/settings.tsx:222
+#: src/pages/settings.tsx:223
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "Custom CSS for your profile page (max 10KB)"
 
@@ -494,16 +506,20 @@ msgstr "Description"
 msgid "Direct"
 msgstr "Direct"
 
+#: src/components/settings/PushNotificationSection.tsx:182
+msgid "Disable"
+msgstr "Disable"
+
 #: src/components/note/NoteComposer.tsx:319
 msgid "Discard"
 msgstr "Discard"
 
-#: src/pages/settings.tsx:145
+#: src/pages/settings.tsx:146
 #: src/pages/signup.tsx:189
 msgid "Display Name"
 msgstr "Display Name"
 
-#: src/components/settings/UISettingsSection.tsx:189
+#: src/components/settings/UISettingsSection.tsx:206
 msgid "Display Settings"
 msgstr "Display Settings"
 
@@ -580,9 +596,17 @@ msgstr "emoji_name"
 msgid "Emojis"
 msgstr "Emojis"
 
+#: src/components/settings/PushNotificationSection.tsx:184
+msgid "Enable"
+msgstr "Enable"
+
 #: src/pages/admin/settings.tsx:382
 msgid "Enable Registration"
 msgstr "Enable Registration"
+
+#: src/components/settings/PushNotificationSection.tsx:167
+msgid "Enable to receive notifications in the background."
+msgstr "Enable to receive notifications in the background."
 
 #: src/pages/mod/instances.tsx:276
 msgid "Enter instance hostname (e.g., spam.example.com)"
@@ -724,7 +748,7 @@ msgstr "Failed to restore note"
 msgid "Failed to save role"
 msgstr "Failed to save role"
 
-#: src/components/settings/UISettingsSection.tsx:146
+#: src/components/settings/UISettingsSection.tsx:150
 msgid "Failed to save UI settings"
 msgstr "Failed to save UI settings"
 
@@ -778,10 +802,23 @@ msgstr "File too large. Maximum size: 256KB"
 msgid "File uploaded successfully"
 msgstr "File uploaded successfully"
 
+#: src/pages/notifications.tsx:205
+msgid "Filter"
+msgstr "Filter"
+
+#: src/pages/notifications.tsx:216
+msgid "Filter notifications"
+msgstr "Filter notifications"
+
 #: src/components/note/NoteCard.tsx:270
 #: src/components/user/UserProfile.tsx:342
+#: src/pages/notifications.tsx:246
 msgid "Follow"
 msgstr "Follow"
+
+#: src/components/notification/NotificationItem.tsx:65
+msgid "followed you"
+msgstr "followed you"
 
 #: src/components/note/NoteComposer.tsx:272
 #: src/components/user/UserProfile.tsx:401
@@ -802,7 +839,7 @@ msgstr "Following successfully"
 msgid "Following..."
 msgstr "Following..."
 
-#: src/components/settings/UISettingsSection.tsx:195
+#: src/components/settings/UISettingsSection.tsx:212
 msgid "Font Size"
 msgstr "Font Size"
 
@@ -814,7 +851,7 @@ msgstr "Get Started"
 msgid "Go to Timeline"
 msgstr "Go to Timeline"
 
-#: src/components/layout/Sidebar.tsx:34
+#: src/components/layout/Sidebar.tsx:35
 #: src/components/note/NoteComposer.tsx:271
 #: src/pages/timeline.tsx:131
 msgid "Home"
@@ -965,7 +1002,7 @@ msgstr "Light"
 msgid "Lightweight"
 msgstr "Lightweight"
 
-#: src/components/settings/UISettingsSection.tsx:205
+#: src/components/settings/UISettingsSection.tsx:222
 msgid "Line Height"
 msgstr "Line Height"
 
@@ -1014,13 +1051,26 @@ msgstr "Manage blocked instances"
 msgid "Manage invitation codes for new user registration"
 msgstr "Manage invitation codes for new user registration"
 
-#: src/pages/settings.tsx:135
+#: src/pages/settings.tsx:136
 msgid "Manage your profile information"
 msgstr "Manage your profile information"
+
+#: src/components/notification/NotificationList.tsx:93
+#: src/pages/notifications.tsx:192
+msgid "Mark all as read"
+msgstr "Mark all as read"
 
 #: src/pages/admin/invitations.tsx:273
 msgid "Max Uses"
 msgstr "Max Uses"
+
+#: src/pages/notifications.tsx:247
+msgid "Mention"
+msgstr "Mention"
+
+#: src/components/notification/NotificationItem.tsx:71
+msgid "mentioned you"
+msgstr "mentioned you"
 
 #: src/components/settings/AccountMigrationSection.tsx:307
 msgid "Migrate your account to a new server. Your followers will be automatically transferred to the new account. This action is irreversible."
@@ -1077,6 +1127,10 @@ msgstr "Never"
 msgid "New accounts require admin approval"
 msgstr "New accounts require admin approval"
 
+#: src/components/notification/NotificationItem.tsx:111
+msgid "New notification"
+msgstr "New notification"
+
 #: src/components/settings/AccountMigrationSection.tsx:296
 msgid "No aliases configured"
 msgstr "No aliases configured"
@@ -1114,9 +1168,18 @@ msgstr "No instances blocked"
 msgid "No invitation codes yet"
 msgstr "No invitation codes yet"
 
+#: src/pages/notifications.tsx:281
+msgid "No matching notifications"
+msgstr "No matching notifications"
+
 #: src/components/timeline/Timeline.tsx:171
 msgid "No notes yet"
 msgstr "No notes yet"
+
+#: src/components/notification/NotificationList.tsx:71
+#: src/pages/notifications.tsx:283
+msgid "No notifications"
+msgstr "No notifications"
 
 #: src/pages/admin/reports.tsx:318
 msgid "No pending reports to review"
@@ -1178,11 +1241,11 @@ msgstr "Note Report"
 msgid "Note restored successfully"
 msgstr "Note restored successfully"
 
-#: src/pages/settings.tsx:229
+#: src/pages/settings.tsx:230
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
 msgstr "Note: Custom CSS is sanitized and some properties may be restricted for security."
 
-#: src/components/settings/UISettingsSection.tsx:257
+#: src/components/settings/UISettingsSection.tsx:315
 msgid "Note: Some CSS properties may be restricted for security."
 msgstr "Note: Some CSS properties may be restricted for security."
 
@@ -1193,6 +1256,20 @@ msgstr "Notes"
 #: src/pages/mod/notes.tsx:202
 msgid "Notes deleted by moderators will appear here"
 msgstr "Notes deleted by moderators will appear here"
+
+#: src/components/settings/UISettingsSection.tsx:253
+msgid "Notification Sound"
+msgstr "Notification Sound"
+
+#: src/components/layout/Sidebar.tsx:41
+#: src/components/notification/NotificationBell.tsx:85
+#: src/pages/notifications.tsx:181
+msgid "Notifications"
+msgstr "Notifications"
+
+#: src/components/settings/PushNotificationSection.tsx:129
+msgid "Notifications are blocked"
+msgstr "Notifications are blocked"
 
 #: src/components/LandingPage.tsx:106
 msgid "Open Registration"
@@ -1238,11 +1315,15 @@ msgstr "Permissions"
 #~ msgid "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
 #~ msgstr "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
 
+#: src/components/settings/PushNotificationSection.tsx:132
+msgid "Please enable notifications in your browser settings to receive push notifications."
+msgstr "Please enable notifications in your browser settings to receive push notifications."
+
 #: src/components/note/NoteComposer.tsx:181
 msgid "Please enter text or attach files"
 msgstr "Please enter text or attach files"
 
-#: src/pages/settings.tsx:79
+#: src/pages/settings.tsx:80
 msgid "Please log in to update your profile"
 msgstr "Please log in to update your profile"
 
@@ -1264,7 +1345,7 @@ msgid "Powered by"
 msgstr "Powered by"
 
 #: src/components/note/NoteComposer.tsx:371
-#: src/components/settings/UISettingsSection.tsx:264
+#: src/components/settings/UISettingsSection.tsx:322
 #: src/pages/admin/emojis.tsx:524
 #: src/pages/admin/settings.tsx:564
 msgid "Preview"
@@ -1294,11 +1375,11 @@ msgstr "Privacy Policy"
 msgid "Privacy Policy URL"
 msgstr "Privacy Policy URL"
 
-#: src/components/layout/Sidebar.tsx:40
+#: src/components/layout/Sidebar.tsx:47
 msgid "Profile"
 msgstr "Profile"
 
-#: src/pages/settings.tsx:99
+#: src/pages/settings.tsx:100
 msgid "Profile updated successfully"
 msgstr "Profile updated successfully"
 
@@ -1315,9 +1396,43 @@ msgstr "Public"
 msgid "Public (show on profiles)"
 msgstr "Public (show on profiles)"
 
+#: src/components/settings/PushNotificationSection.tsx:69
+#: src/components/settings/PushNotificationSection.tsx:91
+#: src/components/settings/PushNotificationSection.tsx:111
+msgid "Push Notifications"
+msgstr "Push Notifications"
+
+#: src/components/settings/PushNotificationSection.tsx:98
+msgid "Push notifications are not configured on this server."
+msgstr "Push notifications are not configured on this server."
+
+#: src/components/settings/PushNotificationSection.tsx:164
+msgid "Push notifications disabled"
+msgstr "Push notifications disabled"
+
+#: src/components/settings/PushNotificationSection.tsx:150
+msgid "Push notifications enabled"
+msgstr "Push notifications enabled"
+
+#: src/pages/notifications.tsx:251
+msgid "Quote"
+msgstr "Quote"
+
+#: src/components/notification/NotificationItem.tsx:95
+msgid "quoted your note"
+msgstr "quoted your note"
+
 #: src/components/note/ReactionPicker.tsx:135
 #~ msgid "React"
 #~ msgstr "React"
+
+#: src/components/notification/NotificationItem.tsx:83
+msgid "reacted with"
+msgstr "reacted with"
+
+#: src/pages/notifications.tsx:249
+msgid "Reaction"
+msgstr "Reaction"
 
 #: src/components/note/NoteCard.tsx:131
 msgid "Reaction added"
@@ -1365,6 +1480,10 @@ msgstr "Recent posts from your community"
 msgid "Refresh"
 msgstr "Refresh"
 
+#: src/components/settings/PushNotificationSection.tsx:215
+msgid "Registered devices"
+msgstr "Registered devices"
+
 #: src/pages/admin/settings.tsx:211
 msgid "Registration"
 msgstr "Registration"
@@ -1404,9 +1523,21 @@ msgstr "Rejected"
 msgid "Remove alias"
 msgstr "Remove alias"
 
+#: src/pages/notifications.tsx:250
+msgid "Renote"
+msgstr "Renote"
+
 #: src/components/note/NoteCard.tsx:278
 msgid "Renoted"
 msgstr "Renoted"
+
+#: src/components/notification/NotificationItem.tsx:89
+msgid "renoted your note"
+msgstr "renoted your note"
+
+#: src/components/notification/NotificationItem.tsx:77
+msgid "replied to your note"
+msgstr "replied to your note"
 
 #. placeholder {0}: descendants.length
 #: src/components/pages/NoteDetailPageClient.tsx:159
@@ -1414,6 +1545,7 @@ msgid "Replies ({0})"
 msgstr "Replies ({0})"
 
 #: src/components/note/NoteComposer.tsx:556
+#: src/pages/notifications.tsx:248
 msgid "Reply"
 msgstr "Reply"
 
@@ -1503,7 +1635,7 @@ msgstr "Require Approval"
 msgid "Reset"
 msgstr "Reset"
 
-#: src/components/settings/UISettingsSection.tsx:307
+#: src/components/settings/UISettingsSection.tsx:365
 msgid "Reset to Default"
 msgstr "Reset to Default"
 
@@ -1587,7 +1719,7 @@ msgstr "Role updated"
 msgid "Roles"
 msgstr "Roles"
 
-#: src/pages/settings.tsx:251
+#: src/pages/settings.tsx:252
 msgid "Save Changes"
 msgstr "Save Changes"
 
@@ -1599,7 +1731,7 @@ msgstr "Save Instance Settings"
 msgid "Save Registration Settings"
 msgstr "Save Registration Settings"
 
-#: src/components/settings/UISettingsSection.tsx:303
+#: src/components/settings/UISettingsSection.tsx:361
 msgid "Save Settings"
 msgstr "Save Settings"
 
@@ -1607,8 +1739,8 @@ msgstr "Save Settings"
 msgid "Save Theme Settings"
 msgstr "Save Theme Settings"
 
-#: src/components/settings/UISettingsSection.tsx:299
-#: src/pages/settings.tsx:247
+#: src/components/settings/UISettingsSection.tsx:357
+#: src/pages/settings.tsx:248
 msgid "Saving..."
 msgstr "Saving..."
 
@@ -1636,12 +1768,20 @@ msgstr "Search User"
 msgid "Secondary"
 msgstr "Secondary"
 
+#: src/components/settings/PushNotificationSection.tsx:198
+msgid "Send a test notification to verify your setup."
+msgstr "Send a test notification to verify your setup."
+
+#: src/components/settings/PushNotificationSection.tsx:204
+msgid "Send test"
+msgstr "Send test"
+
 #: src/pages/admin/emojis.tsx:515
 msgid "Sensitive content (NSFW)"
 msgstr "Sensitive content (NSFW)"
 
-#: src/components/layout/Sidebar.tsx:46
-#: src/pages/settings.tsx:132
+#: src/components/layout/Sidebar.tsx:53
+#: src/pages/settings.tsx:133
 msgid "Settings"
 msgstr "Settings"
 
@@ -1652,6 +1792,10 @@ msgstr "Share your thoughts, connect with friends, and join conversations across
 #: src/components/note/NoteCard.tsx:297
 msgid "Show content"
 msgstr "Show content"
+
+#: src/pages/notifications.tsx:267
+msgid "Show unread only"
+msgstr "Show unread only"
 
 #. placeholder {0}: offset + 1
 #. placeholder {1}: Math.min(offset + limit, total)
@@ -1735,7 +1879,7 @@ msgstr "Target Account URI"
 msgid "Target ID:"
 msgstr "Target ID:"
 
-#: src/pages/settings.tsx:171
+#: src/pages/settings.tsx:172
 msgid "Tell us about yourself..."
 msgstr "Tell us about yourself..."
 
@@ -1751,11 +1895,19 @@ msgstr "Terms of Service"
 msgid "Terms of Service URL"
 msgstr "Terms of Service URL"
 
+#: src/components/settings/UISettingsSection.tsx:285
+msgid "Test"
+msgstr "Test"
+
+#: src/components/settings/PushNotificationSection.tsx:195
+msgid "Test notification"
+msgstr "Test notification"
+
 #: src/components/note/NoteComposer.tsx:186
 msgid "Text exceeds {maxLength} characters"
 msgstr "Text exceeds {maxLength} characters"
 
-#: src/components/settings/UISettingsSection.tsx:225
+#: src/components/settings/UISettingsSection.tsx:242
 #: src/pages/admin/settings.tsx:221
 msgid "Theme"
 msgstr "Theme"
@@ -1776,7 +1928,7 @@ msgstr "This account was migrated to:"
 msgid "This instance is not accepting new registrations at this time."
 msgstr "This instance is not accepting new registrations at this time."
 
-#: src/components/settings/UISettingsSection.tsx:285
+#: src/components/settings/UISettingsSection.tsx:343
 msgid "This is a preview of how text will appear with your selected settings. Adjust the options above to customize your reading experience."
 msgstr "This is a preview of how text will appear with your selected settings. Adjust the options above to customize your reading experience."
 
@@ -1819,11 +1971,15 @@ msgstr "Total: {0} emojis"
 msgid "Try adjusting your filter"
 msgstr "Try adjusting your filter"
 
+#: src/pages/notifications.tsx:288
+msgid "Try adjusting your filters"
+msgstr "Try adjusting your filters"
+
 #: src/app/page.tsx:22
 #~ msgid "UI Components Demo"
 #~ msgstr "UI Components Demo"
 
-#: src/components/settings/UISettingsSection.tsx:141
+#: src/components/settings/UISettingsSection.tsx:145
 msgid "UI settings saved"
 msgstr "UI settings saved"
 
@@ -1905,12 +2061,12 @@ msgid "User unsuspended successfully"
 msgstr "User unsuspended successfully"
 
 #: src/pages/login.tsx:143
-#: src/pages/settings.tsx:190
+#: src/pages/settings.tsx:191
 #: src/pages/signup.tsx:160
 msgid "Username"
 msgstr "Username"
 
-#: src/pages/settings.tsx:201
+#: src/pages/settings.tsx:202
 msgid "Username cannot be changed"
 msgstr "Username cannot be changed"
 
@@ -1948,6 +2104,10 @@ msgstr "Validation failed"
 msgid "View all moderation actions"
 msgstr "View all moderation actions"
 
+#: src/components/notification/NotificationBell.tsx:108
+msgid "View all notifications"
+msgstr "View all notifications"
+
 #: src/pages/mod/notes.tsx:161
 msgid "View and restore deleted notes"
 msgstr "View and restore deleted notes"
@@ -1959,6 +2119,10 @@ msgstr "View Policy"
 #: src/components/LandingPage.tsx:249
 msgid "View Terms"
 msgstr "View Terms"
+
+#: src/components/settings/UISettingsSection.tsx:265
+msgid "Volume"
+msgstr "Volume"
 
 #: src/pages/mod/users.tsx:555
 msgid "Warn User"
@@ -2019,6 +2183,19 @@ msgstr "You have reached your invitation limit"
 msgid "You haven't posted anything yet"
 msgstr "You haven't posted anything yet"
 
+#: src/components/notification/NotificationItem.tsx:101
+msgid "You received a warning from the moderators"
+msgstr "You received a warning from the moderators"
+
+#: src/components/settings/PushNotificationSection.tsx:153
+msgid "You will receive notifications even when the browser is closed."
+msgstr "You will receive notifications even when the browser is closed."
+
+#: src/components/notification/NotificationList.tsx:74
+#: src/pages/notifications.tsx:290
+msgid "You're all caught up!"
+msgstr "You're all caught up!"
+
 #: src/components/user/UserProfile.tsx:465
 msgid "You've reached the end"
 msgstr "You've reached the end"
@@ -2031,10 +2208,14 @@ msgstr "You've reached the end of the timeline"
 msgid "Your account will need to be approved by an administrator before you can use it."
 msgstr "Your account will need to be approved by an administrator before you can use it."
 
-#: src/pages/settings.tsx:179
+#: src/pages/settings.tsx:180
 msgid "Your bio (max 500 characters)"
 msgstr "Your bio (max 500 characters)"
 
-#: src/pages/settings.tsx:158
+#: src/components/settings/PushNotificationSection.tsx:76
+msgid "Your browser does not support push notifications."
+msgstr "Your browser does not support push notifications."
+
+#: src/pages/settings.tsx:159
 msgid "Your public display name (max 50 characters)"
 msgstr "Your public display name (max 50 characters)"

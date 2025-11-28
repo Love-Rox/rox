@@ -65,6 +65,10 @@ msgstr "このインスタンスについて"
 #~ msgid "About This Server"
 #~ msgstr "このサーバーについて"
 
+#: src/components/notification/NotificationItem.tsx:107
+msgid "accepted your follow request"
+msgstr "があなたのフォローリクエストを承認しました"
+
 #: src/components/settings/AccountMigrationSection.tsx:251
 msgid "Account Aliases"
 msgstr "アカウントエイリアス"
@@ -117,7 +121,7 @@ msgstr "追加コメント"
 msgid "Additional Details (optional)"
 msgstr "詳細（任意）"
 
-#: src/components/layout/Sidebar.tsx:56
+#: src/components/layout/Sidebar.tsx:63
 msgid "Admin"
 msgstr "管理"
 
@@ -220,7 +224,7 @@ msgstr "最初の投稿をしてみましょう！"
 msgid "Before migrating, make sure to add this account as an alias on your target account."
 msgstr "引っ越し前に、移行先アカウントでこのアカウントをエイリアスとして追加してください。"
 
-#: src/pages/settings.tsx:165
+#: src/pages/settings.tsx:166
 msgid "Bio"
 msgstr "自己紹介"
 
@@ -267,6 +271,10 @@ msgstr "インスタンスをブロックすると、そのサーバーとの連
 msgid "Bot"
 msgstr "Bot"
 
+#: src/pages/notifications.tsx:232
+msgid "By type"
+msgstr "タイプ別"
+
 #: src/pages/admin/roles.tsx:494
 msgid "Can delete notes"
 msgstr "ノートを削除可能"
@@ -292,7 +300,7 @@ msgstr "ユーザーを凍結可能"
 #: src/pages/admin/roles.tsx:547
 #: src/pages/mod/instances.tsx:374
 #: src/pages/mod/users.tsx:545
-#: src/pages/settings.tsx:263
+#: src/pages/settings.tsx:264
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -311,6 +319,10 @@ msgstr "インスタンスを確認"
 #: src/pages/login.tsx:93
 msgid "Choose your preferred sign-in method"
 msgstr "サインイン方法を選択してください"
+
+#: src/pages/notifications.tsx:224
+msgid "Clear all"
+msgstr "すべてクリア"
 
 #: src/pages/admin/emojis.tsx:443
 msgid "Click to upload (PNG, GIF, WebP, max 256KB)"
@@ -351,7 +363,7 @@ msgstr "連絡先"
 msgid "Content Warning"
 msgstr "閲覧注意"
 
-#: src/components/settings/UISettingsSection.tsx:215
+#: src/components/settings/UISettingsSection.tsx:232
 msgid "Content Width"
 msgstr "コンテンツ幅"
 
@@ -405,19 +417,19 @@ msgstr "アカウント作成中..."
 msgid "Custom Code (optional)"
 msgstr "カスタムコード（任意）"
 
-#: src/pages/settings.tsx:208
+#: src/pages/settings.tsx:209
 msgid "Custom CSS"
 msgstr "カスタムCSS"
 
-#: src/components/settings/UISettingsSection.tsx:237
+#: src/components/settings/UISettingsSection.tsx:295
 msgid "Custom CSS (App-wide)"
 msgstr "カスタムCSS（アプリ全体）"
 
-#: src/components/settings/UISettingsSection.tsx:250
+#: src/components/settings/UISettingsSection.tsx:308
 msgid "Custom CSS applied to the entire app (max 10KB)"
 msgstr "アプリ全体に適用されるカスタムCSS（最大10KB）"
 
-#: src/pages/settings.tsx:222
+#: src/pages/settings.tsx:223
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 
@@ -507,16 +519,20 @@ msgstr "説明"
 msgid "Direct"
 msgstr "ダイレクト"
 
+#: src/components/settings/PushNotificationSection.tsx:182
+msgid "Disable"
+msgstr "無効にする"
+
 #: src/components/note/NoteComposer.tsx:319
 msgid "Discard"
 msgstr "破棄"
 
-#: src/pages/settings.tsx:145
+#: src/pages/settings.tsx:146
 #: src/pages/signup.tsx:189
 msgid "Display Name"
 msgstr "表示名"
 
-#: src/components/settings/UISettingsSection.tsx:189
+#: src/components/settings/UISettingsSection.tsx:206
 msgid "Display Settings"
 msgstr "表示設定"
 
@@ -593,9 +609,17 @@ msgstr "絵文字名"
 msgid "Emojis"
 msgstr "絵文字"
 
+#: src/components/settings/PushNotificationSection.tsx:184
+msgid "Enable"
+msgstr "有効にする"
+
 #: src/pages/admin/settings.tsx:382
 msgid "Enable Registration"
 msgstr "登録を有効化"
+
+#: src/components/settings/PushNotificationSection.tsx:167
+msgid "Enable to receive notifications in the background."
+msgstr "バックグラウンドで通知を受け取るには有効にしてください。"
 
 #: src/pages/mod/instances.tsx:276
 msgid "Enter instance hostname (e.g., spam.example.com)"
@@ -761,7 +785,7 @@ msgstr "ノートの復元に失敗しました"
 msgid "Failed to save role"
 msgstr "ロールの保存に失敗しました"
 
-#: src/components/settings/UISettingsSection.tsx:146
+#: src/components/settings/UISettingsSection.tsx:150
 msgid "Failed to save UI settings"
 msgstr "表示設定の保存に失敗しました"
 
@@ -823,10 +847,23 @@ msgstr "ファイルが大きすぎます。最大サイズ: 256KB"
 msgid "File uploaded successfully"
 msgstr "ファイルをアップロードしました"
 
+#: src/pages/notifications.tsx:205
+msgid "Filter"
+msgstr "フィルター"
+
+#: src/pages/notifications.tsx:216
+msgid "Filter notifications"
+msgstr "通知をフィルター"
+
 #: src/components/note/NoteCard.tsx:270
 #: src/components/user/UserProfile.tsx:342
+#: src/pages/notifications.tsx:246
 msgid "Follow"
 msgstr "フォロー"
+
+#: src/components/notification/NotificationItem.tsx:65
+msgid "followed you"
+msgstr "があなたをフォローしました"
 
 #: src/components/note/NoteComposer.tsx:272
 #: src/components/user/UserProfile.tsx:401
@@ -847,7 +884,7 @@ msgstr "フォローしました"
 msgid "Following..."
 msgstr "フォロー中..."
 
-#: src/components/settings/UISettingsSection.tsx:195
+#: src/components/settings/UISettingsSection.tsx:212
 msgid "Font Size"
 msgstr "文字サイズ"
 
@@ -859,7 +896,7 @@ msgstr "始める"
 msgid "Go to Timeline"
 msgstr "タイムラインへ"
 
-#: src/components/layout/Sidebar.tsx:34
+#: src/components/layout/Sidebar.tsx:35
 #: src/components/note/NoteComposer.tsx:271
 #: src/pages/timeline.tsx:131
 msgid "Home"
@@ -1026,7 +1063,7 @@ msgstr "ライト"
 msgid "Lightweight"
 msgstr "軽量"
 
-#: src/components/settings/UISettingsSection.tsx:205
+#: src/components/settings/UISettingsSection.tsx:222
 msgid "Line Height"
 msgstr "行の高さ"
 
@@ -1079,13 +1116,26 @@ msgstr "ブロック済みインスタンスを管理"
 msgid "Manage invitation codes for new user registration"
 msgstr "新規ユーザー登録用の招待コードを管理"
 
-#: src/pages/settings.tsx:135
+#: src/pages/settings.tsx:136
 msgid "Manage your profile information"
 msgstr "プロフィール情報を管理"
+
+#: src/components/notification/NotificationList.tsx:93
+#: src/pages/notifications.tsx:192
+msgid "Mark all as read"
+msgstr "すべて既読にする"
 
 #: src/pages/admin/invitations.tsx:273
 msgid "Max Uses"
 msgstr "最大使用回数"
+
+#: src/pages/notifications.tsx:247
+msgid "Mention"
+msgstr "メンション"
+
+#: src/components/notification/NotificationItem.tsx:71
+msgid "mentioned you"
+msgstr "があなたにメンションしました"
 
 #: src/components/settings/AccountMigrationSection.tsx:307
 msgid "Migrate your account to a new server. Your followers will be automatically transferred to the new account. This action is irreversible."
@@ -1150,6 +1200,10 @@ msgstr "無期限"
 msgid "New accounts require admin approval"
 msgstr "新規アカウントは管理者の承認が必要"
 
+#: src/components/notification/NotificationItem.tsx:111
+msgid "New notification"
+msgstr "新しい通知"
+
 #: src/components/settings/AccountMigrationSection.tsx:296
 msgid "No aliases configured"
 msgstr "エイリアスが設定されていません"
@@ -1199,9 +1253,18 @@ msgstr "ブロック済みのインスタンスはありません"
 msgid "No invitation codes yet"
 msgstr "招待コードがまだありません"
 
+#: src/pages/notifications.tsx:281
+msgid "No matching notifications"
+msgstr "一致する通知がありません"
+
 #: src/components/timeline/Timeline.tsx:171
 msgid "No notes yet"
 msgstr "まだ投稿がありません"
+
+#: src/components/notification/NotificationList.tsx:71
+#: src/pages/notifications.tsx:283
+msgid "No notifications"
+msgstr "通知はありません"
 
 #: src/pages/admin/reports.tsx:318
 msgid "No pending reports to review"
@@ -1271,11 +1334,11 @@ msgstr "ノートを復元しました"
 #~ msgid "Note restored successfullyPLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/settings.tsx:229
+#: src/pages/settings.tsx:230
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
 msgstr "注意: カスタムCSSはセキュリティのため一部のプロパティが制限されます。"
 
-#: src/components/settings/UISettingsSection.tsx:257
+#: src/components/settings/UISettingsSection.tsx:315
 msgid "Note: Some CSS properties may be restricted for security."
 msgstr "注意: セキュリティのため一部のCSSプロパティは制限されます。"
 
@@ -1294,6 +1357,20 @@ msgstr "モデレーターが削除したノートがここに表示されます
 #: src/pages/mod/audit-logs.tsx:254
 #~ msgid "NotesPLACEHOLDER"
 #~ msgstr ""
+
+#: src/components/settings/UISettingsSection.tsx:253
+msgid "Notification Sound"
+msgstr "通知音"
+
+#: src/components/layout/Sidebar.tsx:41
+#: src/components/notification/NotificationBell.tsx:85
+#: src/pages/notifications.tsx:181
+msgid "Notifications"
+msgstr "通知"
+
+#: src/components/settings/PushNotificationSection.tsx:129
+msgid "Notifications are blocked"
+msgstr "通知がブロックされています"
 
 #: src/components/LandingPage.tsx:106
 msgid "Open Registration"
@@ -1339,11 +1416,15 @@ msgstr "権限"
 #~ msgid "Phase 2: Frontend (Waku + React Aria Components + Lingui) - Setup Complete!"
 #~ msgstr ""
 
+#: src/components/settings/PushNotificationSection.tsx:132
+msgid "Please enable notifications in your browser settings to receive push notifications."
+msgstr "プッシュ通知を受け取るには、ブラウザの設定で通知を許可してください。"
+
 #: src/components/note/NoteComposer.tsx:181
 msgid "Please enter text or attach files"
 msgstr "テキストを入力するかファイルを添付してください"
 
-#: src/pages/settings.tsx:79
+#: src/pages/settings.tsx:80
 msgid "Please log in to update your profile"
 msgstr "プロフィールを更新するにはログインしてください"
 
@@ -1365,7 +1446,7 @@ msgid "Powered by"
 msgstr "Powered by"
 
 #: src/components/note/NoteComposer.tsx:371
-#: src/components/settings/UISettingsSection.tsx:264
+#: src/components/settings/UISettingsSection.tsx:322
 #: src/pages/admin/emojis.tsx:524
 #: src/pages/admin/settings.tsx:564
 msgid "Preview"
@@ -1395,11 +1476,11 @@ msgstr "プライバシーポリシー"
 msgid "Privacy Policy URL"
 msgstr "プライバシーポリシーURL"
 
-#: src/components/layout/Sidebar.tsx:40
+#: src/components/layout/Sidebar.tsx:47
 msgid "Profile"
 msgstr "プロフィール"
 
-#: src/pages/settings.tsx:99
+#: src/pages/settings.tsx:100
 msgid "Profile updated successfully"
 msgstr "プロフィールを更新しました"
 
@@ -1416,9 +1497,43 @@ msgstr "公開"
 msgid "Public (show on profiles)"
 msgstr "公開（プロフィールに表示）"
 
+#: src/components/settings/PushNotificationSection.tsx:69
+#: src/components/settings/PushNotificationSection.tsx:91
+#: src/components/settings/PushNotificationSection.tsx:111
+msgid "Push Notifications"
+msgstr "プッシュ通知"
+
+#: src/components/settings/PushNotificationSection.tsx:98
+msgid "Push notifications are not configured on this server."
+msgstr "このサーバーではプッシュ通知が設定されていません。"
+
+#: src/components/settings/PushNotificationSection.tsx:164
+msgid "Push notifications disabled"
+msgstr "プッシュ通知が無効"
+
+#: src/components/settings/PushNotificationSection.tsx:150
+msgid "Push notifications enabled"
+msgstr "プッシュ通知が有効"
+
+#: src/pages/notifications.tsx:251
+msgid "Quote"
+msgstr "引用"
+
+#: src/components/notification/NotificationItem.tsx:95
+msgid "quoted your note"
+msgstr "があなたの投稿を引用しました"
+
 #: src/components/note/ReactionPicker.tsx:135
 #~ msgid "React"
 #~ msgstr "リアクション"
+
+#: src/components/notification/NotificationItem.tsx:83
+msgid "reacted with"
+msgstr "がリアクションしました"
+
+#: src/pages/notifications.tsx:249
+msgid "Reaction"
+msgstr "リアクション"
 
 #: src/components/note/NoteCard.tsx:131
 msgid "Reaction added"
@@ -1483,6 +1598,10 @@ msgstr "コミュニティの最新投稿"
 msgid "Refresh"
 msgstr "更新"
 
+#: src/components/settings/PushNotificationSection.tsx:215
+msgid "Registered devices"
+msgstr "登録済みデバイス"
+
 #: src/pages/admin/settings.tsx:211
 msgid "Registration"
 msgstr "登録"
@@ -1526,9 +1645,21 @@ msgstr "却下済み"
 msgid "Remove alias"
 msgstr "エイリアスを削除"
 
+#: src/pages/notifications.tsx:250
+msgid "Renote"
+msgstr "リノート"
+
 #: src/components/note/NoteCard.tsx:278
 msgid "Renoted"
 msgstr "リノート"
+
+#: src/components/notification/NotificationItem.tsx:89
+msgid "renoted your note"
+msgstr "があなたの投稿をリノートしました"
+
+#: src/components/notification/NotificationItem.tsx:77
+msgid "replied to your note"
+msgstr "があなたの投稿に返信しました"
 
 #. placeholder {0}: descendants.length
 #: src/components/pages/NoteDetailPageClient.tsx:159
@@ -1536,6 +1667,7 @@ msgid "Replies ({0})"
 msgstr "返信 ({0})"
 
 #: src/components/note/NoteComposer.tsx:556
+#: src/pages/notifications.tsx:248
 msgid "Reply"
 msgstr "返信"
 
@@ -1625,7 +1757,7 @@ msgstr "承認が必要"
 msgid "Reset"
 msgstr "リセット"
 
-#: src/components/settings/UISettingsSection.tsx:307
+#: src/components/settings/UISettingsSection.tsx:365
 msgid "Reset to Default"
 msgstr "デフォルトに戻す"
 
@@ -1717,7 +1849,7 @@ msgstr "ロールを更新しました"
 msgid "Roles"
 msgstr "ロール"
 
-#: src/pages/settings.tsx:251
+#: src/pages/settings.tsx:252
 msgid "Save Changes"
 msgstr "変更を保存"
 
@@ -1729,7 +1861,7 @@ msgstr "インスタンス設定を保存"
 msgid "Save Registration Settings"
 msgstr "登録設定を保存"
 
-#: src/components/settings/UISettingsSection.tsx:303
+#: src/components/settings/UISettingsSection.tsx:361
 msgid "Save Settings"
 msgstr "設定を保存"
 
@@ -1737,8 +1869,8 @@ msgstr "設定を保存"
 msgid "Save Theme Settings"
 msgstr "テーマ設定を保存"
 
-#: src/components/settings/UISettingsSection.tsx:299
-#: src/pages/settings.tsx:247
+#: src/components/settings/UISettingsSection.tsx:357
+#: src/pages/settings.tsx:248
 msgid "Saving..."
 msgstr "保存中..."
 
@@ -1778,12 +1910,20 @@ msgstr "ユーザーを検索"
 msgid "Secondary"
 msgstr "セカンダリ"
 
+#: src/components/settings/PushNotificationSection.tsx:198
+msgid "Send a test notification to verify your setup."
+msgstr "テスト通知を送信して、設定を確認します。"
+
+#: src/components/settings/PushNotificationSection.tsx:204
+msgid "Send test"
+msgstr "テスト送信"
+
 #: src/pages/admin/emojis.tsx:515
 msgid "Sensitive content (NSFW)"
 msgstr "センシティブなコンテンツ（NSFW）"
 
-#: src/components/layout/Sidebar.tsx:46
-#: src/pages/settings.tsx:132
+#: src/components/layout/Sidebar.tsx:53
+#: src/pages/settings.tsx:133
 msgid "Settings"
 msgstr "設定"
 
@@ -1794,6 +1934,10 @@ msgstr "思いを共有し、友人とつながり、Fediverse全体での会話
 #: src/components/note/NoteCard.tsx:297
 msgid "Show content"
 msgstr "内容を表示"
+
+#: src/pages/notifications.tsx:267
+msgid "Show unread only"
+msgstr "未読のみ表示"
 
 #. placeholder {0}: offset + 1
 #. placeholder {1}: Math.min(offset + limit, total)
@@ -1899,7 +2043,7 @@ msgstr "対象ID:"
 #~ msgid "Target ID:PLACEHOLDER"
 #~ msgstr ""
 
-#: src/pages/settings.tsx:171
+#: src/pages/settings.tsx:172
 msgid "Tell us about yourself..."
 msgstr "自己紹介を入力..."
 
@@ -1915,11 +2059,19 @@ msgstr "利用規約"
 msgid "Terms of Service URL"
 msgstr "利用規約URL"
 
+#: src/components/settings/UISettingsSection.tsx:285
+msgid "Test"
+msgstr "テスト"
+
+#: src/components/settings/PushNotificationSection.tsx:195
+msgid "Test notification"
+msgstr "テスト通知"
+
 #: src/components/note/NoteComposer.tsx:186
 msgid "Text exceeds {maxLength} characters"
 msgstr "テキストが{maxLength}文字を超えています"
 
-#: src/components/settings/UISettingsSection.tsx:225
+#: src/components/settings/UISettingsSection.tsx:242
 #: src/pages/admin/settings.tsx:221
 msgid "Theme"
 msgstr "テーマ"
@@ -1940,7 +2092,7 @@ msgstr "このアカウントは以下に引っ越しました:"
 msgid "This instance is not accepting new registrations at this time."
 msgstr "このインスタンスは現在新規登録を受け付けていません。"
 
-#: src/components/settings/UISettingsSection.tsx:285
+#: src/components/settings/UISettingsSection.tsx:343
 msgid "This is a preview of how text will appear with your selected settings. Adjust the options above to customize your reading experience."
 msgstr "これは選択した設定でのテキスト表示のプレビューです。上のオプションを調整して、読みやすい表示にカスタマイズできます。"
 
@@ -1987,11 +2139,15 @@ msgstr "合計: {0}個の絵文字"
 msgid "Try adjusting your filter"
 msgstr "フィルターを調整してみてください"
 
+#: src/pages/notifications.tsx:288
+msgid "Try adjusting your filters"
+msgstr "フィルターを調整してみてください"
+
 #: src/app/page.tsx:22
 #~ msgid "UI Components Demo"
 #~ msgstr ""
 
-#: src/components/settings/UISettingsSection.tsx:141
+#: src/components/settings/UISettingsSection.tsx:145
 msgid "UI settings saved"
 msgstr "表示設定を保存しました"
 
@@ -2102,12 +2258,12 @@ msgstr "ユーザーの停止を解除しました"
 #~ msgstr ""
 
 #: src/pages/login.tsx:143
-#: src/pages/settings.tsx:190
+#: src/pages/settings.tsx:191
 #: src/pages/signup.tsx:160
 msgid "Username"
 msgstr "ユーザー名"
 
-#: src/pages/settings.tsx:201
+#: src/pages/settings.tsx:202
 msgid "Username cannot be changed"
 msgstr "ユーザー名は変更できません"
 
@@ -2153,6 +2309,10 @@ msgstr "すべてのモデレーションアクションを表示"
 #~ msgid "View all moderation actionsPLACEHOLDER"
 #~ msgstr ""
 
+#: src/components/notification/NotificationBell.tsx:108
+msgid "View all notifications"
+msgstr "すべての通知を見る"
+
 #: src/pages/mod/notes.tsx:161
 msgid "View and restore deleted notes"
 msgstr "削除されたノートを表示・復元"
@@ -2168,6 +2328,10 @@ msgstr "ポリシーを見る"
 #: src/components/LandingPage.tsx:249
 msgid "View Terms"
 msgstr "規約を見る"
+
+#: src/components/settings/UISettingsSection.tsx:265
+msgid "Volume"
+msgstr "音量"
 
 #: src/pages/mod/users.tsx:555
 msgid "Warn User"
@@ -2228,6 +2392,19 @@ msgstr "招待コードの作成上限に達しました"
 msgid "You haven't posted anything yet"
 msgstr "まだ何も投稿していません"
 
+#: src/components/notification/NotificationItem.tsx:101
+msgid "You received a warning from the moderators"
+msgstr "モデレーターから警告を受けました"
+
+#: src/components/settings/PushNotificationSection.tsx:153
+msgid "You will receive notifications even when the browser is closed."
+msgstr "ブラウザを閉じていても通知を受け取ることができます。"
+
+#: src/components/notification/NotificationList.tsx:74
+#: src/pages/notifications.tsx:290
+msgid "You're all caught up!"
+msgstr "すべての通知を確認しました！"
+
 #: src/components/user/UserProfile.tsx:465
 msgid "You've reached the end"
 msgstr "最後まで到達しました"
@@ -2240,10 +2417,14 @@ msgstr "タイムラインの最後に到達しました"
 msgid "Your account will need to be approved by an administrator before you can use it."
 msgstr "アカウントは管理者の承認後に使用可能になります。"
 
-#: src/pages/settings.tsx:179
+#: src/pages/settings.tsx:180
 msgid "Your bio (max 500 characters)"
 msgstr "自己紹介（最大500文字）"
 
-#: src/pages/settings.tsx:158
+#: src/components/settings/PushNotificationSection.tsx:76
+msgid "Your browser does not support push notifications."
+msgstr "お使いのブラウザはプッシュ通知に対応していません。"
+
+#: src/pages/settings.tsx:159
 msgid "Your public display name (max 50 characters)"
 msgstr "表示名（最大50文字）"

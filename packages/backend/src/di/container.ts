@@ -16,6 +16,7 @@ import type {
   ICustomEmojiRepository,
   IModerationAuditLogRepository,
   IUserWarningRepository,
+  INotificationRepository,
 } from '../interfaces/repositories/index.js';
 import type { IFileStorage } from '../interfaces/IFileStorage.js';
 import type { ICacheService } from '../interfaces/ICacheService.js';
@@ -35,6 +36,7 @@ import {
   PostgresCustomEmojiRepository,
   PostgresModerationAuditLogRepository,
   PostgresUserWarningRepository,
+  PostgresNotificationRepository,
 } from '../repositories/pg/index.js';
 import {
   LocalStorageAdapter,
@@ -48,6 +50,8 @@ import { ActivityPubDeliveryService } from '../services/ap/ActivityPubDeliverySe
 import { RoleService } from '../services/RoleService.js';
 import { InstanceSettingsService } from '../services/InstanceSettingsService.js';
 import { MigrationService } from '../services/MigrationService.js';
+import { NotificationService } from '../services/NotificationService.js';
+import { WebPushService } from '../services/WebPushService.js';
 
 export interface AppContainer {
   userRepository: IUserRepository;
@@ -65,6 +69,7 @@ export interface AppContainer {
   customEmojiRepository: ICustomEmojiRepository;
   moderationAuditLogRepository: IModerationAuditLogRepository;
   userWarningRepository: IUserWarningRepository;
+  notificationRepository: INotificationRepository;
   fileStorage: IFileStorage;
   cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
@@ -74,6 +79,8 @@ export interface AppContainer {
   roleService: RoleService;
   instanceSettingsService: InstanceSettingsService;
   migrationService: MigrationService;
+  notificationService: NotificationService;
+  webPushService: WebPushService;
 }
 
 /**
@@ -143,6 +150,18 @@ export function createContainer(): AppContainer {
     remoteActorService
   );
 
+  // Web Push Service
+  const webPushService = new WebPushService(db);
+
+  // Notification Service
+  const notificationService = new NotificationService(
+    repositories.notificationRepository,
+    repositories.userRepository
+  );
+
+  // Wire up WebPushService with NotificationService
+  notificationService.setWebPushService(webPushService);
+
   return {
     ...repositories,
     fileStorage,
@@ -154,6 +173,8 @@ export function createContainer(): AppContainer {
     roleService,
     instanceSettingsService,
     migrationService,
+    notificationService,
+    webPushService,
   };
 }
 
@@ -179,6 +200,7 @@ function createRepositories(db: any, dbType: string) {
         customEmojiRepository: new PostgresCustomEmojiRepository(db),
         moderationAuditLogRepository: new PostgresModerationAuditLogRepository(db),
         userWarningRepository: new PostgresUserWarningRepository(db),
+        notificationRepository: new PostgresNotificationRepository(db),
       };
 
     case 'mysql':

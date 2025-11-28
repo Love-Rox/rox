@@ -2,11 +2,12 @@
 
 import { useAtom } from 'jotai';
 import { Trans } from '@lingui/react/macro';
-import { Home, User, Settings, Shield } from 'lucide-react';
+import { Home, User, Settings, Shield, Bell } from 'lucide-react';
 import { currentUserAtom } from '../../lib/atoms/auth';
 import { Avatar } from '../ui/Avatar';
 import { LanguageSwitcher } from '../LanguageSwitcher';
 import { DarkModeToggle } from '../ui/DarkModeToggle';
+import { NotificationBell } from '../notification/NotificationBell';
 
 /**
  * Sidebar navigation component
@@ -34,6 +35,12 @@ export function Sidebar() {
       label: <Trans>Home</Trans>,
       href: '/timeline',
       key: 'home',
+    },
+    {
+      icon: <Bell className="w-6 h-6" />,
+      label: <Trans>Notifications</Trans>,
+      href: '/notifications',
+      key: 'notifications',
     },
     {
       icon: <User className="w-6 h-6" />,
@@ -82,10 +89,13 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* Language & Theme */}
+      {/* Notifications & Language & Theme */}
       <div className="p-4 border-t border-(--border-color) flex items-center justify-between">
-        <LanguageSwitcher />
-        <DarkModeToggle />
+        <NotificationBell />
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+          <DarkModeToggle />
+        </div>
       </div>
 
       {/* User Profile at Bottom */}

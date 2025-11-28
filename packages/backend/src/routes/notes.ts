@@ -36,6 +36,7 @@ notes.post('/create', requireAuth(), userRateLimit(RateLimitPresets.createNote),
   const userRepository = c.get('userRepository');
   const deliveryService = c.get('activityPubDeliveryService');
   const cacheService = c.get('cacheService');
+  const notificationService = c.get('notificationService');
 
   const followRepository = c.get('followRepository');
   const noteService = new NoteService(
@@ -45,6 +46,7 @@ notes.post('/create', requireAuth(), userRateLimit(RateLimitPresets.createNote),
     userRepository,
     deliveryService,
     cacheService,
+    notificationService,
   );
 
   const body = await c.req.json();
@@ -119,7 +121,7 @@ notes.post('/show', optionalAuth(), async (c: Context) => {
  * @body {string} noteId - Note ID to delete
  * @returns {void}
  */
-notes.post('/delete', requireAuth(), async (c: Context) => {
+notes.post('/delete', requireAuth(), userRateLimit(RateLimitPresets.write), async (c: Context) => {
   const user = c.get('user')!;
   const noteRepository = c.get('noteRepository');
   const driveFileRepository = c.get('driveFileRepository');

@@ -9,6 +9,7 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { requireAuth, optionalAuth } from '../middleware/auth.js';
+import { userRateLimit, RateLimitPresets } from '../middleware/rateLimit.js';
 import { ReactionService } from '../services/ReactionService.js';
 
 const reactions = new Hono();
@@ -23,18 +24,20 @@ const reactions = new Hono();
  * @body {string} reaction - Reaction emoji (Unicode or custom emoji name)
  * @returns {Reaction} Created reaction
  */
-reactions.post('/create', requireAuth(), async (c: Context) => {
+reactions.post('/create', requireAuth(), userRateLimit(RateLimitPresets.reaction), async (c: Context) => {
   const user = c.get('user')!;
   const reactionRepository = c.get('reactionRepository');
   const noteRepository = c.get('noteRepository');
   const userRepository = c.get('userRepository');
   const deliveryService = c.get('activityPubDeliveryService');
+  const notificationService = c.get('notificationService');
 
   const reactionService = new ReactionService(
     reactionRepository,
     noteRepository,
     userRepository,
     deliveryService,
+    notificationService,
   );
 
   const body = await c.req.json();
@@ -71,7 +74,7 @@ reactions.post('/create', requireAuth(), async (c: Context) => {
  * @body {string} reaction - Reaction emoji to remove
  * @returns {void}
  */
-reactions.post('/delete', requireAuth(), async (c: Context) => {
+reactions.post('/delete', requireAuth(), userRateLimit(RateLimitPresets.reaction), async (c: Context) => {
   const user = c.get('user')!;
   const reactionRepository = c.get('reactionRepository');
   const noteRepository = c.get('noteRepository');

@@ -444,6 +444,64 @@ export const customEmojis = pgTable(
   })
 );
 
+/**
+ * Notification types enum
+ */
+export type NotificationType =
+  | 'follow'
+  | 'mention'
+  | 'reply'
+  | 'reaction'
+  | 'renote'
+  | 'warning'
+  | 'follow_request_accepted'
+  | 'quote';
+
+// Notifications table
+export const notifications = pgTable(
+  'notifications',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }), // User who receives the notification
+    type: text('type').notNull().$type<NotificationType>(), // Type of notification
+    notifierId: text('notifier_id').references(() => users.id, { onDelete: 'cascade' }), // User who triggered the notification (null for system notifications)
+    noteId: text('note_id').references(() => notes.id, { onDelete: 'cascade' }), // Related note (for mention, reply, reaction, renote, quote)
+    reaction: text('reaction'), // Reaction emoji (for reaction notifications)
+    warningId: text('warning_id').references(() => userWarnings.id, { onDelete: 'cascade' }), // Related warning (for warning notifications)
+    isRead: boolean('is_read').notNull().default(false),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdIdx: index('notification_user_id_idx').on(table.userId),
+    userIdIsReadIdx: index('notification_user_id_is_read_idx').on(table.userId, table.isRead),
+    userIdCreatedAtIdx: index('notification_user_id_created_at_idx').on(table.userId, table.createdAt),
+    typeIdx: index('notification_type_idx').on(table.type),
+  })
+);
+
+// Push subscriptions table (Web Push API)
+export const pushSubscriptions = pgTable(
+  'push_subscriptions',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }), // User who owns this subscription
+    endpoint: text('endpoint').notNull(), // Push service endpoint URL
+    p256dh: text('p256dh').notNull(), // Client public key for encryption
+    auth: text('auth').notNull(), // Auth secret for encryption
+    userAgent: text('user_agent'), // Browser/device info for management
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    userIdIdx: index('push_subscription_user_id_idx').on(table.userId),
+    endpointIdx: uniqueIndex('push_subscription_endpoint_idx').on(table.endpoint),
+  })
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -477,3 +535,7 @@ export type ModerationAuditLog = typeof moderationAuditLogs.$inferSelect;
 export type NewModerationAuditLog = typeof moderationAuditLogs.$inferInsert;
 export type UserWarning = typeof userWarnings.$inferSelect;
 export type NewUserWarning = typeof userWarnings.$inferInsert;
+export type Notification = typeof notifications.$inferSelect;
+export type NewNotification = typeof notifications.$inferInsert;
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type NewPushSubscription = typeof pushSubscriptions.$inferInsert;

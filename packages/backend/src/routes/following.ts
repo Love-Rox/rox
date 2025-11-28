@@ -9,6 +9,7 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { requireAuth } from '../middleware/auth.js';
+import { userRateLimit, RateLimitPresets } from '../middleware/rateLimit.js';
 import { FollowService } from '../services/FollowService.js';
 
 const following = new Hono();
@@ -22,13 +23,14 @@ const following = new Hono();
  * @body {string} userId - User ID to follow
  * @returns {Follow} Created follow relationship
  */
-following.post('/create', requireAuth(), async (c: Context) => {
+following.post('/create', requireAuth(), userRateLimit(RateLimitPresets.follow), async (c: Context) => {
   const user = c.get('user')!;
   const followRepository = c.get('followRepository');
   const userRepository = c.get('userRepository');
   const deliveryService = c.get('activityPubDeliveryService');
+  const notificationService = c.get('notificationService');
 
-  const followService = new FollowService(followRepository, userRepository, deliveryService);
+  const followService = new FollowService(followRepository, userRepository, deliveryService, notificationService);
 
   const body = await c.req.json();
 
@@ -54,7 +56,7 @@ following.post('/create', requireAuth(), async (c: Context) => {
  * @body {string} userId - User ID to unfollow
  * @returns {void}
  */
-following.post('/delete', requireAuth(), async (c: Context) => {
+following.post('/delete', requireAuth(), userRateLimit(RateLimitPresets.follow), async (c: Context) => {
   const user = c.get('user')!;
   const followRepository = c.get('followRepository');
   const userRepository = c.get('userRepository');

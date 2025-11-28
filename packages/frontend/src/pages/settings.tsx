@@ -15,6 +15,7 @@ import { Layout } from '../components/layout/Layout';
 import { InvitationCodeSection } from '../components/settings/InvitationCodeSection';
 import { UISettingsSection } from '../components/settings/UISettingsSection';
 import { AccountMigrationSection } from '../components/settings/AccountMigrationSection';
+import { PushNotificationSection } from '../components/settings/PushNotificationSection';
 
 /**
  * Settings page
@@ -270,6 +271,11 @@ export default function SettingsPage() {
       {/* UI Settings Section */}
       <div className="mt-6">
         <UISettingsSection />
+      </div>
+
+      {/* Push Notifications Section */}
+      <div className="mt-6">
+        <PushNotificationSection />
       </div>
 
       {/* Invitation Codes Section - only shown if user has permission */}

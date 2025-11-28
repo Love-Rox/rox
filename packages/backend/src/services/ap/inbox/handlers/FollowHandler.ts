@@ -51,6 +51,16 @@ export class FollowHandler extends BaseHandler {
 
       this.log('✅', `Follow created: ${remoteActor.username}@${remoteActor.host} → recipient`);
 
+      // Create notification for the followee (fire-and-forget)
+      try {
+        const notificationService = this.getNotificationService(c);
+        if (notificationService) {
+          await notificationService.createFollowNotification(recipientId, remoteActor.id);
+        }
+      } catch (notifError) {
+        this.warn(`Failed to create follow notification: ${notifError}`);
+      }
+
       // Send Accept activity back to remote server
       const userRepository = this.getUserRepository(c);
       const recipient = await userRepository.findById(recipientId);

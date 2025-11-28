@@ -25,6 +25,7 @@ export function diMiddleware() {
     c.set('customEmojiRepository', container.customEmojiRepository);
     c.set('moderationAuditLogRepository', container.moderationAuditLogRepository);
     c.set('userWarningRepository', container.userWarningRepository);
+    c.set('notificationRepository', container.notificationRepository);
     c.set('fileStorage', container.fileStorage);
     c.set('cacheService', container.cacheService);
     c.set('activityDeliveryQueue', container.activityDeliveryQueue);
@@ -34,6 +35,7 @@ export function diMiddleware() {
     c.set('roleService', container.roleService);
     c.set('instanceSettingsService', container.instanceSettingsService);
     c.set('migrationService', container.migrationService);
+    c.set('notificationService', container.notificationService);
 
     await next();
   };

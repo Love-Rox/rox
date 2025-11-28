@@ -11,6 +11,7 @@
 import { Hono } from 'hono';
 import { getDatabase } from '../db/index.js';
 import type { ICacheService } from '../interfaces/ICacheService.js';
+import { getNotificationStreamService, type ConnectionMetrics } from '../services/NotificationStreamService.js';
 import packageJson from '../../../../package.json';
 
 const app = new Hono();
@@ -174,5 +175,67 @@ function checkCache(cacheService?: ICacheService): {
     latency: Date.now() - start,
   };
 }
+
+/**
+ * SSE health response type
+ */
+interface SSEHealthResponse {
+  status: 'ok' | 'degraded' | 'unhealthy';
+  timestamp: string;
+  metrics: ConnectionMetrics;
+  health: {
+    isHealthy: boolean;
+    connectionLimit: number;
+    connectionUsagePercent: number;
+  };
+}
+
+/**
+ * GET /health/sse
+ *
+ * SSE (Server-Sent Events) health check endpoint.
+ * Returns metrics about SSE notification stream connections.
+ *
+ * @example
+ * ```bash
+ * curl http://localhost:3000/health/sse
+ * ```
+ *
+ * @returns SSE metrics including connections, messages sent, and memory usage
+ */
+app.get('/sse', (c) => {
+  const streamService = getNotificationStreamService();
+  const metrics = streamService.getMetrics();
+  const isHealthy = streamService.isHealthy();
+
+  // Define connection limit (matches EventEmitter max listeners)
+  const connectionLimit = 10000;
+  const connectionUsagePercent = (metrics.totalConnections / connectionLimit) * 100;
+
+  // Determine status
+  let status: 'ok' | 'degraded' | 'unhealthy' = 'ok';
+  if (!isHealthy) {
+    status = 'unhealthy';
+  } else if (connectionUsagePercent > 80) {
+    status = 'degraded';
+  }
+
+  const response: SSEHealthResponse = {
+    status,
+    timestamp: new Date().toISOString(),
+    metrics,
+    health: {
+      isHealthy,
+      connectionLimit,
+      connectionUsagePercent: Math.round(connectionUsagePercent * 100) / 100,
+    },
+  };
+
+  if (!isHealthy) {
+    return c.json(response, 503);
+  }
+
+  return c.json(response);
+});
 
 export default app;

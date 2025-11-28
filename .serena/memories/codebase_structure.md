@@ -1,183 +1,75 @@
-# Codebase Structure
+# Rox Codebase Structure
 
-## Repository Layout
+## Monorepo Layout
 
 ```
 rox/
-├── packages/              # Monorepo workspaces
-│   ├── backend/          # Hono Rox (API server)
-│   ├── frontend/         # Waku Rox (web client)
-│   └── shared/           # Common types and utilities
-├── docs/                 # Documentation
-│   ├── implementation/   # Implementation guides (phase-*.md)
-│   ├── project/          # Project specifications (v1.md)
-│   └── activitypub-test-results.md
-├── typedoc/              # Generated API documentation
-├── .serena/              # Serena MCP server memory
-├── .claude/              # Claude Code configuration
-├── compose.yml           # Docker Compose configuration
-├── package.json          # Root package.json (workspace config)
-├── tsconfig.json         # TypeScript configuration
-├── oxlint.json           # Linting configuration
-├── CLAUDE.md             # AI assistant instructions
-├── CONTRIBUTING.md       # Contributing guidelines
-└── README.md             # Project overview
-```
-
-## Backend Structure (packages/backend/src)
-
-```
-packages/backend/src/
-├── adapters/             # Infrastructure adapters (Adapter Pattern)
-│   └── storage/
-│       ├── LocalStorageAdapter.ts    # Local filesystem storage
-│       └── S3StorageAdapter.ts       # S3-compatible storage
+├── packages/
+│   ├── backend/              # Hono Rox - API server
+│   │   ├── src/
+│   │   │   ├── adapters/     # Storage, cache adapters
+│   │   │   ├── db/           # Drizzle schema & migrations
+│   │   │   ├── di/           # DI container
+│   │   │   ├── interfaces/   # Repository interfaces
+│   │   │   ├── lib/          # Utilities, validation
+│   │   │   ├── middleware/   # Hono middleware
+│   │   │   ├── repositories/ # Data access (pg/)
+│   │   │   ├── routes/       # API endpoints
+│   │   │   ├── services/     # Business logic
+│   │   │   ├── tests/        # Test suites
+│   │   │   └── index.ts      # Entry point
+│   │   ├── drizzle/          # DB migrations
+│   │   └── package.json
+│   │
+│   ├── frontend/             # Waku Rox - React client
+│   │   ├── src/
+│   │   │   ├── components/   # UI components
+│   │   │   ├── hooks/        # Custom hooks
+│   │   │   ├── lib/          # API client, atoms
+│   │   │   ├── locales/      # i18n (en, ja)
+│   │   │   ├── pages/        # Route pages
+│   │   │   └── styles/       # Global CSS
+│   │   └── package.json
+│   │
+│   └── shared/               # Shared utilities
+│       └── src/
+│           ├── types/        # Shared TypeScript types
+│           └── index.ts
 │
-├── db/                   # Database configuration and schemas
-│   ├── schema/
-│   │   ├── pg.ts        # PostgreSQL schema
-│   │   ├── mysql.ts     # MySQL/MariaDB schema
-│   │   └── sqlite.ts    # SQLite/D1 schema
-│   ├── index.ts         # Database connection initialization
-│   └── migrate.ts       # Migration runner
+├── docker/                   # Docker configs
+├── docs/                     # Documentation
+│   ├── deployment/           # Deployment guides
+│   └── project/              # Spec documents
 │
-├── di/                   # Dependency Injection
-│   └── container.ts     # DI container (creates repositories/adapters)
+├── .github/workflows/        # CI/CD
+├── .serena/memories/         # Serena memories (this!)
 │
-├── interfaces/           # Abstract interfaces
-│   ├── IFileStorage.ts  # Storage adapter interface
-│   └── repositories/    # Repository interfaces (not yet created as separate files)
-│
-├── middleware/           # Hono middleware
-│   ├── auth.ts          # Authentication middleware (requireAuth)
-│   └── httpSignature.ts # HTTP Signature verification (ActivityPub)
-│
-├── repositories/         # Database operations (Repository Pattern)
-│   ├── pg/              # PostgreSQL implementations
-│   ├── mysql/           # MySQL implementations
-│   └── d1/              # D1/SQLite implementations
-│
-├── routes/               # API endpoints (Hono routes)
-│   ├── ap/              # ActivityPub endpoints
-│   │   ├── actor.ts     # Actor document endpoint
-│   │   ├── webfinger.ts # WebFinger discovery
-│   │   ├── inbox.ts     # Inbox endpoint
-│   │   ├── outbox.ts    # Outbox endpoint
-│   │   ├── followers.ts # Followers collection
-│   │   ├── following.ts # Following collection
-│   │   └── note.ts      # ActivityPub Note object
-│   ├── auth.ts          # Authentication endpoints
-│   ├── notes.ts         # Note CRUD endpoints
-│   ├── users.ts         # User endpoints
-│   ├── reactions.ts     # Reaction endpoints
-│   ├── following.ts     # Follow/unfollow endpoints
-│   └── drive.ts         # File upload/drive endpoints
-│
-├── services/             # Business logic layer
-│   ├── ap/              # ActivityPub services
-│   │   ├── ActivityDeliveryQueue.ts      # BullMQ queue/worker
-│   │   ├── ActivityDeliveryService.ts    # HTTP delivery with signatures
-│   │   ├── ActivityPubDeliveryService.ts # High-level delivery service
-│   │   ├── RemoteActorService.ts         # Remote actor fetching/caching
-│   │   └── RemoteNoteService.ts          # Remote note handling
-│   ├── AuthService.ts    # Authentication logic
-│   ├── NoteService.ts    # Note creation/deletion (with AP delivery)
-│   ├── FollowService.ts  # Follow/unfollow logic
-│   ├── ReactionService.ts # Reaction logic
-│   └── FileService.ts    # File upload/download logic
-│
-├── tests/                # Test files
-│   └── integration/      # Integration tests
-│
-├── utils/                # Utility functions
-│   ├── crypto.ts        # Cryptography (key generation, signatures)
-│   └── id.ts            # ID generation utilities
-│
-└── index.ts              # Application entry point
-```
-
-## Frontend Structure (packages/frontend/src)
-
-```
-packages/frontend/src/
-├── components/           # React components
-│   ├── ui/              # Base UI components (Button, Input, etc.)
-│   └── features/        # Feature-specific components
-│
-├── pages/               # Waku pages (RSC)
-│   ├── _layout.tsx     # Root layout
-│   └── [username].tsx  # User profile page
-│
-├── lib/                 # Utilities and libraries
-│   ├── api.ts          # API client functions
-│   └── i18n.ts         # Lingui i18n configuration
-│
-├── stores/              # Jotai stores (state management)
-│
-├── styles/              # Global styles
-│   └── globals.css     # Tailwind CSS imports
-│
-└── entries.tsx          # Waku entry point
-```
-
-## Shared Package (packages/shared/src)
-
-```
-packages/shared/src/
-├── types/               # Shared TypeScript types
-│   ├── api.ts          # API request/response types
-│   ├── note.ts         # Note types
-│   ├── user.ts         # User types
-│   └── activitypub.ts  # ActivityPub types
-└── index.ts             # Export barrel
+├── CLAUDE.md                 # Claude Code guidance
+├── package.json              # Root package (workspaces)
+├── oxlint.json               # Linter config
+├── compose.yml               # Docker Compose
+└── tsconfig.json             # TypeScript base config
 ```
 
 ## Key Files
 
-### Configuration Files
+### Backend
+- `src/index.ts` - App entry, route registration
+- `src/di/container.ts` - DI container setup
+- `src/middleware/di.ts` - Injects container into Hono context
+- `src/middleware/auth.ts` - Authentication middleware
+- `src/db/schema/pg.ts` - PostgreSQL schema
+- `drizzle.config.ts` - Drizzle ORM config
 
-- `package.json` - Workspace configuration, scripts
-- `tsconfig.json` - TypeScript compiler options (strict mode)
-- `oxlint.json` - Linting rules
-- `.env` - Environment variables (not in git)
-- `.env.example` - Environment variable template
-- `compose.yml` - Docker services (PostgreSQL, Dragonfly/Redis)
+### Frontend
+- `src/pages/_layout.tsx` - Root layout
+- `src/components/AppProviders.tsx` - Context providers
+- `src/lib/api/client.ts` - API client
+- `src/lib/atoms/auth.ts` - Auth state (Jotai)
+- `lingui.config.ts` - i18n config
 
-### Documentation Files
-
-- `CLAUDE.md` - Instructions for AI assistants
-- `CONTRIBUTING.md` - Contributing guidelines
-- `README.md` - Project overview and quick start
-- `docs/implementation/phase-3-federation.md` - ActivityPub implementation guide
-- `docs/activitypub-test-results.md` - Test results
-
-## Database Schema
-
-All database types share common tables:
-- **users**: User accounts, profiles, public/private keys
-- **sessions**: Authentication sessions
-- **notes**: Posts/notes with content, visibility, attachments
-- **reactions**: Emoji reactions to notes
-- **follows**: Follow relationships
-- **driveFiles**: File metadata for uploads
-
-Schema files maintain parity across:
-- PostgreSQL (`db/schema/pg.ts`)
-- MySQL (`db/schema/mysql.ts`)
-- SQLite (`db/schema/sqlite.ts`)
-
-## Import Paths
-
-The project uses TypeScript's `moduleResolution: "bundler"` which allows:
-- Relative imports: `../utils/crypto`
-- Package imports: `rox_shared` (workspace package)
-- Extension-inclusive imports: `./file.ts` (required with `allowImportingTsExtensions`)
-
-## Build Artifacts
-
-Build outputs and generated files (ignored by git):
-- `packages/backend/dist/` - Backend build output
-- `packages/frontend/.waku/` - Waku build cache
-- `node_modules/` - Dependencies
-- `typedoc/` - Generated API docs
-- `.env` - Local environment variables
+### Config Files
+- `package.json` - Root (monorepo scripts)
+- `oxlint.json` - Linter rules
+- `tsconfig.json` - TypeScript config
+- `.env.example` - Environment variables template

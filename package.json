@@ -1,6 +1,6 @@
 {
   "name": "rox",
-  "version": "0.1.0",
+  "version": "2025.11.0-alpha",
   "private": true,
   "description": "Lightweight ActivityPub server & client with Misskey API compatibility",
   "workspaces": [

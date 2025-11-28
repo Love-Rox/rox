@@ -9,6 +9,7 @@
 
 import type { Context, Next } from 'hono';
 import type { ICacheService } from '../interfaces/ICacheService.js';
+import type { RoleService } from '../services/RoleService.js';
 
 /**
  * Rate limit configuration
@@ -89,6 +90,42 @@ export const RateLimitPresets = {
    */
   inbox: {
     limit: 100,
+    windowSeconds: 60, // 1 minute
+  },
+
+  /**
+   * Follow/unfollow operations
+   * 30 requests per minute per user
+   */
+  follow: {
+    limit: 30,
+    windowSeconds: 60, // 1 minute
+  },
+
+  /**
+   * Reaction operations
+   * 60 requests per minute per user
+   */
+  reaction: {
+    limit: 60,
+    windowSeconds: 60, // 1 minute
+  },
+
+  /**
+   * File upload limit
+   * 20 uploads per minute per user
+   */
+  fileUpload: {
+    limit: 20,
+    windowSeconds: 60, // 1 minute
+  },
+
+  /**
+   * Strict write operations (delete, update)
+   * 30 requests per minute per user
+   */
+  write: {
+    limit: 30,
     windowSeconds: 60, // 1 minute
   },
 } as const;
@@ -256,18 +293,103 @@ export function rateLimit(config: RateLimitConfig) {
  * Create rate limiter for authenticated endpoints
  *
  * Uses user ID as key when authenticated, falls back to IP.
+ * Adjusts rate limit based on user's role rateLimitFactor.
  *
  * @param config - Rate limit configuration (without keyGenerator)
  * @returns Hono middleware function
  */
 export function userRateLimit(config: Omit<RateLimitConfig, 'keyGenerator'>) {
-  return rateLimit({
-    ...config,
-    keyGenerator: (c) => {
-      const user = c.get('user') as { id: string } | undefined;
-      return user?.id || getClientIP(c);
-    },
-  });
+  const { limit, windowSeconds, skip, onRateLimit } = config;
+
+  return async (c: Context, next: Next) => {
+    // Check if rate limiting should be skipped
+    if (skip?.(c)) {
+      return next();
+    }
+
+    const cacheService = c.get('cacheService') as ICacheService | undefined;
+
+    // If cache is unavailable, allow the request (fail open)
+    if (!cacheService?.isAvailable()) {
+      return next();
+    }
+
+    const user = c.get('user') as { id: string } | undefined;
+    const key = user?.id || getClientIP(c);
+
+    // Get rate limit factor from RoleService if user is authenticated
+    let effectiveLimit = limit;
+    if (user?.id) {
+      const roleService = c.get('roleService') as RoleService | undefined;
+      if (roleService) {
+        try {
+          const factor = await roleService.getRateLimitFactor(user.id);
+          // Factor > 1 means more lenient (higher limit)
+          // Factor < 1 means stricter (lower limit)
+          effectiveLimit = Math.floor(limit * factor);
+        } catch {
+          // On error, use default limit
+        }
+      }
+    }
+
+    const cacheKey = `${RATE_LIMIT_PREFIX}:${c.req.path}:${key}`;
+    const now = Date.now();
+    const windowMs = windowSeconds * 1000;
+
+    try {
+      // Get current request timestamps
+      const data = await cacheService.get<number[]>(cacheKey);
+      const timestamps = data || [];
+
+      // Filter to only include timestamps within the current window
+      const windowStart = now - windowMs;
+      const validTimestamps = timestamps.filter((t) => t > windowStart);
+
+      // Check if rate limit exceeded
+      if (validTimestamps.length >= effectiveLimit) {
+        // Calculate retry-after time
+        const oldestTimestamp = Math.min(...validTimestamps);
+        const retryAfterMs = oldestTimestamp + windowMs - now;
+        const retryAfterSeconds = Math.ceil(retryAfterMs / 1000);
+
+        // Set rate limit headers
+        c.header('X-RateLimit-Limit', effectiveLimit.toString());
+        c.header('X-RateLimit-Remaining', '0');
+        c.header('X-RateLimit-Reset', Math.ceil((now + retryAfterMs) / 1000).toString());
+        c.header('Retry-After', retryAfterSeconds.toString());
+
+        // Custom response or default 429
+        if (onRateLimit) {
+          return onRateLimit(c, retryAfterSeconds);
+        }
+
+        return c.json(
+          {
+            error: 'Too many requests',
+            message: `Rate limit exceeded. Please try again in ${retryAfterSeconds} seconds.`,
+            retryAfter: retryAfterSeconds,
+          },
+          429
+        );
+      }
+
+      // Add current timestamp and save
+      validTimestamps.push(now);
+      await cacheService.set(cacheKey, validTimestamps, { ttl: windowSeconds });
+
+      // Set rate limit headers
+      c.header('X-RateLimit-Limit', effectiveLimit.toString());
+      c.header('X-RateLimit-Remaining', (effectiveLimit - validTimestamps.length).toString());
+      c.header('X-RateLimit-Reset', Math.ceil((now + windowMs) / 1000).toString());
+
+      return next();
+    } catch (error) {
+      // On error, allow the request (fail open)
+      console.warn('Rate limit check failed:', error);
+      return next();
+    }
+  };
 }
 
 /**

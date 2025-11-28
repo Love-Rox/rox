@@ -26,6 +26,8 @@ import instanceRoute from './routes/instance.js';
 import emojisRoute from './routes/emojis.js';
 import migrationRoute from './routes/migration.js';
 import moderatorRoute from './routes/moderator.js';
+import notificationsRoute from './routes/notifications.js';
+import pushRoute from './routes/push.js';
 import packageJson from '../../../package.json';
 import { ReceivedActivitiesCleanupService } from './services/ReceivedActivitiesCleanupService.js';
 import { getContainer } from './di/container.js';
@@ -67,6 +69,8 @@ app.route('/api/invitations', invitationsRoute);
 app.route('/api/instance', instanceRoute);
 app.route('/api/emojis', emojisRoute);
 app.route('/api/i/migration', migrationRoute);
+app.route('/api/notifications', notificationsRoute);
+app.route('/api/push', pushRoute);
 
 // Media Proxy
 app.route('/proxy', proxyRoute);

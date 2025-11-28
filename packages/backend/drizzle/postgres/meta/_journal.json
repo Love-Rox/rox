@@ -127,6 +127,20 @@
       "when": 1764284763743,
       "tag": "0017_wakeful_sunset_bain",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1764286541070,
+      "tag": "0018_open_magneto",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1764289518668,
+      "tag": "0019_cute_norman_osborn",
+      "breakpoints": true
     }
   ]
 }

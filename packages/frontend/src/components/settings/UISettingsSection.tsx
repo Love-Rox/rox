@@ -15,7 +15,7 @@ import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { Trans } from '@lingui/react/macro';
 import { t } from '@lingui/core/macro';
-import { Settings, Type, AlignJustify, Maximize2, Palette, Code } from 'lucide-react';
+import { Settings, Type, AlignJustify, Maximize2, Palette, Code, Volume2 } from 'lucide-react';
 import { tokenAtom, currentUserAtom } from '../../lib/atoms/auth';
 import { uiSettingsAtom } from '../../lib/atoms/uiSettings';
 import { apiClient } from '../../lib/api/client';
@@ -23,14 +23,16 @@ import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { Spinner } from '../ui/Spinner';
 import { addToastAtom } from '../../lib/atoms/toast';
-import type { UISettings, FontSize, LineHeight, ContentWidth, Theme } from '../../lib/types/uiSettings';
+import type { UISettings, FontSize, LineHeight, ContentWidth, Theme, NotificationSound } from '../../lib/types/uiSettings';
 import {
   fontSizeLabels,
   lineHeightLabels,
   contentWidthLabels,
   themeLabels,
+  notificationSoundLabels,
   defaultUISettings,
 } from '../../lib/types/uiSettings';
+import { testNotificationSound } from '../../lib/utils/notificationSound';
 
 interface SelectOption<T extends string> {
   value: T;
@@ -105,6 +107,8 @@ export function UISettingsSection() {
       localSettings.lineHeight !== uiSettings.lineHeight ||
       localSettings.contentWidth !== uiSettings.contentWidth ||
       localSettings.theme !== uiSettings.theme ||
+      localSettings.notificationSound !== uiSettings.notificationSound ||
+      localSettings.notificationVolume !== uiSettings.notificationVolume ||
       appCustomCss !== (uiSettings.appCustomCss || '');
     setHasChanges(changed);
   }, [localSettings, appCustomCss, uiSettings]);
@@ -181,6 +185,19 @@ export function UISettingsSection() {
     { value: 'system', label: themeLabels.system },
   ];
 
+  const notificationSoundOptions: SelectOption<NotificationSound>[] = [
+    { value: 'none', label: notificationSoundLabels.none },
+    { value: 'default', label: notificationSoundLabels.default },
+    { value: 'soft', label: notificationSoundLabels.soft },
+    { value: 'bell', label: notificationSoundLabels.bell },
+  ];
+
+  const handleTestSound = () => {
+    const soundType = localSettings.notificationSound || defaultUISettings.notificationSound;
+    const volume = localSettings.notificationVolume ?? defaultUISettings.notificationVolume;
+    testNotificationSound(soundType, volume);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -229,6 +246,47 @@ export function UISettingsSection() {
           onChange={(value) => handleSettingChange('theme', value)}
           disabled={isSaving}
         />
+
+        {/* Notification Sound */}
+        <div className="space-y-3">
+          <SelectGroup
+            label={t`Notification Sound`}
+            icon={<Volume2 className="w-4 h-4" />}
+            value={localSettings.notificationSound || defaultUISettings.notificationSound}
+            options={notificationSoundOptions}
+            onChange={(value) => handleSettingChange('notificationSound', value)}
+            disabled={isSaving}
+          />
+
+          {/* Volume Slider */}
+          {localSettings.notificationSound !== 'none' && (
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-gray-600 w-16">
+                <Trans>Volume</Trans>
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={localSettings.notificationVolume ?? defaultUISettings.notificationVolume}
+                onChange={(e) => handleSettingChange('notificationVolume', parseInt(e.target.value, 10))}
+                disabled={isSaving}
+                className="grow h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-500"
+              />
+              <span className="text-sm text-gray-600 w-10 text-right">
+                {localSettings.notificationVolume ?? defaultUISettings.notificationVolume}%
+              </span>
+              <button
+                type="button"
+                onClick={handleTestSound}
+                disabled={isSaving}
+                className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Trans>Test</Trans>
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Custom CSS */}
         <div className="space-y-2">

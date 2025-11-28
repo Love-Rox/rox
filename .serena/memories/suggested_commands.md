@@ -1,221 +1,138 @@
-# Suggested Commands
+# Rox Development Commands
 
-## Essential Development Commands
-
-### Setup and Installation
+## Quick Start
 
 ```bash
 # Install dependencies
 bun install
 
-# Copy environment template
-cp .env.example .env
-# Then edit .env with appropriate values
-```
-
-### Development Servers
-
-```bash
-# Start all services (backend + frontend)
+# Start development (both backend and frontend)
 bun run dev
 
-# Start backend only
-bun run backend:dev
-
-# Start frontend only
-bun run frontend:dev
+# Or start individually
+bun run backend:dev   # Backend only
+bun run frontend:dev  # Frontend only
 ```
 
-### Database Management
+## Backend Development
 
 ```bash
-# Generate database migrations
-bun run db:generate
+# Start backend with PostgreSQL
+DB_TYPE=postgres \
+DATABASE_URL="postgresql://rox:rox_dev_password@localhost:5432/rox" \
+STORAGE_TYPE=local LOCAL_STORAGE_PATH=./uploads \
+PORT=3000 NODE_ENV=development URL=http://localhost:3000 \
+bun run dev
 
-# Run database migrations
-bun run db:migrate
+# Type check
+cd packages/backend && bun run typecheck
 
-# Open Drizzle Studio (database GUI)
-bun run db:studio
+# Run tests
+cd packages/backend && bun test                    # All tests
+cd packages/backend && bun test src/tests/unit/    # Unit tests only
+cd packages/backend && bun test src/tests/integration/  # Integration tests
+
+# Build
+cd packages/backend && bun run build
 ```
 
-### Code Quality
+## Database Operations
 
 ```bash
-# Type checking (all packages)
-bun run typecheck
+# Generate migration after schema changes
+cd packages/backend && DB_TYPE=postgres DATABASE_URL="..." bun run db:generate
 
-# Linting (check for issues)
+# Apply migrations
+cd packages/backend && DB_TYPE=postgres DATABASE_URL="..." bun run db:migrate
+
+# Open Drizzle Studio (DB GUI)
+cd packages/backend && DB_TYPE=postgres DATABASE_URL="..." bun run db:studio
+```
+
+## Frontend Development
+
+```bash
+# Start frontend dev server
+cd packages/frontend && bun run dev
+
+# Type check
+cd packages/frontend && bun run typecheck
+
+# Build
+cd packages/frontend && bun run build
+
+# Extract translations
+cd packages/frontend && bun run lingui:extract
+
+# Compile translations
+cd packages/frontend && bun run lingui:compile
+```
+
+## Code Quality
+
+```bash
+# Lint (from root)
 bun run lint
 
-# Formatting (auto-fix issues)
+# Auto-fix lint issues
 bun run format
 
-# Run all checks before committing
-bun run lint && bun run typecheck && bun test
+# Type check all packages
+bun run typecheck
 ```
 
-### Testing
+## Docker
 
 ```bash
-# Run all tests
-bun test
-
-# Run specific test file
-bun test src/services/AuthService.test.ts
-
-# Run tests in watch mode
-bun test --watch
-```
-
-### Documentation
-
-```bash
-# Generate TypeDoc API documentation
-bun run typedoc
-# Output: ./typedoc/ directory
-```
-
-## Docker Commands
-
-### Start Infrastructure Services
-
-```bash
-# Start PostgreSQL and Dragonfly (Redis)
+# Start with Docker Compose
 docker compose up -d
-
-# Check service health
-docker compose ps
 
 # View logs
 docker compose logs -f
 
-# Stop services
+# Stop
 docker compose down
-```
-
-### MySQL Support (Optional)
-
-```bash
-# Start with MySQL instead of PostgreSQL
-docker compose --profile mysql up -d
-```
-
-### Database Access
-
-```bash
-# PostgreSQL CLI
-PGPASSWORD=rox_dev_password psql -h localhost -U rox -d rox
-
-# MySQL CLI (if using MySQL profile)
-mysql -h localhost -u rox -prox_dev_password rox
-```
-
-## Build and Production
-
-```bash
-# Build all packages
-bun run build
-
-# Build backend only
-bun run --filter backend build
-
-# Build frontend only
-bun run --filter frontend build
-
-# Start production server (after build)
-bun run --filter backend start
-```
-
-## Workspace Commands
-
-```bash
-# Run command in specific package
-bun run --filter backend [command]
-bun run --filter frontend [command]
-bun run --filter shared [command]
-
-# Run command in all packages
-bun run --filter '*' [command]
 ```
 
 ## Git Workflow
 
 ```bash
+# Check status
+git status
+
 # Create feature branch
-git checkout -b feat/your-feature
+git checkout -b feat/feature-name
 
-# Commit with conventional commits
-git commit -m "feat(scope): description"
-
-# Push to remote
-git push origin feat/your-feature
+# Commit with conventional commit format
+git commit -m "feat: add user warning system"
+git commit -m "fix: resolve pagination issue"
+git commit -m "docs: update API documentation"
 ```
 
-## Utility Commands (macOS)
+## Environment Variables
 
-### File Operations
+Required for backend:
 ```bash
-# Find files
-find . -name "*.ts" -type f
-
-# Search in files
-grep -r "searchterm" src/
-
-# List directory tree
-tree -L 3 -I node_modules
+DB_TYPE=postgres
+DATABASE_URL=postgresql://user:pass@host:5432/db
+STORAGE_TYPE=local
+LOCAL_STORAGE_PATH=./uploads
+PORT=3000
+NODE_ENV=development
+URL=http://localhost:3000
 ```
 
-### Process Management
+Optional:
 ```bash
-# Find process by port
-lsof -i :3000
-
-# Kill process by PID
-kill -9 [PID]
+REDIS_URL=redis://localhost:6379  # For caching/queue
+S3_ENDPOINT=...                   # For S3 storage
 ```
 
-### System Information
-```bash
-# Check Bun version
-bun --version
-
-# Check Node version (if needed)
-node --version
-
-# Check Docker version
-docker --version
-```
-
-## Environment-Specific Commands
-
-### PostgreSQL Environment
-```bash
-DB_TYPE=postgres DATABASE_URL="postgresql://rox:rox_dev_password@localhost:5432/rox" bun run dev
-```
-
-### SQLite Environment
-```bash
-DB_TYPE=sqlite DATABASE_URL="sqlite://./rox.db" bun run dev
-```
-
-### With Federation Enabled
-```bash
-ENABLE_FEDERATION=true bun run dev
-```
-
-## Troubleshooting
+## Documentation
 
 ```bash
-# Clear build cache
-rm -rf packages/*/dist packages/*/.waku
+# Generate TypeDoc
+bun run typedoc
 
-# Reinstall dependencies
-rm -rf node_modules packages/*/node_modules
-bun install
-
-# Reset database (WARNING: destroys data)
-docker compose down -v
-docker compose up -d
-bun run db:migrate
+# View at typedoc/index.html
 ```

@@ -8,6 +8,7 @@ export type FontSize = 'small' | 'medium' | 'large' | 'xlarge';
 export type LineHeight = 'compact' | 'normal' | 'relaxed';
 export type ContentWidth = 'narrow' | 'normal' | 'wide';
 export type Theme = 'light' | 'dark' | 'system';
+export type NotificationSound = 'none' | 'default' | 'soft' | 'bell';
 
 export interface UISettings {
   fontSize?: FontSize;
@@ -15,6 +16,8 @@ export interface UISettings {
   contentWidth?: ContentWidth;
   theme?: Theme;
   appCustomCss?: string;
+  notificationSound?: NotificationSound;
+  notificationVolume?: number; // 0-100
 }
 
 /**
@@ -26,6 +29,8 @@ export const defaultUISettings: Required<Omit<UISettings, 'appCustomCss'>> & { a
   contentWidth: 'normal',
   theme: 'system',
   appCustomCss: '',
+  notificationSound: 'default',
+  notificationVolume: 50,
 };
 
 /**
@@ -76,4 +81,11 @@ export const themeLabels: Record<Theme, string> = {
   light: 'Light',
   dark: 'Dark',
   system: 'System',
+};
+
+export const notificationSoundLabels: Record<NotificationSound, string> = {
+  none: 'Off',
+  default: 'Default',
+  soft: 'Soft',
+  bell: 'Bell',
 };

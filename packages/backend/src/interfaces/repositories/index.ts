@@ -13,3 +13,4 @@ export * from './IInstanceSettingsRepository.js';
 export * from './ICustomEmojiRepository.js';
 export * from './IModerationAuditLogRepository.js';
 export * from './IUserWarningRepository.js';
+export * from './INotificationRepository.js';

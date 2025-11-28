@@ -1,132 +1,156 @@
-# Architecture Patterns
+# Rox Architecture Patterns
 
 ## Core Design Principles
 
-Rox uses **Repository Pattern** and **Adapter Pattern** to decouple business logic from infrastructure, enabling environment-based switching without code changes.
+### 1. Repository Pattern
 
-## 1. Repository Pattern
-
-Database operations are abstracted through interfaces. Controllers depend only on repository interfaces, not concrete implementations.
-
-### Directory Structure
+All database operations are abstracted through repository interfaces:
 
 ```
-src/repositories/
-├── pg/          # PostgreSQL implementations
-├── mysql/       # MySQL implementations
-└── d1/          # D1 (SQLite) implementations
+interfaces/repositories/
+├── IUserRepository.ts
+├── INoteRepository.ts
+├── IFollowRepository.ts
+├── ISessionRepository.ts
+├── IDriveFileRepository.ts
+├── IReactionRepository.ts
+├── IInstanceBlockRepository.ts
+├── IUserReportRepository.ts
+├── IRoleRepository.ts
+├── IRoleAssignmentRepository.ts
+├── IInstanceSettingsRepository.ts
+├── ICustomEmojiRepository.ts
+├── IModerationAuditLogRepository.ts
+├── IUserWarningRepository.ts
+└── IInvitationCodeRepository.ts
 ```
 
-### Usage Pattern
+Implementations per database type:
+- `repositories/pg/` - PostgreSQL implementations
 
-```typescript
-// ✅ Good: Use repository interface
-const user = await userRepository.findById(userId);
+### 2. Adapter Pattern
 
-// ❌ Bad: Direct database access
-const user = await db.select().from(users).where(eq(users.id, userId));
-```
-
-### Key Repositories
-
-- `INoteRepository`: Note CRUD operations
-- `IUserRepository`: User CRUD operations
-- `IFollowRepository`: Follow relationship operations
-- `IReactionRepository`: Reaction operations
-- `IDriveFileRepository`: File metadata operations
-
-### Selection Mechanism
-
-Repository implementations are selected via `DB_TYPE` environment variable at application startup through the DI container (`src/di/container.ts`).
-
-## 2. Adapter Pattern
-
-Storage operations use adapters to abstract infrastructure concerns.
-
-### Directory Structure
+Infrastructure concerns abstracted via adapters:
 
 ```
-src/adapters/
+adapters/
 ├── storage/
-│   ├── LocalStorageAdapter.ts    # Local filesystem
-│   └── S3StorageAdapter.ts       # S3-compatible storage
-└── email/                         # (Future: email adapters)
+│   ├── LocalStorageAdapter.ts
+│   └── S3StorageAdapter.ts
+└── cache/
+    └── DragonflyCacheAdapter.ts
 ```
 
-### Interface
+### 3. Dependency Injection
 
-All storage adapters implement `IFileStorage`:
-- `save(file: Buffer, metadata: FileMetadata): Promise<string>` - Returns file ID/URL
-- `delete(fileId: string): Promise<void>`
-- `getUrl(fileId: string): string` - Returns publicly accessible URL
-
-### Usage Pattern
+Container-based DI via `di/container.ts`:
 
 ```typescript
-// ✅ Good: Use storage adapter
-const url = await storageAdapter.save(file, metadata);
+// AppContainer provides all dependencies
+export interface AppContainer {
+  userRepository: IUserRepository;
+  noteRepository: INoteRepository;
+  fileStorage: IFileStorage;
+  cacheService: ICacheService;
+  // ... other dependencies
+}
 
-// ❌ Bad: Direct filesystem access
-await fs.writeFile(path, file);
+// Injected via Hono middleware
+c.get('userRepository')
+c.get('noteRepository')
 ```
 
-### Selection Mechanism
+### 4. Service Layer
 
-Storage adapters are selected via `STORAGE_TYPE` environment variable.
+Business logic isolated in services:
 
-## 3. Dependency Injection
-
-Dependencies are injected via Hono Context based on environment configuration.
-
-### Container
-
-The DI container (`src/di/container.ts`) initializes:
-- Repository implementations (based on `DB_TYPE`)
-- Storage adapters (based on `STORAGE_TYPE`)
-- Services (business logic)
-
-### Usage in Routes
-
-```typescript
-app.post('/api/notes', requireAuth(), async (c) => {
-  const noteRepository = c.get('noteRepository');
-  const storageAdapter = c.get('storageAdapter');
-  const user = c.get('user')!;
-  
-  // Business logic using injected dependencies
-});
+```
+services/
+├── AuthService.ts          # Authentication
+├── UserService.ts          # User management
+├── NoteService.ts          # Note/post management
+├── FollowService.ts        # Follow relationships
+├── ReactionService.ts      # Emoji reactions
+├── FileService.ts          # File uploads
+├── RoleService.ts          # RBAC
+├── InstanceSettingsService.ts
+├── MigrationService.ts     # Account migration
+└── ap/                     # ActivityPub
+    ├── RemoteActorService.ts
+    ├── RemoteNoteService.ts
+    ├── ActivityPubDeliveryService.ts
+    ├── ActivityDeliveryQueue.ts
+    └── inbox/
+        ├── InboxService.ts
+        └── handlers/       # Activity handlers
 ```
 
-## 4. Service Layer
+## Backend Directory Structure
 
-Business logic lives in the service layer (`src/services/`), which orchestrates repositories and adapters.
+```
+packages/backend/src/
+├── adapters/       # Infrastructure adapters
+├── db/             # Database schema & migrations
+│   └── schema/     # Drizzle schema definitions
+├── di/             # Dependency injection
+├── interfaces/     # Abstract interfaces
+├── lib/            # Utilities (validation, etc.)
+├── middleware/     # Hono middleware
+├── repositories/   # Data access layer
+├── routes/         # API endpoints
+├── services/       # Business logic
+├── tests/          # Test files
+└── index.ts        # Application entry
+```
 
-### Key Services
+## Frontend Directory Structure
 
-- `NoteService`: Note creation, deletion, timeline generation
-- `AuthService`: Authentication, session management
-- `FollowService`: Follow/unfollow operations
-- `ReactionService`: Reaction management
-- `FileService`: File upload/download handling
-- `ActivityPubDeliveryService`: ActivityPub federation delivery
+```
+packages/frontend/src/
+├── components/     # React components
+│   ├── ui/         # Base UI components
+│   ├── layout/     # Layout components
+│   ├── auth/       # Authentication
+│   ├── note/       # Note display/compose
+│   ├── timeline/   # Timeline views
+│   ├── user/       # User profile
+│   ├── settings/   # Settings pages
+│   ├── admin/      # Admin dashboard
+│   ├── moderator/  # Moderation tools
+│   └── mfm/        # MFM rendering
+├── hooks/          # Custom hooks
+├── lib/            # Utilities
+│   ├── api/        # API client
+│   └── atoms/      # Jotai atoms
+├── locales/        # i18n translations
+├── pages/          # Route pages
+└── styles/         # Global styles
+```
 
-### Pattern
+## Key API Routes
 
-Services receive repositories via constructor injection and implement business logic without direct infrastructure knowledge.
+### Public API
+- `/api/auth/*` - Authentication
+- `/api/users/*` - User endpoints
+- `/api/notes/*` - Note endpoints
+- `/api/following/*` - Follow relationships
+- `/api/reactions/*` - Reactions
 
-## 5. Database Schema Management
+### Admin API (`/api/admin/*`)
+- Instance settings
+- Role management
+- User administration
 
-Each database type has its own schema file:
-- `db/schema/pg.ts` - PostgreSQL
-- `db/schema/mysql.ts` - MySQL/MariaDB
-- `db/schema/sqlite.ts` - SQLite/D1
+### Moderator API (`/api/mod/*`)
+- User reports
+- Note moderation
+- User warnings
+- Instance blocking
+- Audit logs
 
-Schemas are kept synchronized across database types using Drizzle's migration system.
-
-## 6. Multi-Environment Support
-
-The architecture enables running the same codebase in:
-- **VPS**: PostgreSQL/MySQL + local/S3 storage + Docker
-- **Edge**: Cloudflare Workers + D1 database + R2 storage
-
-Configuration is entirely environment-variable driven.
+### ActivityPub
+- `/.well-known/webfinger`
+- `/users/:username` - Actor
+- `/users/:username/inbox` - Inbox
+- `/users/:username/outbox` - Outbox
+- `/notes/:id` - Note activity

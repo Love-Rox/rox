@@ -10,6 +10,7 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { requireAuth } from '../middleware/auth.js';
+import { userRateLimit, RateLimitPresets } from '../middleware/rateLimit.js';
 import { FileService } from '../services/FileService.js';
 
 const drive = new Hono();
@@ -24,7 +25,7 @@ const drive = new Hono();
  * - Accepts multipart/form-data
  * - Maximum file size: 10MB (configurable)
  */
-drive.post('/files/create', requireAuth(), async (c: Context) => {
+drive.post('/files/create', requireAuth(), userRateLimit(RateLimitPresets.fileUpload), async (c: Context) => {
   const user = c.get('user')!;
   const driveFileRepository = c.get('driveFileRepository');
   const fileStorage = c.get('fileStorage');
@@ -138,7 +139,7 @@ drive.get('/files/show', requireAuth(), async (c: Context) => {
  * - Only file owner can update
  * - Cannot change file content or storage location
  */
-drive.post('/files/update', requireAuth(), async (c: Context) => {
+drive.post('/files/update', requireAuth(), userRateLimit(RateLimitPresets.write), async (c: Context) => {
   const user = c.get('user')!;
   const driveFileRepository = c.get('driveFileRepository');
   const fileStorage = c.get('fileStorage');
@@ -177,7 +178,7 @@ drive.post('/files/update', requireAuth(), async (c: Context) => {
  * - Only file owner can delete
  * - Removes file from storage adapter and database
  */
-drive.post('/files/delete', requireAuth(), async (c: Context) => {
+drive.post('/files/delete', requireAuth(), userRateLimit(RateLimitPresets.write), async (c: Context) => {
   const user = c.get('user')!;
   const driveFileRepository = c.get('driveFileRepository');
   const fileStorage = c.get('fileStorage');
