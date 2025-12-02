@@ -329,29 +329,38 @@ export class ActivityDeliveryQueue {
         console.log(`⏳ Rate limit reached for ${hostname}, delaying by ${delay}ms`);
       }
 
-      // Add to queue with retry options, priority, and optional delay
-      await this.queue.add("deliver", data, {
-        priority, // Lower number = higher priority
-        attempts: 5, // Retry up to 5 times
-        backoff: {
-          type: "exponential",
-          delay: 1000, // Start with 1 second delay
-        },
-        delay, // Apply rate limit delay if needed
-        removeOnComplete: true, // Clean up completed jobs
-        removeOnFail: {
-          age: 24 * 3600, // Keep failed jobs for 24 hours
-        },
-        // Deduplication: if same activity to same inbox within 5 seconds, skip
-        jobId: this.generateJobId(data),
-      });
+      try {
+        // Add to queue with retry options, priority, and optional delay
+        await this.queue.add("deliver", data, {
+          priority, // Lower number = higher priority
+          attempts: 5, // Retry up to 5 times
+          backoff: {
+            type: "exponential",
+            delay: 1000, // Start with 1 second delay
+          },
+          delay, // Apply rate limit delay if needed
+          removeOnComplete: true, // Clean up completed jobs
+          removeOnFail: {
+            age: 24 * 3600, // Keep failed jobs for 24 hours
+          },
+          // Deduplication: if same activity to same inbox within 5 seconds, skip
+          jobId: this.generateJobId(data),
+        });
 
-      const priorityLabel =
-        priority === JobPriority.URGENT ? "🚨" : priority === JobPriority.LOW ? "🐌" : "📤";
-      const delayLabel = delay > 0 ? ` (delayed ${delay}ms)` : "";
-      console.log(
-        `${priorityLabel} Queued delivery to ${data.inboxUrl} (priority: ${priority})${delayLabel}`,
-      );
+        const priorityLabel =
+          priority === JobPriority.URGENT ? "🚨" : priority === JobPriority.LOW ? "🐌" : "📤";
+        const delayLabel = delay > 0 ? ` (delayed ${delay}ms)` : "";
+        console.log(
+          `${priorityLabel} Queued delivery to ${data.inboxUrl} (priority: ${priority})${delayLabel}`,
+        );
+      } catch (error) {
+        // Queue operation failed (e.g., Dragonfly cluster mode issue)
+        // Fall back to synchronous delivery
+        console.warn(
+          `⚠️  Queue operation failed, falling back to sync delivery: ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
+        await this.deliverSync(data);
+      }
     } else {
       // Fallback to synchronous delivery
       // In sync mode, apply rate limit via sleep
