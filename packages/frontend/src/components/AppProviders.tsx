@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Application Providers Component
@@ -7,10 +7,10 @@
  * for use in the root layout.
  */
 
-import { type ReactNode, useEffect, useState } from 'react';
-import { I18nProvider } from './I18nProvider.js';
-import { ThemeProvider } from './ThemeProvider.js';
-import type { ThemeSettings } from '../lib/types/instance';
+import { type ReactNode, useEffect, useState } from "react";
+import { I18nProvider } from "./I18nProvider.js";
+import { ThemeProvider } from "./ThemeProvider.js";
+import type { ThemeSettings } from "../lib/types/instance";
 
 interface AppProvidersProps {
   children: ReactNode;
@@ -33,13 +33,13 @@ export function AppProviders({ children }: AppProvidersProps) {
     // Fetch instance theme settings
     const fetchTheme = async () => {
       try {
-        const response = await fetch('/api/instance/theme');
+        const response = await fetch("/api/instance/theme");
         if (response.ok) {
           const data = await response.json();
           setTheme(data);
         }
       } catch (error) {
-        console.error('Failed to fetch theme settings:', error);
+        console.error("Failed to fetch theme settings:", error);
       } finally {
         setIsLoaded(true);
       }

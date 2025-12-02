@@ -7,9 +7,9 @@
  * @module services/ap/ActivityDeliveryQueue
  */
 
-import { Queue, Worker, type Job } from 'bullmq';
-import { Redis } from 'ioredis';
-import { ActivityDeliveryService } from './ActivityDeliveryService.js';
+import { Queue, Worker, type Job } from "bullmq";
+import { Redis } from "ioredis";
+import { ActivityDeliveryService } from "./ActivityDeliveryService.js";
 
 /**
  * Job priority levels
@@ -105,7 +105,7 @@ export class ActivityDeliveryQueue {
    *
    * @param enableStatsLogging - Enable periodic statistics logging (default: true in production)
    */
-  constructor(enableStatsLogging: boolean = process.env.NODE_ENV === 'production') {
+  constructor(enableStatsLogging: boolean = process.env.NODE_ENV === "production") {
     this.deliveryService = new ActivityDeliveryService();
     this.initPromise = this.initializeQueue();
 
@@ -132,7 +132,7 @@ export class ActivityDeliveryQueue {
    * @private
    */
   private async initializeQueue(): Promise<void> {
-    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+    const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 
     try {
       // Attempt to connect to Redis
@@ -150,37 +150,37 @@ export class ActivityDeliveryQueue {
 
       // Wait for connection to be ready
       await new Promise<void>((resolve, reject) => {
-        this.redis!.once('ready', () => resolve());
-        this.redis!.once('error', (err) => reject(err));
+        this.redis!.once("ready", () => resolve());
+        this.redis!.once("error", (err) => reject(err));
       });
 
-      console.log('✅ Redis connected, using BullMQ for delivery queue');
+      console.log("✅ Redis connected, using BullMQ for delivery queue");
 
       // Initialize queue
-      this.queue = new Queue<DeliveryJobData>('activitypub-delivery', {
+      this.queue = new Queue<DeliveryJobData>("activitypub-delivery", {
         connection: this.redis,
       });
 
       // Initialize worker
       this.worker = new Worker<DeliveryJobData>(
-        'activitypub-delivery',
+        "activitypub-delivery",
         async (job: Job<DeliveryJobData>) => {
           await this.processJob(job);
         },
         {
           connection: this.redis,
           concurrency: 10, // Process up to 10 jobs concurrently
-        }
+        },
       );
 
-      this.worker.on('failed', (job, err) => {
+      this.worker.on("failed", (job, err) => {
         console.error(`Job ${job?.id} failed:`, err);
       });
 
       this.useQueue = true;
     } catch (error) {
-      console.warn('⚠️  Redis not available, using synchronous delivery fallback');
-      console.warn(`   Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.warn("⚠️  Redis not available, using synchronous delivery fallback");
+      console.warn(`   Error: ${error instanceof Error ? error.message : "Unknown error"}`);
       this.useQueue = false;
 
       // Clean up failed connection
@@ -233,7 +233,7 @@ export class ActivityDeliveryQueue {
 
     // Cleanup old deliveries (outside window)
     const windowStart = now - this.rateLimitConfig.windowMs;
-    state.deliveries = state.deliveries.filter(timestamp => timestamp > windowStart);
+    state.deliveries = state.deliveries.filter((timestamp) => timestamp > windowStart);
     state.lastCleanup = now;
 
     // Check if we're under the limit
@@ -320,11 +320,11 @@ export class ActivityDeliveryQueue {
       }
 
       // Add to queue with retry options, priority, and optional delay
-      await this.queue.add('deliver', data, {
+      await this.queue.add("deliver", data, {
         priority, // Lower number = higher priority
         attempts: 5, // Retry up to 5 times
         backoff: {
-          type: 'exponential',
+          type: "exponential",
           delay: 1000, // Start with 1 second delay
         },
         delay, // Apply rate limit delay if needed
@@ -336,9 +336,12 @@ export class ActivityDeliveryQueue {
         jobId: this.generateJobId(data),
       });
 
-      const priorityLabel = priority === JobPriority.URGENT ? '🚨' : priority === JobPriority.LOW ? '🐌' : '📤';
-      const delayLabel = delay > 0 ? ` (delayed ${delay}ms)` : '';
-      console.log(`${priorityLabel} Queued delivery to ${data.inboxUrl} (priority: ${priority})${delayLabel}`);
+      const priorityLabel =
+        priority === JobPriority.URGENT ? "🚨" : priority === JobPriority.LOW ? "🐌" : "📤";
+      const delayLabel = delay > 0 ? ` (delayed ${delay}ms)` : "";
+      console.log(
+        `${priorityLabel} Queued delivery to ${data.inboxUrl} (priority: ${priority})${delayLabel}`,
+      );
     } else {
       // Fallback to synchronous delivery
       // In sync mode, apply rate limit via sleep
@@ -346,7 +349,7 @@ export class ActivityDeliveryQueue {
         const delay = this.calculateRateLimitDelay(hostname);
         if (delay > 0 && delay <= 60000) {
           console.log(`⏳ Rate limit reached for ${hostname}, waiting ${delay}ms`);
-          await new Promise(resolve => setTimeout(resolve, delay));
+          await new Promise((resolve) => setTimeout(resolve, delay));
         }
       }
 
@@ -368,7 +371,7 @@ export class ActivityDeliveryQueue {
    */
   private generateJobId(data: DeliveryJobData): string {
     const activityId = data.activity.id || JSON.stringify(data.activity);
-    const hash = Buffer.from(`${activityId}-${data.inboxUrl}`).toString('base64').slice(0, 32);
+    const hash = Buffer.from(`${activityId}-${data.inboxUrl}`).toString("base64").slice(0, 32);
     return `deliver-${hash}`;
   }
 
@@ -391,10 +394,10 @@ export class ActivityDeliveryQueue {
       console.log(`✅ Delivered to ${inboxUrl}`);
 
       // Record success metric
-      this.recordMetric(inboxUrl, 'success');
+      this.recordMetric(inboxUrl, "success");
     } catch (error) {
       // Record failure metric
-      this.recordMetric(inboxUrl, 'failure');
+      this.recordMetric(inboxUrl, "failure");
       throw error; // Re-throw for BullMQ retry logic
     }
   }
@@ -409,10 +412,10 @@ export class ActivityDeliveryQueue {
    *
    * @private
    */
-  private recordMetric(inboxUrl: string, type: 'success' | 'failure'): void {
+  private recordMetric(inboxUrl: string, type: "success" | "failure"): void {
     const metrics = this.deliveryMetrics.get(inboxUrl) || { success: 0, failure: 0 };
 
-    if (type === 'success') {
+    if (type === "success") {
       metrics.success++;
     } else {
       metrics.failure++;
@@ -473,9 +476,8 @@ export class ActivityDeliveryQueue {
     }
 
     const totalDeliveries = totalSuccess + totalFailure;
-    const successRate = totalDeliveries > 0
-      ? Math.round((totalSuccess / totalDeliveries) * 100 * 100) / 100
-      : 0;
+    const successRate =
+      totalDeliveries > 0 ? Math.round((totalSuccess / totalDeliveries) * 100 * 100) / 100 : 0;
 
     // Get top servers by delivery count
     const serverStats = Array.from(this.deliveryMetrics.entries())
@@ -483,11 +485,12 @@ export class ActivityDeliveryQueue {
         inbox,
         success: metrics.success,
         failure: metrics.failure,
-        successRate: metrics.success + metrics.failure > 0
-          ? Math.round((metrics.success / (metrics.success + metrics.failure)) * 100 * 100) / 100
-          : 0,
+        successRate:
+          metrics.success + metrics.failure > 0
+            ? Math.round((metrics.success / (metrics.success + metrics.failure)) * 100 * 100) / 100
+            : 0,
       }))
-      .sort((a, b) => (b.success + b.failure) - (a.success + a.failure))
+      .sort((a, b) => b.success + b.failure - (a.success + a.failure))
       .slice(0, 10); // Top 10 servers
 
     return {
@@ -508,27 +511,29 @@ export class ActivityDeliveryQueue {
   public logDeliveryStatistics(): void {
     const stats = this.getDeliveryStatistics();
 
-    console.log('\n' + '='.repeat(60));
-    console.log('📊 ActivityPub Delivery Statistics');
-    console.log('='.repeat(60));
+    console.log("\n" + "=".repeat(60));
+    console.log("📊 ActivityPub Delivery Statistics");
+    console.log("=".repeat(60));
     console.log(`Total Deliveries:      ${stats.totalDeliveries}`);
     console.log(`✅ Successful:         ${stats.successfulDeliveries} (${stats.successRate}%)`);
     console.log(`❌ Failed:             ${stats.failedDeliveries}`);
     console.log(`🌐 Unique Servers:     ${stats.serverCount}`);
 
     if (stats.topServers.length > 0) {
-      console.log('\n📈 Top 10 Servers by Delivery Count:');
-      console.log('─'.repeat(60));
+      console.log("\n📈 Top 10 Servers by Delivery Count:");
+      console.log("─".repeat(60));
 
       for (const server of stats.topServers) {
         const total = server.success + server.failure;
         const hostname = this.extractHostname(server.inbox);
         console.log(`  ${hostname}`);
-        console.log(`    Total: ${total} | Success: ${server.success} | Failed: ${server.failure} | Rate: ${server.successRate}%`);
+        console.log(
+          `    Total: ${total} | Success: ${server.success} | Failed: ${server.failure} | Rate: ${server.successRate}%`,
+        );
       }
     }
 
-    console.log('='.repeat(60) + '\n');
+    console.log("=".repeat(60) + "\n");
   }
 
   /**
@@ -539,7 +544,7 @@ export class ActivityDeliveryQueue {
    * @private
    */
   private startPeriodicStatsLogging(): void {
-    const intervalMs = parseInt(process.env.STATS_LOG_INTERVAL_MS || '3600000', 10); // Default: 1 hour
+    const intervalMs = parseInt(process.env.STATS_LOG_INTERVAL_MS || "3600000", 10); // Default: 1 hour
 
     this.statsInterval = setInterval(() => {
       const stats = this.getDeliveryStatistics();
@@ -567,7 +572,7 @@ export class ActivityDeliveryQueue {
     if (this.statsInterval) {
       clearInterval(this.statsInterval);
       this.statsInterval = null;
-      console.log('📊 Periodic statistics logging stopped');
+      console.log("📊 Periodic statistics logging stopped");
     }
   }
 
@@ -581,12 +586,7 @@ export class ActivityDeliveryQueue {
    */
   private async deliverSync(data: DeliveryJobData): Promise<void> {
     try {
-      await this.deliveryService.deliver(
-        data.activity,
-        data.inboxUrl,
-        data.keyId,
-        data.privateKey
-      );
+      await this.deliveryService.deliver(data.activity, data.inboxUrl, data.keyId, data.privateKey);
       console.log(`✅ Delivered to ${data.inboxUrl}`);
     } catch (error) {
       console.error(`❌ Failed to deliver to ${data.inboxUrl}:`, error);
@@ -609,7 +609,7 @@ export class ActivityDeliveryQueue {
    * ```
    */
   public async shutdown(): Promise<void> {
-    console.log('Shutting down ActivityDeliveryQueue...');
+    console.log("Shutting down ActivityDeliveryQueue...");
 
     // Stop periodic statistics logging
     this.stopPeriodicStatsLogging();
@@ -617,7 +617,7 @@ export class ActivityDeliveryQueue {
     // Log final statistics
     const stats = this.getDeliveryStatistics();
     if (stats.totalDeliveries > 0) {
-      console.log('\n📊 Final Delivery Statistics:');
+      console.log("\n📊 Final Delivery Statistics:");
       this.logDeliveryStatistics();
     }
 
@@ -633,6 +633,6 @@ export class ActivityDeliveryQueue {
       await this.redis.quit();
     }
 
-    console.log('ActivityDeliveryQueue shut down');
+    console.log("ActivityDeliveryQueue shut down");
   }
 }

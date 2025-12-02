@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Notification hooks for real-time notifications
@@ -6,13 +6,13 @@
  * Provides hooks for managing notifications with SSE support
  */
 
-import { useEffect, useCallback, useRef } from 'react';
-import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { tokenAtom, isAuthenticatedAtom } from '../lib/atoms/auth';
-import { uiSettingsAtom } from '../lib/atoms/uiSettings';
-import { notificationsApi } from '../lib/api/notifications';
-import { playNotificationSound } from '../lib/utils/notificationSound';
-import type { Notification, NotificationFetchOptions } from '../lib/types/notification';
+import { useEffect, useCallback, useRef } from "react";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { tokenAtom, isAuthenticatedAtom } from "../lib/atoms/auth";
+import { uiSettingsAtom } from "../lib/atoms/uiSettings";
+import { notificationsApi } from "../lib/api/notifications";
+import { playNotificationSound } from "../lib/utils/notificationSound";
+import type { Notification, NotificationFetchOptions } from "../lib/types/notification";
 
 /**
  * Notifications list atom
@@ -67,12 +67,12 @@ export function useNotifications() {
           setNotifications(data);
         }
       } catch (error) {
-        console.error('Failed to fetch notifications:', error);
+        console.error("Failed to fetch notifications:", error);
       } finally {
         setLoading(false);
       }
     },
-    [isAuthenticated, setNotifications, setLoading]
+    [isAuthenticated, setNotifications, setLoading],
   );
 
   /**
@@ -85,7 +85,7 @@ export function useNotifications() {
       const { count } = await notificationsApi.getUnreadCount();
       setUnreadCount(count);
     } catch (error) {
-      console.error('Failed to fetch unread count:', error);
+      console.error("Failed to fetch unread count:", error);
     }
   }, [isAuthenticated, setUnreadCount]);
 
@@ -97,14 +97,14 @@ export function useNotifications() {
       try {
         await notificationsApi.markAsRead(notificationId);
         setNotifications((prev) =>
-          prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n))
+          prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n)),
         );
         setUnreadCount((prev) => Math.max(0, prev - 1));
       } catch (error) {
-        console.error('Failed to mark notification as read:', error);
+        console.error("Failed to mark notification as read:", error);
       }
     },
-    [setNotifications, setUnreadCount]
+    [setNotifications, setUnreadCount],
   );
 
   /**
@@ -116,7 +116,7 @@ export function useNotifications() {
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnreadCount(0);
     } catch (error) {
-      console.error('Failed to mark all notifications as read:', error);
+      console.error("Failed to mark all notifications as read:", error);
     }
   }, [setNotifications, setUnreadCount]);
 
@@ -134,10 +134,10 @@ export function useNotifications() {
           setUnreadCount((prev) => Math.max(0, prev - 1));
         }
       } catch (error) {
-        console.error('Failed to delete notification:', error);
+        console.error("Failed to delete notification:", error);
       }
     },
-    [notifications, setNotifications, setUnreadCount]
+    [notifications, setNotifications, setUnreadCount],
   );
 
   /**
@@ -164,7 +164,7 @@ export function useNotifications() {
       reconnectTimeoutRef.current = null;
     }
 
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+    const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
     const url = `${baseUrl}/api/notifications/stream`;
 
     // EventSource doesn't support custom headers, so we use a workaround
@@ -172,41 +172,41 @@ export function useNotifications() {
     const eventSource = new EventSource(`${url}?token=${encodeURIComponent(token)}`);
     eventSourceRef.current = eventSource;
 
-    eventSource.addEventListener('connected', () => {
-      console.log('SSE connected for notifications');
+    eventSource.addEventListener("connected", () => {
+      console.log("SSE connected for notifications");
       setSseConnected(true);
     });
 
-    eventSource.addEventListener('notification', (event) => {
+    eventSource.addEventListener("notification", (event) => {
       try {
         const notification = JSON.parse(event.data) as Notification;
         // Add new notification at the beginning
         setNotifications((prev) => [notification, ...prev]);
 
         // Play notification sound
-        if (uiSettings.notificationSound && uiSettings.notificationSound !== 'none') {
+        if (uiSettings.notificationSound && uiSettings.notificationSound !== "none") {
           playNotificationSound(uiSettings.notificationSound, uiSettings.notificationVolume ?? 50);
         }
       } catch (error) {
-        console.error('Failed to parse notification event:', error);
+        console.error("Failed to parse notification event:", error);
       }
     });
 
-    eventSource.addEventListener('unreadCount', (event) => {
+    eventSource.addEventListener("unreadCount", (event) => {
       try {
         const { count } = JSON.parse(event.data);
         setUnreadCount(count);
       } catch (error) {
-        console.error('Failed to parse unreadCount event:', error);
+        console.error("Failed to parse unreadCount event:", error);
       }
     });
 
-    eventSource.addEventListener('heartbeat', () => {
+    eventSource.addEventListener("heartbeat", () => {
       // Heartbeat received, connection is alive
     });
 
     eventSource.onerror = () => {
-      console.warn('SSE connection error, reconnecting...');
+      console.warn("SSE connection error, reconnecting...");
       setSseConnected(false);
       eventSource.close();
       eventSourceRef.current = null;
@@ -285,7 +285,7 @@ export function useUnreadCount() {
       const { count } = await notificationsApi.getUnreadCount();
       setUnreadCount(count);
     } catch (error) {
-      console.error('Failed to fetch unread count:', error);
+      console.error("Failed to fetch unread count:", error);
     }
   }, [isAuthenticated, setUnreadCount]);
 

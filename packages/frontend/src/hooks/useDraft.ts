@@ -1,7 +1,7 @@
-import { useEffect, useCallback } from 'react';
-import { useAtom } from 'jotai';
-import { atomWithStorage } from 'jotai/utils';
-import type { NoteVisibility } from '../lib/api/notes';
+import { useEffect, useCallback } from "react";
+import { useAtom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
+import type { NoteVisibility } from "../lib/api/notes";
 
 /**
  * Draft data structure
@@ -18,7 +18,7 @@ export interface DraftData {
  * Atom for storing draft data in localStorage
  * Automatically syncs with localStorage
  */
-const draftAtom = atomWithStorage<DraftData | null>('note-composer-draft', null);
+const draftAtom = atomWithStorage<DraftData | null>("note-composer-draft", null);
 
 /**
  * Hook for managing note composer drafts
@@ -55,7 +55,7 @@ export function useDraft(_options: { autosaveDelay?: number } = {}) {
    * Save draft to localStorage
    */
   const saveDraft = useCallback(
-    (data: Omit<DraftData, 'timestamp'>) => {
+    (data: Omit<DraftData, "timestamp">) => {
       // Only save if there's actual content
       if (!data.text.trim() && !data.cw.trim()) {
         setDraft(null);
@@ -67,7 +67,7 @@ export function useDraft(_options: { autosaveDelay?: number } = {}) {
         timestamp: Date.now(),
       });
     },
-    [setDraft]
+    [setDraft],
   );
 
   /**
@@ -87,7 +87,7 @@ export function useDraft(_options: { autosaveDelay?: number } = {}) {
   /**
    * Check if there's a draft available
    */
-  const hasDraft = draft !== null && (draft.text.trim() !== '' || draft.cw.trim() !== '');
+  const hasDraft = draft !== null && (draft.text.trim() !== "" || draft.cw.trim() !== "");
 
   return {
     saveDraft,
@@ -114,10 +114,7 @@ export function useDraft(_options: { autosaveDelay?: number } = {}) {
  * );
  * ```
  */
-export function useAutosaveDraft(
-  data: Omit<DraftData, 'timestamp'>,
-  delay = 1000
-) {
+export function useAutosaveDraft(data: Omit<DraftData, "timestamp">, delay = 1000) {
   const { saveDraft } = useDraft();
 
   useEffect(() => {

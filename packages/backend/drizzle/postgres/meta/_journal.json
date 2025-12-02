@@ -141,6 +141,13 @@
       "when": 1764289518668,
       "tag": "0019_cute_norman_osborn",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1764638256103,
+      "tag": "0020_numerous_anita_blake",
+      "breakpoints": true
     }
   ]
 }

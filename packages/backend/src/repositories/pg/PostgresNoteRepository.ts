@@ -1,16 +1,16 @@
-import { eq, and, or, isNull, inArray, desc, gt, lt, sql } from 'drizzle-orm';
-import type { Database } from '../../db/index.js';
-import { notes, users } from '../../db/schema/pg.js';
+import { eq, and, or, isNull, inArray, desc, gt, lt, sql } from "drizzle-orm";
+import type { Database } from "../../db/index.js";
+import { notes, users } from "../../db/schema/pg.js";
 import type {
   INoteRepository,
   TimelineOptions,
-} from '../../interfaces/repositories/INoteRepository.js';
-import type { Note } from 'shared';
+} from "../../interfaces/repositories/INoteRepository.js";
+import type { Note } from "shared";
 
 export class PostgresNoteRepository implements INoteRepository {
   constructor(private db: Database) {}
 
-  async create(note: Omit<Note, 'createdAt' | 'updatedAt'>): Promise<Note> {
+  async create(note: Omit<Note, "createdAt" | "updatedAt">): Promise<Note> {
     const now = new Date();
     const [result] = await this.db
       .insert(notes)
@@ -22,28 +22,20 @@ export class PostgresNoteRepository implements INoteRepository {
       .returning();
 
     if (!result) {
-      throw new Error('Failed to create note');
+      throw new Error("Failed to create note");
     }
 
     return result as Note;
   }
 
   async findById(id: string): Promise<Note | null> {
-    const [result] = await this.db
-      .select()
-      .from(notes)
-      .where(eq(notes.id, id))
-      .limit(1);
+    const [result] = await this.db.select().from(notes).where(eq(notes.id, id)).limit(1);
 
     return (result as Note) ?? null;
   }
 
   async findByUri(uri: string): Promise<Note | null> {
-    const [result] = await this.db
-      .select()
-      .from(notes)
-      .where(eq(notes.uri, uri))
-      .limit(1);
+    const [result] = await this.db.select().from(notes).where(eq(notes.uri, uri)).limit(1);
 
     return (result as Note) ?? null;
   }
@@ -54,7 +46,7 @@ export class PostgresNoteRepository implements INoteRepository {
     // 条件を配列に集める
     const conditions = [
       isNull(users.host), // ローカルユーザーのみ
-      eq(notes.visibility, 'public'), // 公開投稿のみ
+      eq(notes.visibility, "public"), // 公開投稿のみ
       eq(notes.localOnly, false), // localOnlyでない投稿
       eq(notes.isDeleted, false), // ソフトデリートされていない
     ];
@@ -75,21 +67,22 @@ export class PostgresNoteRepository implements INoteRepository {
       .orderBy(desc(notes.createdAt))
       .limit(limit);
 
-    return results.map((r) => ({
-      ...r.notes,
-      user: {
-        id: r.users.id,
-        username: r.users.username,
-        displayName: r.users.displayName,
-        avatarUrl: r.users.avatarUrl,
-        host: r.users.host,
-      },
-    }) as Note);
+    return results.map(
+      (r) =>
+        ({
+          ...r.notes,
+          user: {
+            id: r.users.id,
+            username: r.users.username,
+            displayName: r.users.displayName,
+            avatarUrl: r.users.avatarUrl,
+            host: r.users.host,
+          },
+        }) as Note,
+    );
   }
 
-  async getTimeline(
-    options: TimelineOptions & { userIds: string[] }
-  ): Promise<Note[]> {
+  async getTimeline(options: TimelineOptions & { userIds: string[] }): Promise<Note[]> {
     const { limit = 20, sinceId, untilId, userIds } = options;
 
     if (userIds.length === 0) {
@@ -117,21 +110,22 @@ export class PostgresNoteRepository implements INoteRepository {
       .orderBy(desc(notes.createdAt))
       .limit(limit);
 
-    return results.map((r) => ({
-      ...r.notes,
-      user: {
-        id: r.users.id,
-        username: r.users.username,
-        displayName: r.users.displayName,
-        avatarUrl: r.users.avatarUrl,
-        host: r.users.host,
-      },
-    }) as Note);
+    return results.map(
+      (r) =>
+        ({
+          ...r.notes,
+          user: {
+            id: r.users.id,
+            username: r.users.username,
+            displayName: r.users.displayName,
+            avatarUrl: r.users.avatarUrl,
+            host: r.users.host,
+          },
+        }) as Note,
+    );
   }
 
-  async getSocialTimeline(
-    options: TimelineOptions & { userIds?: string[] }
-  ): Promise<Note[]> {
+  async getSocialTimeline(options: TimelineOptions & { userIds?: string[] }): Promise<Note[]> {
     const { limit = 20, sinceId, untilId, userIds = [] } = options;
 
     // ソーシャルタイムライン = ローカルの公開投稿 OR フォロー中のリモートユーザーの投稿
@@ -142,19 +136,14 @@ export class PostgresNoteRepository implements INoteRepository {
     // ローカル公開投稿の条件（localOnlyではない、publicのみ）
     const localConditions = [
       isNull(users.host),
-      eq(notes.visibility, 'public'),
+      eq(notes.visibility, "public"),
       eq(notes.localOnly, false),
     ];
 
     // リモートユーザーの投稿の条件（userIdsに含まれる）
     if (userIds.length > 0) {
       // (ローカル公開投稿) OR (フォロー中のリモートユーザー)
-      conditions.push(
-        or(
-          and(...localConditions),
-          inArray(notes.userId, userIds)
-        )!
-      );
+      conditions.push(or(and(...localConditions), inArray(notes.userId, userIds))!);
     } else {
       // フォローなしの場合はローカル公開投稿のみ
       conditions.push(...localConditions);
@@ -179,10 +168,7 @@ export class PostgresNoteRepository implements INoteRepository {
     return results.map((r) => r.notes as Note);
   }
 
-  async findByUserId(
-    userId: string,
-    options: TimelineOptions
-  ): Promise<Note[]> {
+  async findByUserId(userId: string, options: TimelineOptions): Promise<Note[]> {
     const { limit = 20, sinceId, untilId } = options;
 
     const conditions = [
@@ -206,22 +192,22 @@ export class PostgresNoteRepository implements INoteRepository {
       .orderBy(desc(notes.createdAt))
       .limit(limit);
 
-    return results.map((r) => ({
-      ...r.notes,
-      user: {
-        id: r.users.id,
-        username: r.users.username,
-        displayName: r.users.displayName,
-        avatarUrl: r.users.avatarUrl,
-        host: r.users.host,
-      },
-    }) as Note);
+    return results.map(
+      (r) =>
+        ({
+          ...r.notes,
+          user: {
+            id: r.users.id,
+            username: r.users.username,
+            displayName: r.users.displayName,
+            avatarUrl: r.users.avatarUrl,
+            host: r.users.host,
+          },
+        }) as Note,
+    );
   }
 
-  async findReplies(
-    noteId: string,
-    options: TimelineOptions
-  ): Promise<Note[]> {
+  async findReplies(noteId: string, options: TimelineOptions): Promise<Note[]> {
     const { limit = 20, sinceId, untilId } = options;
 
     const conditions = [
@@ -245,22 +231,22 @@ export class PostgresNoteRepository implements INoteRepository {
       .orderBy(desc(notes.createdAt))
       .limit(limit);
 
-    return results.map((r) => ({
-      ...r.notes,
-      user: {
-        id: r.users.id,
-        username: r.users.username,
-        displayName: r.users.displayName,
-        avatarUrl: r.users.avatarUrl,
-        host: r.users.host,
-      },
-    }) as Note);
+    return results.map(
+      (r) =>
+        ({
+          ...r.notes,
+          user: {
+            id: r.users.id,
+            username: r.users.username,
+            displayName: r.users.displayName,
+            avatarUrl: r.users.avatarUrl,
+            host: r.users.host,
+          },
+        }) as Note,
+    );
   }
 
-  async findRenotes(
-    noteId: string,
-    options: TimelineOptions
-  ): Promise<Note[]> {
+  async findRenotes(noteId: string, options: TimelineOptions): Promise<Note[]> {
     const { limit = 20, sinceId, untilId } = options;
 
     const conditions = [
@@ -284,22 +270,22 @@ export class PostgresNoteRepository implements INoteRepository {
       .orderBy(desc(notes.createdAt))
       .limit(limit);
 
-    return results.map((r) => ({
-      ...r.notes,
-      user: {
-        id: r.users.id,
-        username: r.users.username,
-        displayName: r.users.displayName,
-        avatarUrl: r.users.avatarUrl,
-        host: r.users.host,
-      },
-    }) as Note);
+    return results.map(
+      (r) =>
+        ({
+          ...r.notes,
+          user: {
+            id: r.users.id,
+            username: r.users.username,
+            displayName: r.users.displayName,
+            avatarUrl: r.users.avatarUrl,
+            host: r.users.host,
+          },
+        }) as Note,
+    );
   }
 
-  async update(
-    id: string,
-    data: Partial<Omit<Note, 'id' | 'createdAt'>>
-  ): Promise<Note> {
+  async update(id: string, data: Partial<Omit<Note, "id" | "createdAt">>): Promise<Note> {
     const [result] = await this.db
       .update(notes)
       .set({
@@ -310,7 +296,7 @@ export class PostgresNoteRepository implements INoteRepository {
       .returning();
 
     if (!result) {
-      throw new Error('Note not found');
+      throw new Error("Note not found");
     }
 
     return result as Note;
@@ -339,11 +325,7 @@ export class PostgresNoteRepository implements INoteRepository {
     return result?.count ?? 0;
   }
 
-  async softDelete(
-    id: string,
-    deletedById: string,
-    reason?: string
-  ): Promise<Note | null> {
+  async softDelete(id: string, deletedById: string, reason?: string): Promise<Note | null> {
     const [result] = await this.db
       .update(notes)
       .set({
@@ -397,15 +379,18 @@ export class PostgresNoteRepository implements INoteRepository {
       .limit(limit)
       .offset(offset);
 
-    return results.map((r) => ({
-      ...r.notes,
-      user: {
-        id: r.users.id,
-        username: r.users.username,
-        displayName: r.users.displayName,
-        avatarUrl: r.users.avatarUrl,
-        host: r.users.host,
-      },
-    }) as Note);
+    return results.map(
+      (r) =>
+        ({
+          ...r.notes,
+          user: {
+            id: r.users.id,
+            username: r.users.username,
+            displayName: r.users.displayName,
+            avatarUrl: r.users.avatarUrl,
+            host: r.users.host,
+          },
+        }) as Note,
+    );
   }
 }

@@ -1,4 +1,4 @@
-import type { Note } from 'shared';
+import type { Note } from "shared";
 
 export interface TimelineOptions {
   limit?: number;
@@ -11,7 +11,7 @@ export interface INoteRepository {
   /**
    * ノートを作成
    */
-  create(note: Omit<Note, 'createdAt' | 'updatedAt'>): Promise<Note>;
+  create(note: Omit<Note, "createdAt" | "updatedAt">): Promise<Note>;
 
   /**
    * IDでノートを取得
@@ -59,7 +59,7 @@ export interface INoteRepository {
   /**
    * ノートを更新
    */
-  update(id: string, data: Partial<Omit<Note, 'id' | 'createdAt'>>): Promise<Note>;
+  update(id: string, data: Partial<Omit<Note, "id" | "createdAt">>): Promise<Note>;
 
   /**
    * ノートを削除（ハードデリート）

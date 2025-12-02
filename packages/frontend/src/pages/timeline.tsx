@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { Trans } from '@lingui/react/macro';
-import { useAtom } from 'jotai';
-import { useEffect, useState } from 'react';
-import { Timeline } from '../components/timeline/Timeline';
-import { NoteComposer } from '../components/note/NoteComposer';
-import { Layout } from '../components/layout/Layout';
-import { currentUserAtom, tokenAtom } from '../lib/atoms/auth';
-import { timelineNotesAtom } from '../lib/atoms/timeline';
-import { apiClient } from '../lib/api/client';
+import { Trans } from "@lingui/react/macro";
+import { useAtom } from "jotai";
+import { useEffect, useState } from "react";
+import { Timeline } from "../components/timeline/Timeline";
+import { NoteComposer } from "../components/note/NoteComposer";
+import { Layout } from "../components/layout/Layout";
+import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
+import { timelineNotesAtom } from "../lib/atoms/timeline";
+import { apiClient } from "../lib/api/client";
 
 /**
  * Timeline page component
  * Authenticated users only - shows timeline with note composer
  */
-type TimelineType = 'local' | 'social' | 'home';
+type TimelineType = "local" | "social" | "home";
 
 export default function TimelinePage() {
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, setTimelineNotes] = useAtom(timelineNotesAtom);
-  const [timelineType, setTimelineType] = useState<TimelineType>('local');
+  const [timelineType, setTimelineType] = useState<TimelineType>("local");
   const [isLoading, setIsLoading] = useState(true);
 
   // Restore user session on mount
@@ -28,7 +28,7 @@ export default function TimelinePage() {
     const restoreSession = async () => {
       // No token at all, redirect to login
       if (!token) {
-        window.location.href = '/login';
+        window.location.href = "/login";
         return;
       }
 
@@ -36,13 +36,13 @@ export default function TimelinePage() {
       if (!currentUser) {
         try {
           apiClient.setToken(token);
-          const response = await apiClient.get<{ user: any }>('/api/auth/session');
+          const response = await apiClient.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
           setIsLoading(false);
         } catch (error) {
-          console.error('Failed to restore session:', error);
+          console.error("Failed to restore session:", error);
           // Token is invalid, redirect to login
-          window.location.href = '/login';
+          window.location.href = "/login";
           return;
         }
       } else {
@@ -56,10 +56,10 @@ export default function TimelinePage() {
   const handleNoteCreated = async () => {
     // Refresh timeline by fetching latest notes
     try {
-      const newNotes = await apiClient.get<any[]>('/api/notes/local-timeline?limit=20');
+      const newNotes = await apiClient.get<any[]>("/api/notes/local-timeline?limit=20");
       setTimelineNotes(newNotes);
     } catch (error) {
-      console.error('Failed to refresh timeline:', error);
+      console.error("Failed to refresh timeline:", error);
       // Fallback: just reload the page
       window.location.reload();
     }
@@ -86,45 +86,49 @@ export default function TimelinePage() {
       </div>
 
       {/* Timeline Type Tabs */}
-      <div className="mb-6 border-b border-gray-200 dark:border-gray-700" role="tablist" aria-label="Timeline types">
+      <div
+        className="mb-6 border-b border-gray-200 dark:border-gray-700"
+        role="tablist"
+        aria-label="Timeline types"
+      >
         <div className="flex gap-6">
           <button
-            onClick={() => setTimelineType('local')}
+            onClick={() => setTimelineType("local")}
             className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              timelineType === 'local'
-                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500'
+              timelineType === "local"
+                ? "border-primary-500 text-primary-600 dark:text-primary-400"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500"
             }`}
             role="tab"
-            aria-selected={timelineType === 'local'}
+            aria-selected={timelineType === "local"}
             aria-controls="timeline-content"
             id="tab-local"
           >
             <Trans>Local</Trans>
           </button>
           <button
-            onClick={() => setTimelineType('social')}
+            onClick={() => setTimelineType("social")}
             className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              timelineType === 'social'
-                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500'
+              timelineType === "social"
+                ? "border-primary-500 text-primary-600 dark:text-primary-400"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500"
             }`}
             role="tab"
-            aria-selected={timelineType === 'social'}
+            aria-selected={timelineType === "social"}
             aria-controls="timeline-content"
             id="tab-social"
           >
             <Trans>Social</Trans>
           </button>
           <button
-            onClick={() => setTimelineType('home')}
+            onClick={() => setTimelineType("home")}
             className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              timelineType === 'home'
-                ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500'
+              timelineType === "home"
+                ? "border-primary-500 text-primary-600 dark:text-primary-400"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500"
             }`}
             role="tab"
-            aria-selected={timelineType === 'home'}
+            aria-selected={timelineType === "home"}
             aria-controls="timeline-content"
             id="tab-home"
           >

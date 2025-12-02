@@ -11,9 +11,9 @@
 export function isExternalUrl(url: string): boolean {
   if (!url) return false;
   // Relative URLs are not external
-  if (url.startsWith('/') && !url.startsWith('//')) return false;
+  if (url.startsWith("/") && !url.startsWith("//")) return false;
   // Data URLs are not external
-  if (url.startsWith('data:')) return false;
+  if (url.startsWith("data:")) return false;
 
   try {
     const parsed = new URL(url, window.location.origin);
@@ -32,14 +32,14 @@ export function isLocalDevelopmentUrl(url: string): boolean {
     const parsed = new URL(url);
     const hostname = parsed.hostname.toLowerCase();
     return (
-      hostname === 'localhost' ||
-      hostname === '127.0.0.1' ||
-      hostname === '::1' ||
-      hostname.endsWith('.local') ||
-      hostname.endsWith('.localhost') ||
-      hostname.startsWith('192.168.') ||
-      hostname.startsWith('10.') ||
-      hostname.startsWith('172.')
+      hostname === "localhost" ||
+      hostname === "127.0.0.1" ||
+      hostname === "::1" ||
+      hostname.endsWith(".local") ||
+      hostname.endsWith(".localhost") ||
+      hostname.startsWith("192.168.") ||
+      hostname.startsWith("10.") ||
+      hostname.startsWith("172.")
     );
   } catch {
     return false;

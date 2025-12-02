@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
 /**
  * Hook for fetching and caching instance information
  */
 
-import { useState, useEffect } from 'react';
-import { apiClient } from '../lib/api/client';
-import type { InstanceInfo } from '../lib/types/instance';
+import { useState, useEffect } from "react";
+import { apiClient } from "../lib/api/client";
+import type { InstanceInfo } from "../lib/types/instance";
 
 /**
  * Cache for instance info to avoid repeated requests
@@ -26,7 +26,7 @@ async function fetchInstanceInfo(): Promise<InstanceInfo> {
     return fetchPromise;
   }
 
-  fetchPromise = apiClient.get<InstanceInfo>('/api/instance');
+  fetchPromise = apiClient.get<InstanceInfo>("/api/instance");
 
   try {
     instanceInfoCache = await fetchPromise;

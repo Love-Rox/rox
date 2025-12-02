@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useAtom } from 'jotai';
-import { Trans } from '@lingui/react/macro';
-import { Home, User, Settings, Shield, Bell, Search } from 'lucide-react';
-import { currentUserAtom } from '../../lib/atoms/auth';
-import { Avatar } from '../ui/Avatar';
-import { LanguageSwitcher } from '../LanguageSwitcher';
-import { DarkModeToggle } from '../ui/DarkModeToggle';
-import { NotificationBell } from '../notification/NotificationBell';
+import { useAtom } from "jotai";
+import { Trans } from "@lingui/react/macro";
+import { Home, User, Settings, Shield, Bell, Search } from "lucide-react";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { Avatar } from "../ui/Avatar";
+import { LanguageSwitcher } from "../LanguageSwitcher";
+import { DarkModeToggle } from "../ui/DarkModeToggle";
+import { NotificationBell } from "../notification/NotificationBell";
 
 /**
  * Sidebar navigation component
@@ -22,9 +22,9 @@ export function Sidebar() {
 
   const userInitials = currentUser.name
     ? currentUser.name
-        .split(' ')
+        .split(" ")
         .map((n: string) => n[0])
-        .join('')
+        .join("")
         .toUpperCase()
         .slice(0, 2)
     : currentUser.username.slice(0, 2).toUpperCase();
@@ -33,32 +33,32 @@ export function Sidebar() {
     {
       icon: <Home className="w-6 h-6" />,
       label: <Trans>Home</Trans>,
-      href: '/timeline',
-      key: 'home',
+      href: "/timeline",
+      key: "home",
     },
     {
       icon: <Search className="w-6 h-6" />,
       label: <Trans>Search</Trans>,
-      href: '/search',
-      key: 'search',
+      href: "/search",
+      key: "search",
     },
     {
       icon: <Bell className="w-6 h-6" />,
       label: <Trans>Notifications</Trans>,
-      href: '/notifications',
-      key: 'notifications',
+      href: "/notifications",
+      key: "notifications",
     },
     {
       icon: <User className="w-6 h-6" />,
       label: <Trans>Profile</Trans>,
       href: `/${currentUser.username}`,
-      key: 'profile',
+      key: "profile",
     },
     {
       icon: <Settings className="w-6 h-6" />,
       label: <Trans>Settings</Trans>,
-      href: '/settings',
-      key: 'settings',
+      href: "/settings",
+      key: "settings",
     },
   ];
 
@@ -67,8 +67,8 @@ export function Sidebar() {
     navItems.push({
       icon: <Shield className="w-6 h-6" />,
       label: <Trans>Admin</Trans>,
-      href: '/admin/settings',
-      key: 'admin',
+      href: "/admin/settings",
+      key: "admin",
     });
   }
 

@@ -7,13 +7,13 @@
  * @module services/FileService
  */
 
-import { createHash } from 'node:crypto';
-import { extname } from 'node:path';
-import type { IDriveFileRepository } from '../interfaces/repositories/IDriveFileRepository.js';
-import type { IFileStorage } from '../interfaces/IFileStorage.js';
-import type { DriveFile } from '../../../shared/src/types/file.js';
-import { generateId } from '../../../shared/src/utils/id.js';
-import { getImageProcessor } from './ImageProcessor.js';
+import { createHash } from "node:crypto";
+import { extname } from "node:path";
+import type { IDriveFileRepository } from "../interfaces/repositories/IDriveFileRepository.js";
+import type { IFileStorage } from "../interfaces/IFileStorage.js";
+import type { DriveFile } from "../../../shared/src/types/file.js";
+import { generateId } from "../../../shared/src/utils/id.js";
+import { getImageProcessor } from "./ImageProcessor.js";
 
 /**
  * File upload input data
@@ -73,7 +73,7 @@ export class FileService {
     private readonly storage: IFileStorage,
   ) {
     // Default: 10MB, configurable via environment variable
-    this.maxFileSize = Number.parseInt(process.env.MAX_FILE_SIZE || '10485760', 10);
+    this.maxFileSize = Number.parseInt(process.env.MAX_FILE_SIZE || "10485760", 10);
   }
 
   /**
@@ -108,13 +108,11 @@ export class FileService {
 
     // ファイルサイズのバリデーション
     if (file.byteLength > this.maxFileSize) {
-      throw new Error(
-        `File size exceeds maximum allowed size of ${this.maxFileSize} bytes`,
-      );
+      throw new Error(`File size exceeds maximum allowed size of ${this.maxFileSize} bytes`);
     }
 
     // MD5ハッシュ計算（将来の重複排除用）
-    const md5 = createHash('md5').update(file).digest('hex');
+    const md5 = createHash("md5").update(file).digest("hex");
 
     const imageProcessor = getImageProcessor();
     let fileToSave = file;
@@ -131,11 +129,11 @@ export class FileService {
         // Use WebP version as main file
         fileToSave = processed.webp;
         fileType = processed.webpType;
-        fileName = this.replaceExtension(name, '.webp');
+        fileName = this.replaceExtension(name, ".webp");
         blurhash = processed.blurhash;
 
         // Save thumbnail
-        const thumbnailName = this.replaceExtension(name, '_thumb.webp');
+        const thumbnailName = this.replaceExtension(name, "_thumb.webp");
         const thumbnailKey = await this.storage.save(processed.thumbnail, {
           name: thumbnailName,
           type: processed.thumbnailType,
@@ -144,7 +142,9 @@ export class FileService {
         });
         thumbnailUrl = this.storage.getUrl(thumbnailKey);
 
-        console.log(`🖼️  Image processed: ${name} → WebP (${Math.round(processed.webp.byteLength / 1024)}KB)`);
+        console.log(
+          `🖼️  Image processed: ${name} → WebP (${Math.round(processed.webp.byteLength / 1024)}KB)`,
+        );
       } catch (error) {
         // Fall back to original file if processing fails
         console.warn(`⚠️  Image processing failed for ${name}, using original:`, error);
@@ -264,15 +264,11 @@ export class FileService {
    * });
    * ```
    */
-  async update(
-    fileId: string,
-    userId: string,
-    input: FileUpdateInput,
-  ): Promise<DriveFile> {
+  async update(fileId: string, userId: string, input: FileUpdateInput): Promise<DriveFile> {
     const file = await this.findById(fileId, userId);
 
     if (!file) {
-      throw new Error('File not found or access denied');
+      throw new Error("File not found or access denied");
     }
 
     const updateData: Partial<DriveFile> = {};
@@ -313,7 +309,7 @@ export class FileService {
     const file = await this.findById(fileId, userId);
 
     if (!file) {
-      throw new Error('File not found or access denied');
+      throw new Error("File not found or access denied");
     }
 
     // ストレージから削除

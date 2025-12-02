@@ -1,26 +1,36 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import type { ReactNode } from 'react';
-import { Trans } from '@lingui/react/macro';
-import { t } from '@lingui/core/macro';
-import { Image as ImageIcon, X, Globe, Home as HomeIcon, Lock, Mail, ChevronDown, Eye } from 'lucide-react';
-import { MfmRenderer } from '../mfm/MfmRenderer';
-import { Select, Button as RACButton, Popover, ListBox, ListBoxItem } from 'react-aria-components';
-import { Button } from '../ui/Button';
-import { Card, CardContent } from '../ui/Card';
-import { Avatar } from '../ui/Avatar';
-import { ProgressBar } from '../ui/ProgressBar';
-import { Spinner } from '../ui/Spinner';
-import { InlineError } from '../ui/ErrorMessage';
-import { EmojiPicker } from '../ui/EmojiPicker';
-import { useAtom } from 'jotai';
-import { currentUserAtom, tokenAtom } from '../../lib/atoms/auth';
-import { addToastAtom } from '../../lib/atoms/toast';
-import { notesApi } from '../../lib/api/notes';
-import type { NoteVisibility } from '../../lib/api/notes';
-import { uploadFile } from '../../lib/api/drive';
-import { useDraft, useAutosaveDraft } from '../../hooks/useDraft';
+import { useState, useRef, useEffect } from "react";
+import type { ReactNode } from "react";
+import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
+import {
+  Image as ImageIcon,
+  X,
+  Globe,
+  Home as HomeIcon,
+  Lock,
+  Mail,
+  ChevronDown,
+  Eye,
+} from "lucide-react";
+import { NOTE_TEXT_MAX_LENGTH } from "shared";
+import { MfmRenderer } from "../mfm/MfmRenderer";
+import { Select, Button as RACButton, Popover, ListBox, ListBoxItem } from "react-aria-components";
+import { Button } from "../ui/Button";
+import { Card, CardContent } from "../ui/Card";
+import { Avatar } from "../ui/Avatar";
+import { ProgressBar } from "../ui/ProgressBar";
+import { Spinner } from "../ui/Spinner";
+import { InlineError } from "../ui/ErrorMessage";
+import { EmojiPicker } from "../ui/EmojiPicker";
+import { useAtom } from "jotai";
+import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { addToastAtom } from "../../lib/atoms/toast";
+import { notesApi } from "../../lib/api/notes";
+import type { NoteVisibility } from "../../lib/api/notes";
+import { uploadFile } from "../../lib/api/drive";
+import { useDraft, useAutosaveDraft } from "../../hooks/useDraft";
 
 export interface NoteComposerProps {
   /**
@@ -53,10 +63,10 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   const [currentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
-  const [text, setText] = useState('');
-  const [cw, setCw] = useState('');
+  const [text, setText] = useState("");
+  const [cw, setCw] = useState("");
   const [showCw, setShowCw] = useState(false);
-  const [visibility, setVisibility] = useState<NoteVisibility>('public');
+  const [visibility, setVisibility] = useState<NoteVisibility>("public");
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -78,7 +88,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
       showCw,
       visibility,
     },
-    1000 // Save every 1 second after user stops typing
+    1000, // Save every 1 second after user stops typing
   );
 
   // Load draft on mount (only if not replying)
@@ -99,12 +109,12 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
 
       // Auto-resize textarea
       if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto';
+        textareaRef.current.style.height = "auto";
         textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
       }
 
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Draft restored`,
       });
     }
@@ -114,19 +124,19 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
     clearDraft();
     setShowDraftBanner(false);
     addToast({
-      type: 'info',
+      type: "info",
       message: t`Draft discarded`,
     });
   };
 
-  const maxLength = 3000;
+  const maxLength = NOTE_TEXT_MAX_LENGTH;
   const remainingChars = maxLength - text.length;
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
     // Auto-resize textarea
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
@@ -151,7 +161,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
     e.stopPropagation();
 
     const droppedFiles = Array.from(e.dataTransfer.files).filter((file) =>
-      file.type.startsWith('image/'),
+      file.type.startsWith("image/"),
     );
 
     if (droppedFiles.length > 0) {
@@ -214,7 +224,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
             // Update progress
             setUploadProgress(Math.round(((i + 1) / files.length) * 100));
           } catch (uploadError) {
-            console.error('Failed to upload file:', uploadError);
+            console.error("Failed to upload file:", uploadError);
             throw new Error(t`Failed to upload ${file.name}`);
           }
         }
@@ -232,13 +242,13 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
       });
 
       // Reset form
-      setText('');
-      setCw('');
+      setText("");
+      setCw("");
       setShowCw(false);
-      setVisibility('public');
+      setVisibility("public");
       setFiles([]);
       if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto';
+        textareaRef.current.style.height = "auto";
       }
 
       // Clear draft
@@ -246,18 +256,18 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
 
       // Show success toast
       addToast({
-        type: 'success',
+        type: "success",
         message: t`Note posted successfully`,
       });
 
       onNoteCreated?.();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create note';
+      const errorMessage = err instanceof Error ? err.message : "Failed to create note";
       setError(errorMessage);
 
       // Show error toast
       addToast({
-        type: 'error',
+        type: "error",
         message: errorMessage,
       });
     } finally {
@@ -267,10 +277,10 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   };
 
   const visibilityOptions: { value: NoteVisibility; label: ReactNode; icon: ReactNode }[] = [
-    { value: 'public', label: <Trans>Public</Trans>, icon: <Globe className="w-4 h-4" /> },
-    { value: 'home', label: <Trans>Home</Trans>, icon: <HomeIcon className="w-4 h-4" /> },
-    { value: 'followers', label: <Trans>Followers</Trans>, icon: <Lock className="w-4 h-4" /> },
-    { value: 'direct', label: <Trans>Direct</Trans>, icon: <Mail className="w-4 h-4" /> },
+    { value: "public", label: <Trans>Public</Trans>, icon: <Globe className="w-4 h-4" /> },
+    { value: "home", label: <Trans>Home</Trans>, icon: <HomeIcon className="w-4 h-4" /> },
+    { value: "followers", label: <Trans>Followers</Trans>, icon: <Lock className="w-4 h-4" /> },
+    { value: "direct", label: <Trans>Direct</Trans>, icon: <Mail className="w-4 h-4" /> },
   ];
 
   if (!currentUser) {
@@ -279,9 +289,9 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
 
   const userInitials = currentUser.name
     ? currentUser.name
-        .split(' ')
+        .split(" ")
         .map((n: string) => n[0])
-        .join('')
+        .join("")
         .toUpperCase()
         .slice(0, 2)
     : currentUser.username.slice(0, 2).toUpperCase();
@@ -294,8 +304,18 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
           <div className="mb-4 rounded-md bg-blue-50 dark:bg-blue-900/30 p-3 border border-blue-200 dark:border-blue-800">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <svg
+                  className="w-5 h-5 text-blue-600 dark:text-blue-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
                 </svg>
                 <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
                   <Trans>You have an unsaved draft</Trans>
@@ -335,7 +355,10 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
             {/* Reply indicator */}
             {replyTo && (
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                <Trans>Replying to</Trans> <span className="text-primary-600 dark:text-primary-400 font-medium">{replyTo}</span>
+                <Trans>Replying to</Trans>{" "}
+                <span className="text-primary-600 dark:text-primary-400 font-medium">
+                  {replyTo}
+                </span>
               </div>
             )}
 
@@ -440,7 +463,9 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                   onClick={() => setShowCw(!showCw)}
                   disabled={isSubmitting}
                   className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 ${
-                    showCw ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400'
+                    showCw
+                      ? "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
+                      : "text-gray-600 dark:text-gray-400"
                   }`}
                   type="button"
                   title="Content Warning"
@@ -451,17 +476,16 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 </button>
 
                 {/* Emoji picker */}
-                <EmojiPicker
-                  onEmojiSelect={handleEmojiSelect}
-                  isDisabled={isSubmitting}
-                />
+                <EmojiPicker onEmojiSelect={handleEmojiSelect} isDisabled={isSubmitting} />
 
                 {/* MFM Preview toggle */}
                 <button
                   onClick={() => setShowPreview(!showPreview)}
                   disabled={isSubmitting}
                   className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 ${
-                    showPreview ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400'
+                    showPreview
+                      ? "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
+                      : "text-gray-600 dark:text-gray-400"
                   }`}
                   type="button"
                   title="Preview MFM"
@@ -512,7 +536,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                       r="14"
                       fill="none"
                       className="stroke-gray-200 dark:stroke-gray-600"
-                      stroke={remainingChars < 0 ? '#ef4444' : undefined}
+                      stroke={remainingChars < 0 ? "#ef4444" : undefined}
                       strokeWidth="2"
                     />
                     <circle
@@ -520,7 +544,13 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                       cy="16"
                       r="14"
                       fill="none"
-                      stroke={remainingChars < 0 ? '#ef4444' : remainingChars < 100 ? '#f97316' : '#3b82f6'}
+                      stroke={
+                        remainingChars < 0
+                          ? "#ef4444"
+                          : remainingChars < 100
+                            ? "#f97316"
+                            : "#3b82f6"
+                      }
                       strokeWidth="2"
                       strokeDasharray={`${(text.length / maxLength) * 87.96} 87.96`}
                       strokeLinecap="round"
@@ -530,20 +560,25 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                   <span
                     className={`absolute text-xs font-medium ${
                       remainingChars < 0
-                        ? 'text-red-600'
+                        ? "text-red-600"
                         : remainingChars < 100
-                        ? 'text-orange-600'
-                        : 'text-gray-500 dark:text-gray-400'
+                          ? "text-orange-600"
+                          : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
-                    {text.length > maxLength - 100 ? remainingChars : ''}
+                    {text.length > maxLength - 100 ? remainingChars : ""}
                   </span>
                 </div>
 
                 {/* Submit button */}
                 <Button
                   onPress={handleSubmit}
-                  isDisabled={isSubmitting || isUploading || (!text.trim() && files.length === 0) || text.length > maxLength}
+                  isDisabled={
+                    isSubmitting ||
+                    isUploading ||
+                    (!text.trim() && files.length === 0) ||
+                    text.length > maxLength
+                  }
                   variant="primary"
                   size="sm"
                 >

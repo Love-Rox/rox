@@ -1,5 +1,5 @@
-import type { PageProps } from 'waku/router';
-import { UserProfile } from '../../components/user/UserProfile';
+import type { PageProps } from "waku/router";
+import { UserProfile } from "../../components/user/UserProfile";
 
 /**
  * Parse username parameter to extract username and host
@@ -10,10 +10,10 @@ import { UserProfile } from '../../components/user/UserProfile';
  */
 function parseUserParam(param: string): { username: string; host: string | null } {
   // Remove leading @ if present
-  const cleaned = param.startsWith('@') ? param.slice(1) : param;
+  const cleaned = param.startsWith("@") ? param.slice(1) : param;
 
   // Check for remote user format (username@host)
-  const atIndex = cleaned.indexOf('@');
+  const atIndex = cleaned.indexOf("@");
   if (atIndex > 0) {
     return {
       username: cleaned.slice(0, atIndex),
@@ -33,7 +33,7 @@ function parseUserParam(param: string): { username: string; host: string | null 
  * /@alice - Shows alice's profile (local)
  * /@alice@mastodon.social - Shows alice's profile from mastodon.social (remote)
  */
-export default async function UserPage({ username: usernameParam }: PageProps<'/[username]'>) {
+export default async function UserPage({ username: usernameParam }: PageProps<"/[username]">) {
   if (!usernameParam) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-2xl">
@@ -57,6 +57,6 @@ export default async function UserPage({ username: usernameParam }: PageProps<'/
  */
 export const getConfig = async () => {
   return {
-    render: 'dynamic',
+    render: "dynamic",
   } as const;
 };

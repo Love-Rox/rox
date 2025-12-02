@@ -3,7 +3,7 @@
  * Provides functions for interacting with the reaction API endpoints
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 /**
  * Reaction data structure
@@ -31,9 +31,9 @@ export async function createReaction(
   token: string,
 ): Promise<Reaction> {
   const response = await fetch(`${API_BASE}/api/notes/reactions/create`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ noteId, reaction }),
@@ -41,7 +41,7 @@ export async function createReaction(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to create reaction');
+    throw new Error(error.error || "Failed to create reaction");
   }
 
   return response.json();
@@ -60,9 +60,9 @@ export async function deleteReaction(
   token: string,
 ): Promise<void> {
   const response = await fetch(`${API_BASE}/api/notes/reactions/delete`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ noteId, reaction }),
@@ -70,7 +70,7 @@ export async function deleteReaction(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to delete reaction');
+    throw new Error(error.error || "Failed to delete reaction");
   }
 }
 
@@ -81,20 +81,17 @@ export async function deleteReaction(
  * @param limit - Maximum number of reactions to retrieve
  * @returns List of reactions
  */
-export async function getReactions(
-  noteId: string,
-  limit?: number,
-): Promise<Reaction[]> {
+export async function getReactions(noteId: string, limit?: number): Promise<Reaction[]> {
   const params = new URLSearchParams({ noteId });
   if (limit) {
-    params.append('limit', limit.toString());
+    params.append("limit", limit.toString());
   }
 
   const response = await fetch(`${API_BASE}/api/notes/reactions?${params}`);
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to get reactions');
+    throw new Error(error.error || "Failed to get reactions");
   }
 
   return response.json();
@@ -106,15 +103,13 @@ export async function getReactions(
  * @param noteId - Note ID
  * @returns Reaction counts by emoji
  */
-export async function getReactionCounts(
-  noteId: string,
-): Promise<Record<string, number>> {
+export async function getReactionCounts(noteId: string): Promise<Record<string, number>> {
   const params = new URLSearchParams({ noteId });
   const response = await fetch(`${API_BASE}/api/notes/reactions/counts?${params}`);
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to get reaction counts');
+    throw new Error(error.error || "Failed to get reaction counts");
   }
 
   return response.json();
@@ -142,7 +137,7 @@ export async function getReactionCountsWithEmojis(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to get reaction counts');
+    throw new Error(error.error || "Failed to get reaction counts");
   }
 
   return response.json();
@@ -155,23 +150,17 @@ export async function getReactionCountsWithEmojis(
  * @param token - Authentication token
  * @returns User's reactions
  */
-export async function getMyReactions(
-  noteId: string,
-  token: string,
-): Promise<Reaction[]> {
+export async function getMyReactions(noteId: string, token: string): Promise<Reaction[]> {
   const params = new URLSearchParams({ noteId });
-  const response = await fetch(
-    `${API_BASE}/api/notes/reactions/my-reactions?${params}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  const response = await fetch(`${API_BASE}/api/notes/reactions/my-reactions?${params}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to get user reactions');
+    throw new Error(error.error || "Failed to get user reactions");
   }
 
   return response.json();

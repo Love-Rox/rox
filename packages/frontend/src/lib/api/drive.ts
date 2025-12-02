@@ -3,7 +3,7 @@
  * Provides functions for interacting with the drive/file upload API endpoints
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 /**
  * Drive file data structure
@@ -43,23 +43,20 @@ export interface UploadFileParams {
  * @param token - Authentication token
  * @returns Uploaded file information
  */
-export async function uploadFile(
-  params: UploadFileParams,
-  token: string,
-): Promise<DriveFile> {
+export async function uploadFile(params: UploadFileParams, token: string): Promise<DriveFile> {
   const formData = new FormData();
-  formData.append('file', params.file);
+  formData.append("file", params.file);
 
   if (params.isSensitive !== undefined) {
-    formData.append('isSensitive', String(params.isSensitive));
+    formData.append("isSensitive", String(params.isSensitive));
   }
 
   if (params.comment) {
-    formData.append('comment', params.comment);
+    formData.append("comment", params.comment);
   }
 
   const response = await fetch(`${API_BASE}/api/drive/files/create`, {
-    method: 'POST',
+    method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -68,7 +65,7 @@ export async function uploadFile(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to upload file');
+    throw new Error(error.error || "Failed to upload file");
   }
 
   return response.json();
@@ -90,34 +87,28 @@ export interface ListFilesOptions {
  * @param token - Authentication token
  * @returns List of files
  */
-export async function listFiles(
-  options: ListFilesOptions,
-  token: string,
-): Promise<DriveFile[]> {
+export async function listFiles(options: ListFilesOptions, token: string): Promise<DriveFile[]> {
   const params = new URLSearchParams();
 
   if (options.limit) {
-    params.append('limit', options.limit.toString());
+    params.append("limit", options.limit.toString());
   }
   if (options.sinceId) {
-    params.append('sinceId', options.sinceId);
+    params.append("sinceId", options.sinceId);
   }
   if (options.untilId) {
-    params.append('untilId', options.untilId);
+    params.append("untilId", options.untilId);
   }
 
-  const response = await fetch(
-    `${API_BASE}/api/drive/files?${params}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  const response = await fetch(`${API_BASE}/api/drive/files?${params}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to list files');
+    throw new Error(error.error || "Failed to list files");
   }
 
   return response.json();
@@ -130,24 +121,18 @@ export async function listFiles(
  * @param token - Authentication token
  * @returns File information
  */
-export async function getFile(
-  fileId: string,
-  token: string,
-): Promise<DriveFile> {
+export async function getFile(fileId: string, token: string): Promise<DriveFile> {
   const params = new URLSearchParams({ fileId });
 
-  const response = await fetch(
-    `${API_BASE}/api/drive/files/show?${params}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  const response = await fetch(`${API_BASE}/api/drive/files/show?${params}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to get file');
+    throw new Error(error.error || "Failed to get file");
   }
 
   return response.json();
@@ -159,14 +144,11 @@ export async function getFile(
  * @param fileId - File ID to delete
  * @param token - Authentication token
  */
-export async function deleteFile(
-  fileId: string,
-  token: string,
-): Promise<void> {
+export async function deleteFile(fileId: string, token: string): Promise<void> {
   const response = await fetch(`${API_BASE}/api/drive/files/delete`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ fileId }),
@@ -174,7 +156,7 @@ export async function deleteFile(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to delete file');
+    throw new Error(error.error || "Failed to delete file");
   }
 }
 
@@ -184,9 +166,7 @@ export async function deleteFile(
  * @param token - Authentication token
  * @returns Storage usage in bytes and MB
  */
-export async function getStorageUsage(
-  token: string,
-): Promise<{ usage: number; usageMB: number }> {
+export async function getStorageUsage(token: string): Promise<{ usage: number; usageMB: number }> {
   const response = await fetch(`${API_BASE}/api/drive/usage`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -195,7 +175,7 @@ export async function getStorageUsage(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Failed to get storage usage');
+    throw new Error(error.error || "Failed to get storage usage");
   }
 
   return response.json();

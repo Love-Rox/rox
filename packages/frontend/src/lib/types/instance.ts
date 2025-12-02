@@ -9,7 +9,7 @@
  */
 export interface ThemeSettings {
   primaryColor: string;
-  darkMode: 'light' | 'dark' | 'system';
+  darkMode: "light" | "dark" | "system";
 }
 
 /**

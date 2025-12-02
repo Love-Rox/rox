@@ -1,4 +1,4 @@
-import { NoteDetailPageClient } from '../../components/pages/NoteDetailPageClient';
+import { NoteDetailPageClient } from "../../components/pages/NoteDetailPageClient";
 
 /**
  * Note detail page (Server Component)
@@ -14,6 +14,6 @@ export default function NoteDetailPage({ noteId }: { noteId: string }) {
  */
 export const getConfig = async () => {
   return {
-    render: 'dynamic',
+    render: "dynamic",
   } as const;
 };

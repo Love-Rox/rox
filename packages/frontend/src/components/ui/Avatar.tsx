@@ -1,29 +1,26 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { getProxiedImageUrl } from '../../lib/utils/imageProxy';
+import { useState } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 
 /**
  * Avatar variant styles using Class Variance Authority
  * Defines visual variants for size
  */
-const avatarVariants = cva(
-  'rounded-full bg-gray-200 dark:bg-gray-700 object-cover',
-  {
-    variants: {
-      size: {
-        sm: 'h-8 w-8 text-xs',
-        md: 'h-10 w-10 text-sm',
-        lg: 'h-12 w-12 text-base',
-        xl: 'h-16 w-16 text-xl',
-      },
+const avatarVariants = cva("rounded-full bg-gray-200 dark:bg-gray-700 object-cover", {
+  variants: {
+    size: {
+      sm: "h-8 w-8 text-xs",
+      md: "h-10 w-10 text-sm",
+      lg: "h-12 w-12 text-base",
+      xl: "h-16 w-16 text-xl",
     },
-    defaultVariants: {
-      size: 'md',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
 
 /**
  * Props for the Avatar component
@@ -61,7 +58,7 @@ export interface AvatarProps extends VariantProps<typeof avatarVariants> {
  * <Avatar src="/avatar.jpg" alt="Jane" size="sm" />
  * ```
  */
-export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps) {
+export function Avatar({ src, alt = "", fallback, size, className }: AvatarProps) {
   const [hasError, setHasError] = useState(false);
 
   // Get the image URL (proxied if external)
@@ -72,7 +69,7 @@ export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps
       <img
         src={imageUrl}
         alt={alt}
-        className={'inline-block ' + avatarVariants({ size, className })}
+        className={"inline-block " + avatarVariants({ size, className })}
         onError={() => setHasError(true)}
       />
     );
@@ -81,7 +78,12 @@ export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps
   if (fallback) {
     return (
       <div
-        className={'inline-flex items-center justify-center ' + avatarVariants({ size }) + ' bg-primary-100! dark:bg-primary-900/30! text-primary-700 dark:text-primary-300 font-semibold ' + (className || '')}
+        className={
+          "inline-flex items-center justify-center " +
+          avatarVariants({ size }) +
+          " bg-primary-100! dark:bg-primary-900/30! text-primary-700 dark:text-primary-300 font-semibold " +
+          (className || "")
+        }
         aria-label={alt}
       >
         {fallback}
@@ -92,7 +94,12 @@ export function Avatar({ src, alt = '', fallback, size, className }: AvatarProps
   // Default fallback: user icon
   return (
     <div
-      className={'inline-flex items-center justify-center ' + avatarVariants({ size }) + ' bg-gray-300! dark:bg-gray-600! text-gray-600 dark:text-gray-300 ' + (className || '')}
+      className={
+        "inline-flex items-center justify-center " +
+        avatarVariants({ size }) +
+        " bg-gray-300! dark:bg-gray-600! text-gray-600 dark:text-gray-300 " +
+        (className || "")
+      }
       aria-label={alt}
     >
       <svg

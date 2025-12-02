@@ -5,34 +5,34 @@
  */
 
 // Service Worker version
-const SW_VERSION = '1.0.0';
+const SW_VERSION = "1.0.0";
 
 // Install event
-self.addEventListener('install', (_event) => {
-  console.log('[SW] Installing Service Worker version:', SW_VERSION);
+self.addEventListener("install", (_event) => {
+  console.log("[SW] Installing Service Worker version:", SW_VERSION);
   // Skip waiting to activate immediately
   self.skipWaiting();
 });
 
 // Activate event
-self.addEventListener('activate', (event) => {
-  console.log('[SW] Service Worker activated');
+self.addEventListener("activate", (event) => {
+  console.log("[SW] Service Worker activated");
   // Take control of all clients immediately
   event.waitUntil(self.clients.claim());
 });
 
 // Push event - handle incoming push notifications
-self.addEventListener('push', (event) => {
-  console.log('[SW] Push notification received');
+self.addEventListener("push", (event) => {
+  console.log("[SW] Push notification received");
 
   let data = {
-    title: 'New Notification',
-    body: 'You have a new notification',
-    icon: '/favicon.png',
-    badge: '/favicon.png',
-    tag: 'default',
+    title: "New Notification",
+    body: "You have a new notification",
+    icon: "/favicon.png",
+    badge: "/favicon.png",
+    tag: "default",
     data: {
-      url: '/notifications',
+      url: "/notifications",
     },
   };
 
@@ -49,7 +49,7 @@ self.addEventListener('push', (event) => {
         data: payload.data || data.data,
       };
     } catch (e) {
-      console.error('[SW] Failed to parse push data:', e);
+      console.error("[SW] Failed to parse push data:", e);
     }
   }
 
@@ -63,12 +63,12 @@ self.addEventListener('push', (event) => {
     requireInteraction: false,
     actions: [
       {
-        action: 'open',
-        title: 'Open',
+        action: "open",
+        title: "Open",
       },
       {
-        action: 'dismiss',
-        title: 'Dismiss',
+        action: "dismiss",
+        title: "Dismiss",
       },
     ],
   };
@@ -77,27 +77,27 @@ self.addEventListener('push', (event) => {
 });
 
 // Notification click event
-self.addEventListener('notificationclick', (event) => {
-  console.log('[SW] Notification clicked:', event.action);
+self.addEventListener("notificationclick", (event) => {
+  console.log("[SW] Notification clicked:", event.action);
 
   event.notification.close();
 
   // Handle action buttons
-  if (event.action === 'dismiss') {
+  if (event.action === "dismiss") {
     return;
   }
 
   // Get URL from notification data
-  const urlToOpen = event.notification.data?.url || '/notifications';
+  const urlToOpen = event.notification.data?.url || "/notifications";
 
   event.waitUntil(
-    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
       // Check if app is already open
       for (const client of clientList) {
-        if (client.url.includes(self.location.origin) && 'focus' in client) {
+        if (client.url.includes(self.location.origin) && "focus" in client) {
           // Navigate existing window
           client.postMessage({
-            type: 'NOTIFICATION_CLICK',
+            type: "NOTIFICATION_CLICK",
             url: urlToOpen,
           });
           return client.focus();
@@ -108,20 +108,20 @@ self.addEventListener('notificationclick', (event) => {
       if (self.clients.openWindow) {
         return self.clients.openWindow(urlToOpen);
       }
-    })
+    }),
   );
 });
 
 // Notification close event
-self.addEventListener('notificationclose', (_event) => {
-  console.log('[SW] Notification closed');
+self.addEventListener("notificationclose", (_event) => {
+  console.log("[SW] Notification closed");
 });
 
 // Message handler for communication with main app
-self.addEventListener('message', (event) => {
-  console.log('[SW] Message received:', event.data);
+self.addEventListener("message", (event) => {
+  console.log("[SW] Message received:", event.data);
 
-  if (event.data?.type === 'SKIP_WAITING') {
+  if (event.data?.type === "SKIP_WAITING") {
     self.skipWaiting();
   }
 });

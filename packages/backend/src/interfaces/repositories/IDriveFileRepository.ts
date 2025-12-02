@@ -1,10 +1,10 @@
-import type { DriveFile } from 'shared';
+import type { DriveFile } from "shared";
 
 export interface IDriveFileRepository {
   /**
    * ファイルを作成
    */
-  create(file: Omit<DriveFile, 'createdAt' | 'updatedAt'>): Promise<DriveFile>;
+  create(file: Omit<DriveFile, "createdAt" | "updatedAt">): Promise<DriveFile>;
 
   /**
    * IDでファイルを取得
@@ -25,7 +25,7 @@ export interface IDriveFileRepository {
       limit?: number;
       sinceId?: string;
       untilId?: string;
-    }
+    },
   ): Promise<DriveFile[]>;
 
   /**
@@ -38,7 +38,7 @@ export interface IDriveFileRepository {
    */
   update(
     id: string,
-    data: Partial<Omit<DriveFile, 'id' | 'userId' | 'createdAt'>>
+    data: Partial<Omit<DriveFile, "id" | "userId" | "createdAt">>,
   ): Promise<DriveFile>;
 
   /**

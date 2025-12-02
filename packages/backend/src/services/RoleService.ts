@@ -6,11 +6,11 @@
  * Supports Redis caching for improved performance.
  */
 
-import type { IRoleRepository } from '../interfaces/repositories/IRoleRepository.js';
-import type { IRoleAssignmentRepository } from '../interfaces/repositories/IRoleAssignmentRepository.js';
-import type { RolePolicies, Role } from '../db/schema/pg.js';
-import type { ICacheService } from '../interfaces/ICacheService.js';
-import { CacheTTL, CachePrefix } from '../adapters/cache/DragonflyCacheAdapter.js';
+import type { IRoleRepository } from "../interfaces/repositories/IRoleRepository.js";
+import type { IRoleAssignmentRepository } from "../interfaces/repositories/IRoleAssignmentRepository.js";
+import type { RolePolicies, Role } from "../db/schema/pg.js";
+import type { ICacheService } from "../interfaces/ICacheService.js";
+import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.js";
 
 /**
  * Default policies applied to all users (base permissions)
@@ -110,7 +110,7 @@ export class RoleService {
   constructor(
     roleRepository: IRoleRepository,
     roleAssignmentRepository: IRoleAssignmentRepository,
-    cacheService?: ICacheService
+    cacheService?: ICacheService,
   ) {
     this.roleRepository = roleRepository;
     this.roleAssignmentRepository = roleAssignmentRepository;
@@ -183,7 +183,7 @@ export class RoleService {
   async hasPermission(userId: string, permission: keyof RolePolicies): Promise<boolean> {
     const policies = await this.getEffectivePolicies(userId);
     const value = policies[permission];
-    return typeof value === 'boolean' ? value : false;
+    return typeof value === "boolean" ? value : false;
   }
 
   /**
@@ -265,7 +265,7 @@ export class RoleService {
     userId: string,
     roleId: string,
     assignedById?: string,
-    expiresAt?: Date
+    expiresAt?: Date,
   ): Promise<void> {
     await this.roleAssignmentRepository.assign(userId, roleId, assignedById, expiresAt);
     // Invalidate cached policies for the user
@@ -286,13 +286,13 @@ export class RoleService {
    * Create default admin role if it doesn't exist
    */
   async ensureAdminRole(): Promise<Role> {
-    const existingAdmin = await this.roleRepository.findByName('Admin');
+    const existingAdmin = await this.roleRepository.findByName("Admin");
     if (existingAdmin) return existingAdmin;
 
     return this.roleRepository.create({
-      name: 'Admin',
-      description: 'Administrator with full permissions',
-      color: '#ff0000',
+      name: "Admin",
+      description: "Administrator with full permissions",
+      color: "#ff0000",
       isPublic: false,
       isDefault: false,
       isAdminRole: true,
@@ -323,13 +323,13 @@ export class RoleService {
    * Create default moderator role if it doesn't exist
    */
   async ensureModeratorRole(): Promise<Role> {
-    const existingMod = await this.roleRepository.findByName('Moderator');
+    const existingMod = await this.roleRepository.findByName("Moderator");
     if (existingMod) return existingMod;
 
     return this.roleRepository.create({
-      name: 'Moderator',
-      description: 'Moderator with content management permissions',
-      color: '#00ff00',
+      name: "Moderator",
+      description: "Moderator with content management permissions",
+      color: "#00ff00",
       isPublic: false,
       isDefault: false,
       isAdminRole: false,

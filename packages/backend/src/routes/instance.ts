@@ -7,9 +7,9 @@
  * @module routes/instance
  */
 
-import { Hono } from 'hono';
-import type { Context } from 'hono';
-import { InstanceSettingsService } from '../services/InstanceSettingsService.js';
+import { Hono } from "hono";
+import type { Context } from "hono";
+import { InstanceSettingsService } from "../services/InstanceSettingsService.js";
 
 const app = new Hono();
 
@@ -24,14 +24,14 @@ const app = new Hono();
  * - Theme settings
  * - Links to ToS and Privacy Policy
  */
-app.get('/', async (c: Context) => {
-  const instanceSettingsRepository = c.get('instanceSettingsRepository');
+app.get("/", async (c: Context) => {
+  const instanceSettingsRepository = c.get("instanceSettingsRepository");
   const instanceSettingsService = new InstanceSettingsService(instanceSettingsRepository);
 
   const info = await instanceSettingsService.getPublicInstanceInfo();
 
   // Get instance URL from environment
-  const instanceUrl = process.env.URL || 'http://localhost:3000';
+  const instanceUrl = process.env.URL || "http://localhost:3000";
 
   return c.json({
     // Instance metadata
@@ -61,9 +61,9 @@ app.get('/', async (c: Context) => {
 
     // Software info
     software: {
-      name: 'rox',
-      version: process.env.npm_package_version || '0.1.0',
-      repository: 'https://github.com/Love-rox/rox',
+      name: "rox",
+      version: process.env.npm_package_version || "0.1.0",
+      repository: "https://github.com/Love-rox/rox",
     },
   });
 });
@@ -76,8 +76,8 @@ app.get('/', async (c: Context) => {
  * Returns only theme settings for CSS customization.
  * This is a lightweight endpoint for frontend theming.
  */
-app.get('/theme', async (c: Context) => {
-  const instanceSettingsRepository = c.get('instanceSettingsRepository');
+app.get("/theme", async (c: Context) => {
+  const instanceSettingsRepository = c.get("instanceSettingsRepository");
   const instanceSettingsService = new InstanceSettingsService(instanceSettingsRepository);
 
   const theme = await instanceSettingsService.getThemeSettings();
