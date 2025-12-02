@@ -47,9 +47,13 @@ export function Layout({ children, showSidebar = true, maxWidth = "2xl" }: Layou
       {shouldShowSidebar && <Sidebar />}
 
       {/* Main Content Area */}
-      <main className={`${shouldShowSidebar ? "ml-64" : ""} min-h-screen`}>
+      <main
+        className={`min-h-screen ${
+          shouldShowSidebar ? "lg:ml-64 pt-16 lg:pt-0" : ""
+        }`}
+      >
         {/* Page Content */}
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
           <div className={`${maxWidthClass} mx-auto rox-content`}>{children}</div>
         </div>
       </main>

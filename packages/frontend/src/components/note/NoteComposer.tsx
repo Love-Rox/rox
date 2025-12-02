@@ -510,8 +510,8 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
             {error && <InlineError message={error} />}
 
             {/* Toolbar */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-2">
+              <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
                 {/* File upload button */}
                 <button
                   onClick={() => fileInputRef.current?.click()}
@@ -606,7 +606,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
 
                   {/* Drafts dropdown */}
                   {showDraftList && (
-                    <div className="absolute bottom-full left-0 mb-2 w-72 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden z-50">
+                    <div className="absolute bottom-full left-0 sm:left-auto sm:right-0 mb-2 w-[calc(100vw-2rem)] sm:w-72 max-w-72 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden z-50">
                       <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 dark:border-gray-700">
                         <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           <Trans>Drafts</Trans> ({drafts.length})
@@ -692,7 +692,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 </Select>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 {/* Character counter with circular progress */}
                 <div className="relative flex items-center justify-center w-8 h-8">
                   {/* Circular progress background */}

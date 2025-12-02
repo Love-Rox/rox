@@ -413,7 +413,7 @@ function NoteCardComponent({
 
         {/* Interaction Buttons */}
         <div
-          className="flex items-center gap-2 border-t border-gray-100 dark:border-gray-700 pt-3"
+          className="flex items-center gap-1 sm:gap-2 flex-wrap border-t border-gray-100 dark:border-gray-700 pt-3"
           role="group"
           aria-label="Post actions"
         >
@@ -445,7 +445,7 @@ function NoteCardComponent({
           />
           {localReactions && Object.keys(localReactions).length > 0 && (
             <div
-              className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400"
+              className="flex items-center gap-1 flex-wrap text-sm text-gray-600 dark:text-gray-400"
               role="group"
               aria-label="Reactions"
             >

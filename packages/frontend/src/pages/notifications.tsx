@@ -167,36 +167,38 @@ export default function NotificationsPage() {
     <Layout>
       <div className="max-w-2xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Bell className="w-8 h-8 text-(--text-primary)" />
-              <h1 className="text-2xl font-bold text-(--text-primary)">
+        <div className="mb-4 sm:mb-6">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Bell className="w-6 h-6 sm:w-8 sm:h-8 text-(--text-primary)" />
+              <h1 className="text-xl sm:text-2xl font-bold text-(--text-primary)">
                 <Trans>Notifications</Trans>
               </h1>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               {hasUnread && (
                 <button
                   type="button"
                   onClick={markAllAsRead}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-secondary) rounded-lg transition-colors"
+                  className="flex items-center gap-1 px-2 sm:px-3 py-1.5 text-sm text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-secondary) rounded-lg transition-colors"
+                  title="Mark all as read"
                 >
                   <CheckCheck className="w-4 h-4" />
-                  <Trans>Mark all as read</Trans>
+                  <span className="hidden sm:inline"><Trans>Mark all as read</Trans></span>
                 </button>
               )}
               <button
                 type="button"
                 onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                className={`flex items-center gap-1 px-2 sm:px-3 py-1.5 text-sm rounded-lg transition-colors ${
                   hasActiveFilters
                     ? "bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300"
                     : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-secondary)"
                 }`}
+                title="Filter"
               >
                 <Filter className="w-4 h-4" />
-                <Trans>Filter</Trans>
+                <span className="hidden sm:inline"><Trans>Filter</Trans></span>
               </button>
             </div>
           </div>

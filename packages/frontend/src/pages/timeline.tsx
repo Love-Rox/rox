@@ -76,22 +76,22 @@ export default function TimelinePage() {
 
   return (
     <Layout>
-      <div className="mb-6">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100">
           <Trans>Timeline</Trans>
         </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
+        <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">
           <Trans>Recent posts from your community</Trans>
         </p>
       </div>
 
       {/* Timeline Type Tabs */}
       <div
-        className="mb-6 border-b border-gray-200 dark:border-gray-700"
+        className="mb-4 sm:mb-6 border-b border-gray-200 dark:border-gray-700"
         role="tablist"
         aria-label="Timeline types"
       >
-        <div className="flex gap-6">
+        <div className="flex gap-3 sm:gap-6">
           <button
             onClick={() => setTimelineType("local")}
             className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${

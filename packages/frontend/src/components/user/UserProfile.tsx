@@ -326,7 +326,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
           {/* Banner */}
           {user.bannerUrl && (
-            <div className="h-48 bg-linear-to-r from-primary-500 to-primary-600">
+            <div className="h-32 sm:h-48 bg-linear-to-r from-primary-500 to-primary-600">
               <img
                 src={getProxiedImageUrl(user.bannerUrl) || ""}
                 alt=""
@@ -335,15 +335,15 @@ export function UserProfile({ username, host }: UserProfileProps) {
             </div>
           )}
           {!user.bannerUrl && (
-            <div className="h-48 bg-linear-to-r from-primary-500 to-primary-600" />
+            <div className="h-32 sm:h-48 bg-linear-to-r from-primary-500 to-primary-600" />
           )}
 
           {/* Profile Info */}
-          <div className="p-6">
-            <div className="flex items-start gap-4">
+          <div className="p-4 sm:p-6">
+            <div className="flex items-start gap-3 sm:gap-4">
               {/* Avatar */}
-              <div className="-mt-16">
-                <div className="w-24 h-24 rounded-full border-4 border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-700 overflow-hidden">
+              <div className="-mt-12 sm:-mt-16">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-700 overflow-hidden">
                   {user.avatarUrl && (
                     <img
                       src={getProxiedImageUrl(user.avatarUrl) || ""}
@@ -360,7 +360,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex-1 flex justify-end gap-2">
+              <div className="flex-1 flex justify-end gap-1 sm:gap-2 flex-wrap">
                 {isOwnProfile ? (
                   <Button
                     variant="secondary"
@@ -412,7 +412,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
             {/* User Info */}
             <div className="mt-4">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
                   {user.displayName ? (
                     <MfmRenderer text={user.displayName} plain customEmojis={profileEmojiMap} />
                   ) : (
@@ -442,7 +442,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
             )}
 
             {/* Stats */}
-            <div className="mt-4 flex items-center gap-6 text-sm">
+            <div className="mt-4 flex items-center gap-4 sm:gap-6 text-sm flex-wrap">
               <div>
                 <span className="font-bold text-gray-900 dark:text-gray-100">
                   {user.notesCount ?? 0}
