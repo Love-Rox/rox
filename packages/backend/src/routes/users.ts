@@ -9,7 +9,7 @@
 import { Hono } from "hono";
 import { AuthService } from "../services/AuthService.js";
 import { UserService } from "../services/UserService.js";
-import { requireAuth } from "../middleware/auth.js";
+import { requireAuth, optionalAuth } from "../middleware/auth.js";
 
 const app = new Hono();
 
@@ -261,8 +261,9 @@ app.get("/search", async (c) => {
  * - 400: userId or username is required
  * - 404: User not found
  */
-app.get("/show", async (c) => {
+app.get("/show", optionalAuth(), async (c) => {
   const userRepository = c.get("userRepository");
+  const followRepository = c.get("followRepository");
   const userId = c.req.query("userId");
   const username = c.req.query("username");
 
@@ -284,7 +285,14 @@ app.get("/show", async (c) => {
   // パスワードハッシュとメールアドレスを除外
   const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
 
-  return c.json(publicUser);
+  // Check if current user is following this user (if authenticated)
+  let isFollowed = false;
+  const currentUser = c.get("user");
+  if (currentUser && currentUser.id !== user.id) {
+    isFollowed = await followRepository.exists(currentUser.id, user.id);
+  }
+
+  return c.json({ ...publicUser, isFollowed });
 });
 
 /**
@@ -318,8 +326,9 @@ app.get("/show", async (c) => {
  * - 404: User not found on remote server
  * - 502: Failed to fetch remote user (network error, invalid response)
  */
-app.get("/resolve", async (c) => {
+app.get("/resolve", optionalAuth(), async (c) => {
   const userRepository = c.get("userRepository");
+  const followRepository = c.get("followRepository");
   const remoteActorService = c.get("remoteActorService");
   const acct = c.req.query("acct");
 
@@ -346,7 +355,14 @@ app.get("/resolve", async (c) => {
     // パスワードハッシュとメールアドレスを除外
     const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
 
-    return c.json(publicUser);
+    // Check if current user is following this user (if authenticated)
+    let isFollowed = false;
+    const currentUser = c.get("user");
+    if (currentUser && currentUser.id !== user.id) {
+      isFollowed = await followRepository.exists(currentUser.id, user.id);
+    }
+
+    return c.json({ ...publicUser, isFollowed });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to resolve user";
 

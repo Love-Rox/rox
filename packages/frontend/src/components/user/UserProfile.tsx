@@ -130,7 +130,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
     loadCurrentUser();
   }, [token, currentUser, setCurrentUser]);
 
-  // Load user data
+  // Load user data (after token is set)
   useEffect(() => {
     const loadUser = async () => {
       try {
@@ -146,8 +146,10 @@ export function UserProfile({ username, host }: UserProfileProps) {
       }
     };
 
-    loadUser();
-  }, [username, host]);
+    // Wait a tick for token to be set in apiClient
+    const timeoutId = setTimeout(loadUser, 0);
+    return () => clearTimeout(timeoutId);
+  }, [username, host, token]);
 
   // Load user's notes
   useEffect(() => {
@@ -243,7 +245,17 @@ export function UserProfile({ username, host }: UserProfileProps) {
         );
       }
     } catch (err) {
-      console.error("Failed to toggle follow:", err);
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      console.error("Failed to toggle follow:", errorMessage);
+
+      // If "Already following" error, sync the state
+      if (errorMessage.includes("Already following")) {
+        setIsFollowing(true);
+      }
+      // If "Not following" error on unfollow, sync the state
+      if (errorMessage.includes("Not following") || errorMessage.includes("not found")) {
+        setIsFollowing(false);
+      }
     } finally {
       setFollowLoading(false);
     }
