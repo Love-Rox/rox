@@ -270,7 +270,7 @@ function NoteCardComponent({
                   href={`https://${note.user.host}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs rounded hover:opacity-80 transition-opacity truncate max-w-[160px]"
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs rounded hover:opacity-80 transition-opacity truncate max-w-40"
                   style={{
                     backgroundColor: remoteInstance?.themeColor
                       ? `${remoteInstance.themeColor}20`
