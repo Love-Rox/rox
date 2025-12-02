@@ -309,6 +309,12 @@ notifications.get("/stream", async (c: Context) => {
 
   return streamSSE(c, async (stream) => {
     let eventId = 0;
+    let running = true;
+
+    // Clean up on disconnect
+    stream.onAbort(() => {
+      running = false;
+    });
 
     // Send initial connection event
     await stream.writeSSE({
@@ -317,23 +323,38 @@ notifications.get("/stream", async (c: Context) => {
       id: String(eventId++),
     });
 
+    // Queue for notifications received from subscription
+    const notificationQueue: Array<{ type: string; data: unknown }> = [];
+
     // Subscribe to notification events for this user
-    const unsubscribe = streamService.subscribe(user.id, async (event) => {
-      try {
-        await stream.writeSSE({
-          event: event.type,
-          data: JSON.stringify(event.data),
-          id: String(eventId++),
-        });
-      } catch {
-        // Connection closed, will be cleaned up
-      }
+    const unsubscribe = streamService.subscribe(user.id, (event) => {
+      notificationQueue.push(event);
     });
 
-    // Keep connection alive with periodic heartbeats
-    // Note: Shorter interval (15s) helps maintain connection through proxies
-    // that may timeout idle connections
-    const heartbeatInterval = setInterval(async () => {
+    // Main loop: send heartbeats and process notification queue
+    // Using while loop pattern as recommended by Hono docs for proper stream maintenance
+    while (running) {
+      // Process any pending notifications
+      while (notificationQueue.length > 0) {
+        const event = notificationQueue.shift();
+        if (event) {
+          try {
+            await stream.writeSSE({
+              event: event.type,
+              data: JSON.stringify(event.data),
+              id: String(eventId++),
+            });
+          } catch {
+            // Connection closed
+            running = false;
+            break;
+          }
+        }
+      }
+
+      if (!running) break;
+
+      // Send heartbeat
       try {
         await stream.writeSSE({
           event: "heartbeat",
@@ -342,18 +363,16 @@ notifications.get("/stream", async (c: Context) => {
         });
       } catch {
         // Connection closed
-        clearInterval(heartbeatInterval);
+        running = false;
+        break;
       }
-    }, 15000); // Send heartbeat every 15 seconds
 
-    // Clean up on disconnect
-    stream.onAbort(() => {
-      unsubscribe();
-      clearInterval(heartbeatInterval);
-    });
+      // Wait before next heartbeat (15 seconds)
+      await stream.sleep(15000);
+    }
 
-    // Keep the stream open
-    await new Promise(() => {});
+    // Cleanup
+    unsubscribe();
   });
 });
 
