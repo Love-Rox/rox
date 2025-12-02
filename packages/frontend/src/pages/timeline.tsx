@@ -14,7 +14,7 @@ import { apiClient } from "../lib/api/client";
  * Timeline page component
  * Authenticated users only - shows timeline with note composer
  */
-type TimelineType = "local" | "social" | "home";
+type TimelineType = "local" | "social" | "global" | "home";
 
 const TIMELINE_TYPE_STORAGE_KEY = "rox:timelineType";
 
@@ -24,7 +24,7 @@ const TIMELINE_TYPE_STORAGE_KEY = "rox:timelineType";
 function getSavedTimelineType(): TimelineType {
   if (typeof window === "undefined") return "local";
   const saved = localStorage.getItem(TIMELINE_TYPE_STORAGE_KEY);
-  if (saved === "local" || saved === "social" || saved === "home") {
+  if (saved === "local" || saved === "social" || saved === "global" || saved === "home") {
     return saved;
   }
   return "local";
@@ -139,6 +139,20 @@ export default function TimelinePage() {
             id="tab-social"
           >
             <Trans>Social</Trans>
+          </button>
+          <button
+            onClick={() => handleTimelineTypeChange("global")}
+            className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+              timelineType === "global"
+                ? "border-primary-500 text-primary-600 dark:text-primary-400"
+                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500"
+            }`}
+            role="tab"
+            aria-selected={timelineType === "global"}
+            aria-controls="timeline-content"
+            id="tab-global"
+          >
+            <Trans>Global</Trans>
           </button>
           <button
             onClick={() => handleTimelineTypeChange("home")}

@@ -420,6 +420,50 @@ export class NoteService {
   }
 
   /**
+   * Get global timeline
+   *
+   * Returns all public posts from local and remote users.
+   *
+   * @param options - Pagination options
+   * @returns List of Note records
+   *
+   * @example
+   * ```typescript
+   * const notes = await noteService.getGlobalTimeline({
+   *   limit: 20,
+   * });
+   * ```
+   */
+  async getGlobalTimeline(options: TimelineOptions = {}): Promise<Note[]> {
+    const limit = this.normalizeLimit(options.limit);
+
+    // Cache only the first page (no cursor) for performance
+    const isFirstPage = !options.sinceId && !options.untilId;
+    const cacheKey = `${CachePrefix.TIMELINE_GLOBAL}:${limit}`;
+
+    // Try cache for first page
+    if (isFirstPage && this.cacheService?.isAvailable()) {
+      const cached = await this.cacheService.get<Note[]>(cacheKey);
+      if (cached) {
+        return cached;
+      }
+    }
+
+    const notes = await this.noteRepository.getGlobalTimeline({
+      limit,
+      sinceId: options.sinceId,
+      untilId: options.untilId,
+    });
+
+    // Cache first page results
+    if (isFirstPage && this.cacheService?.isAvailable()) {
+      await this.cacheService.set(cacheKey, notes, { ttl: CacheTTL.SHORT });
+    }
+
+    return notes;
+  }
+
+  /**
    * Get user timeline
    *
    * Returns posts from a specific user.

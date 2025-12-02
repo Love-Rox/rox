@@ -232,7 +232,7 @@ msgstr "タイムラインに戻る"
 msgid "Banner URL"
 msgstr "バナーURL"
 
-#: src/components/timeline/Timeline.tsx:211
+#: src/components/timeline/Timeline.tsx:215
 msgid "Be the first to post something!"
 msgstr "最初の投稿をしてみましょう！"
 
@@ -292,7 +292,7 @@ msgid "Browser tab icon (recommended: 32x32 PNG or ICO)"
 msgstr "ブラウザタブのアイコン（推奨: 32x32 PNG または ICO）"
 
 #: src/components/settings/StorageSection.tsx:222
-#: src/pages/admin/storage.tsx:329
+#: src/pages/admin/storage.tsx:331
 msgid "By File Type"
 msgstr "ファイルタイプ別"
 
@@ -323,7 +323,7 @@ msgstr "ユーザーを凍結可能"
 #: src/components/report/ReportDialog.tsx:170
 #: src/pages/admin/emojis.tsx:567
 #: src/pages/admin/roles.tsx:568
-#: src/pages/admin/storage.tsx:533
+#: src/pages/admin/storage.tsx:535
 #: src/pages/mod/instances.tsx:389
 #: src/pages/mod/users.tsx:568
 #: src/pages/settings.tsx:275
@@ -688,7 +688,7 @@ msgstr "ユーザー名を入力（例: alice または alice@remote.server）"
 msgid "Enter your invitation code to register"
 msgstr "登録には招待コードを入力してください"
 
-#: src/components/timeline/Timeline.tsx:151
+#: src/components/timeline/Timeline.tsx:155
 msgid "Error loading timeline"
 msgstr "タイムラインの読み込みに失敗しました"
 
@@ -754,7 +754,7 @@ msgid "Failed to delete emoji"
 msgstr "絵文字の削除に失敗しました"
 
 #: src/components/settings/StorageSection.tsx:132
-#: src/pages/admin/storage.tsx:213
+#: src/pages/admin/storage.tsx:215
 msgid "Failed to delete file"
 msgstr "ファイルの削除に失敗しました"
 
@@ -796,11 +796,11 @@ msgstr "報告の詳細の読み込みに失敗しました"
 msgid "Failed to load storage data"
 msgstr "ストレージデータの読み込みに失敗しました"
 
-#: src/pages/admin/storage.tsx:156
+#: src/pages/admin/storage.tsx:158
 msgid "Failed to load storage statistics"
 msgstr "ストレージ統計の読み込みに失敗しました"
 
-#: src/pages/admin/storage.tsx:178
+#: src/pages/admin/storage.tsx:180
 msgid "Failed to load user storage details"
 msgstr "ユーザーストレージ詳細の読み込みに失敗しました"
 
@@ -854,7 +854,7 @@ msgstr "絵文字の更新に失敗しました"
 #~ msgid "Failed to update follow status"
 #~ msgstr "フォロー状態の更新に失敗しました"
 
-#: src/pages/admin/storage.tsx:243
+#: src/pages/admin/storage.tsx:245
 msgid "Failed to update quota"
 msgstr "クォータの更新に失敗しました"
 
@@ -880,7 +880,7 @@ msgid "Federated"
 msgstr "分散型"
 
 #: src/components/settings/StorageSection.tsx:127
-#: src/pages/admin/storage.tsx:208
+#: src/pages/admin/storage.tsx:210
 msgid "File deleted"
 msgstr "ファイルを削除しました"
 
@@ -949,13 +949,17 @@ msgstr "リモートサーバーで見つかりました"
 msgid "Get Started"
 msgstr "始める"
 
+#: src/pages/timeline.tsx:155
+msgid "Global"
+msgstr "グローバル"
+
 #: src/components/LandingPage.tsx:129
 msgid "Go to Timeline"
 msgstr "タイムラインへ"
 
 #: src/components/layout/Sidebar.tsx:64
 #: src/components/note/NoteComposer.tsx:355
-#: src/pages/timeline.tsx:155
+#: src/pages/timeline.tsx:169
 msgid "Home"
 msgstr "ホーム"
 
@@ -1016,7 +1020,7 @@ msgstr "インスタンス情報"
 msgid "Instance Name"
 msgstr "インスタンス名"
 
-#: src/pages/admin/storage.tsx:286
+#: src/pages/admin/storage.tsx:288
 msgid "Instance Overview"
 msgstr "インスタンス概要"
 
@@ -1112,16 +1116,16 @@ msgstr "軽量"
 msgid "Line Height"
 msgstr "行の高さ"
 
-#: src/components/timeline/Timeline.tsx:220
+#: src/components/timeline/Timeline.tsx:224
 #: src/components/user/UserProfile.tsx:518
 msgid "Load more"
 msgstr "もっと読み込む"
 
-#: src/components/timeline/Timeline.tsx:179
+#: src/components/timeline/Timeline.tsx:183
 msgid "Loading more posts..."
 msgstr "投稿を読み込み中..."
 
-#: src/components/timeline/Timeline.tsx:164
+#: src/components/timeline/Timeline.tsx:168
 msgid "Loading posts..."
 msgstr "投稿を読み込み中..."
 
@@ -1161,7 +1165,7 @@ msgstr "管理者メールアドレス"
 msgid "Manage blocked instances"
 msgstr "ブロック済みインスタンスを管理"
 
-#: src/pages/admin/storage.tsx:273
+#: src/pages/admin/storage.tsx:275
 msgid "Manage instance storage and user quotas"
 msgstr "インスタンスのストレージとユーザークォータを管理"
 
@@ -1182,7 +1186,7 @@ msgstr "すべて既読にする"
 msgid "Max Uses"
 msgstr "最大使用回数"
 
-#: src/pages/admin/storage.tsx:516
+#: src/pages/admin/storage.tsx:518
 msgid "MB (-1 for unlimited)"
 msgstr "MB（無制限の場合は-1）"
 
@@ -1306,7 +1310,7 @@ msgstr "招待コードがまだありません"
 msgid "No matching notifications"
 msgstr "一致する通知がありません"
 
-#: src/components/timeline/Timeline.tsx:208
+#: src/components/timeline/Timeline.tsx:212
 msgid "No notes yet"
 msgstr "まだ投稿がありません"
 
@@ -1336,7 +1340,7 @@ msgstr "報告が見つかりません"
 msgid "No roles yet"
 msgstr "ロールがまだありません"
 
-#: src/pages/admin/storage.tsx:386
+#: src/pages/admin/storage.tsx:388
 msgid "No system files"
 msgstr "システムファイルはありません"
 
@@ -1346,7 +1350,7 @@ msgstr "システムファイルはありません"
 msgid "No text content"
 msgstr "テキストコンテンツなし"
 
-#: src/pages/admin/storage.tsx:485
+#: src/pages/admin/storage.tsx:487
 #: src/pages/search.tsx:437
 msgid "No users found"
 msgstr "ユーザーが見つかりませんでした"
@@ -1557,12 +1561,12 @@ msgstr "プッシュ通知が無効"
 msgid "Push notifications enabled"
 msgstr "プッシュ通知が有効"
 
-#: src/pages/admin/storage.tsx:238
+#: src/pages/admin/storage.tsx:240
 msgid "Quota updated"
 msgstr "クォータを更新しました"
 
 #. placeholder {0}: selectedUser.quotaMb === -1 ? "Unlimited" : `${selectedUser.quotaMb} MB`
-#: src/pages/admin/storage.tsx:547
+#: src/pages/admin/storage.tsx:549
 msgid "Quota: {0}"
 msgstr "クォータ: {0}"
 
@@ -1867,9 +1871,9 @@ msgstr "ロールを更新しました"
 msgid "Roles"
 msgstr "ロール"
 
-#: src/pages/admin/storage.tsx:523
+#: src/pages/admin/storage.tsx:525
 msgid "Save"
-msgstr ""
+msgstr "保存"
 
 #: src/pages/settings.tsx:263
 msgid "Save Changes"
@@ -1932,7 +1936,7 @@ msgstr "検索対象:"
 msgid "Search User"
 msgstr "ユーザーを検索"
 
-#: src/pages/admin/storage.tsx:451
+#: src/pages/admin/storage.tsx:453
 msgid "Search users..."
 msgstr "ユーザーを検索..."
 
@@ -2036,7 +2040,7 @@ msgstr "標準絵文字"
 msgid "Storage"
 msgstr "ストレージ"
 
-#: src/pages/admin/storage.tsx:270
+#: src/pages/admin/storage.tsx:272
 msgid "Storage Management"
 msgstr "ストレージ管理"
 
@@ -2065,8 +2069,8 @@ msgstr "停止中"
 msgid "System"
 msgstr "システム"
 
-#: src/pages/admin/storage.tsx:317
-#: src/pages/admin/storage.tsx:370
+#: src/pages/admin/storage.tsx:319
+#: src/pages/admin/storage.tsx:372
 msgid "System Files"
 msgstr "システムファイル"
 
@@ -2160,7 +2164,7 @@ msgstr "合計アクション数"
 msgid "Total Codes"
 msgstr "コード総数"
 
-#: src/pages/admin/storage.tsx:293
+#: src/pages/admin/storage.tsx:295
 msgid "Total Files"
 msgstr "総ファイル数"
 
@@ -2173,7 +2177,7 @@ msgstr "報告総数"
 msgid "Total Roles"
 msgstr "ロール総数"
 
-#: src/pages/admin/storage.tsx:301
+#: src/pages/admin/storage.tsx:303
 msgid "Total Size"
 msgstr "総サイズ"
 
@@ -2276,7 +2280,7 @@ msgstr "ユーザーが見つかりません"
 msgid "User Report"
 msgstr "ユーザーの報告"
 
-#: src/pages/admin/storage.tsx:440
+#: src/pages/admin/storage.tsx:442
 msgid "User Storage"
 msgstr "ユーザーストレージ"
 
@@ -2311,7 +2315,7 @@ msgstr "ユーザー"
 msgid "Users can still override this with their own preference"
 msgstr "ユーザーは自分の設定で上書きできます"
 
-#: src/pages/admin/storage.tsx:309
+#: src/pages/admin/storage.tsx:311
 msgid "Users with Files"
 msgstr "ファイルを持つユーザー"
 
@@ -2433,7 +2437,7 @@ msgstr "すべての通知を確認しました！"
 msgid "You've reached the end"
 msgstr "最後まで到達しました"
 
-#: src/components/timeline/Timeline.tsx:194
+#: src/components/timeline/Timeline.tsx:198
 msgid "You've reached the end of the timeline"
 msgstr "タイムラインの最後に到達しました"
 

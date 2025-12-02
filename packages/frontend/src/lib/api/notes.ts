@@ -54,6 +54,22 @@ export class NotesApi {
   }
 
   /**
+   * Fetch global timeline (all public posts from local and remote users)
+   *
+   * @param options - Timeline fetch options
+   * @returns Array of notes
+   */
+  async getGlobalTimeline(options: TimelineOptions = {}): Promise<Note[]> {
+    const params = new URLSearchParams();
+    if (options.limit) params.set("limit", options.limit.toString());
+    if (options.untilId) params.set("untilId", options.untilId);
+    if (options.sinceId) params.set("sinceId", options.sinceId);
+
+    const query = params.toString();
+    return apiClient.get<Note[]>(`/api/notes/global-timeline${query ? `?${query}` : ""}`);
+  }
+
+  /**
    * Fetch home timeline (following only)
    *
    * @param options - Timeline fetch options

@@ -23,15 +23,15 @@ import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigation";
  * Props for the Timeline component
  */
 export interface TimelineProps {
-  /** Timeline type: 'local' | 'social' | 'home' */
-  type?: "local" | "social" | "home";
+  /** Timeline type: 'local' | 'social' | 'global' | 'home' */
+  type?: "local" | "social" | "global" | "home";
 }
 
 /**
  * Timeline component for displaying a feed of notes
  * Supports infinite scroll pagination and real-time updates
  *
- * @param type - Timeline type (local/social/home)
+ * @param type - Timeline type (local/social/global/home)
  */
 export function Timeline({ type = "local" }: TimelineProps) {
   const [notes, setNotes] = useAtom(timelineNotesAtom);
@@ -60,7 +60,9 @@ export function Timeline({ type = "local" }: TimelineProps) {
             ? notesApi.getHomeTimeline
             : type === "social"
               ? notesApi.getSocialTimeline
-              : notesApi.getLocalTimeline;
+              : type === "global"
+                ? notesApi.getGlobalTimeline
+                : notesApi.getLocalTimeline;
 
         const newNotes = await fetchFunction({ limit: 20 });
         setNotes(newNotes);
@@ -95,7 +97,9 @@ export function Timeline({ type = "local" }: TimelineProps) {
           ? notesApi.getHomeTimeline
           : type === "social"
             ? notesApi.getSocialTimeline
-            : notesApi.getLocalTimeline;
+            : type === "global"
+              ? notesApi.getGlobalTimeline
+              : notesApi.getLocalTimeline;
 
       const newNotes = await fetchFunction({
         limit: 20,

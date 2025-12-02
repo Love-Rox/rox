@@ -232,7 +232,7 @@ msgstr "Back to timeline"
 msgid "Banner URL"
 msgstr "Banner URL"
 
-#: src/components/timeline/Timeline.tsx:211
+#: src/components/timeline/Timeline.tsx:215
 msgid "Be the first to post something!"
 msgstr "Be the first to post something!"
 
@@ -292,7 +292,7 @@ msgid "Browser tab icon (recommended: 32x32 PNG or ICO)"
 msgstr "Browser tab icon (recommended: 32x32 PNG or ICO)"
 
 #: src/components/settings/StorageSection.tsx:222
-#: src/pages/admin/storage.tsx:329
+#: src/pages/admin/storage.tsx:331
 msgid "By File Type"
 msgstr "By File Type"
 
@@ -323,7 +323,7 @@ msgstr "Can suspend users"
 #: src/components/report/ReportDialog.tsx:170
 #: src/pages/admin/emojis.tsx:567
 #: src/pages/admin/roles.tsx:568
-#: src/pages/admin/storage.tsx:533
+#: src/pages/admin/storage.tsx:535
 #: src/pages/mod/instances.tsx:389
 #: src/pages/mod/users.tsx:568
 #: src/pages/settings.tsx:275
@@ -688,7 +688,7 @@ msgstr "Enter username (e.g., alice or alice@remote.server)"
 msgid "Enter your invitation code to register"
 msgstr "Enter your invitation code to register"
 
-#: src/components/timeline/Timeline.tsx:151
+#: src/components/timeline/Timeline.tsx:155
 msgid "Error loading timeline"
 msgstr "Error loading timeline"
 
@@ -754,7 +754,7 @@ msgid "Failed to delete emoji"
 msgstr "Failed to delete emoji"
 
 #: src/components/settings/StorageSection.tsx:132
-#: src/pages/admin/storage.tsx:213
+#: src/pages/admin/storage.tsx:215
 msgid "Failed to delete file"
 msgstr "Failed to delete file"
 
@@ -796,11 +796,11 @@ msgstr "Failed to load report details"
 msgid "Failed to load storage data"
 msgstr "Failed to load storage data"
 
-#: src/pages/admin/storage.tsx:156
+#: src/pages/admin/storage.tsx:158
 msgid "Failed to load storage statistics"
 msgstr "Failed to load storage statistics"
 
-#: src/pages/admin/storage.tsx:178
+#: src/pages/admin/storage.tsx:180
 msgid "Failed to load user storage details"
 msgstr "Failed to load user storage details"
 
@@ -854,7 +854,7 @@ msgstr "Failed to update emoji"
 #~ msgid "Failed to update follow status"
 #~ msgstr "Failed to update follow status"
 
-#: src/pages/admin/storage.tsx:243
+#: src/pages/admin/storage.tsx:245
 msgid "Failed to update quota"
 msgstr "Failed to update quota"
 
@@ -880,7 +880,7 @@ msgid "Federated"
 msgstr "Federated"
 
 #: src/components/settings/StorageSection.tsx:127
-#: src/pages/admin/storage.tsx:208
+#: src/pages/admin/storage.tsx:210
 msgid "File deleted"
 msgstr "File deleted"
 
@@ -949,13 +949,17 @@ msgstr "Found on remote server"
 msgid "Get Started"
 msgstr "Get Started"
 
+#: src/pages/timeline.tsx:155
+msgid "Global"
+msgstr "Global"
+
 #: src/components/LandingPage.tsx:129
 msgid "Go to Timeline"
 msgstr "Go to Timeline"
 
 #: src/components/layout/Sidebar.tsx:64
 #: src/components/note/NoteComposer.tsx:355
-#: src/pages/timeline.tsx:155
+#: src/pages/timeline.tsx:169
 msgid "Home"
 msgstr "Home"
 
@@ -1016,7 +1020,7 @@ msgstr "Instance Information"
 msgid "Instance Name"
 msgstr "Instance Name"
 
-#: src/pages/admin/storage.tsx:286
+#: src/pages/admin/storage.tsx:288
 msgid "Instance Overview"
 msgstr "Instance Overview"
 
@@ -1112,16 +1116,16 @@ msgstr "Lightweight"
 msgid "Line Height"
 msgstr "Line Height"
 
-#: src/components/timeline/Timeline.tsx:220
+#: src/components/timeline/Timeline.tsx:224
 #: src/components/user/UserProfile.tsx:518
 msgid "Load more"
 msgstr "Load more"
 
-#: src/components/timeline/Timeline.tsx:179
+#: src/components/timeline/Timeline.tsx:183
 msgid "Loading more posts..."
 msgstr "Loading more posts..."
 
-#: src/components/timeline/Timeline.tsx:164
+#: src/components/timeline/Timeline.tsx:168
 msgid "Loading posts..."
 msgstr "Loading posts..."
 
@@ -1161,7 +1165,7 @@ msgstr "Maintainer Email"
 msgid "Manage blocked instances"
 msgstr "Manage blocked instances"
 
-#: src/pages/admin/storage.tsx:273
+#: src/pages/admin/storage.tsx:275
 msgid "Manage instance storage and user quotas"
 msgstr "Manage instance storage and user quotas"
 
@@ -1182,7 +1186,7 @@ msgstr "Mark all as read"
 msgid "Max Uses"
 msgstr "Max Uses"
 
-#: src/pages/admin/storage.tsx:516
+#: src/pages/admin/storage.tsx:518
 msgid "MB (-1 for unlimited)"
 msgstr "MB (-1 for unlimited)"
 
@@ -1306,7 +1310,7 @@ msgstr "No invitation codes yet"
 msgid "No matching notifications"
 msgstr "No matching notifications"
 
-#: src/components/timeline/Timeline.tsx:208
+#: src/components/timeline/Timeline.tsx:212
 msgid "No notes yet"
 msgstr "No notes yet"
 
@@ -1336,7 +1340,7 @@ msgstr "No reports found"
 msgid "No roles yet"
 msgstr "No roles yet"
 
-#: src/pages/admin/storage.tsx:386
+#: src/pages/admin/storage.tsx:388
 msgid "No system files"
 msgstr "No system files"
 
@@ -1346,7 +1350,7 @@ msgstr "No system files"
 msgid "No text content"
 msgstr "No text content"
 
-#: src/pages/admin/storage.tsx:485
+#: src/pages/admin/storage.tsx:487
 #: src/pages/search.tsx:437
 msgid "No users found"
 msgstr "No users found"
@@ -1557,12 +1561,12 @@ msgstr "Push notifications disabled"
 msgid "Push notifications enabled"
 msgstr "Push notifications enabled"
 
-#: src/pages/admin/storage.tsx:238
+#: src/pages/admin/storage.tsx:240
 msgid "Quota updated"
 msgstr "Quota updated"
 
 #. placeholder {0}: selectedUser.quotaMb === -1 ? "Unlimited" : `${selectedUser.quotaMb} MB`
-#: src/pages/admin/storage.tsx:547
+#: src/pages/admin/storage.tsx:549
 msgid "Quota: {0}"
 msgstr "Quota: {0}"
 
@@ -1867,7 +1871,7 @@ msgstr "Role updated"
 msgid "Roles"
 msgstr "Roles"
 
-#: src/pages/admin/storage.tsx:523
+#: src/pages/admin/storage.tsx:525
 msgid "Save"
 msgstr "Save"
 
@@ -1932,7 +1936,7 @@ msgstr "Search in:"
 msgid "Search User"
 msgstr "Search User"
 
-#: src/pages/admin/storage.tsx:451
+#: src/pages/admin/storage.tsx:453
 msgid "Search users..."
 msgstr "Search users..."
 
@@ -2036,7 +2040,7 @@ msgstr "Standard Emojis"
 msgid "Storage"
 msgstr "Storage"
 
-#: src/pages/admin/storage.tsx:270
+#: src/pages/admin/storage.tsx:272
 msgid "Storage Management"
 msgstr "Storage Management"
 
@@ -2065,8 +2069,8 @@ msgstr "Suspended"
 msgid "System"
 msgstr "System"
 
-#: src/pages/admin/storage.tsx:317
-#: src/pages/admin/storage.tsx:370
+#: src/pages/admin/storage.tsx:319
+#: src/pages/admin/storage.tsx:372
 msgid "System Files"
 msgstr "System Files"
 
@@ -2160,7 +2164,7 @@ msgstr "Total Actions"
 msgid "Total Codes"
 msgstr "Total Codes"
 
-#: src/pages/admin/storage.tsx:293
+#: src/pages/admin/storage.tsx:295
 msgid "Total Files"
 msgstr "Total Files"
 
@@ -2173,7 +2177,7 @@ msgstr "Total Reports"
 msgid "Total Roles"
 msgstr "Total Roles"
 
-#: src/pages/admin/storage.tsx:301
+#: src/pages/admin/storage.tsx:303
 msgid "Total Size"
 msgstr "Total Size"
 
@@ -2276,7 +2280,7 @@ msgstr "User not found"
 msgid "User Report"
 msgstr "User Report"
 
-#: src/pages/admin/storage.tsx:440
+#: src/pages/admin/storage.tsx:442
 msgid "User Storage"
 msgstr "User Storage"
 
@@ -2311,7 +2315,7 @@ msgstr "Users"
 msgid "Users can still override this with their own preference"
 msgstr "Users can still override this with their own preference"
 
-#: src/pages/admin/storage.tsx:309
+#: src/pages/admin/storage.tsx:311
 msgid "Users with Files"
 msgstr "Users with Files"
 
@@ -2433,7 +2437,7 @@ msgstr "You're all caught up!"
 msgid "You've reached the end"
 msgstr "You've reached the end"
 
-#: src/components/timeline/Timeline.tsx:194
+#: src/components/timeline/Timeline.tsx:198
 msgid "You've reached the end of the timeline"
 msgstr "You've reached the end of the timeline"
 

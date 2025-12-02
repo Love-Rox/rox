@@ -180,6 +180,47 @@ export class PostgresNoteRepository implements INoteRepository {
     );
   }
 
+  async getGlobalTimeline(options: TimelineOptions): Promise<Note[]> {
+    const { limit = 20, sinceId, untilId } = options;
+
+    // グローバルタイムライン = すべての公開投稿（ローカル + リモート）
+    const conditions = [
+      eq(notes.visibility, "public"), // 公開投稿のみ
+      eq(notes.localOnly, false), // localOnlyでない投稿
+      eq(notes.isDeleted, false), // ソフトデリートされていない
+    ];
+
+    if (sinceId) {
+      conditions.push(gt(notes.id, sinceId));
+    }
+
+    if (untilId) {
+      conditions.push(lt(notes.id, untilId));
+    }
+
+    const results = await this.db
+      .select()
+      .from(notes)
+      .innerJoin(users, eq(notes.userId, users.id))
+      .where(and(...conditions))
+      .orderBy(desc(notes.createdAt))
+      .limit(limit);
+
+    return results.map(
+      (r) =>
+        ({
+          ...r.notes,
+          user: {
+            id: r.users.id,
+            username: r.users.username,
+            displayName: r.users.displayName,
+            avatarUrl: r.users.avatarUrl,
+            host: r.users.host,
+          },
+        }) as Note,
+    );
+  }
+
   async findByUserId(userId: string, options: TimelineOptions): Promise<Note[]> {
     const { limit = 20, sinceId, untilId } = options;
 

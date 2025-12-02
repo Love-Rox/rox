@@ -31,6 +31,7 @@ export const CachePrefix = {
   TIMELINE_LOCAL: "timeline:local",
   TIMELINE_HOME: "timeline:home",
   TIMELINE_SOCIAL: "timeline:social",
+  TIMELINE_GLOBAL: "timeline:global",
   USER_PROFILE: "user:profile",
   USER_BY_USERNAME: "user:username",
   NOTE: "note",
