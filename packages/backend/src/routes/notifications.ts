@@ -331,6 +331,8 @@ notifications.get("/stream", async (c: Context) => {
     });
 
     // Keep connection alive with periodic heartbeats
+    // Note: Shorter interval (15s) helps maintain connection through proxies
+    // that may timeout idle connections
     const heartbeatInterval = setInterval(async () => {
       try {
         await stream.writeSSE({
@@ -342,7 +344,7 @@ notifications.get("/stream", async (c: Context) => {
         // Connection closed
         clearInterval(heartbeatInterval);
       }
-    }, 30000); // Send heartbeat every 30 seconds
+    }, 15000); // Send heartbeat every 15 seconds
 
     // Clean up on disconnect
     stream.onAbort(() => {
