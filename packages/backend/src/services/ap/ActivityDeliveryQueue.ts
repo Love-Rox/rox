@@ -132,6 +132,13 @@ export class ActivityDeliveryQueue {
    * @private
    */
   private async initializeQueue(): Promise<void> {
+    // Check if queue is explicitly disabled via environment variable
+    if (process.env.USE_QUEUE === "false") {
+      console.log("📤 Queue disabled via USE_QUEUE=false, using synchronous delivery");
+      this.useQueue = false;
+      return;
+    }
+
     const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
 
     try {
