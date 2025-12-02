@@ -156,9 +156,11 @@ export class ActivityDeliveryQueue {
 
       console.log("✅ Redis connected, using BullMQ for delivery queue");
 
-      // Initialize queue
+      // Initialize queue with hash tag prefix for Dragonfly/Redis cluster compatibility
+      // The {ap} hash tag ensures all keys are in the same slot
       this.queue = new Queue<DeliveryJobData>("activitypub-delivery", {
         connection: this.redis,
+        prefix: "{ap}",
       });
 
       // Initialize worker
@@ -169,6 +171,7 @@ export class ActivityDeliveryQueue {
         },
         {
           connection: this.redis,
+          prefix: "{ap}",
           concurrency: 10, // Process up to 10 jobs concurrently
         },
       );
