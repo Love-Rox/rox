@@ -41,14 +41,16 @@ import type { DriveFile } from "shared";
 interface InstanceStorageStats {
   totalFiles: number;
   totalSize: number;
-  totalUsers: number;
-  bySource: Record<string, { count: number; size: number }>;
+  totalSizeMB: number;
+  userFiles: { count: number; size: number; sizeMB: number };
+  systemFiles: { count: number; size: number; sizeMB: number };
   byType: Record<string, { count: number; size: number }>;
   topUsers: Array<{
     userId: string;
-    username: string;
-    fileCount: number;
-    totalSize: number;
+    username?: string;
+    count: number;
+    size: number;
+    sizeMB: number;
   }>;
 }
 
@@ -142,13 +144,13 @@ export default function AdminStoragePage() {
 
     try {
       apiClient.setToken(token);
-      const [statsData, systemFilesData] = await Promise.all([
+      const [statsData, systemFilesResponse] = await Promise.all([
         apiClient.get<InstanceStorageStats>("/api/admin/storage/stats"),
-        apiClient.get<DriveFile[]>("/api/admin/storage/system-files"),
+        apiClient.get<{ files: DriveFile[]; total: number }>("/api/admin/storage/system-files"),
       ]);
 
       setStats(statsData);
-      setSystemFiles(systemFilesData);
+      setSystemFiles(systemFilesResponse.files);
     } catch (err: any) {
       console.error("Failed to fetch storage stats:", err);
       addToast({
@@ -259,7 +261,7 @@ export default function AdminStoragePage() {
 
   const filteredTopUsers = stats?.topUsers.filter(
     (u) =>
-      u.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.userId.includes(searchQuery)
   );
 
@@ -309,7 +311,7 @@ export default function AdminStoragePage() {
                   <Trans>Users with Files</Trans>
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  {stats.totalUsers.toLocaleString()}
+                  {stats.topUsers.length.toLocaleString()}
                 </p>
               </div>
               <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -317,7 +319,7 @@ export default function AdminStoragePage() {
                   <Trans>System Files</Trans>
                 </p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  {stats.bySource.system?.count || 0}
+                  {stats.systemFiles.count.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -471,10 +473,10 @@ export default function AdminStoragePage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                      @{user.username}
+                      @{user.username ?? user.userId}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {user.fileCount} files • {formatBytes(user.totalSize)}
+                      {user.count} files • {formatBytes(user.size)}
                     </p>
                   </div>
                 </div>
