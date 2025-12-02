@@ -92,7 +92,7 @@ export interface UserProfileProps {
  * Displays user information, stats, and their notes
  */
 export function UserProfile({ username, host }: UserProfileProps) {
-  const [currentUser] = useAtom(currentUserAtom);
+  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [user, setUser] = useState<User | null>(null);
   const [notes, setNotes] = useState<any[]>([]);
@@ -109,12 +109,26 @@ export function UserProfile({ username, host }: UserProfileProps) {
   // Generate unique ID for custom CSS scoping
   const profileContainerId = useId().replace(/:/g, "-");
 
-  // Set API token
+  // Set API token and load current user session
   useEffect(() => {
     if (token) {
       apiClient.setToken(token);
     }
-  }, [token]);
+
+    // Load current user if not already loaded
+    const loadCurrentUser = async () => {
+      if (token && !currentUser) {
+        try {
+          const response = await apiClient.get<{ user: User }>("/api/auth/session");
+          setCurrentUser(response.user);
+        } catch (err) {
+          console.error("Failed to load current user session:", err);
+        }
+      }
+    };
+
+    loadCurrentUser();
+  }, [token, currentUser, setCurrentUser]);
 
   // Load user data
   useEffect(() => {
