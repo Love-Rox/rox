@@ -6,6 +6,10 @@ import { defineConfig } from "waku/config";
 /**
  * Waku configuration
  * Configures Vite settings for Tailwind CSS v4 (via Vite plugin) and Lingui integration
+ *
+ * NOTE: There's a post-build script (fix-preload) that fixes invalid
+ * `<link rel="preload" as="stylesheet">` to `as="style"` per W3C spec.
+ * See: https://github.com/vercel/next.js/issues/84569
  */
 export default defineConfig({
   /** Vite configuration for all environments */
