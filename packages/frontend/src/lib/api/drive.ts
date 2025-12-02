@@ -3,7 +3,17 @@
  * Provides functions for interacting with the drive/file upload API endpoints
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+/**
+ * Get the API base URL
+ * In browser, uses same origin (proxy handles routing in dev)
+ * In SSR, uses localhost
+ */
+function getApiBase(): string {
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  return "http://localhost:3000";
+}
 
 /**
  * Drive file data structure
@@ -55,7 +65,7 @@ export async function uploadFile(params: UploadFileParams, token: string): Promi
     formData.append("comment", params.comment);
   }
 
-  const response = await fetch(`${API_BASE}/api/drive/files/create`, {
+  const response = await fetch(`${getApiBase()}/api/drive/files/create`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -100,7 +110,7 @@ export async function listFiles(options: ListFilesOptions, token: string): Promi
     params.append("untilId", options.untilId);
   }
 
-  const response = await fetch(`${API_BASE}/api/drive/files?${params}`, {
+  const response = await fetch(`${getApiBase()}/api/drive/files?${params}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -124,7 +134,7 @@ export async function listFiles(options: ListFilesOptions, token: string): Promi
 export async function getFile(fileId: string, token: string): Promise<DriveFile> {
   const params = new URLSearchParams({ fileId });
 
-  const response = await fetch(`${API_BASE}/api/drive/files/show?${params}`, {
+  const response = await fetch(`${getApiBase()}/api/drive/files/show?${params}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -145,7 +155,7 @@ export async function getFile(fileId: string, token: string): Promise<DriveFile>
  * @param token - Authentication token
  */
 export async function deleteFile(fileId: string, token: string): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/drive/files/delete`, {
+  const response = await fetch(`${getApiBase()}/api/drive/files/delete`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -167,7 +177,7 @@ export async function deleteFile(fileId: string, token: string): Promise<void> {
  * @returns Storage usage in bytes and MB
  */
 export async function getStorageUsage(token: string): Promise<{ usage: number; usageMB: number }> {
-  const response = await fetch(`${API_BASE}/api/drive/usage`, {
+  const response = await fetch(`${getApiBase()}/api/drive/usage`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

@@ -3,7 +3,17 @@
  * Provides functions for interacting with the following API endpoints
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+/**
+ * Get the API base URL
+ * In browser, uses same origin (proxy handles routing in dev)
+ * In SSR, uses localhost
+ */
+function getApiBase(): string {
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  return "http://localhost:3000";
+}
 
 /**
  * Follow relationship data structure
@@ -23,7 +33,7 @@ export interface Follow {
  * @returns Created follow relationship
  */
 export async function followUser(userId: string, token: string): Promise<Follow> {
-  const response = await fetch(`${API_BASE}/api/following/create`, {
+  const response = await fetch(`${getApiBase()}/api/following/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -47,7 +57,7 @@ export async function followUser(userId: string, token: string): Promise<Follow>
  * @param token - Authentication token
  */
 export async function unfollowUser(userId: string, token: string): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/following/delete`, {
+  const response = await fetch(`${getApiBase()}/api/following/delete`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -75,7 +85,7 @@ export async function getFollowers(userId: string, limit?: number): Promise<Foll
     params.append("limit", limit.toString());
   }
 
-  const response = await fetch(`${API_BASE}/api/users/followers?${params}`);
+  const response = await fetch(`${getApiBase()}/api/users/followers?${params}`);
 
   if (!response.ok) {
     const error = await response.json();
@@ -98,7 +108,7 @@ export async function getFollowing(userId: string, limit?: number): Promise<Foll
     params.append("limit", limit.toString());
   }
 
-  const response = await fetch(`${API_BASE}/api/users/following?${params}`);
+  const response = await fetch(`${getApiBase()}/api/users/following?${params}`);
 
   if (!response.ok) {
     const error = await response.json();

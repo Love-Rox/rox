@@ -3,7 +3,17 @@
  * Provides functions for interacting with the reaction API endpoints
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+/**
+ * Get the API base URL
+ * In browser, uses same origin (proxy handles routing in dev)
+ * In SSR, uses localhost
+ */
+function getApiBase(): string {
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  return "http://localhost:3000";
+}
 
 /**
  * Reaction data structure
@@ -30,7 +40,7 @@ export async function createReaction(
   reaction: string,
   token: string,
 ): Promise<Reaction> {
-  const response = await fetch(`${API_BASE}/api/notes/reactions/create`, {
+  const response = await fetch(`${getApiBase()}/api/notes/reactions/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -59,7 +69,7 @@ export async function deleteReaction(
   reaction: string,
   token: string,
 ): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/notes/reactions/delete`, {
+  const response = await fetch(`${getApiBase()}/api/notes/reactions/delete`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -87,7 +97,7 @@ export async function getReactions(noteId: string, limit?: number): Promise<Reac
     params.append("limit", limit.toString());
   }
 
-  const response = await fetch(`${API_BASE}/api/notes/reactions?${params}`);
+  const response = await fetch(`${getApiBase()}/api/notes/reactions?${params}`);
 
   if (!response.ok) {
     const error = await response.json();
@@ -105,7 +115,7 @@ export async function getReactions(noteId: string, limit?: number): Promise<Reac
  */
 export async function getReactionCounts(noteId: string): Promise<Record<string, number>> {
   const params = new URLSearchParams({ noteId });
-  const response = await fetch(`${API_BASE}/api/notes/reactions/counts?${params}`);
+  const response = await fetch(`${getApiBase()}/api/notes/reactions/counts?${params}`);
 
   if (!response.ok) {
     const error = await response.json();
@@ -133,7 +143,7 @@ export async function getReactionCountsWithEmojis(
   noteId: string,
 ): Promise<ReactionCountsWithEmojis> {
   const params = new URLSearchParams({ noteId });
-  const response = await fetch(`${API_BASE}/api/notes/reactions/counts-with-emojis?${params}`);
+  const response = await fetch(`${getApiBase()}/api/notes/reactions/counts-with-emojis?${params}`);
 
   if (!response.ok) {
     const error = await response.json();
@@ -152,7 +162,7 @@ export async function getReactionCountsWithEmojis(
  */
 export async function getMyReactions(noteId: string, token: string): Promise<Reaction[]> {
   const params = new URLSearchParams({ noteId });
-  const response = await fetch(`${API_BASE}/api/notes/reactions/my-reactions?${params}`, {
+  const response = await fetch(`${getApiBase()}/api/notes/reactions/my-reactions?${params}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
