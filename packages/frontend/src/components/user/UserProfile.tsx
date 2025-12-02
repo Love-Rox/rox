@@ -262,8 +262,8 @@ export function UserProfile({ username, host }: UserProfileProps) {
     return (
       <Layout>
         <ErrorMessage
-          title={(<Trans>Error loading user profile</Trans>) as unknown as string}
-          message={error || ((<Trans>User not found</Trans>) as unknown as string)}
+          title={<Trans>Error loading user profile</Trans>}
+          message={error || <Trans>User not found</Trans>}
           onRetry={handleRetry}
           variant="error"
         />

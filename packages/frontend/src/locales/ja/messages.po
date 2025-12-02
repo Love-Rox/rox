@@ -184,7 +184,7 @@ msgstr "アカウントを引っ越ししてもよろしいですか？この操
 msgid "Audit Logs"
 msgstr "監査ログ"
 
-#: src/components/note/NoteComposer.tsx:200
+#: src/components/note/NoteComposer.tsx:201
 msgid "Authentication required"
 msgstr "認証が必要です"
 
@@ -491,7 +491,7 @@ msgstr "この警告の理由を説明してください..."
 msgid "Description"
 msgstr "説明"
 
-#: src/components/note/NoteComposer.tsx:282
+#: src/components/note/NoteComposer.tsx:283
 msgid "Direct"
 msgstr "ダイレクト"
 
@@ -499,7 +499,7 @@ msgstr "ダイレクト"
 msgid "Disable"
 msgstr "無効にする"
 
-#: src/components/note/NoteComposer.tsx:338
+#: src/components/note/NoteComposer.tsx:339
 msgid "Discard"
 msgstr "破棄"
 
@@ -516,11 +516,11 @@ msgstr "表示設定"
 msgid "Don't have an account?"
 msgstr "アカウントをお持ちでないですか？"
 
-#: src/components/note/NoteComposer.tsx:127
+#: src/components/note/NoteComposer.tsx:128
 msgid "Draft discarded"
 msgstr "下書きを破棄しました"
 
-#: src/components/note/NoteComposer.tsx:117
+#: src/components/note/NoteComposer.tsx:118
 msgid "Draft restored"
 msgstr "下書きを復元しました"
 
@@ -771,7 +771,7 @@ msgid "Failed to update follow status"
 msgstr "フォロー状態の更新に失敗しました"
 
 #. placeholder {0}: file.name
-#: src/components/note/NoteComposer.tsx:227
+#: src/components/note/NoteComposer.tsx:228
 msgid "Failed to upload {0}"
 msgstr "{0}のアップロードに失敗しました"
 
@@ -821,7 +821,7 @@ msgstr "フォロー"
 msgid "followed you"
 msgstr "があなたをフォローしました"
 
-#: src/components/note/NoteComposer.tsx:281
+#: src/components/note/NoteComposer.tsx:282
 #: src/components/user/UserProfile.tsx:432
 msgid "Followers"
 msgstr "フォロワー"
@@ -859,7 +859,7 @@ msgid "Go to Timeline"
 msgstr "タイムラインへ"
 
 #: src/components/layout/Sidebar.tsx:35
-#: src/components/note/NoteComposer.tsx:280
+#: src/components/note/NoteComposer.tsx:281
 #: src/pages/timeline.tsx:135
 msgid "Home"
 msgstr "ホーム"
@@ -1243,7 +1243,7 @@ msgstr "ノートのモデレーション"
 msgid "Note not found"
 msgstr "ノートが見つかりません"
 
-#: src/components/note/NoteComposer.tsx:259
+#: src/components/note/NoteComposer.tsx:260
 msgid "Note posted successfully"
 msgstr "投稿しました"
 
@@ -1338,7 +1338,7 @@ msgstr "権限"
 msgid "Please enable notifications in your browser settings to receive push notifications."
 msgstr "プッシュ通知を受け取るには、ブラウザの設定で通知を許可してください。"
 
-#: src/components/note/NoteComposer.tsx:190
+#: src/components/note/NoteComposer.tsx:191
 msgid "Please enter text or attach files"
 msgstr "テキストを入力するかファイルを添付してください"
 
@@ -1346,11 +1346,11 @@ msgstr "テキストを入力するかファイルを添付してください"
 msgid "Please log in to update your profile"
 msgstr "プロフィールを更新するにはログインしてください"
 
-#: src/components/note/NoteComposer.tsx:593
+#: src/components/note/NoteComposer.tsx:594
 msgid "Post"
 msgstr "投稿"
 
-#: src/components/note/NoteComposer.tsx:589
+#: src/components/note/NoteComposer.tsx:590
 msgid "Posting..."
 msgstr "投稿中..."
 
@@ -1363,7 +1363,7 @@ msgstr "投稿"
 msgid "Powered by"
 msgstr "Powered by"
 
-#: src/components/note/NoteComposer.tsx:393
+#: src/components/note/NoteComposer.tsx:394
 #: src/components/settings/UISettingsSection.tsx:331
 #: src/pages/admin/emojis.tsx:534
 #: src/pages/admin/settings.tsx:617
@@ -1406,7 +1406,7 @@ msgstr "プロフィールを更新しました"
 msgid "Provide more context about your report..."
 msgstr "報告についての詳細を入力してください..."
 
-#: src/components/note/NoteComposer.tsx:279
+#: src/components/note/NoteComposer.tsx:280
 #: src/pages/admin/roles.tsx:616
 msgid "Public"
 msgstr "公開"
@@ -1559,12 +1559,12 @@ msgstr "があなたの投稿に返信しました"
 msgid "Replies ({0})"
 msgstr "返信 ({0})"
 
-#: src/components/note/NoteComposer.tsx:591
+#: src/components/note/NoteComposer.tsx:592
 #: src/pages/notifications.tsx:242
 msgid "Reply"
 msgstr "返信"
 
-#: src/components/note/NoteComposer.tsx:357
+#: src/components/note/NoteComposer.tsx:358
 msgid "Replying to"
 msgstr "返信先:"
 
@@ -1684,7 +1684,7 @@ msgstr "解決済み"
 msgid "Resolved: {0}"
 msgstr "解決: {0}"
 
-#: src/components/note/NoteComposer.tsx:330
+#: src/components/note/NoteComposer.tsx:331
 #: src/pages/mod/notes.tsx:275
 msgid "Restore"
 msgstr "復元"
@@ -1933,7 +1933,7 @@ msgstr "テスト"
 msgid "Test notification"
 msgstr "テスト通知"
 
-#: src/components/note/NoteComposer.tsx:195
+#: src/components/note/NoteComposer.tsx:196
 msgid "Text exceeds {maxLength} characters"
 msgstr "テキストが{maxLength}文字を超えています"
 
@@ -2063,11 +2063,11 @@ msgstr "絵文字を更新"
 msgid "Update Role"
 msgstr "ロールを更新"
 
-#: src/components/note/NoteComposer.tsx:429
+#: src/components/note/NoteComposer.tsx:430
 msgid "Uploading files..."
 msgstr "ファイルをアップロード中..."
 
-#: src/components/note/NoteComposer.tsx:587
+#: src/components/note/NoteComposer.tsx:588
 #: src/pages/admin/emojis.tsx:441
 msgid "Uploading..."
 msgstr "アップロード中..."
@@ -2210,7 +2210,7 @@ msgstr "{1}時間あたり最大{0}個の招待コードを作成できます"
 msgid "You have already reported this"
 msgstr "既に報告済みです"
 
-#: src/components/note/NoteComposer.tsx:320
+#: src/components/note/NoteComposer.tsx:321
 msgid "You have an unsaved draft"
 msgstr "未保存の下書きがあります"
 

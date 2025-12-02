@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 
 /**
@@ -8,9 +9,9 @@ import { Trans } from "@lingui/react/macro";
 
 export interface ErrorMessageProps {
   /** Error title/message */
-  title: string;
+  title: ReactNode;
   /** Optional detailed error message */
-  message?: string;
+  message?: ReactNode;
   /** Optional retry callback */
   onRetry?: () => void;
   /** Show retry button loading state */

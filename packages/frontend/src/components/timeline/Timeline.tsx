@@ -124,7 +124,7 @@ export function Timeline({ initialNotes = [], type = "local" }: TimelineProps) {
       {/* Enhanced Error Message with Retry */}
       {error && (
         <ErrorMessage
-          title={(<Trans>Error loading timeline</Trans>) as unknown as string}
+          title={<Trans>Error loading timeline</Trans>}
           message={error}
           onRetry={handleRetry}
           isRetrying={loading}
