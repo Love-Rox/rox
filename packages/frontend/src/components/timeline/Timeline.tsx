@@ -23,8 +23,6 @@ import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigation";
  * Props for the Timeline component
  */
 export interface TimelineProps {
-  /** Initial notes data (from Server Component) */
-  initialNotes?: any[];
   /** Timeline type: 'local' | 'social' | 'home' */
   type?: "local" | "social" | "home";
 }
@@ -33,10 +31,9 @@ export interface TimelineProps {
  * Timeline component for displaying a feed of notes
  * Supports infinite scroll pagination and real-time updates
  *
- * @param initialNotes - Initial notes from server-side rendering
  * @param type - Timeline type (local/social/home)
  */
-export function Timeline({ initialNotes = [], type = "local" }: TimelineProps) {
+export function Timeline({ type = "local" }: TimelineProps) {
   const [notes, setNotes] = useAtom(timelineNotesAtom);
   const [loading, setLoading] = useAtom(timelineLoadingAtom);
   const [error, setError] = useAtom(timelineErrorAtom);
@@ -44,13 +41,40 @@ export function Timeline({ initialNotes = [], type = "local" }: TimelineProps) {
   const [lastNoteId] = useAtom(timelineLastNoteIdAtom);
 
   const timelineContainerRef = useRef<HTMLDivElement>(null);
+  const hasLoadedRef = useRef(false);
 
-  // Initialize with initial notes
+  // Reset and load data when type changes (component remounts via key)
   useEffect(() => {
-    if (initialNotes.length > 0 && notes.length === 0) {
-      setNotes(initialNotes);
-    }
-  }, [initialNotes, notes.length, setNotes]);
+    // Reset state on mount
+    setNotes([]);
+    setError(null);
+    setHasMore(true);
+    setLoading(true);
+    hasLoadedRef.current = false;
+
+    // Load initial data
+    const loadInitialData = async () => {
+      try {
+        const fetchFunction =
+          type === "home"
+            ? notesApi.getHomeTimeline
+            : type === "social"
+              ? notesApi.getSocialTimeline
+              : notesApi.getLocalTimeline;
+
+        const newNotes = await fetchFunction({ limit: 20 });
+        setNotes(newNotes);
+        setHasMore(newNotes.length >= 20);
+        hasLoadedRef.current = true;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load notes");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInitialData();
+  }, [type, setNotes, setError, setHasMore, setLoading]);
 
   // Keyboard navigation for timeline
   useKeyboardNavigation(timelineContainerRef, {
