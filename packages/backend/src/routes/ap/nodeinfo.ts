@@ -10,6 +10,7 @@
 
 import { Hono } from "hono";
 import rootPackageJson from "../../../../../package.json";
+import { InstanceSettingsService } from "../../services/InstanceSettingsService.js";
 
 const app = new Hono();
 
@@ -57,6 +58,14 @@ app.get("/.well-known/nodeinfo", (c) => {
 app.get("/nodeinfo/2.1", async (c) => {
   const userRepository = c.get("userRepository");
   const noteRepository = c.get("noteRepository");
+  const instanceSettingsRepository = c.get("instanceSettingsRepository");
+
+  // Get instance settings
+  const instanceSettingsService = new InstanceSettingsService(instanceSettingsRepository);
+  const [metadata, registration] = await Promise.all([
+    instanceSettingsService.getInstanceMetadata(),
+    instanceSettingsService.getRegistrationSettings(),
+  ]);
 
   // Get statistics (with fallback to 0 if repositories don't have count methods)
   let totalUsers = 0;
@@ -80,15 +89,15 @@ app.get("/nodeinfo/2.1", async (c) => {
     software: {
       name: "rox",
       version: ROX_VERSION,
-      repository: "https://github.com/sasapiyo/rox",
-      homepage: "https://github.com/sasapiyo/rox",
+      repository: "https://github.com/Love-rox/rox",
+      homepage: "https://github.com/Love-rox/rox",
     },
     protocols: ["activitypub"],
     services: {
       inbound: [],
       outbound: [],
     },
-    openRegistrations: process.env.ENABLE_REGISTRATION === "true",
+    openRegistrations: registration.enabled,
     usage: {
       users: {
         total: totalUsers,
@@ -99,15 +108,16 @@ app.get("/nodeinfo/2.1", async (c) => {
       localComments: 0, // Rox doesn't distinguish comments from posts
     },
     metadata: {
-      nodeName: "Rox Instance",
-      nodeDescription: "A lightweight ActivityPub server with Misskey API compatibility",
+      nodeName: metadata.name || "Rox Instance",
+      nodeDescription: metadata.description || "A lightweight ActivityPub server with Misskey API compatibility",
       maintainer: {
         name: "Administrator",
-        email: process.env.ADMIN_EMAIL || null,
+        email: metadata.maintainerEmail || null,
       },
       langs: ["en", "ja"],
-      tosUrl: null, // TODO: Add Terms of Service URL if available
-      privacyPolicyUrl: null, // TODO: Add Privacy Policy URL if available
+      tosUrl: metadata.tosUrl || null,
+      privacyPolicyUrl: metadata.privacyPolicyUrl || null,
+      iconUrl: metadata.iconUrl || null,
       features: ["activitypub", "misskey_api", "notes", "reactions", "following"],
     },
   });
@@ -124,6 +134,14 @@ app.get("/nodeinfo/2.1", async (c) => {
 app.get("/nodeinfo/2.0", async (c) => {
   const userRepository = c.get("userRepository");
   const noteRepository = c.get("noteRepository");
+  const instanceSettingsRepository = c.get("instanceSettingsRepository");
+
+  // Get instance settings
+  const instanceSettingsService = new InstanceSettingsService(instanceSettingsRepository);
+  const [metadata, registration] = await Promise.all([
+    instanceSettingsService.getInstanceMetadata(),
+    instanceSettingsService.getRegistrationSettings(),
+  ]);
 
   // Get statistics (with fallback to 0 if repositories don't have count methods)
   let totalUsers = 0;
@@ -153,7 +171,7 @@ app.get("/nodeinfo/2.0", async (c) => {
       inbound: [],
       outbound: [],
     },
-    openRegistrations: process.env.ENABLE_REGISTRATION === "true",
+    openRegistrations: registration.enabled,
     usage: {
       users: {
         total: totalUsers,
@@ -161,15 +179,16 @@ app.get("/nodeinfo/2.0", async (c) => {
       localPosts,
     },
     metadata: {
-      nodeName: "Rox Instance",
-      nodeDescription: "A lightweight ActivityPub server with Misskey API compatibility",
+      nodeName: metadata.name || "Rox Instance",
+      nodeDescription: metadata.description || "A lightweight ActivityPub server with Misskey API compatibility",
       maintainer: {
         name: "Administrator",
-        email: process.env.ADMIN_EMAIL || null,
+        email: metadata.maintainerEmail || null,
       },
       langs: ["en", "ja"],
-      tosUrl: null,
-      privacyPolicyUrl: null,
+      tosUrl: metadata.tosUrl || null,
+      privacyPolicyUrl: metadata.privacyPolicyUrl || null,
+      iconUrl: metadata.iconUrl || null,
       features: ["activitypub", "misskey_api", "notes", "reactions", "following"],
     },
   });

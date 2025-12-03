@@ -20,6 +20,8 @@ import type {
   INotificationRepository,
   IRemoteInstanceRepository,
   IScheduledNoteRepository,
+  IPasskeyCredentialRepository,
+  IPasskeyChallengeRepository,
 } from "../interfaces/repositories/index.js";
 import type { IFileStorage } from "../interfaces/IFileStorage.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
@@ -43,6 +45,8 @@ import {
   PostgresNotificationRepository,
   PostgresRemoteInstanceRepository,
   PostgresScheduledNoteRepository,
+  PostgresPasskeyCredentialRepository,
+  PostgresPasskeyChallengeRepository,
 } from "../repositories/pg/index.js";
 import { LocalStorageAdapter, S3StorageAdapter } from "../adapters/storage/index.js";
 import { ActivityDeliveryQueue } from "../services/ap/ActivityDeliveryQueue.js";
@@ -77,6 +81,8 @@ export interface AppContainer {
   notificationRepository: INotificationRepository;
   remoteInstanceRepository: IRemoteInstanceRepository;
   scheduledNoteRepository: IScheduledNoteRepository;
+  passkeyCredentialRepository: IPasskeyCredentialRepository;
+  passkeyChallengeRepository: IPasskeyChallengeRepository;
   fileStorage: IFileStorage;
   cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
@@ -216,6 +222,8 @@ function createRepositories(db: any, dbType: string) {
         notificationRepository: new PostgresNotificationRepository(db),
         remoteInstanceRepository: new PostgresRemoteInstanceRepository(db),
         scheduledNoteRepository: new PostgresScheduledNoteRepository(db),
+        passkeyCredentialRepository: new PostgresPasskeyCredentialRepository(db),
+        passkeyChallengeRepository: new PostgresPasskeyChallengeRepository(db),
       };
 
     case "mysql":
