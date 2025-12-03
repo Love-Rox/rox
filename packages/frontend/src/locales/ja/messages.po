@@ -127,8 +127,8 @@ msgstr "他のサーバーのアカウントとリンクするためにエイリ
 msgid "Add Emoji"
 msgstr "絵文字を追加"
 
-#: src/components/note/NoteComposer.tsx:568
-#: src/components/note/NoteComposer.tsx:569
+#: src/components/note/NoteComposer.tsx:597
+#: src/components/note/NoteComposer.tsx:598
 msgid "Add images"
 msgstr "画像を追加"
 
@@ -247,7 +247,7 @@ msgstr "素材"
 msgid "Audit Logs"
 msgstr "監査ログ"
 
-#: src/components/note/NoteComposer.tsx:297
+#: src/components/note/NoteComposer.tsx:292
 msgid "Authentication required"
 msgstr "認証が必要です"
 
@@ -390,6 +390,7 @@ msgstr "ユーザーを凍結可能"
 
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
+#: src/components/note/NoteComposer.tsx:834
 #: src/components/report/ReportDialog.tsx:170
 #: src/components/settings/PasskeySection.tsx:333
 #: src/pages/admin/emojis.tsx:567
@@ -401,7 +402,7 @@ msgstr "ユーザーを凍結可能"
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: src/components/note/NoteComposer.tsx:158
+#: src/components/note/NoteComposer.tsx:153
 msgid "Cannot save empty draft"
 msgstr "空の下書きは保存できません"
 
@@ -574,7 +575,7 @@ msgstr "削除"
 msgid "Delete code"
 msgstr "コードを削除"
 
-#: src/components/note/NoteComposer.tsx:712
+#: src/components/note/NoteComposer.tsx:741
 msgid "Delete draft"
 msgstr "下書きを削除"
 
@@ -613,7 +614,7 @@ msgstr "この警告の理由を説明してください..."
 msgid "Description"
 msgstr "説明"
 
-#: src/components/note/NoteComposer.tsx:381
+#: src/components/note/NoteComposer.tsx:410
 msgid "Direct"
 msgstr "ダイレクト"
 
@@ -621,7 +622,7 @@ msgstr "ダイレクト"
 msgid "Disable"
 msgstr "無効にする"
 
-#: src/components/note/NoteComposer.tsx:437
+#: src/components/note/NoteComposer.tsx:466
 msgid "Discard"
 msgstr "破棄"
 
@@ -638,29 +639,29 @@ msgstr "表示設定"
 msgid "Don't have an account?"
 msgstr "アカウントをお持ちでないですか？"
 
-#: src/components/note/NoteComposer.tsx:197
+#: src/components/note/NoteComposer.tsx:192
 msgid "Draft deleted"
 msgstr "下書きを削除しました"
 
-#: src/components/note/NoteComposer.tsx:150
+#: src/components/note/NoteComposer.tsx:145
 msgid "Draft discarded"
 msgstr "下書きを破棄しました"
 
-#: src/components/note/NoteComposer.tsx:187
+#: src/components/note/NoteComposer.tsx:182
 msgid "Draft loaded"
 msgstr "下書きを読み込みました"
 
-#: src/components/note/NoteComposer.tsx:140
+#: src/components/note/NoteComposer.tsx:135
 msgid "Draft restored"
 msgstr "下書きを復元しました"
 
-#: src/components/note/NoteComposer.tsx:166
+#: src/components/note/NoteComposer.tsx:161
 msgid "Draft saved"
 msgstr "下書きを保存しました"
 
-#: src/components/note/NoteComposer.tsx:654
-#: src/components/note/NoteComposer.tsx:655
-#: src/components/note/NoteComposer.tsx:671
+#: src/components/note/NoteComposer.tsx:683
+#: src/components/note/NoteComposer.tsx:684
+#: src/components/note/NoteComposer.tsx:700
 msgid "Drafts"
 msgstr "下書き"
 
@@ -725,7 +726,7 @@ msgstr "絵文字名"
 msgid "Emojis"
 msgstr "絵文字"
 
-#: src/components/note/NoteComposer.tsx:702
+#: src/components/note/NoteComposer.tsx:731
 msgid "Empty draft"
 msgstr "空の下書き"
 
@@ -980,7 +981,7 @@ msgid "Failed to update quota"
 msgstr "クォータの更新に失敗しました"
 
 #. placeholder {0}: file.name
-#: src/components/note/NoteComposer.tsx:325
+#: src/components/note/NoteComposer.tsx:329
 msgid "Failed to upload {0}"
 msgstr "{0}のアップロードに失敗しました"
 
@@ -1062,7 +1063,7 @@ msgstr "フォロー"
 msgid "followed you"
 msgstr "があなたをフォローしました"
 
-#: src/components/note/NoteComposer.tsx:380
+#: src/components/note/NoteComposer.tsx:409
 #: src/components/user/UserProfile.tsx:459
 msgid "Followers"
 msgstr "フォロワー"
@@ -1112,7 +1113,7 @@ msgid "Healthy"
 msgstr "正常"
 
 #: src/components/layout/Sidebar.tsx:74
-#: src/components/note/NoteComposer.tsx:379
+#: src/components/note/NoteComposer.tsx:408
 #: src/pages/timeline.tsx:169
 msgid "Home"
 msgstr "ホーム"
@@ -1453,7 +1454,7 @@ msgstr "名前"
 msgid "Never"
 msgstr "無期限"
 
-#: src/components/note/NoteComposer.tsx:678
+#: src/components/note/NoteComposer.tsx:707
 msgid "New"
 msgstr "新規"
 
@@ -1493,7 +1494,7 @@ msgstr "カスタム絵文字がまだありません"
 msgid "No deleted notes"
 msgstr "削除されたノートはありません"
 
-#: src/components/note/NoteComposer.tsx:684
+#: src/components/note/NoteComposer.tsx:713
 msgid "No drafts saved"
 msgstr "保存された下書きはありません"
 
@@ -1595,7 +1596,7 @@ msgstr "ノートのモデレーション"
 msgid "Note not found"
 msgstr "ノートが見つかりません"
 
-#: src/components/note/NoteComposer.tsx:358
+#: src/components/note/NoteComposer.tsx:364
 msgid "Note posted successfully"
 msgstr "投稿しました"
 
@@ -1611,6 +1612,10 @@ msgstr "ノートの報告"
 #: src/pages/mod/notes.tsx:107
 msgid "Note restored successfully"
 msgstr "ノートを復元しました"
+
+#: src/components/note/NoteComposer.tsx:350
+msgid "Note scheduled successfully"
+msgstr "予約投稿を設定しました"
 
 #: src/pages/settings.tsx:248
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
@@ -1720,7 +1725,7 @@ msgstr "権限"
 msgid "Please enable notifications in your browser settings to receive push notifications."
 msgstr "プッシュ通知を受け取るには、ブラウザの設定で通知を許可してください。"
 
-#: src/components/note/NoteComposer.tsx:287
+#: src/components/note/NoteComposer.tsx:282
 msgid "Please enter text or attach files"
 msgstr "テキストを入力するかファイルを添付してください"
 
@@ -1733,11 +1738,11 @@ msgstr "プロフィールを更新するにはログインしてください"
 msgid "Please select an image file"
 msgstr "画像ファイルを選択してください"
 
-#: src/components/note/NoteComposer.tsx:820
+#: src/components/note/NoteComposer.tsx:925
 msgid "Post"
 msgstr "投稿"
 
-#: src/components/note/NoteComposer.tsx:816
+#: src/components/note/NoteComposer.tsx:921
 msgid "Posting..."
 msgstr "投稿中..."
 
@@ -1751,7 +1756,7 @@ msgstr "投稿"
 msgid "Powered by"
 msgstr "Powered by"
 
-#: src/components/note/NoteComposer.tsx:492
+#: src/components/note/NoteComposer.tsx:521
 #: src/components/settings/UISettingsSection.tsx:331
 #: src/pages/admin/emojis.tsx:534
 #: src/pages/admin/settings.tsx:722
@@ -1802,7 +1807,7 @@ msgstr "プロフィールを更新しました"
 msgid "Provide more context about your report..."
 msgstr "報告についての詳細を入力してください..."
 
-#: src/components/note/NoteComposer.tsx:378
+#: src/components/note/NoteComposer.tsx:407
 #: src/pages/admin/roles.tsx:616
 msgid "Public"
 msgstr "公開"
@@ -2002,12 +2007,12 @@ msgstr "があなたの投稿に返信しました"
 msgid "Replies ({0})"
 msgstr "返信 ({0})"
 
-#: src/components/note/NoteComposer.tsx:818
+#: src/components/note/NoteComposer.tsx:923
 #: src/pages/notifications.tsx:244
 msgid "Reply"
 msgstr "返信"
 
-#: src/components/note/NoteComposer.tsx:456
+#: src/components/note/NoteComposer.tsx:485
 msgid "Replying to"
 msgstr "返信先:"
 
@@ -2127,7 +2132,7 @@ msgstr "解決済み"
 msgid "Resolved: {0}"
 msgstr "解決: {0}"
 
-#: src/components/note/NoteComposer.tsx:429
+#: src/components/note/NoteComposer.tsx:458
 #: src/pages/mod/notes.tsx:275
 msgid "Restore"
 msgstr "復元"
@@ -2190,8 +2195,8 @@ msgstr "保存"
 msgid "Save Changes"
 msgstr "変更を保存"
 
-#: src/components/note/NoteComposer.tsx:637
-#: src/components/note/NoteComposer.tsx:638
+#: src/components/note/NoteComposer.tsx:666
+#: src/components/note/NoteComposer.tsx:667
 msgid "Save draft"
 msgstr "下書きを保存"
 
@@ -2215,6 +2220,20 @@ msgstr "テーマ設定を保存"
 #: src/pages/settings.tsx:264
 msgid "Saving..."
 msgstr "保存中..."
+
+#: src/components/note/NoteComposer.tsx:849
+msgid "Schedule"
+msgstr "予約する"
+
+#: src/components/note/NoteComposer.tsx:794
+#: src/components/note/NoteComposer.tsx:795
+#: src/components/note/NoteComposer.tsx:806
+msgid "Schedule post"
+msgstr "予約投稿"
+
+#: src/components/note/NoteComposer.tsx:300
+msgid "Scheduled time must be in the future"
+msgstr "予約時刻は現在時刻より後に設定してください"
 
 #: src/components/layout/Sidebar.tsx:80
 #: src/pages/mod/users.tsx:298
@@ -2263,8 +2282,8 @@ msgstr "セカンダリ"
 msgid "Select"
 msgstr "選択する"
 
-#: src/components/note/NoteComposer.tsx:588
-#: src/components/note/NoteComposer.tsx:589
+#: src/components/note/NoteComposer.tsx:617
+#: src/components/note/NoteComposer.tsx:618
 msgid "Select from drive"
 msgstr "ドライブから選択"
 
@@ -2442,7 +2461,7 @@ msgstr "テスト"
 msgid "Test notification"
 msgstr "テスト通知"
 
-#: src/components/note/NoteComposer.tsx:292
+#: src/components/note/NoteComposer.tsx:287
 msgid "Text exceeds {maxLength} characters"
 msgstr "テキストが{maxLength}文字を超えています"
 
@@ -2604,11 +2623,11 @@ msgstr "ファイルをアップロードするとここに表示されます"
 msgid "Upload images for your instance branding. Files are automatically converted to WebP format."
 msgstr "インスタンスのブランディング用画像をアップロードしてください。ファイルは自動的にWebP形式に変換されます。"
 
-#: src/components/note/NoteComposer.tsx:551
+#: src/components/note/NoteComposer.tsx:580
 msgid "Uploading files..."
 msgstr "ファイルをアップロード中..."
 
-#: src/components/note/NoteComposer.tsx:814
+#: src/components/note/NoteComposer.tsx:919
 #: src/components/settings/ProfileImageSection.tsx:253
 #: src/components/settings/ProfileImageSection.tsx:329
 #: src/pages/admin/emojis.tsx:441
@@ -2752,6 +2771,11 @@ msgstr "このインスタンスをブロックする理由は？"
 msgid "Why Join?"
 msgstr "なぜ参加するの？"
 
+#. placeholder {0}: new Date(scheduledAt).toLocaleString()
+#: src/components/note/NoteComposer.tsx:819
+msgid "Will be posted at {0}"
+msgstr "{0}に投稿予定"
+
 #: src/pages/admin/federation.tsx:287
 #: src/pages/admin/federation.tsx:325
 msgid "With Errors"
@@ -2776,7 +2800,7 @@ msgstr "{1}時間あたり最大{0}個の招待コードを作成できます"
 msgid "You have already reported this"
 msgstr "既に報告済みです"
 
-#: src/components/note/NoteComposer.tsx:419
+#: src/components/note/NoteComposer.tsx:448
 msgid "You have an unsaved draft"
 msgstr "未保存の下書きがあります"
 

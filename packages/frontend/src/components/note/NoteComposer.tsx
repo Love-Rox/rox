@@ -17,6 +17,7 @@ import {
   FileText,
   Trash2,
   HardDrive,
+  Clock,
 } from "lucide-react";
 import { NOTE_TEXT_MAX_LENGTH } from "shared";
 import { MfmRenderer } from "../mfm/MfmRenderer";
@@ -34,7 +35,8 @@ import { addToastAtom } from "../../lib/atoms/toast";
 import { notesApi } from "../../lib/api/notes";
 import type { NoteVisibility } from "../../lib/api/notes";
 import { uploadFile, type DriveFile } from "../../lib/api/drive";
-import { useDraft, useAutosaveDraft } from "../../hooks/useDraft";
+import { useDraft } from "../../hooks/useDraft";
+import { scheduledNotesApi } from "../../lib/api/scheduled-notes";
 import { DrivePickerDialog } from "../drive/DrivePickerDialog";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 
@@ -102,16 +104,9 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   const [showDraftBanner, setShowDraftBanner] = useState(false);
   const [showDraftList, setShowDraftList] = useState(false);
 
-  // Auto-save draft (only for non-reply posts)
-  useAutosaveDraft(
-    {
-      text,
-      cw,
-      showCw,
-      visibility,
-    },
-    1000, // Save every 1 second after user stops typing
-  );
+  // Scheduled post state
+  const [scheduledAt, setScheduledAt] = useState<string | null>(null);
+  const [showSchedulePicker, setShowSchedulePicker] = useState(false);
 
   // Load draft on mount (only if not replying)
   useEffect(() => {
@@ -282,7 +277,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
     }, 0);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (scheduleDate?: string) => {
     if (!text.trim() && totalFileCount === 0) {
       setError(t`Please enter text or attach files`);
       return;
@@ -296,6 +291,15 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
     if (!token) {
       setError(t`Authentication required`);
       return;
+    }
+
+    // Validate scheduled date is in the future
+    if (scheduleDate) {
+      const scheduledTime = new Date(scheduleDate).getTime();
+      if (scheduledTime <= Date.now()) {
+        setError(t`Scheduled time must be in the future`);
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -330,13 +334,36 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
         setUploadProgress(0);
       }
 
-      await notesApi.createNote({
-        text: text.trim(),
-        cw: showCw && cw.trim() ? cw.trim() : undefined,
-        visibility,
-        fileIds: fileIds.length > 0 ? fileIds : undefined,
-        replyId,
-      });
+      if (scheduleDate) {
+        // Create scheduled note
+        await scheduledNotesApi.create({
+          text: text.trim(),
+          cw: showCw && cw.trim() ? cw.trim() : undefined,
+          visibility,
+          fileIds: fileIds.length > 0 ? fileIds : undefined,
+          replyId,
+          scheduledAt: scheduleDate,
+        });
+
+        addToast({
+          type: "success",
+          message: t`Note scheduled successfully`,
+        });
+      } else {
+        // Create note immediately
+        await notesApi.createNote({
+          text: text.trim(),
+          cw: showCw && cw.trim() ? cw.trim() : undefined,
+          visibility,
+          fileIds: fileIds.length > 0 ? fileIds : undefined,
+          replyId,
+        });
+
+        addToast({
+          type: "success",
+          message: t`Note posted successfully`,
+        });
+      }
 
       // Reset form
       setText("");
@@ -345,18 +372,14 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
       setVisibility("public");
       setFiles([]);
       setDriveFiles([]);
+      setScheduledAt(null);
+      setShowSchedulePicker(false);
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
       }
 
       // Clear draft
       clearDraft();
-
-      // Show success toast
-      addToast({
-        type: "success",
-        message: t`Note posted successfully`,
-      });
 
       onNoteCreated?.();
     } catch (err) {
@@ -371,6 +394,12 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
     } finally {
       setIsSubmitting(false);
       setIsUploading(false);
+    }
+  };
+
+  const handleScheduleSubmit = () => {
+    if (scheduledAt) {
+      handleSubmit(scheduledAt);
     }
   };
 
@@ -749,6 +778,82 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                     </ListBox>
                   </Popover>
                 </Select>
+
+                {/* Schedule post button (not available for replies) */}
+                {!replyId && (
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowSchedulePicker(!showSchedulePicker)}
+                      disabled={isSubmitting}
+                      className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 ${
+                        showSchedulePicker || scheduledAt
+                          ? "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
+                          : "text-gray-600 dark:text-gray-400"
+                      }`}
+                      type="button"
+                      title={t`Schedule post`}
+                      aria-label={t`Schedule post`}
+                      aria-expanded={showSchedulePicker}
+                    >
+                      <Clock className="w-5 h-5" />
+                    </button>
+
+                    {/* Schedule picker dropdown */}
+                    {showSchedulePicker && (
+                      <div className="absolute bottom-full left-0 sm:left-auto sm:right-0 mb-2 w-[calc(100vw-2rem)] sm:w-80 max-w-80 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden z-50">
+                        <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            <Trans>Schedule post</Trans>
+                          </span>
+                        </div>
+                        <div className="p-3 space-y-3">
+                          <input
+                            type="datetime-local"
+                            value={scheduledAt || ""}
+                            onChange={(e) => setScheduledAt(e.target.value || null)}
+                            min={new Date(Date.now() + 60000).toISOString().slice(0, 16)}
+                            className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                          />
+                          {scheduledAt && (
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                              <Trans>
+                                Will be posted at {new Date(scheduledAt).toLocaleString()}
+                              </Trans>
+                            </div>
+                          )}
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onPress={() => {
+                                setScheduledAt(null);
+                                setShowSchedulePicker(false);
+                              }}
+                              className="flex-1"
+                            >
+                              <Trans>Cancel</Trans>
+                            </Button>
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onPress={handleScheduleSubmit}
+                              isDisabled={
+                                !scheduledAt ||
+                                isSubmitting ||
+                                isUploading ||
+                                (!text.trim() && totalFileCount === 0) ||
+                                text.length > maxLength
+                              }
+                              className="flex-1"
+                            >
+                              <Trans>Schedule</Trans>
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-2 sm:gap-3">
@@ -798,7 +903,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
 
                 {/* Submit button */}
                 <Button
-                  onPress={handleSubmit}
+                  onPress={() => handleSubmit()}
                   isDisabled={
                     isSubmitting ||
                     isUploading ||
