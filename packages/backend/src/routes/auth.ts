@@ -1,13 +1,14 @@
 /**
  * Authentication API Routes
  *
- * Provides endpoints for login, logout, and session validation.
+ * Provides endpoints for login, logout, session validation, and passkey authentication.
  *
  * @module routes/auth
  */
 
 import { Hono } from "hono";
 import { AuthService } from "../services/AuthService.js";
+import { PasskeyService } from "../services/PasskeyService.js";
 import { requireAuth } from "../middleware/auth.js";
 import { rateLimit, RateLimitPresets } from "../middleware/rateLimit.js";
 import type { Context } from "hono";
@@ -342,6 +343,270 @@ app.get("/session", requireAuth(), async (c) => {
       expiresAt: session.expiresAt,
     },
   });
+});
+
+// ============================================
+// Passkey (WebAuthn) Authentication Routes
+// ============================================
+
+/**
+ * Helper to create PasskeyService instance
+ */
+const getPasskeyService = (c: Context): PasskeyService => {
+  return new PasskeyService(
+    c.get("passkeyCredentialRepository"),
+    c.get("passkeyChallengeRepository"),
+    c.get("userRepository"),
+    c.get("sessionRepository"),
+  );
+};
+
+/**
+ * Begin Passkey Registration
+ *
+ * POST /api/auth/passkey/register/begin
+ *
+ * Generates WebAuthn registration options for the authenticated user.
+ * Requires authentication - user must be logged in to add a passkey.
+ */
+app.post("/passkey/register/begin", requireAuth(), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  try {
+    const passkeyService = getPasskeyService(c);
+    const options = await passkeyService.generateRegistrationOptions(user.id);
+
+    return c.json(options);
+  } catch (error) {
+    console.error("Passkey registration begin error:", error);
+    return c.json(
+      { error: error instanceof Error ? error.message : "Failed to generate registration options" },
+      400,
+    );
+  }
+});
+
+/**
+ * Complete Passkey Registration
+ *
+ * POST /api/auth/passkey/register/finish
+ *
+ * Verifies and stores the WebAuthn credential after browser registration.
+ * Requires authentication.
+ */
+app.post("/passkey/register/finish", requireAuth(), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  try {
+    const body = await c.req.json();
+
+    if (!body.credential) {
+      return c.json({ error: "Credential is required" }, 400);
+    }
+
+    const passkeyService = getPasskeyService(c);
+    const passkey = await passkeyService.verifyRegistration(user.id, body.credential, body.name);
+
+    return c.json({
+      success: true,
+      passkey: {
+        id: passkey.id,
+        name: passkey.name,
+        createdAt: passkey.createdAt,
+        deviceType: passkey.deviceType,
+        backedUp: passkey.backedUp,
+      },
+    });
+  } catch (error) {
+    console.error("Passkey registration finish error:", error);
+    return c.json(
+      { error: error instanceof Error ? error.message : "Failed to verify registration" },
+      400,
+    );
+  }
+});
+
+/**
+ * Begin Passkey Authentication
+ *
+ * POST /api/auth/passkey/authenticate/begin
+ *
+ * Generates WebAuthn authentication options.
+ * Can optionally accept a username to filter available credentials.
+ */
+app.post("/passkey/authenticate/begin", rateLimit(RateLimitPresets.login), async (c) => {
+  try {
+    const body = await c.req.json().catch(() => ({}));
+
+    const passkeyService = getPasskeyService(c);
+    const options = await passkeyService.generateAuthenticationOptions(body.username);
+
+    return c.json(options);
+  } catch (error) {
+    console.error("Passkey authentication begin error:", error);
+    return c.json(
+      { error: error instanceof Error ? error.message : "Failed to generate authentication options" },
+      400,
+    );
+  }
+});
+
+/**
+ * Complete Passkey Authentication
+ *
+ * POST /api/auth/passkey/authenticate/finish
+ *
+ * Verifies the WebAuthn assertion and creates a session.
+ * Returns user and token on success.
+ */
+app.post("/passkey/authenticate/finish", rateLimit(RateLimitPresets.login), async (c) => {
+  try {
+    const body = await c.req.json();
+
+    if (!body.credential) {
+      return c.json({ error: "Credential is required" }, 400);
+    }
+
+    const passkeyService = getPasskeyService(c);
+    const { user, session } = await passkeyService.verifyAuthentication(body.credential);
+
+    // Remove sensitive data from response
+    const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+
+    return c.json({
+      user: publicUser,
+      token: session.token,
+    });
+  } catch (error) {
+    console.error("Passkey authentication finish error:", error);
+    if (error instanceof Error) {
+      if (error.message.includes("suspended")) {
+        return c.json({ error: "Account is suspended" }, 403);
+      }
+    }
+    return c.json(
+      { error: error instanceof Error ? error.message : "Authentication failed" },
+      401,
+    );
+  }
+});
+
+/**
+ * List User's Passkeys
+ *
+ * GET /api/auth/passkey
+ *
+ * Returns all passkeys registered by the authenticated user.
+ */
+app.get("/passkey", requireAuth(), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  try {
+    const passkeyService = getPasskeyService(c);
+    const passkeys = await passkeyService.getUserPasskeys(user.id);
+
+    return c.json({
+      passkeys: passkeys.map((p) => ({
+        id: p.id,
+        name: p.name,
+        deviceType: p.deviceType,
+        backedUp: p.backedUp,
+        createdAt: p.createdAt,
+        lastUsedAt: p.lastUsedAt,
+      })),
+    });
+  } catch (error) {
+    console.error("List passkeys error:", error);
+    return c.json({ error: "Failed to list passkeys" }, 500);
+  }
+});
+
+/**
+ * Delete a Passkey
+ *
+ * DELETE /api/auth/passkey/:id
+ *
+ * Deletes a specific passkey by ID.
+ */
+app.delete("/passkey/:id", requireAuth(), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  const passkeyId = c.req.param("id");
+  if (!passkeyId) {
+    return c.json({ error: "Passkey ID is required" }, 400);
+  }
+
+  try {
+    const passkeyService = getPasskeyService(c);
+    await passkeyService.deletePasskey(user.id, passkeyId);
+
+    return c.json({ success: true });
+  } catch (error) {
+    console.error("Delete passkey error:", error);
+    return c.json(
+      { error: error instanceof Error ? error.message : "Failed to delete passkey" },
+      400,
+    );
+  }
+});
+
+/**
+ * Rename a Passkey
+ *
+ * PATCH /api/auth/passkey/:id
+ *
+ * Updates the name of a specific passkey.
+ */
+app.patch("/passkey/:id", requireAuth(), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  const passkeyId = c.req.param("id");
+  if (!passkeyId) {
+    return c.json({ error: "Passkey ID is required" }, 400);
+  }
+
+  try {
+    const body = await c.req.json();
+
+    if (!body.name || typeof body.name !== "string") {
+      return c.json({ error: "Name is required" }, 400);
+    }
+
+    const passkeyService = getPasskeyService(c);
+    const passkey = await passkeyService.renamePasskey(user.id, passkeyId, body.name);
+
+    return c.json({
+      passkey: {
+        id: passkey.id,
+        name: passkey.name,
+        deviceType: passkey.deviceType,
+        backedUp: passkey.backedUp,
+        createdAt: passkey.createdAt,
+        lastUsedAt: passkey.lastUsedAt,
+      },
+    });
+  } catch (error) {
+    console.error("Rename passkey error:", error);
+    return c.json(
+      { error: error instanceof Error ? error.message : "Failed to rename passkey" },
+      400,
+    );
+  }
 });
 
 export default app;

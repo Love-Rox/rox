@@ -17,3 +17,5 @@ export * from "./PostgresUserWarningRepository.js";
 export * from "./PostgresNotificationRepository.js";
 export * from "./PostgresRemoteInstanceRepository.js";
 export * from "./PostgresScheduledNoteRepository.js";
+export * from "./PostgresPasskeyCredentialRepository.js";
+export * from "./PostgresPasskeyChallengeRepository.js";

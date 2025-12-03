@@ -18,6 +18,7 @@ import { AccountMigrationSection } from "../components/settings/AccountMigration
 import { PushNotificationSection } from "../components/settings/PushNotificationSection";
 import { StorageSection } from "../components/settings/StorageSection";
 import { ProfileImageSection } from "../components/settings/ProfileImageSection";
+import { PasskeySection } from "../components/settings/PasskeySection";
 
 /**
  * Settings page
@@ -296,6 +297,11 @@ export default function SettingsPage() {
       {/* Push Notifications Section */}
       <div className="mt-6">
         <PushNotificationSection />
+      </div>
+
+      {/* Passkey Section */}
+      <div className="mt-6">
+        <PasskeySection />
       </div>
 
       {/* Invitation Codes Section - only shown if user has permission */}

@@ -29,6 +29,8 @@ export function diMiddleware() {
     c.set("notificationRepository", container.notificationRepository);
     c.set("remoteInstanceRepository", container.remoteInstanceRepository);
     c.set("scheduledNoteRepository", container.scheduledNoteRepository);
+    c.set("passkeyCredentialRepository", container.passkeyCredentialRepository);
+    c.set("passkeyChallengeRepository", container.passkeyChallengeRepository);
     c.set("fileStorage", container.fileStorage);
     c.set("cacheService", container.cacheService);
     c.set("activityDeliveryQueue", container.activityDeliveryQueue);

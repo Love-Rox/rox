@@ -17,3 +17,5 @@ export * from "./IUserWarningRepository.js";
 export * from "./INotificationRepository.js";
 export * from "./IRemoteInstanceRepository.js";
 export * from "./IScheduledNoteRepository.js";
+export * from "./IPasskeyCredentialRepository.js";
+export * from "./IPasskeyChallengeRepository.js";

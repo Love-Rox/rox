@@ -9,28 +9,12 @@
 
 import { Hono } from "hono";
 import type { Context } from "hono";
-import { readFileSync } from "fs";
-import { join } from "path";
 import { InstanceSettingsService } from "../services/InstanceSettingsService.js";
 import type { RemoteInstanceService } from "../services/RemoteInstanceService.js";
+import rootPackageJson from "../../../../package.json";
 
-// Read version from root package.json at startup
-let ROX_VERSION = "0.1.0";
-try {
-  // Try to read from root package.json (../../.. from src/routes/instance.ts)
-  const rootPackageJsonPath = join(import.meta.dir, "../../../package.json");
-  const packageJson = JSON.parse(readFileSync(rootPackageJsonPath, "utf-8"));
-  ROX_VERSION = packageJson.version || ROX_VERSION;
-} catch {
-  // If that fails, try monorepo root (../../../../../package.json)
-  try {
-    const monorepoPackageJsonPath = join(import.meta.dir, "../../../../../package.json");
-    const packageJson = JSON.parse(readFileSync(monorepoPackageJsonPath, "utf-8"));
-    ROX_VERSION = packageJson.version || ROX_VERSION;
-  } catch {
-    // Fallback to default version
-  }
-}
+// Get version from root package.json
+const ROX_VERSION = rootPackageJson.version;
 
 const app = new Hono();
 

@@ -151,6 +151,53 @@ export const sessions = pgTable(
   }),
 );
 
+// Passkey credentials table for WebAuthn authentication
+export const passkeyCredentials = pgTable(
+  "passkey_credentials",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    credentialId: text("credential_id").notNull().unique(), // WebAuthn credential ID (base64url)
+    publicKey: text("public_key").notNull(), // COSE public key (base64url)
+    counter: integer("counter").notNull().default(0), // Signature counter for replay attack prevention
+    deviceType: text("device_type"), // 'singleDevice' or 'multiDevice'
+    backedUp: boolean("backed_up").notNull().default(false), // Whether credential is backed up (sync passkey)
+    transports: jsonb("transports").$type<string[]>().default([]), // WebAuthn transports (usb, ble, nfc, internal)
+    name: text("name"), // User-friendly name for the credential
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    lastUsedAt: timestamp("last_used_at"),
+  },
+  (table) => ({
+    credentialIdIdx: uniqueIndex("passkey_credential_id_idx").on(table.credentialId),
+    userIdIdx: index("passkey_user_id_idx").on(table.userId),
+  }),
+);
+
+// Passkey authentication challenges (temporary storage for WebAuthn flow)
+export const passkeyChallenges = pgTable(
+  "passkey_challenges",
+  {
+    id: text("id").primaryKey(),
+    challenge: text("challenge").notNull().unique(), // Random challenge (base64url)
+    userId: text("user_id").references(() => users.id, { onDelete: "cascade" }), // null for authentication, set for registration
+    type: text("type").notNull(), // 'registration' or 'authentication'
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    challengeIdx: uniqueIndex("passkey_challenge_idx").on(table.challenge),
+    expiresAtIdx: index("passkey_challenge_expires_idx").on(table.expiresAt),
+  }),
+);
+
+// Type exports for passkey tables
+export type PasskeyCredential = typeof passkeyCredentials.$inferSelect;
+export type NewPasskeyCredential = typeof passkeyCredentials.$inferInsert;
+export type PasskeyChallenge = typeof passkeyChallenges.$inferSelect;
+export type NewPasskeyChallenge = typeof passkeyChallenges.$inferInsert;
+
 // Notes table
 export const notes = pgTable(
   "notes",
