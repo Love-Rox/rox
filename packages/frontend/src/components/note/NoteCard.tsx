@@ -10,6 +10,7 @@ import { getRemoteInstanceInfo, type PublicRemoteInstance } from "../../lib/api/
 import { Card, CardContent } from "../ui/Card";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
+import { SpaLink } from "../ui/SpaLink";
 import { ImageModal } from "../ui/ImageModal";
 import { notesApi } from "../../lib/api/notes";
 import { NoteComposer } from "./NoteComposer";
@@ -199,8 +200,8 @@ function NoteCardComponent({
       <CardContent className="p-4">
         {/* User Info */}
         <div className="mb-3 flex items-start gap-3">
-          <a
-            href={`/${note.user.username}`}
+          <SpaLink
+            to={`/${note.user.username}`}
             className="shrink-0"
             aria-label={`View profile of ${note.user.name || note.user.username}`}
           >
@@ -210,11 +211,11 @@ function NoteCardComponent({
               fallback={userInitials}
               size="md"
             />
-          </a>
+          </SpaLink>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <a
-                href={
+              <SpaLink
+                to={
                   note.user.host
                     ? `/@${note.user.username}@${note.user.host}`
                     : `/${note.user.username}`
@@ -222,9 +223,9 @@ function NoteCardComponent({
                 className="font-semibold text-(--text-primary) truncate hover:underline"
               >
                 {note.user.name ? <MfmRenderer text={note.user.name} plain /> : note.user.username}
-              </a>
-              <a
-                href={
+              </SpaLink>
+              <SpaLink
+                to={
                   note.user.host
                     ? `/@${note.user.username}@${note.user.host}`
                     : `/${note.user.username}`
@@ -233,7 +234,7 @@ function NoteCardComponent({
               >
                 @{note.user.username}
                 {note.user.host && `@${note.user.host}`}
-              </a>
+              </SpaLink>
               {/* Remote instance badge with server info */}
               {note.user.host && (
                 <a
@@ -278,13 +279,13 @@ function NoteCardComponent({
                 </a>
               )}
             </div>
-            <a
-              href={`/notes/${note.id}`}
+            <SpaLink
+              to={`/notes/${note.id}`}
               className="text-xs text-(--text-muted) hover:underline"
               title={new Date(note.createdAt).toLocaleString()}
             >
               {new Date(note.createdAt).toLocaleString()}
-            </a>
+            </SpaLink>
           </div>
         </div>
 
@@ -379,15 +380,15 @@ function NoteCardComponent({
             {note.renote && (
               <div className="mb-3 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
                 <div className="mb-2 flex items-center gap-2">
-                  <a href={`/${note.renote.user.username}`} className="shrink-0">
+                  <SpaLink to={`/${note.renote.user.username}`} className="shrink-0">
                     <Avatar
                       src={note.renote.user.avatarUrl}
                       alt={note.renote.user.name || note.renote.user.username}
                       size="sm"
                     />
-                  </a>
-                  <a
-                    href={`/${note.renote.user.username}`}
+                  </SpaLink>
+                  <SpaLink
+                    to={`/${note.renote.user.username}`}
                     className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
                   >
                     {note.renote.user.name ? (
@@ -395,13 +396,13 @@ function NoteCardComponent({
                     ) : (
                       note.renote.user.username
                     )}
-                  </a>
-                  <a
-                    href={`/${note.renote.user.username}`}
+                  </SpaLink>
+                  <SpaLink
+                    to={`/${note.renote.user.username}`}
                     className="text-xs text-gray-500 dark:text-gray-400 hover:underline"
                   >
                     @{note.renote.user.username}
-                  </a>
+                  </SpaLink>
                 </div>
                 {note.renote.text && (
                   <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap wrap-break-word">

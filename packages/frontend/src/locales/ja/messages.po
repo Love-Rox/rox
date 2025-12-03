@@ -154,7 +154,7 @@ msgstr "追加コメント"
 msgid "Additional Details (optional)"
 msgstr "詳細（任意）"
 
-#: src/components/layout/Sidebar.tsx:105
+#: src/components/layout/Sidebar.tsx:106
 msgid "Admin"
 msgstr "管理"
 
@@ -451,7 +451,7 @@ msgstr "ActivityPubプロトコルを使用してFediverse全体のユーザー�
 msgid "Contact"
 msgstr "連絡先"
 
-#: src/components/note/NoteCard.tsx:303
+#: src/components/note/NoteCard.tsx:304
 msgid "Content Warning"
 msgstr "閲覧注意"
 
@@ -762,7 +762,7 @@ msgstr "登録には招待コードを入力してください"
 msgid "Error loading timeline"
 msgstr "タイムラインの読み込みに失敗しました"
 
-#: src/components/user/UserProfile.tsx:304
+#: src/components/user/UserProfile.tsx:306
 msgid "Error loading user profile"
 msgstr "ユーザープロフィールの読み込みに失敗しました"
 
@@ -801,7 +801,7 @@ msgstr "エイリアスの追加に失敗しました"
 msgid "Failed to add emoji"
 msgstr "絵文字の追加に失敗しました"
 
-#: src/components/note/NoteCard.tsx:158
+#: src/components/note/NoteCard.tsx:159
 msgid "Failed to add reaction"
 msgstr "リアクションの追加に失敗しました"
 
@@ -907,7 +907,7 @@ msgstr "バナーの削除に失敗しました"
 msgid "Failed to remove instance"
 msgstr "インスタンスの削除に失敗しました"
 
-#: src/components/note/NoteCard.tsx:176
+#: src/components/note/NoteCard.tsx:177
 msgid "Failed to renote"
 msgstr "リノートに失敗しました"
 
@@ -1084,7 +1084,7 @@ msgstr "インスタンスのヘッダー画像（最大5MB）"
 msgid "Healthy"
 msgstr "正常"
 
-#: src/components/layout/Sidebar.tsx:71
+#: src/components/layout/Sidebar.tsx:72
 #: src/components/note/NoteComposer.tsx:379
 #: src/pages/timeline.tsx:169
 msgid "Home"
@@ -1338,7 +1338,7 @@ msgstr "リモートインスタンスと連合ステータスを管理"
 msgid "Manage your profile information"
 msgstr "プロフィール情報を管理"
 
-#: src/components/notification/NotificationList.tsx:87
+#: src/components/notification/NotificationList.tsx:89
 #: src/pages/notifications.tsx:187
 msgid "Mark all as read"
 msgstr "すべて既読にする"
@@ -1393,7 +1393,7 @@ msgstr "モデレーター権限が必要です"
 msgid "Moderator Role"
 msgstr "モデレーターロール"
 
-#: src/components/note/NoteCard.tsx:496
+#: src/components/note/NoteCard.tsx:497
 msgid "More options"
 msgstr "その他のオプション"
 
@@ -1491,7 +1491,7 @@ msgstr "一致する通知がありません"
 msgid "No notes yet"
 msgstr "まだ投稿がありません"
 
-#: src/components/notification/NotificationList.tsx:65
+#: src/components/notification/NotificationList.tsx:67
 #: src/pages/notifications.tsx:279
 msgid "No notifications"
 msgstr "通知はありません"
@@ -1552,7 +1552,7 @@ msgstr "ノートが見つかりません"
 msgid "Note posted successfully"
 msgstr "投稿しました"
 
-#: src/components/note/NoteCard.tsx:170
+#: src/components/note/NoteCard.tsx:171
 msgid "Note renoted"
 msgstr "リノートしました"
 
@@ -1589,7 +1589,7 @@ msgstr "モデレーターが削除したノートがここに表示されます
 msgid "Notification Sound"
 msgstr "通知音"
 
-#: src/components/layout/Sidebar.tsx:83
+#: src/components/layout/Sidebar.tsx:84
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:175
 msgid "Notifications"
@@ -1709,7 +1709,7 @@ msgstr "プライバシーポリシー"
 msgid "Privacy Policy URL"
 msgstr "プライバシーポリシーURL"
 
-#: src/components/layout/Sidebar.tsx:89
+#: src/components/layout/Sidebar.tsx:90
 msgid "Profile"
 msgstr "プロフィール"
 
@@ -1777,7 +1777,7 @@ msgstr "がリアクションしました"
 msgid "Reaction"
 msgstr "リアクション"
 
-#: src/components/note/NoteCard.tsx:151
+#: src/components/note/NoteCard.tsx:152
 msgid "Reaction added"
 msgstr "リアクションを追加しました"
 
@@ -1900,7 +1900,7 @@ msgstr "バナーを削除"
 msgid "Renote"
 msgstr "リノート"
 
-#: src/components/note/NoteCard.tsx:294
+#: src/components/note/NoteCard.tsx:295
 msgid "Renoted"
 msgstr "リノート"
 
@@ -1926,7 +1926,7 @@ msgstr "返信"
 msgid "Replying to"
 msgstr "返信先:"
 
-#: src/components/note/NoteCard.tsx:511
+#: src/components/note/NoteCard.tsx:512
 msgid "Report"
 msgstr "報告"
 
@@ -2130,7 +2130,7 @@ msgstr "テーマ設定を保存"
 msgid "Saving..."
 msgstr "保存中..."
 
-#: src/components/layout/Sidebar.tsx:77
+#: src/components/layout/Sidebar.tsx:78
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:333
 #: src/pages/search.tsx:359
@@ -2202,7 +2202,7 @@ msgstr "センシティブなコンテンツ（NSFW）"
 msgid "Server Assets"
 msgstr "サーバー素材"
 
-#: src/components/layout/Sidebar.tsx:95
+#: src/components/layout/Sidebar.tsx:96
 #: src/pages/settings.tsx:135
 msgid "Settings"
 msgstr "設定"
@@ -2216,7 +2216,7 @@ msgstr "思いを共有し、友人とつながり、Fediverse全体での会話
 msgid "Show all {0} files"
 msgstr "すべて表示（{0}ファイル）"
 
-#: src/components/note/NoteCard.tsx:313
+#: src/components/note/NoteCard.tsx:314
 msgid "Show content"
 msgstr "内容を表示"
 
@@ -2538,7 +2538,7 @@ msgstr "ユーザー詳細"
 msgid "User Moderation"
 msgstr "ユーザーのモデレーション"
 
-#: src/components/user/UserProfile.tsx:305
+#: src/components/user/UserProfile.tsx:307
 #: src/pages/mod/users.tsx:115
 msgid "User not found"
 msgstr "ユーザーが見つかりません"
@@ -2702,7 +2702,7 @@ msgstr "モデレーターから警告を受けました"
 msgid "You will receive notifications even when the browser is closed."
 msgstr "ブラウザを閉じていても通知を受け取ることができます。"
 
-#: src/components/notification/NotificationList.tsx:68
+#: src/components/notification/NotificationList.tsx:70
 #: src/pages/notifications.tsx:286
 msgid "You're all caught up!"
 msgstr "すべての通知を確認しました！"

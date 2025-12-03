@@ -12,6 +12,7 @@ import { Bell, CheckCheck, Loader2 } from "lucide-react";
 import { NotificationItem } from "./NotificationItem";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
+import { useRouter } from "../ui/SpaLink";
 import type { Notification } from "../../lib/types/notification";
 
 interface NotificationListProps {
@@ -20,6 +21,7 @@ interface NotificationListProps {
 
 export function NotificationList({ onNotificationClick }: NotificationListProps) {
   const { notifications, loading, markAsRead, markAllAsRead, loadMore } = useNotifications();
+  const router = useRouter();
 
   const [hasMore, setHasMore] = useState(true);
 
@@ -43,16 +45,16 @@ export function NotificationList({ onNotificationClick }: NotificationListProps)
       return;
     }
 
-    // Default navigation
+    // Default navigation using SPA router
     if (notification.noteId) {
-      window.location.href = `/notes/${notification.noteId}`;
+      router.push(`/notes/${notification.noteId}`);
     } else if (notification.notifier) {
       const host = notification.notifier.host;
       const username = notification.notifier.username;
       if (host) {
-        window.location.href = `/@${username}@${host}`;
+        router.push(`/@${username}@${host}`);
       } else {
-        window.location.href = `/@${username}`;
+        router.push(`/@${username}`);
       }
     }
   };
