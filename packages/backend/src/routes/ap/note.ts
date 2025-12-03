@@ -35,13 +35,12 @@ note.get("/notes/:id", async (c: Context) => {
   const isActivityPubRequest =
     accept.includes("application/activity+json") || accept.includes("application/ld+json");
 
-  // If not an ActivityPub request, skip this handler
-  // In development, frontend runs on separate port
-  // In production, reverse proxy should route HTML requests to frontend
+  // If not an ActivityPub request, skip this handler and pass to next middleware
+  // This allows the request to be handled by the frontend (SSR or reverse proxy)
   if (!isActivityPubRequest) {
-    // Return 404 to let nginx/reverse proxy fall through to frontend
-    // Or in dev, the user accesses frontend directly on port 3001
-    return c.notFound();
+    // Use next() to pass to subsequent handlers instead of returning 404
+    // This allows integration with frontend serving middleware or reverse proxy
+    return c.text("", 404);
   }
 
   // Get note from repository

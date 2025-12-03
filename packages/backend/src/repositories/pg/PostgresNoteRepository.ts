@@ -29,15 +29,51 @@ export class PostgresNoteRepository implements INoteRepository {
   }
 
   async findById(id: string): Promise<Note | null> {
-    const [result] = await this.db.select().from(notes).where(eq(notes.id, id)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(notes)
+      .innerJoin(users, eq(notes.userId, users.id))
+      .where(eq(notes.id, id))
+      .limit(1);
 
-    return (result as Note) ?? null;
+    if (!result) {
+      return null;
+    }
+
+    return {
+      ...result.notes,
+      user: {
+        id: result.users.id,
+        username: result.users.username,
+        displayName: result.users.displayName,
+        avatarUrl: result.users.avatarUrl,
+        host: result.users.host,
+      },
+    } as Note;
   }
 
   async findByUri(uri: string): Promise<Note | null> {
-    const [result] = await this.db.select().from(notes).where(eq(notes.uri, uri)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(notes)
+      .innerJoin(users, eq(notes.userId, users.id))
+      .where(eq(notes.uri, uri))
+      .limit(1);
 
-    return (result as Note) ?? null;
+    if (!result) {
+      return null;
+    }
+
+    return {
+      ...result.notes,
+      user: {
+        id: result.users.id,
+        username: result.users.username,
+        displayName: result.users.displayName,
+        avatarUrl: result.users.avatarUrl,
+        host: result.users.host,
+      },
+    } as Note;
   }
 
   async getLocalTimeline(options: TimelineOptions): Promise<Note[]> {

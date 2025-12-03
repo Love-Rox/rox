@@ -88,7 +88,7 @@ export function NoteDetailPageClient({ noteId }: { noteId: string }) {
     );
   }
 
-  if (error || !note) {
+  if (error || !note || !note.user) {
     return (
       <Layout>
         <div className="max-w-2xl mx-auto py-8 px-4">
