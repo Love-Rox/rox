@@ -204,10 +204,14 @@ export class WebPushService {
       const options = {
         timeout: 10000, // 10 seconds
       };
+      console.log("[WebPush] Sending to endpoint:", subscription.endpoint.substring(0, 60) + "...");
+      const startTime = Date.now();
       await webpush.sendNotification(pushSubscription, JSON.stringify(payload), options);
+      console.log("[WebPush] Success, took", Date.now() - startTime, "ms");
       logger.debug({ subscriptionId: subscription.id }, "Push notification sent");
       return true;
     } catch (error: any) {
+      console.log("[WebPush] Error:", error.message, "code:", error.code, "status:", error.statusCode);
       // Handle expired or invalid subscriptions
       if (error.statusCode === 404 || error.statusCode === 410) {
         logger.info(
