@@ -163,7 +163,7 @@ msgstr "Additional Comment"
 msgid "Additional Details (optional)"
 msgstr "Additional Details (optional)"
 
-#: src/components/layout/Sidebar.tsx:108
+#: src/components/layout/Sidebar.tsx:120
 msgid "Admin"
 msgstr "Admin"
 
@@ -276,19 +276,6 @@ msgstr "Avatar updated successfully"
 msgid "Back to timeline"
 msgstr "Back to timeline"
 
-#: src/components/settings/ProfileImageSection.tsx:275
-msgid "Banner"
-msgstr "Banner"
-
-#: src/components/settings/ProfileImageSection.tsx:182
-msgid "Banner removed"
-msgstr "Banner removed"
-
-#: src/components/settings/ProfileImageSection.tsx:126
-msgid "Banner updated successfully"
-msgstr "Banner updated successfully"
-
-#: src/pages/admin/settings.tsx:398
 #: src/components/settings/ProfileImageSection.tsx:275
 msgid "Banner"
 msgstr "Banner"
@@ -1125,7 +1112,7 @@ msgstr "Header image for your instance (max 5MB)"
 msgid "Healthy"
 msgstr "Healthy"
 
-#: src/components/layout/Sidebar.tsx:74
+#: src/components/layout/Sidebar.tsx:86
 #: src/components/note/NoteComposer.tsx:408
 #: src/pages/timeline.tsx:169
 msgid "Home"
@@ -1160,11 +1147,9 @@ msgid "Initiate Migration"
 msgstr "Initiate Migration"
 
 #: src/pages/admin/settings.tsx:277
-#: src/pages/admin/settings.tsx:277
 msgid "Instance"
 msgstr "Instance"
 
-#: src/pages/admin/settings.tsx:782
 #: src/pages/admin/settings.tsx:782
 msgid "Instance Banner"
 msgstr "Instance Banner"
@@ -1350,8 +1335,8 @@ msgstr "Local only"
 msgid "Log In"
 msgstr "Log In"
 
-#: src/components/layout/Sidebar.tsx:200
-#: src/components/layout/Sidebar.tsx:327
+#: src/components/layout/Sidebar.tsx:214
+#: src/components/layout/Sidebar.tsx:345
 msgid "Logging out..."
 msgstr "Logging out..."
 
@@ -1359,8 +1344,8 @@ msgstr "Logging out..."
 msgid "Login failed. Please check your credentials."
 msgstr "Login failed. Please check your credentials."
 
-#: src/components/layout/Sidebar.tsx:200
-#: src/components/layout/Sidebar.tsx:327
+#: src/components/layout/Sidebar.tsx:214
+#: src/components/layout/Sidebar.tsx:345
 msgid "Logout"
 msgstr "Logout"
 
@@ -1656,7 +1641,7 @@ msgstr "Notes deleted by moderators will appear here"
 msgid "Notification Sound"
 msgstr "Notification Sound"
 
-#: src/components/layout/Sidebar.tsx:86
+#: src/components/layout/Sidebar.tsx:98
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:175
 msgid "Notifications"
@@ -1745,7 +1730,6 @@ msgid "Please enter text or attach files"
 msgstr "Please enter text or attach files"
 
 #: src/pages/settings.tsx:83
-#: src/pages/settings.tsx:83
 msgid "Please log in to update your profile"
 msgstr "Please log in to update your profile"
 
@@ -1807,7 +1791,7 @@ msgstr "Privacy Policy"
 msgid "Privacy Policy URL"
 msgstr "Privacy Policy URL"
 
-#: src/components/layout/Sidebar.tsx:92
+#: src/components/layout/Sidebar.tsx:104
 msgid "Profile"
 msgstr "Profile"
 
@@ -2251,7 +2235,7 @@ msgstr "Schedule post"
 msgid "Scheduled time must be in the future"
 msgstr "Scheduled time must be in the future"
 
-#: src/components/layout/Sidebar.tsx:80
+#: src/components/layout/Sidebar.tsx:92
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:333
 #: src/pages/search.tsx:359
@@ -2323,7 +2307,7 @@ msgstr "Sensitive content (NSFW)"
 msgid "Server Assets"
 msgstr "Server Assets"
 
-#: src/components/layout/Sidebar.tsx:98
+#: src/components/layout/Sidebar.tsx:110
 #: src/pages/settings.tsx:136
 msgid "Settings"
 msgstr "Settings"
