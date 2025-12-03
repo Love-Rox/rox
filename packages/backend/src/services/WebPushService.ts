@@ -200,9 +200,9 @@ export class WebPushService {
     };
 
     try {
-      // Set a 30 second timeout for the push notification
+      // Set a 10 second timeout for the push notification
       const options = {
-        timeout: 30000, // 30 seconds
+        timeout: 10000, // 10 seconds
       };
       await webpush.sendNotification(pushSubscription, JSON.stringify(payload), options);
       logger.debug({ subscriptionId: subscription.id }, "Push notification sent");
@@ -218,12 +218,25 @@ export class WebPushService {
         return false;
       }
 
+      // Handle timeout errors
+      if (error.code === "ETIMEDOUT" || error.message?.includes("timeout")) {
+        logger.warn(
+          {
+            subscriptionId: subscription.id,
+            endpoint: subscription.endpoint,
+          },
+          "Push notification timed out - push service may be unreachable",
+        );
+        return false;
+      }
+
       // Log detailed error information
       logger.error(
         {
           err: error,
           subscriptionId: subscription.id,
           statusCode: error.statusCode,
+          code: error.code,
           message: error.message,
           endpoint: subscription.endpoint,
         },
