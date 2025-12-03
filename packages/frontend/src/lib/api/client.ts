@@ -199,6 +199,77 @@ export class ApiClient {
       body: body ? JSON.stringify(body) : undefined,
     });
   }
+
+  /**
+   * Upload file via FormData
+   *
+   * @param path - API endpoint path
+   * @param formData - FormData containing the file
+   * @param timeout - Request timeout in milliseconds (default: 60000 for uploads)
+   * @returns Parsed JSON response
+   *
+   * @example
+   * ```ts
+   * const formData = new FormData();
+   * formData.append('file', file);
+   * const result = await apiClient.upload<{ url: string }>('/api/upload', formData);
+   * ```
+   */
+  async upload<T>(path: string, formData: FormData, timeout: number = 60000): Promise<T> {
+    const headers: Record<string, string> = {};
+    // Don't set Content-Type - browser will set it with boundary for multipart/form-data
+
+    if (this.token) {
+      headers.Authorization = `Bearer ${this.token}`;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const response = await fetch(`${this.baseUrl}${path}`, {
+        method: "POST",
+        headers,
+        body: formData,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: response.statusText }));
+        throw new ApiError(
+          error.error || `API Error: ${response.statusText}`,
+          response.status,
+          false,
+          false,
+        );
+      }
+
+      return response.json();
+    } catch (error) {
+      clearTimeout(timeoutId);
+
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new ApiError("Upload timeout. Please try again.", undefined, false, true);
+      }
+
+      if (error instanceof TypeError) {
+        throw new ApiError("Network error. Please check your connection.", undefined, true, false);
+      }
+
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      throw new ApiError(
+        error instanceof Error ? error.message : "Unknown error occurred",
+        undefined,
+        false,
+        false,
+      );
+    }
+  }
 }
 
 /**

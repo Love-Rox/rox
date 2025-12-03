@@ -17,6 +17,7 @@ import { UISettingsSection } from "../components/settings/UISettingsSection";
 import { AccountMigrationSection } from "../components/settings/AccountMigrationSection";
 import { PushNotificationSection } from "../components/settings/PushNotificationSection";
 import { StorageSection } from "../components/settings/StorageSection";
+import { ProfileImageSection } from "../components/settings/ProfileImageSection";
 
 /**
  * Settings page
@@ -138,7 +139,10 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <Card>
+      {/* Profile Images Section */}
+      <ProfileImageSection />
+
+      <Card className="mt-6">
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Display Name */}
