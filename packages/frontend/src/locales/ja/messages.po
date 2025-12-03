@@ -66,9 +66,11 @@ msgid "{0} used (Unlimited)"
 msgstr "{0} 使用中（無制限）"
 
 #: src/pages/admin/settings.tsx:222
+#: src/pages/admin/settings.tsx:222
 msgid "{assetType} removed"
 msgstr "{assetType}を削除しました"
 
+#: src/pages/admin/settings.tsx:204
 #: src/pages/admin/settings.tsx:204
 msgid "{assetType} uploaded successfully"
 msgstr "{assetType}をアップロードしました"
@@ -172,6 +174,7 @@ msgid "Admin Role"
 msgstr "管理者ロール"
 
 #: src/pages/admin/settings.tsx:256
+#: src/pages/admin/settings.tsx:256
 msgid "Admin Settings"
 msgstr "管理設定"
 
@@ -214,6 +217,7 @@ msgstr "すべてのインスタンスがこのサーバーと連携できます
 msgid "All Types"
 msgstr "すべてのタイプ"
 
+#: src/pages/admin/settings.tsx:517
 #: src/pages/admin/settings.tsx:517
 msgid "Allow new users to register accounts"
 msgstr "新規ユーザーのアカウント登録を許可"

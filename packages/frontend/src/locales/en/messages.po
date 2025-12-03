@@ -289,6 +289,19 @@ msgid "Banner updated successfully"
 msgstr "Banner updated successfully"
 
 #: src/pages/admin/settings.tsx:398
+#: src/components/settings/ProfileImageSection.tsx:275
+msgid "Banner"
+msgstr "Banner"
+
+#: src/components/settings/ProfileImageSection.tsx:182
+msgid "Banner removed"
+msgstr "Banner removed"
+
+#: src/components/settings/ProfileImageSection.tsx:126
+msgid "Banner updated successfully"
+msgstr "Banner updated successfully"
+
+#: src/pages/admin/settings.tsx:398
 msgid "Banner URL"
 msgstr "Banner URL"
 
@@ -1147,9 +1160,11 @@ msgid "Initiate Migration"
 msgstr "Initiate Migration"
 
 #: src/pages/admin/settings.tsx:277
+#: src/pages/admin/settings.tsx:277
 msgid "Instance"
 msgstr "Instance"
 
+#: src/pages/admin/settings.tsx:782
 #: src/pages/admin/settings.tsx:782
 msgid "Instance Banner"
 msgstr "Instance Banner"
@@ -1729,6 +1744,7 @@ msgstr "Please enable notifications in your browser settings to receive push not
 msgid "Please enter text or attach files"
 msgstr "Please enter text or attach files"
 
+#: src/pages/settings.tsx:83
 #: src/pages/settings.tsx:83
 msgid "Please log in to update your profile"
 msgstr "Please log in to update your profile"

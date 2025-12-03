@@ -3,7 +3,19 @@
 import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
-import { Home, User, Settings, Shield, Bell, Search, Menu, X, PanelLeftClose, PanelLeft, LogOut } from "lucide-react";
+import {
+  Home,
+  User,
+  Settings,
+  Shield,
+  Bell,
+  Search,
+  Menu,
+  X,
+  PanelLeftClose,
+  PanelLeft,
+  LogOut,
+} from "lucide-react";
 import { currentUserAtom, logoutAtom } from "../../lib/atoms/auth";
 import { sidebarCollapsedWithPersistenceAtom } from "../../lib/atoms/sidebar";
 import { Avatar } from "../ui/Avatar";
@@ -128,16 +140,18 @@ export function Sidebar() {
       {/* Logo / Brand */}
       <div className="p-4 border-b border-(--border-color)">
         <SpaLink to="/timeline" className="flex items-center gap-3" onClick={handleNavClick}>
-          {instanceInfo?.iconUrl ? (
-            <img
-              src={instanceInfo.iconUrl}
-              alt={instanceInfo.name || "Logo"}
-              className="w-8 h-8 rounded-lg object-cover"
-            />
-          ) : null}
-          <span className="text-xl font-bold text-primary-600">
-            {instanceInfo?.name || "Rox"}
-          </span>
+          <SpaLink to="/timeline" className="flex items-center gap-3" onClick={handleNavClick}>
+            {instanceInfo?.iconUrl ? (
+              <img
+                src={instanceInfo.iconUrl}
+                alt={instanceInfo.name || "Logo"}
+                className="w-8 h-8 rounded-lg object-cover"
+              />
+            ) : null}
+            <span className="text-xl font-bold text-primary-600">
+              {instanceInfo?.name || "Rox"}
+            </span>
+          </SpaLink>
         </SpaLink>
       </div>
 
@@ -208,33 +222,37 @@ export function Sidebar() {
   const DesktopSidebarContent = () => (
     <>
       {/* Logo / Brand with collapse toggle */}
-      <div className={`p-4 border-b border-(--border-color) flex items-center ${isCollapsed ? "justify-center" : "justify-between"}`}>
+      <div
+        className={`p-4 border-b border-(--border-color) flex items-center ${isCollapsed ? "justify-center" : "justify-between"}`}
+      >
         <SpaLink to="/timeline" className={`flex items-center ${isCollapsed ? "" : "gap-3"}`}>
-          {/* Use favicon for collapsed mode, icon for expanded */}
-          {isCollapsed ? (
-            instanceInfo?.faviconUrl || instanceInfo?.iconUrl ? (
-              <img
-                src={instanceInfo.faviconUrl || instanceInfo.iconUrl || ""}
-                alt={instanceInfo?.name || "Logo"}
-                className="w-8 h-8 rounded object-cover"
-              />
-            ) : (
-              <span className="text-xl font-bold text-primary-600">R</span>
-            )
-          ) : (
-            <>
-              {instanceInfo?.iconUrl ? (
+          <SpaLink to="/timeline" className={`flex items-center ${isCollapsed ? "" : "gap-3"}`}>
+            {/* Use favicon for collapsed mode, icon for expanded */}
+            {isCollapsed ? (
+              instanceInfo?.faviconUrl || instanceInfo?.iconUrl ? (
                 <img
-                  src={instanceInfo.iconUrl}
-                  alt={instanceInfo.name || "Logo"}
-                  className="w-8 h-8 rounded-lg object-cover"
+                  src={instanceInfo.faviconUrl || instanceInfo.iconUrl || ""}
+                  alt={instanceInfo?.name || "Logo"}
+                  className="w-8 h-8 rounded object-cover"
                 />
-              ) : null}
-              <span className="text-xl font-bold text-primary-600">
-                {instanceInfo?.name || "Rox"}
-              </span>
-            </>
-          )}
+              ) : (
+                <span className="text-xl font-bold text-primary-600">R</span>
+              )
+            ) : (
+              <>
+                {instanceInfo?.iconUrl ? (
+                  <img
+                    src={instanceInfo.iconUrl}
+                    alt={instanceInfo.name || "Logo"}
+                    className="w-8 h-8 rounded-lg object-cover"
+                  />
+                ) : null}
+                <span className="text-xl font-bold text-primary-600">
+                  {instanceInfo?.name || "Rox"}
+                </span>
+              </>
+            )}
+          </SpaLink>
         </SpaLink>
         {!isCollapsed && (
           <button
@@ -361,22 +379,21 @@ export function Sidebar() {
         </button>
 
         <SpaLink to="/timeline" className="flex items-center gap-2">
-          {instanceInfo?.iconUrl ? (
-            <img
-              src={instanceInfo.iconUrl}
-              alt={instanceInfo.name || "Logo"}
-              className="w-7 h-7 rounded-lg object-cover"
-            />
-          ) : null}
-          <span className="text-lg font-bold text-primary-600">
-            {instanceInfo?.name || "Rox"}
-          </span>
+          <SpaLink to="/timeline" className="flex items-center gap-2">
+            {instanceInfo?.iconUrl ? (
+              <img
+                src={instanceInfo.iconUrl}
+                alt={instanceInfo.name || "Logo"}
+                className="w-7 h-7 rounded-lg object-cover"
+              />
+            ) : null}
+            <span className="text-lg font-bold text-primary-600">
+              {instanceInfo?.name || "Rox"}
+            </span>
+          </SpaLink>
         </SpaLink>
 
-        <SpaLink
-          to={`/${currentUser.username}`}
-          className="p-1 -mr-1 rounded-full"
-        >
+        <SpaLink to={`/${currentUser.username}`} className="p-1 -mr-1 rounded-full">
           <Avatar
             src={currentUser.avatarUrl}
             alt={currentUser.name || currentUser.username}

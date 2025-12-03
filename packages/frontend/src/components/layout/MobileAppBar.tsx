@@ -87,7 +87,11 @@ export function MobileAppBar() {
             }`}
             aria-label={item.label}
           >
-            <span className={item.highlight ? "p-1.5 rounded-full bg-primary-100 dark:bg-primary-900/30" : ""}>
+            <span
+              className={
+                item.highlight ? "p-1.5 rounded-full bg-primary-100 dark:bg-primary-900/30" : ""
+              }
+            >
               {item.icon}
             </span>
           </SpaLink>
