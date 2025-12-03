@@ -5,7 +5,7 @@
  */
 
 // Service Worker version
-const SW_VERSION = "1.0.0";
+const SW_VERSION = "1.0.1";
 
 // Install event
 self.addEventListener("install", (_event) => {
@@ -63,6 +63,7 @@ self.addEventListener("push", (event) => {
     tag: data.tag,
     data: data.data,
     vibrate: [100, 50, 100],
+    silent: false, // Enable notification sound
     requireInteraction: false,
     actions: [
       {
