@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "waku dev",
-    "build": "waku build && bun run fix-preload",
-    "fix-preload": "bun run scripts/fix-preload.ts",
+    "build": "waku build",
     "start": "waku start -p ${FRONTEND_PORT:-3001}",
     "typecheck": "tsc --noEmit",
     "lingui:extract": "lingui extract",
