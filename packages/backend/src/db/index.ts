@@ -35,11 +35,15 @@ export function createDatabase(): Database {
     case "postgres": {
       // Connection pooling configuration
       // postgres.js has built-in connection pooling
+      // Note: All timeout values are in seconds for postgres.js
       const client = postgres(databaseUrl, {
         max: parseInt(process.env.DB_POOL_MAX || "10", 10), // Max connections in pool
         idle_timeout: parseInt(process.env.DB_IDLE_TIMEOUT || "20", 10), // Close idle connections after 20s
-        max_lifetime: parseInt(process.env.DB_MAX_LIFETIME || "600", 10), // Max connection lifetime 10min (reduced from 30min to prevent timeout overflow)
-        connect_timeout: parseInt(process.env.DB_CONNECT_TIMEOUT || "30", 10), // Connection timeout 30s
+        max_lifetime: 60 * 5, // 5 minutes - keep short to avoid timeout overflow issues
+        connect_timeout: parseInt(process.env.DB_CONNECT_TIMEOUT || "10", 10), // Connection timeout 10s
+        connection: {
+          application_name: "rox",
+        },
       });
       return drizzlePg(client, { schema: pgSchema }) as Database;
     }
