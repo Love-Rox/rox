@@ -9,7 +9,7 @@
  * - Theme settings (primary color, dark mode)
  */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
@@ -23,6 +23,7 @@ import { addToastAtom } from "../../lib/atoms/toast";
 import { Layout } from "../../components/layout/Layout";
 import { clearInstanceInfoCache } from "../../hooks/useInstanceInfo";
 import { AdminNav } from "../../components/admin/AdminNav";
+import { AssetUploadCard } from "../../components/admin/AssetUploadCard";
 
 interface AdminSettings {
   registration: {
@@ -76,9 +77,6 @@ export default function AdminSettingsPage() {
     favicon: null,
   });
   const [isUploadingAsset, setIsUploadingAsset] = useState<string | null>(null);
-  const iconInputRef = useRef<HTMLInputElement>(null);
-  const bannerInputRef = useRef<HTMLInputElement>(null);
-  const faviconInputRef = useRef<HTMLInputElement>(null);
 
   // Check admin access and load settings
   useEffect(() => {
@@ -229,11 +227,6 @@ export default function AdminSettingsPage() {
     } finally {
       setIsUploadingAsset(null);
     }
-  };
-
-  const handleFileSelect = (assetType: "icon" | "banner" | "favicon") => {
-    const inputRef = assetType === "icon" ? iconInputRef : assetType === "banner" ? bannerInputRef : faviconInputRef;
-    inputRef.current?.click();
   };
 
   if (isLoading) {
@@ -773,181 +766,38 @@ export default function AdminSettingsPage() {
               <Trans>Upload images for your instance branding. Files are automatically converted to WebP format.</Trans>
             </p>
 
-            {/* Hidden file inputs */}
-            <input
-              ref={iconInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleAssetUpload("icon", file);
-                e.target.value = "";
-              }}
-            />
-            <input
-              ref={bannerInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleAssetUpload("banner", file);
-                e.target.value = "";
-              }}
-            />
-            <input
-              ref={faviconInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleAssetUpload("favicon", file);
-                e.target.value = "";
-              }}
+            <AssetUploadCard
+              type="icon"
+              title={<Trans>Instance Icon</Trans>}
+              description={<Trans>Used for push notifications and instance branding (max 2MB)</Trans>}
+              currentUrl={assets.icon}
+              isUploading={isUploadingAsset === "icon"}
+              onUpload={(file) => handleAssetUpload("icon", file)}
+              onDelete={() => handleAssetDelete("icon")}
+              previewClassName="w-16 h-16 rounded-lg"
             />
 
-            {/* Icon */}
-            <div className="border border-(--border-color) rounded-lg p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h4 className="font-medium text-(--text-primary)">
-                    <Trans>Instance Icon</Trans>
-                  </h4>
-                  <p className="text-sm text-(--text-muted) mt-1">
-                    <Trans>Used for push notifications and instance branding (max 2MB)</Trans>
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onPress={() => handleFileSelect("icon")}
-                    isDisabled={isUploadingAsset === "icon"}
-                  >
-                    {isUploadingAsset === "icon" ? (
-                      <Spinner size="xs" />
-                    ) : (
-                      <Trans>Upload</Trans>
-                    )}
-                  </Button>
-                  {assets.icon && (
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onPress={() => handleAssetDelete("icon")}
-                      isDisabled={isUploadingAsset === "icon"}
-                    >
-                      <Trans>Remove</Trans>
-                    </Button>
-                  )}
-                </div>
-              </div>
-              {assets.icon && (
-                <div className="mt-4">
-                  <img
-                    src={assets.icon}
-                    alt="Instance icon"
-                    className="w-16 h-16 rounded-lg object-cover border border-(--border-color)"
-                  />
-                </div>
-              )}
-            </div>
+            <AssetUploadCard
+              type="banner"
+              title={<Trans>Instance Banner</Trans>}
+              description={<Trans>Header image for your instance (max 5MB)</Trans>}
+              currentUrl={assets.banner}
+              isUploading={isUploadingAsset === "banner"}
+              onUpload={(file) => handleAssetUpload("banner", file)}
+              onDelete={() => handleAssetDelete("banner")}
+              previewClassName="w-full max-w-md h-32 rounded-lg"
+            />
 
-            {/* Banner */}
-            <div className="border border-(--border-color) rounded-lg p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h4 className="font-medium text-(--text-primary)">
-                    <Trans>Instance Banner</Trans>
-                  </h4>
-                  <p className="text-sm text-(--text-muted) mt-1">
-                    <Trans>Header image for your instance (max 5MB)</Trans>
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onPress={() => handleFileSelect("banner")}
-                    isDisabled={isUploadingAsset === "banner"}
-                  >
-                    {isUploadingAsset === "banner" ? (
-                      <Spinner size="xs" />
-                    ) : (
-                      <Trans>Upload</Trans>
-                    )}
-                  </Button>
-                  {assets.banner && (
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onPress={() => handleAssetDelete("banner")}
-                      isDisabled={isUploadingAsset === "banner"}
-                    >
-                      <Trans>Remove</Trans>
-                    </Button>
-                  )}
-                </div>
-              </div>
-              {assets.banner && (
-                <div className="mt-4">
-                  <img
-                    src={assets.banner}
-                    alt="Instance banner"
-                    className="w-full max-w-md h-32 rounded-lg object-cover border border-(--border-color)"
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Favicon */}
-            <div className="border border-(--border-color) rounded-lg p-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h4 className="font-medium text-(--text-primary)">
-                    <Trans>Favicon</Trans>
-                  </h4>
-                  <p className="text-sm text-(--text-muted) mt-1">
-                    <Trans>Browser tab icon, recommended 32x32 or 64x64 (max 512KB)</Trans>
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onPress={() => handleFileSelect("favicon")}
-                    isDisabled={isUploadingAsset === "favicon"}
-                  >
-                    {isUploadingAsset === "favicon" ? (
-                      <Spinner size="xs" />
-                    ) : (
-                      <Trans>Upload</Trans>
-                    )}
-                  </Button>
-                  {assets.favicon && (
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onPress={() => handleAssetDelete("favicon")}
-                      isDisabled={isUploadingAsset === "favicon"}
-                    >
-                      <Trans>Remove</Trans>
-                    </Button>
-                  )}
-                </div>
-              </div>
-              {assets.favicon && (
-                <div className="mt-4">
-                  <img
-                    src={assets.favicon}
-                    alt="Favicon"
-                    className="w-8 h-8 rounded object-cover border border-(--border-color)"
-                  />
-                </div>
-              )}
-            </div>
+            <AssetUploadCard
+              type="favicon"
+              title={<Trans>Favicon</Trans>}
+              description={<Trans>Browser tab icon, recommended 32x32 or 64x64 (max 512KB)</Trans>}
+              currentUrl={assets.favicon}
+              isUploading={isUploadingAsset === "favicon"}
+              onUpload={(file) => handleAssetUpload("favicon", file)}
+              onDelete={() => handleAssetDelete("favicon")}
+              previewClassName="w-8 h-8 rounded"
+            />
           </CardContent>
         </Card>
       )}

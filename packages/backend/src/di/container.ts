@@ -262,6 +262,7 @@ function createStorageAdapter(): IFileStorage {
       }
 
       // S3クライアントの作成
+      // forcePathStyle: true is required for S3-compatible storage (R2, MinIO, etc.)
       const s3Client = new S3Client({
         endpoint,
         region,
@@ -269,6 +270,7 @@ function createStorageAdapter(): IFileStorage {
           accessKeyId: accessKey,
           secretAccessKey: secretKey,
         },
+        forcePathStyle: true,
       });
 
       return new S3StorageAdapter(s3Client, bucketName, publicUrl);
