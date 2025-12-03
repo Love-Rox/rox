@@ -18,13 +18,13 @@ import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.j
  */
 export interface UserUpdateInput {
   /** Display name */
-  displayName?: string;
+  displayName?: string | null;
   /** Bio/description */
-  bio?: string;
+  bio?: string | null;
   /** Avatar URL */
-  avatarUrl?: string;
-  /** Header/banner URL */
-  headerUrl?: string;
+  avatarUrl?: string | null;
+  /** Banner/header URL */
+  bannerUrl?: string | null;
 }
 
 /**

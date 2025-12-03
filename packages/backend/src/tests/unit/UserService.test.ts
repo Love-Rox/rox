@@ -138,12 +138,10 @@ describe("UserService", () => {
       );
 
       const result = await service.updateProfile("user1", {
-        headerUrl: "https://example.com/banner.jpg",
+        bannerUrl: "https://example.com/banner.jpg",
       });
 
-      // Note: UserUpdateInput uses headerUrl which maps to bannerUrl in the User type
-      // The mock spreads the data directly, so we check headerUrl was passed through
-      expect((result as Record<string, unknown>).headerUrl).toBe("https://example.com/banner.jpg");
+      expect(result.bannerUrl).toBe("https://example.com/banner.jpg");
     });
 
     test("should deliver Update activity for local users", async () => {

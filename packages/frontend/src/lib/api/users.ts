@@ -120,4 +120,46 @@ export const usersApi = {
   async unfollow(userId: string): Promise<{ success: boolean }> {
     return apiClient.post<{ success: boolean }>("/api/following/delete", { userId });
   },
+
+  /**
+   * Upload avatar image
+   *
+   * @param file - Image file to upload
+   * @returns Object containing the new avatar URL
+   */
+  async uploadAvatar(file: File): Promise<{ avatarUrl: string }> {
+    const formData = new FormData();
+    formData.append("file", file);
+    return apiClient.upload<{ avatarUrl: string }>("/api/users/@me/avatar", formData);
+  },
+
+  /**
+   * Delete avatar image
+   *
+   * @returns Success status
+   */
+  async deleteAvatar(): Promise<{ success: boolean }> {
+    return apiClient.delete<{ success: boolean }>("/api/users/@me/avatar");
+  },
+
+  /**
+   * Upload banner image
+   *
+   * @param file - Image file to upload
+   * @returns Object containing the new banner URL
+   */
+  async uploadBanner(file: File): Promise<{ bannerUrl: string }> {
+    const formData = new FormData();
+    formData.append("file", file);
+    return apiClient.upload<{ bannerUrl: string }>("/api/users/@me/banner", formData);
+  },
+
+  /**
+   * Delete banner image
+   *
+   * @returns Success status
+   */
+  async deleteBanner(): Promise<{ success: boolean }> {
+    return apiClient.delete<{ success: boolean }>("/api/users/@me/banner");
+  },
 };

@@ -10,6 +10,7 @@ import { Hono } from "hono";
 import { AuthService } from "../services/AuthService.js";
 import { UserService } from "../services/UserService.js";
 import { requireAuth, optionalAuth } from "../middleware/auth.js";
+import { errorResponse } from "../lib/routeUtils.js";
 
 const app = new Hono();
 
@@ -534,7 +535,7 @@ app.patch("/@me", requireAuth(), async (c) => {
   if (body.name !== undefined) updateData.displayName = body.name;
   if (body.description !== undefined) updateData.bio = body.description;
   if (body.avatarUrl !== undefined) updateData.avatarUrl = body.avatarUrl;
-  if (body.bannerUrl !== undefined) updateData.headerUrl = body.bannerUrl;
+  if (body.bannerUrl !== undefined) updateData.bannerUrl = body.bannerUrl;
   if (body.customCss !== undefined) {
     // Sanitize CSS to prevent XSS (allow basic safe CSS)
     // Limit to 10KB to prevent abuse
@@ -582,6 +583,254 @@ app.patch("/@me", requireAuth(), async (c) => {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to update profile";
     return c.json({ error: message }, 400);
+  }
+});
+
+// ============================================================================
+// Profile Image Upload Endpoints
+// ============================================================================
+
+/**
+ * Upload Avatar Image
+ *
+ * POST /api/users/@me/avatar
+ *
+ * Uploads an avatar image for the authenticated user.
+ * The image is processed (resized, converted to WebP) and stored.
+ *
+ * @remarks
+ * Headers:
+ * ```
+ * Authorization: Bearer <token>
+ * Content-Type: multipart/form-data
+ * ```
+ *
+ * Form Data:
+ * - file: The image file to upload (max 2MB, images only)
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "avatarUrl": "https://example.com/files/abc123.webp"
+ * }
+ * ```
+ */
+app.post("/@me/avatar", requireAuth(), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return errorResponse(c, "Unauthorized", 401);
+  }
+
+  const driveFileRepository = c.get("driveFileRepository");
+  const fileStorage = c.get("fileStorage");
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const cacheService = c.get("cacheService");
+
+  const { FileService } = await import("../services/FileService.js");
+  const fileService = new FileService(driveFileRepository, fileStorage);
+  const userService = new UserService(userRepository, deliveryService, cacheService);
+
+  const body = await c.req.parseBody();
+  const file = body.file as File;
+
+  if (!file) {
+    return errorResponse(c, "No file provided");
+  }
+
+  // Validate file type (must be an image)
+  if (!file.type.startsWith("image/")) {
+    return errorResponse(c, "File must be an image");
+  }
+
+  // Size limit: 2MB
+  const maxSize = 2 * 1024 * 1024;
+  if (file.size > maxSize) {
+    return errorResponse(c, "File size exceeds 2MB limit");
+  }
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Upload file
+    const driveFile = await fileService.upload({
+      file: buffer,
+      name: `avatar-${Date.now()}-${file.name}`,
+      type: file.type,
+      userId: user.id,
+      source: "user",
+      comment: "User avatar",
+    });
+
+    // Update user's avatarUrl
+    const updatedUser = await userService.updateProfile(user.id, {
+      avatarUrl: driveFile.url,
+    });
+
+    return c.json({
+      avatarUrl: updatedUser.avatarUrl,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      return errorResponse(c, error.message);
+    }
+    throw error;
+  }
+});
+
+/**
+ * Delete Avatar Image
+ *
+ * DELETE /api/users/@me/avatar
+ *
+ * Removes the authenticated user's avatar image.
+ */
+app.delete("/@me/avatar", requireAuth(), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return errorResponse(c, "Unauthorized", 401);
+  }
+
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const cacheService = c.get("cacheService");
+
+  const userService = new UserService(userRepository, deliveryService, cacheService);
+
+  try {
+    await userService.updateProfile(user.id, {
+      avatarUrl: null,
+    });
+
+    return c.json({ success: true });
+  } catch (error) {
+    if (error instanceof Error) {
+      return errorResponse(c, error.message);
+    }
+    throw error;
+  }
+});
+
+/**
+ * Upload Banner Image
+ *
+ * POST /api/users/@me/banner
+ *
+ * Uploads a banner/header image for the authenticated user.
+ * The image is processed and stored.
+ *
+ * @remarks
+ * Headers:
+ * ```
+ * Authorization: Bearer <token>
+ * Content-Type: multipart/form-data
+ * ```
+ *
+ * Form Data:
+ * - file: The image file to upload (max 5MB, images only)
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "bannerUrl": "https://example.com/files/abc123.webp"
+ * }
+ * ```
+ */
+app.post("/@me/banner", requireAuth(), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return errorResponse(c, "Unauthorized", 401);
+  }
+
+  const driveFileRepository = c.get("driveFileRepository");
+  const fileStorage = c.get("fileStorage");
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const cacheService = c.get("cacheService");
+
+  const { FileService } = await import("../services/FileService.js");
+  const fileService = new FileService(driveFileRepository, fileStorage);
+  const userService = new UserService(userRepository, deliveryService, cacheService);
+
+  const body = await c.req.parseBody();
+  const file = body.file as File;
+
+  if (!file) {
+    return errorResponse(c, "No file provided");
+  }
+
+  // Validate file type (must be an image)
+  if (!file.type.startsWith("image/")) {
+    return errorResponse(c, "File must be an image");
+  }
+
+  // Size limit: 5MB for banner
+  const maxSize = 5 * 1024 * 1024;
+  if (file.size > maxSize) {
+    return errorResponse(c, "File size exceeds 5MB limit");
+  }
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Upload file
+    const driveFile = await fileService.upload({
+      file: buffer,
+      name: `banner-${Date.now()}-${file.name}`,
+      type: file.type,
+      userId: user.id,
+      source: "user",
+      comment: "User banner",
+    });
+
+    // Update user's bannerUrl
+    const updatedUser = await userService.updateProfile(user.id, {
+      bannerUrl: driveFile.url,
+    });
+
+    return c.json({
+      bannerUrl: updatedUser.bannerUrl,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      return errorResponse(c, error.message);
+    }
+    throw error;
+  }
+});
+
+/**
+ * Delete Banner Image
+ *
+ * DELETE /api/users/@me/banner
+ *
+ * Removes the authenticated user's banner image.
+ */
+app.delete("/@me/banner", requireAuth(), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return errorResponse(c, "Unauthorized", 401);
+  }
+
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const cacheService = c.get("cacheService");
+
+  const userService = new UserService(userRepository, deliveryService, cacheService);
+
+  try {
+    await userService.updateProfile(user.id, {
+      bannerUrl: null,
+    });
+
+    return c.json({ success: true });
+  } catch (error) {
+    if (error instanceof Error) {
+      return errorResponse(c, error.message);
+    }
+    throw error;
   }
 });
 
