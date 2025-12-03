@@ -7,6 +7,7 @@ import { Home, User, Settings, Shield, Bell, Search, Menu, X, PanelLeftClose, Pa
 import { currentUserAtom } from "../../lib/atoms/auth";
 import { sidebarCollapsedWithPersistenceAtom } from "../../lib/atoms/sidebar";
 import { Avatar } from "../ui/Avatar";
+import { SpaLink } from "../ui/SpaLink";
 import { LanguageSwitcher } from "../LanguageSwitcher";
 import { DarkModeToggle } from "../ui/DarkModeToggle";
 import { NotificationBell } from "../notification/NotificationBell";
@@ -117,7 +118,7 @@ export function Sidebar() {
     <>
       {/* Logo / Brand */}
       <div className="p-4 border-b border-(--border-color)">
-        <a href="/timeline" className="flex items-center gap-3" onClick={handleNavClick}>
+        <SpaLink to="/timeline" className="flex items-center gap-3" onClick={handleNavClick}>
           {instanceInfo?.iconUrl ? (
             <img
               src={instanceInfo.iconUrl}
@@ -128,21 +129,21 @@ export function Sidebar() {
           <span className="text-xl font-bold text-primary-600">
             {instanceInfo?.name || "Rox"}
           </span>
-        </a>
+        </SpaLink>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
         {navItems.map((item) => (
-          <a
+          <SpaLink
             key={item.key}
-            href={item.href}
+            to={item.href}
             onClick={handleNavClick}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-(--text-secondary) hover:bg-(--bg-tertiary) transition-colors"
           >
             <span className="text-(--text-muted)">{item.icon}</span>
             <span className="font-medium">{item.label}</span>
-          </a>
+          </SpaLink>
         ))}
       </nav>
 
@@ -157,8 +158,8 @@ export function Sidebar() {
 
       {/* User Profile at Bottom */}
       <div className="p-3 border-t border-(--border-color)">
-        <a
-          href={`/${currentUser.username}`}
+        <SpaLink
+          to={`/${currentUser.username}`}
           onClick={handleNavClick}
           className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-(--bg-tertiary) transition-colors"
         >
@@ -174,7 +175,7 @@ export function Sidebar() {
             </p>
             <p className="text-xs text-(--text-muted) truncate">@{currentUser.username}</p>
           </div>
-        </a>
+        </SpaLink>
       </div>
     </>
   );
@@ -184,7 +185,7 @@ export function Sidebar() {
     <>
       {/* Logo / Brand with collapse toggle */}
       <div className={`p-4 border-b border-(--border-color) flex items-center ${isCollapsed ? "justify-center" : "justify-between"}`}>
-        <a href="/timeline" className={`flex items-center ${isCollapsed ? "" : "gap-3"}`}>
+        <SpaLink to="/timeline" className={`flex items-center ${isCollapsed ? "" : "gap-3"}`}>
           {/* Use favicon for collapsed mode, icon for expanded */}
           {isCollapsed ? (
             instanceInfo?.faviconUrl || instanceInfo?.iconUrl ? (
@@ -210,7 +211,7 @@ export function Sidebar() {
               </span>
             </>
           )}
-        </a>
+        </SpaLink>
         {!isCollapsed && (
           <button
             type="button"
@@ -227,9 +228,9 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className={`flex-1 ${isCollapsed ? "p-2" : "p-4"} space-y-2 overflow-y-auto`}>
         {navItems.map((item) => (
-          <a
+          <SpaLink
             key={item.key}
-            href={item.href}
+            to={item.href}
             className={`flex items-center rounded-lg text-(--text-secondary) hover:bg-(--bg-tertiary) transition-colors ${
               isCollapsed ? "justify-center p-3" : "gap-3 px-4 py-3"
             }`}
@@ -237,7 +238,7 @@ export function Sidebar() {
           >
             <span className="text-(--text-muted)">{item.icon}</span>
             {!isCollapsed && <span className="font-medium">{item.label}</span>}
-          </a>
+          </SpaLink>
         ))}
       </nav>
 
@@ -261,8 +262,8 @@ export function Sidebar() {
 
       {/* User Profile at Bottom */}
       <div className={`border-t border-(--border-color) ${isCollapsed ? "p-2" : "p-4"}`}>
-        <a
-          href={`/${currentUser.username}`}
+        <SpaLink
+          to={`/${currentUser.username}`}
           className={`flex items-center rounded-lg hover:bg-(--bg-tertiary) transition-colors ${
             isCollapsed ? "justify-center p-2" : "gap-3 px-2 py-2"
           }`}
@@ -282,7 +283,7 @@ export function Sidebar() {
               <p className="text-xs text-(--text-muted) truncate">@{currentUser.username}</p>
             </div>
           )}
-        </a>
+        </SpaLink>
       </div>
 
       {/* Expand button when collapsed */}
@@ -315,7 +316,7 @@ export function Sidebar() {
           <Menu className="w-6 h-6" />
         </button>
 
-        <a href="/timeline" className="flex items-center gap-2">
+        <SpaLink to="/timeline" className="flex items-center gap-2">
           {instanceInfo?.iconUrl ? (
             <img
               src={instanceInfo.iconUrl}
@@ -326,10 +327,10 @@ export function Sidebar() {
           <span className="text-lg font-bold text-primary-600">
             {instanceInfo?.name || "Rox"}
           </span>
-        </a>
+        </SpaLink>
 
-        <a
-          href={`/${currentUser.username}`}
+        <SpaLink
+          to={`/${currentUser.username}`}
           className="p-1 -mr-1 rounded-full"
         >
           <Avatar
@@ -338,7 +339,7 @@ export function Sidebar() {
             fallback={userInitials}
             size="sm"
           />
-        </a>
+        </SpaLink>
       </header>
 
       {/* Mobile Menu Overlay */}

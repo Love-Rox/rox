@@ -18,6 +18,7 @@ import { TimelineSkeleton } from "../ui/Skeleton";
 import { Layout } from "../layout/Layout";
 import { ReportDialog } from "../report/ReportDialog";
 import { RoleBadgeList } from "./RoleBadge";
+import { useRouter } from "../ui/SpaLink";
 
 /**
  * Public role type returned from the API
@@ -94,6 +95,7 @@ export interface UserProfileProps {
 export function UserProfile({ username, host }: UserProfileProps) {
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [notes, setNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -365,9 +367,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
                   <Button
                     variant="secondary"
                     onPress={() => {
-                      if (typeof window !== "undefined") {
-                        window.location.href = "/settings";
-                      }
+                      router.push("/settings");
                     }}
                   >
                     <Trans>Edit Profile</Trans>

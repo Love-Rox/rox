@@ -4,6 +4,7 @@ import { useAtom } from "jotai";
 import { currentUserAtom } from "../../lib/atoms/auth";
 import { sidebarCollapsedAtom } from "../../lib/atoms/sidebar";
 import { Sidebar } from "./Sidebar";
+import { MobileAppBar } from "./MobileAppBar";
 import { useUISettings } from "../../lib/hooks/useUISettings";
 
 /**
@@ -44,10 +45,11 @@ export function Layout({ children, showSidebar = true, maxWidth = "2xl" }: Layou
   const shouldShowSidebar = showSidebar && currentUser;
 
   // Sidebar margin: 64px when collapsed, 256px (16rem) when expanded
+  // Also add bottom padding on mobile for the AppBar (pb-16 = 4rem = 64px)
   const sidebarMarginClass = shouldShowSidebar
     ? isCollapsed
-      ? "lg:ml-16 pt-16 lg:pt-0"
-      : "lg:ml-64 pt-16 lg:pt-0"
+      ? "lg:ml-16 pt-16 lg:pt-0 pb-16 lg:pb-0"
+      : "lg:ml-64 pt-16 lg:pt-0 pb-16 lg:pb-0"
     : "";
 
   return (
@@ -62,6 +64,9 @@ export function Layout({ children, showSidebar = true, maxWidth = "2xl" }: Layou
           <div className={`${maxWidthClass} mx-auto rox-content`}>{children}</div>
         </div>
       </main>
+
+      {/* Mobile Bottom Navigation Bar */}
+      {shouldShowSidebar && <MobileAppBar />}
     </div>
   );
 }

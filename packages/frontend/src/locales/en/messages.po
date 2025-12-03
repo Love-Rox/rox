@@ -154,7 +154,7 @@ msgstr "Additional Comment"
 msgid "Additional Details (optional)"
 msgstr "Additional Details (optional)"
 
-#: src/components/layout/Sidebar.tsx:105
+#: src/components/layout/Sidebar.tsx:106
 msgid "Admin"
 msgstr "Admin"
 
@@ -451,7 +451,7 @@ msgstr "Connect with users across the fediverse using ActivityPub protocol"
 msgid "Contact"
 msgstr "Contact"
 
-#: src/components/note/NoteCard.tsx:303
+#: src/components/note/NoteCard.tsx:304
 msgid "Content Warning"
 msgstr "Content Warning"
 
@@ -762,7 +762,7 @@ msgstr "Enter your invitation code to register"
 msgid "Error loading timeline"
 msgstr "Error loading timeline"
 
-#: src/components/user/UserProfile.tsx:304
+#: src/components/user/UserProfile.tsx:306
 msgid "Error loading user profile"
 msgstr "Error loading user profile"
 
@@ -801,7 +801,7 @@ msgstr "Failed to add alias"
 msgid "Failed to add emoji"
 msgstr "Failed to add emoji"
 
-#: src/components/note/NoteCard.tsx:158
+#: src/components/note/NoteCard.tsx:159
 msgid "Failed to add reaction"
 msgstr "Failed to add reaction"
 
@@ -907,7 +907,7 @@ msgstr "Failed to remove banner"
 msgid "Failed to remove instance"
 msgstr "Failed to remove instance"
 
-#: src/components/note/NoteCard.tsx:176
+#: src/components/note/NoteCard.tsx:177
 msgid "Failed to renote"
 msgstr "Failed to renote"
 
@@ -1084,7 +1084,7 @@ msgstr "Header image for your instance (max 5MB)"
 msgid "Healthy"
 msgstr "Healthy"
 
-#: src/components/layout/Sidebar.tsx:71
+#: src/components/layout/Sidebar.tsx:72
 #: src/components/note/NoteComposer.tsx:379
 #: src/pages/timeline.tsx:169
 msgid "Home"
@@ -1338,7 +1338,7 @@ msgstr "Manage remote instances and federation status"
 msgid "Manage your profile information"
 msgstr "Manage your profile information"
 
-#: src/components/notification/NotificationList.tsx:87
+#: src/components/notification/NotificationList.tsx:89
 #: src/pages/notifications.tsx:187
 msgid "Mark all as read"
 msgstr "Mark all as read"
@@ -1393,7 +1393,7 @@ msgstr "Moderator access required"
 msgid "Moderator Role"
 msgstr "Moderator Role"
 
-#: src/components/note/NoteCard.tsx:496
+#: src/components/note/NoteCard.tsx:497
 msgid "More options"
 msgstr "More options"
 
@@ -1491,7 +1491,7 @@ msgstr "No matching notifications"
 msgid "No notes yet"
 msgstr "No notes yet"
 
-#: src/components/notification/NotificationList.tsx:65
+#: src/components/notification/NotificationList.tsx:67
 #: src/pages/notifications.tsx:279
 msgid "No notifications"
 msgstr "No notifications"
@@ -1552,7 +1552,7 @@ msgstr "Note not found"
 msgid "Note posted successfully"
 msgstr "Note posted successfully"
 
-#: src/components/note/NoteCard.tsx:170
+#: src/components/note/NoteCard.tsx:171
 msgid "Note renoted"
 msgstr "Note renoted"
 
@@ -1589,7 +1589,7 @@ msgstr "Notes deleted by moderators will appear here"
 msgid "Notification Sound"
 msgstr "Notification Sound"
 
-#: src/components/layout/Sidebar.tsx:83
+#: src/components/layout/Sidebar.tsx:84
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:175
 msgid "Notifications"
@@ -1709,7 +1709,7 @@ msgstr "Privacy Policy"
 msgid "Privacy Policy URL"
 msgstr "Privacy Policy URL"
 
-#: src/components/layout/Sidebar.tsx:89
+#: src/components/layout/Sidebar.tsx:90
 msgid "Profile"
 msgstr "Profile"
 
@@ -1777,7 +1777,7 @@ msgstr "reacted with"
 msgid "Reaction"
 msgstr "Reaction"
 
-#: src/components/note/NoteCard.tsx:151
+#: src/components/note/NoteCard.tsx:152
 msgid "Reaction added"
 msgstr "Reaction added"
 
@@ -1900,7 +1900,7 @@ msgstr "Remove banner"
 msgid "Renote"
 msgstr "Renote"
 
-#: src/components/note/NoteCard.tsx:294
+#: src/components/note/NoteCard.tsx:295
 msgid "Renoted"
 msgstr "Renoted"
 
@@ -1926,7 +1926,7 @@ msgstr "Reply"
 msgid "Replying to"
 msgstr "Replying to"
 
-#: src/components/note/NoteCard.tsx:511
+#: src/components/note/NoteCard.tsx:512
 msgid "Report"
 msgstr "Report"
 
@@ -2130,7 +2130,7 @@ msgstr "Save Theme Settings"
 msgid "Saving..."
 msgstr "Saving..."
 
-#: src/components/layout/Sidebar.tsx:77
+#: src/components/layout/Sidebar.tsx:78
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:333
 #: src/pages/search.tsx:359
@@ -2202,7 +2202,7 @@ msgstr "Sensitive content (NSFW)"
 msgid "Server Assets"
 msgstr "Server Assets"
 
-#: src/components/layout/Sidebar.tsx:95
+#: src/components/layout/Sidebar.tsx:96
 #: src/pages/settings.tsx:135
 msgid "Settings"
 msgstr "Settings"
@@ -2216,7 +2216,7 @@ msgstr "Share your thoughts, connect with friends, and join conversations across
 msgid "Show all {0} files"
 msgstr "Show all {0} files"
 
-#: src/components/note/NoteCard.tsx:313
+#: src/components/note/NoteCard.tsx:314
 msgid "Show content"
 msgstr "Show content"
 
@@ -2538,7 +2538,7 @@ msgstr "User Details"
 msgid "User Moderation"
 msgstr "User Moderation"
 
-#: src/components/user/UserProfile.tsx:305
+#: src/components/user/UserProfile.tsx:307
 #: src/pages/mod/users.tsx:115
 msgid "User not found"
 msgstr "User not found"
@@ -2702,7 +2702,7 @@ msgstr "You received a warning from the moderators"
 msgid "You will receive notifications even when the browser is closed."
 msgstr "You will receive notifications even when the browser is closed."
 
-#: src/components/notification/NotificationList.tsx:68
+#: src/components/notification/NotificationList.tsx:70
 #: src/pages/notifications.tsx:286
 msgid "You're all caught up!"
 msgstr "You're all caught up!"
