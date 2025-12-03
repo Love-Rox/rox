@@ -16,6 +16,7 @@ import { Button } from "../ui/Button";
 import { TimelineSkeleton } from "../ui/Skeleton";
 import { Spinner } from "../ui/Spinner";
 import { ErrorMessage } from "../ui/ErrorMessage";
+import { ScrollToTop } from "../ui/ScrollToTop";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigation";
 
@@ -225,6 +226,9 @@ export function Timeline({ type = "local" }: TimelineProps) {
           </Button>
         </div>
       )}
+
+      {/* Scroll to Top Button */}
+      <ScrollToTop />
     </div>
   );
 }

@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
-import { Home, User, Settings, Shield, Bell, Search, Menu, X } from "lucide-react";
+import { Home, User, Settings, Shield, Bell, Search, Menu, X, PanelLeftClose, PanelLeft } from "lucide-react";
 import { currentUserAtom } from "../../lib/atoms/auth";
+import { sidebarCollapsedWithPersistenceAtom } from "../../lib/atoms/sidebar";
 import { Avatar } from "../ui/Avatar";
 import { LanguageSwitcher } from "../LanguageSwitcher";
 import { DarkModeToggle } from "../ui/DarkModeToggle";
@@ -20,6 +21,12 @@ export function Sidebar() {
   const [currentUser] = useAtom(currentUserAtom);
   const { instanceInfo } = useInstanceInfo();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useAtom(sidebarCollapsedWithPersistenceAtom);
+
+  // Toggle collapsed state
+  const toggleCollapsed = () => {
+    setIsCollapsed(!isCollapsed);
+  };
 
   // Close mobile menu on route change or resize
   useEffect(() => {
@@ -105,11 +112,12 @@ export function Sidebar() {
     setIsMobileMenuOpen(false);
   };
 
-  const SidebarContent = () => (
+  // Mobile sidebar content (always expanded)
+  const MobileSidebarContent = () => (
     <>
       {/* Logo / Brand */}
-      <div className="p-4 lg:p-6 border-b border-(--border-color)">
-        <a href="/" className="flex items-center gap-3" onClick={handleNavClick}>
+      <div className="p-4 border-b border-(--border-color)">
+        <a href="/timeline" className="flex items-center gap-3" onClick={handleNavClick}>
           {instanceInfo?.iconUrl ? (
             <img
               src={instanceInfo.iconUrl}
@@ -117,20 +125,20 @@ export function Sidebar() {
               className="w-8 h-8 rounded-lg object-cover"
             />
           ) : null}
-          <span className="text-xl lg:text-2xl font-bold text-primary-600">
+          <span className="text-xl font-bold text-primary-600">
             {instanceInfo?.name || "Rox"}
           </span>
         </a>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-3 lg:p-4 space-y-1 lg:space-y-2 overflow-y-auto">
+      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
         {navItems.map((item) => (
           <a
             key={item.key}
             href={item.href}
             onClick={handleNavClick}
-            className="flex items-center gap-3 px-3 lg:px-4 py-2.5 lg:py-3 rounded-lg text-(--text-secondary) hover:bg-(--bg-tertiary) transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-(--text-secondary) hover:bg-(--bg-tertiary) transition-colors"
           >
             <span className="text-(--text-muted)">{item.icon}</span>
             <span className="font-medium">{item.label}</span>
@@ -139,7 +147,7 @@ export function Sidebar() {
       </nav>
 
       {/* Notifications & Language & Theme */}
-      <div className="p-3 lg:p-4 border-t border-(--border-color) flex items-center justify-between">
+      <div className="p-3 border-t border-(--border-color) flex items-center justify-between">
         <NotificationBell />
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
@@ -148,7 +156,7 @@ export function Sidebar() {
       </div>
 
       {/* User Profile at Bottom */}
-      <div className="p-3 lg:p-4 border-t border-(--border-color)">
+      <div className="p-3 border-t border-(--border-color)">
         <a
           href={`/${currentUser.username}`}
           onClick={handleNavClick}
@@ -171,6 +179,129 @@ export function Sidebar() {
     </>
   );
 
+  // Desktop sidebar content (supports collapsed mode)
+  const DesktopSidebarContent = () => (
+    <>
+      {/* Logo / Brand with collapse toggle */}
+      <div className={`p-4 border-b border-(--border-color) flex items-center ${isCollapsed ? "justify-center" : "justify-between"}`}>
+        <a href="/timeline" className={`flex items-center ${isCollapsed ? "" : "gap-3"}`}>
+          {/* Use favicon for collapsed mode, icon for expanded */}
+          {isCollapsed ? (
+            instanceInfo?.faviconUrl || instanceInfo?.iconUrl ? (
+              <img
+                src={instanceInfo.faviconUrl || instanceInfo.iconUrl || ""}
+                alt={instanceInfo?.name || "Logo"}
+                className="w-8 h-8 rounded object-cover"
+              />
+            ) : (
+              <span className="text-xl font-bold text-primary-600">R</span>
+            )
+          ) : (
+            <>
+              {instanceInfo?.iconUrl ? (
+                <img
+                  src={instanceInfo.iconUrl}
+                  alt={instanceInfo.name || "Logo"}
+                  className="w-8 h-8 rounded-lg object-cover"
+                />
+              ) : null}
+              <span className="text-xl font-bold text-primary-600">
+                {instanceInfo?.name || "Rox"}
+              </span>
+            </>
+          )}
+        </a>
+        {!isCollapsed && (
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            className="p-1.5 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) transition-colors"
+            aria-label="Collapse sidebar"
+            title="Collapse sidebar"
+          >
+            <PanelLeftClose className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Navigation */}
+      <nav className={`flex-1 ${isCollapsed ? "p-2" : "p-4"} space-y-2 overflow-y-auto`}>
+        {navItems.map((item) => (
+          <a
+            key={item.key}
+            href={item.href}
+            className={`flex items-center rounded-lg text-(--text-secondary) hover:bg-(--bg-tertiary) transition-colors ${
+              isCollapsed ? "justify-center p-3" : "gap-3 px-4 py-3"
+            }`}
+            title={isCollapsed ? String(item.key) : undefined}
+          >
+            <span className="text-(--text-muted)">{item.icon}</span>
+            {!isCollapsed && <span className="font-medium">{item.label}</span>}
+          </a>
+        ))}
+      </nav>
+
+      {/* Notifications & Language & Theme */}
+      <div className={`border-t border-(--border-color) ${isCollapsed ? "p-2" : "p-4"}`}>
+        {isCollapsed ? (
+          <div className="flex flex-col items-center gap-2">
+            <NotificationBell />
+            <DarkModeToggle />
+          </div>
+        ) : (
+          <div className="flex items-center justify-between">
+            <NotificationBell />
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <DarkModeToggle />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* User Profile at Bottom */}
+      <div className={`border-t border-(--border-color) ${isCollapsed ? "p-2" : "p-4"}`}>
+        <a
+          href={`/${currentUser.username}`}
+          className={`flex items-center rounded-lg hover:bg-(--bg-tertiary) transition-colors ${
+            isCollapsed ? "justify-center p-2" : "gap-3 px-2 py-2"
+          }`}
+          title={isCollapsed ? currentUser.username : undefined}
+        >
+          <Avatar
+            src={currentUser.avatarUrl}
+            alt={currentUser.name || currentUser.username}
+            fallback={userInitials}
+            size="sm"
+          />
+          {!isCollapsed && (
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-(--text-primary) truncate">
+                {(currentUser as any).displayName || currentUser.username}
+              </p>
+              <p className="text-xs text-(--text-muted) truncate">@{currentUser.username}</p>
+            </div>
+          )}
+        </a>
+      </div>
+
+      {/* Expand button when collapsed */}
+      {isCollapsed && (
+        <div className="p-2 border-t border-(--border-color) flex justify-center">
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            className="p-2 rounded-lg text-(--text-muted) hover:bg-(--bg-tertiary) transition-colors"
+            aria-label="Expand sidebar"
+            title="Expand sidebar"
+          >
+            <PanelLeft className="w-5 h-5" />
+          </button>
+        </div>
+      )}
+    </>
+  );
+
   return (
     <>
       {/* Mobile Header Bar */}
@@ -184,7 +315,7 @@ export function Sidebar() {
           <Menu className="w-6 h-6" />
         </button>
 
-        <a href="/" className="flex items-center gap-2">
+        <a href="/timeline" className="flex items-center gap-2">
           {instanceInfo?.iconUrl ? (
             <img
               src={instanceInfo.iconUrl}
@@ -239,12 +370,16 @@ export function Sidebar() {
             <X className="w-5 h-5" />
           </button>
         </div>
-        <SidebarContent />
+        <MobileSidebarContent />
       </aside>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-64 bg-(--card-bg) border-r border-(--border-color) flex-col">
-        <SidebarContent />
+      <aside
+        className={`hidden lg:flex fixed left-0 top-0 h-screen bg-(--card-bg) border-r border-(--border-color) flex-col transition-all duration-300 ${
+          isCollapsed ? "w-16" : "w-64"
+        }`}
+      >
+        <DesktopSidebarContent />
       </aside>
     </>
   );

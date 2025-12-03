@@ -2,6 +2,7 @@
 
 import { useAtom } from "jotai";
 import { currentUserAtom } from "../../lib/atoms/auth";
+import { sidebarCollapsedAtom } from "../../lib/atoms/sidebar";
 import { Sidebar } from "./Sidebar";
 import { useUISettings } from "../../lib/hooks/useUISettings";
 
@@ -24,6 +25,7 @@ export interface LayoutProps {
  */
 export function Layout({ children, showSidebar = true, maxWidth = "2xl" }: LayoutProps) {
   const [currentUser] = useAtom(currentUserAtom);
+  const [isCollapsed] = useAtom(sidebarCollapsedAtom);
 
   // Apply UI settings (CSS variables, theme, custom CSS)
   useUISettings();
@@ -41,17 +43,20 @@ export function Layout({ children, showSidebar = true, maxWidth = "2xl" }: Layou
   // Don't show sidebar if user not logged in or explicitly disabled
   const shouldShowSidebar = showSidebar && currentUser;
 
+  // Sidebar margin: 64px when collapsed, 256px (16rem) when expanded
+  const sidebarMarginClass = shouldShowSidebar
+    ? isCollapsed
+      ? "lg:ml-16 pt-16 lg:pt-0"
+      : "lg:ml-64 pt-16 lg:pt-0"
+    : "";
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       {/* Sidebar */}
       {shouldShowSidebar && <Sidebar />}
 
       {/* Main Content Area */}
-      <main
-        className={`min-h-screen ${
-          shouldShowSidebar ? "lg:ml-64 pt-16 lg:pt-0" : ""
-        }`}
-      >
+      <main className={`min-h-screen transition-all duration-300 ${sidebarMarginClass}`}>
         {/* Page Content */}
         <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
           <div className={`${maxWidthClass} mx-auto rox-content`}>{children}</div>
