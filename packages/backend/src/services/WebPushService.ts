@@ -182,6 +182,7 @@ export class WebPushService {
 
   /**
    * Send push notification to a specific subscription
+   * Uses native fetch instead of web-push's https module for Bun compatibility
    */
   private async sendToSubscription(
     subscription: PushSubscription,
@@ -205,50 +206,80 @@ export class WebPushService {
       console.log("[WebPush] Sending to endpoint:", subscription.endpoint.substring(0, 60) + "...");
       const startTime = Date.now();
 
-      // Use Promise.race to enforce timeout since web-push timeout option may not work in Bun
-      const sendPromise = webpush.sendNotification(pushSubscription, JSON.stringify(payload));
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => {
-          reject(new Error(`Push notification timed out after ${TIMEOUT_MS}ms`));
-        }, TIMEOUT_MS);
-      });
+      // Use web-push to generate the encrypted payload and headers
+      // but use native fetch for the HTTP request (Bun's https module has issues)
+      const requestDetails = webpush.generateRequestDetails(
+        pushSubscription,
+        JSON.stringify(payload),
+      );
 
-      await Promise.race([sendPromise, timeoutPromise]);
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-      console.log("[WebPush] Success, took", Date.now() - startTime, "ms");
-      logger.debug({ subscriptionId: subscription.id }, "Push notification sent");
-      return true;
-    } catch (error: any) {
-      console.log("[WebPush] Error:", error.message, "code:", error.code, "status:", error.statusCode);
+      try {
+        const response = await fetch(requestDetails.endpoint, {
+          method: requestDetails.method,
+          headers: requestDetails.headers as Record<string, string>,
+          body: requestDetails.body,
+          signal: controller.signal,
+        });
 
-      // Handle expired or invalid subscriptions
-      if (error.statusCode === 404 || error.statusCode === 410) {
-        logger.info(
-          { subscriptionId: subscription.id, statusCode: error.statusCode },
-          "Removing invalid push subscription",
-        );
-        await this.removeSubscription(subscription.id);
-        return false;
-      }
+        clearTimeout(timeoutId);
 
-      // Handle timeout errors (both manual and library)
-      if (error.code === "ETIMEDOUT" || error.message?.includes("timeout") || error.message?.includes("timed out")) {
-        logger.warn(
+        if (response.status === 201 || response.status === 200) {
+          console.log("[WebPush] Success, took", Date.now() - startTime, "ms");
+          logger.debug({ subscriptionId: subscription.id }, "Push notification sent");
+          return true;
+        }
+
+        // Handle error responses
+        if (response.status === 404 || response.status === 410) {
+          logger.info(
+            { subscriptionId: subscription.id, statusCode: response.status },
+            "Removing invalid push subscription",
+          );
+          await this.removeSubscription(subscription.id);
+          return false;
+        }
+
+        const errorText = await response.text();
+        console.log("[WebPush] Error response:", response.status, errorText.substring(0, 200));
+        logger.error(
           {
             subscriptionId: subscription.id,
+            statusCode: response.status,
+            error: errorText.substring(0, 500),
             endpoint: subscription.endpoint,
           },
-          "Push notification timed out - push service may be unreachable",
+          "Push notification failed",
         );
         return false;
+      } catch (fetchError: any) {
+        clearTimeout(timeoutId);
+
+        if (fetchError.name === "AbortError") {
+          console.log("[WebPush] Error: Request timed out after", TIMEOUT_MS, "ms");
+          logger.warn(
+            {
+              subscriptionId: subscription.id,
+              endpoint: subscription.endpoint,
+            },
+            "Push notification timed out - push service may be unreachable",
+          );
+          return false;
+        }
+
+        throw fetchError;
       }
+    } catch (error: any) {
+      console.log("[WebPush] Error:", error.message, "code:", error.code);
 
       // Log detailed error information
       logger.error(
         {
           err: error,
           subscriptionId: subscription.id,
-          statusCode: error.statusCode,
           code: error.code,
           message: error.message,
           endpoint: subscription.endpoint,
