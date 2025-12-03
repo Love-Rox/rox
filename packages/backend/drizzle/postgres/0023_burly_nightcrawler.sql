@@ -1,1 +1,0 @@
-ALTER TABLE "remote_instances" ADD COLUMN "last_fetch_error" text;
