@@ -143,7 +143,7 @@ msgstr "対応内容についてメモを追加..."
 
 #: src/components/settings/PasskeySection.tsx:394
 msgid "Add Passkey"
-msgstr ""
+msgstr "パスキーを追加"
 
 #: src/pages/admin/emojis.tsx:608
 msgid "Add your first custom emoji to get started"
@@ -152,7 +152,7 @@ msgstr "最初のカスタム絵文字を追加して始めましょう"
 #. placeholder {0}: formatDate(passkey.createdAt)
 #: src/components/settings/PasskeySection.tsx:299
 msgid "Added {0}"
-msgstr ""
+msgstr "{0} に追加"
 
 #: src/pages/admin/reports.tsx:479
 #: src/pages/mod/reports.tsx:447
@@ -850,7 +850,7 @@ msgstr "招待コードの削除に失敗しました"
 
 #: src/components/settings/PasskeySection.tsx:194
 msgid "Failed to delete passkey"
-msgstr ""
+msgstr "パスキーの削除に失敗しました"
 
 #: src/pages/admin/roles.tsx:282
 msgid "Failed to delete role"
@@ -882,7 +882,7 @@ msgstr "ノートの読み込みに失敗しました"
 
 #: src/components/settings/PasskeySection.tsx:63
 msgid "Failed to load passkeys"
-msgstr ""
+msgstr "パスキーの読み込みに失敗しました"
 
 #: src/pages/admin/reports.tsx:157
 #: src/pages/mod/reports.tsx:145
@@ -912,7 +912,7 @@ msgstr "インスタンス情報の更新に失敗しました"
 
 #: src/components/settings/PasskeySection.tsx:122
 msgid "Failed to register passkey"
-msgstr ""
+msgstr "パスキーの登録に失敗しました"
 
 #: src/components/settings/AccountMigrationSection.tsx:123
 msgid "Failed to remove alias"
@@ -932,7 +932,7 @@ msgstr "インスタンスの削除に失敗しました"
 
 #: src/components/settings/PasskeySection.tsx:169
 msgid "Failed to rename passkey"
-msgstr ""
+msgstr "パスキーの名前変更に失敗しました"
 
 #: src/components/note/NoteCard.tsx:177
 msgid "Failed to renote"
@@ -1277,7 +1277,7 @@ msgstr "最終取得"
 #. placeholder {0}: formatDate(passkey.lastUsedAt)
 #: src/components/settings/PasskeySection.tsx:303
 msgid "Last used {0}"
-msgstr ""
+msgstr "最終使用: {0}"
 
 #: src/pages/mod/users.tsx:541
 msgid "Leave empty for a permanent warning"
@@ -1541,7 +1541,7 @@ msgstr "通知はありません"
 
 #: src/components/settings/PasskeySection.tsx:371
 msgid "No passkeys registered yet"
-msgstr ""
+msgstr "パスキーはまだ登録されていません"
 
 #: src/pages/admin/reports.tsx:323
 msgid "No pending reports to review"
@@ -1661,7 +1661,7 @@ msgstr "またはパスワードでログイン"
 #. placeholder {0}: new Date().toLocaleDateString()
 #: src/components/settings/PasskeySection.tsx:95
 msgid "Passkey {0}"
-msgstr ""
+msgstr "パスキー {0}"
 
 #: src/pages/login.tsx:81
 msgid "Passkey authentication failed."
@@ -1669,28 +1669,28 @@ msgstr "パスキー認証に失敗しました。"
 
 #: src/components/settings/PasskeySection.tsx:187
 msgid "Passkey deleted"
-msgstr ""
+msgstr "パスキーを削除しました"
 
 #: src/components/settings/PasskeySection.tsx:100
 msgid "Passkey registered successfully"
-msgstr ""
+msgstr "パスキーを登録しました"
 
 #: src/components/settings/PasskeySection.tsx:112
 msgid "Passkey registration was cancelled or not allowed"
-msgstr ""
+msgstr "パスキーの登録がキャンセルされたか許可されませんでした"
 
 #: src/components/settings/PasskeySection.tsx:160
 msgid "Passkey renamed"
-msgstr ""
+msgstr "パスキーの名前を変更しました"
 
 #: src/components/settings/PasskeySection.tsx:234
 #: src/components/settings/PasskeySection.tsx:251
 msgid "Passkeys"
-msgstr ""
+msgstr "パスキー"
 
 #: src/components/settings/PasskeySection.tsx:256
 msgid "Passkeys allow you to sign in securely without a password using your device's biometrics or security key."
-msgstr ""
+msgstr "パスキーを使用すると、デバイスの生体認証やセキュリティキーでパスワードなしに安全にログインできます。"
 
 #: src/pages/login.tsx:156
 #: src/pages/signup.tsx:183
@@ -1919,7 +1919,7 @@ msgstr "登録済みデバイス"
 
 #: src/components/settings/PasskeySection.tsx:387
 msgid "Registering..."
-msgstr ""
+msgstr "登録中..."
 
 #: src/pages/admin/settings.tsx:287
 msgid "Registration"
@@ -1979,7 +1979,7 @@ msgstr "バナーを削除"
 
 #: src/components/settings/PasskeySection.tsx:344
 msgid "Rename"
-msgstr ""
+msgstr "名前を変更"
 
 #: src/pages/notifications.tsx:246
 msgid "Renote"
@@ -2395,7 +2395,7 @@ msgstr "停止中"
 
 #: src/components/settings/PasskeySection.tsx:311
 msgid "Synced"
-msgstr ""
+msgstr "同期済み"
 
 #: src/pages/admin/settings.tsx:672
 msgid "System"
@@ -2477,7 +2477,7 @@ msgstr "これはRoxインスタンスです - あなたを分散型ソーシャ
 
 #: src/components/settings/PasskeySection.tsx:117
 msgid "This passkey is already registered"
-msgstr ""
+msgstr "このパスキーは既に登録されています"
 
 #: src/components/user/UserProfile.tsx:500
 msgid "This user hasn't posted anything yet"
@@ -2819,7 +2819,7 @@ msgstr "自己紹介（最大500文字）"
 
 #: src/components/settings/PasskeySection.tsx:239
 msgid "Your browser does not support passkeys."
-msgstr ""
+msgstr "お使いのブラウザはパスキーに対応していません。"
 
 #: src/components/settings/PushNotificationSection.tsx:76
 msgid "Your browser does not support push notifications."

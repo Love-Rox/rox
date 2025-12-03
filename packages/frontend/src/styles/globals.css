@@ -126,14 +126,14 @@ body {
   line-height: var(--rox-line-height);
 }
 
-/* iOS Safari input zoom prevention
- * Safari zooms on input focus when font-size < 16px.
- * Using max() ensures minimum 16px while respecting user's font settings.
+/* Mobile input zoom prevention
+ * iOS Safari zooms on input focus when font-size < 16px.
+ * Apply minimum 16px on mobile touch devices to prevent unwanted zoom.
  */
-@supports (-webkit-touch-callout: none) {
+@media (hover: none) and (pointer: coarse) {
   input,
   textarea,
   select {
-    font-size: max(16px, 1rem);
+    font-size: max(16px, 1rem) !important;
   }
 }
