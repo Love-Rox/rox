@@ -42,7 +42,7 @@ Japanese documentation is provided in parallel to support the local community.
 **Rox** is a lightweight ActivityPub server & client designed to be:
 
 - **Lighter and faster** than existing Misskey instances
-- **Infrastructure agnostic** - runs on traditional VPS (Docker) or edge environments (Cloudflare Workers/D1)
+- **Infrastructure agnostic** - runs on traditional VPS (Docker) or edge environments
 - **Misskey API compatible** for seamless migration of existing users
 
 **Component Names:**
@@ -65,6 +65,88 @@ Japanese documentation is provided in parallel to support the local community.
 | ORM | Drizzle ORM | TypeScript-first, lightweight, SQL-like operations with multi-DB support |
 | Queue | Dragonfly / BullMQ | Async job processing for ActivityPub delivery (VPS environments) |
 | Code Quality | oxc | Rust-based toolchain for linting and formatting (replaces ESLint/Prettier) |
+
+## Development Commands
+
+### Running the Application
+
+```bash
+# Development (both backend and frontend)
+bun run dev
+
+# Development (backend only)
+bun run dev:backend
+
+# Development (frontend only)
+bun run dev:frontend
+
+# Production build
+bun run build
+
+# Start production server
+bun run start
+```
+
+### Testing
+
+```bash
+# Run all tests
+bun test
+
+# Unit tests only
+bun run test:unit
+
+# Integration tests only
+bun run test:integration
+
+# Backend tests
+bun run test:backend
+```
+
+### Database
+
+```bash
+# Generate migrations
+bun run db:generate
+
+# Run migrations
+bun run db:migrate
+
+# Open Drizzle Studio
+bun run db:studio
+
+# Backup database
+bun run db:backup
+
+# Restore database
+bun run db:restore
+```
+
+### Code Quality
+
+```bash
+# Type checking
+bun run typecheck
+
+# Linting
+bun run lint
+
+# Format code
+bun run format
+
+# Check formatting
+bun run format:check
+```
+
+### Internationalization
+
+```bash
+# Extract translation strings
+bun run lingui:extract
+
+# Compile translations
+bun run lingui:compile
+```
 
 ## Development Tools & MCP Servers
 
@@ -104,7 +186,7 @@ The project uses **Repository Pattern** and **Adapter Pattern** to decouple busi
 
 1. **Database Abstraction Layer**
    - Controllers (Hono routes) depend only on repository interfaces (e.g., `INoteRepository`, `IUserRepository`)
-   - Concrete implementations exist per database type in `repositories/{pg,mysql,d1}/`
+   - Concrete implementations exist per database type in `repositories/pg/`
    - Selection via `DB_TYPE` environment variable at application startup
    - Dependency injection happens during DI container construction
 
@@ -125,29 +207,40 @@ packages/
 ├── backend/
 │   └── src/
 │       ├── adapters/       # Infrastructure implementations (Adapter Pattern)
-│       │   ├── storage/
-│       │   │   ├── LocalStorageAdapter.ts
-│       │   │   └── S3StorageAdapter.ts
+│       │   ├── storage/    # LocalStorageAdapter, S3StorageAdapter
 │       │   └── cache/      # Cache adapters (Dragonfly)
 │       ├── db/
-│       │   ├── schema/     # Drizzle schema definitions
-│       │   │   └── pg.ts   # PostgreSQL
+│       │   ├── schema/     # Drizzle schema definitions (pg.ts)
 │       │   └── index.ts    # DB connection initialization
+│       ├── di/             # Dependency injection container
 │       ├── interfaces/     # Abstract definitions (Interfaces)
 │       │   ├── IFileStorage.ts
 │       │   └── repositories/
+│       ├── middleware/     # Hono middleware (auth, rate limiting, etc.)
 │       ├── repositories/   # DB operations (Repository Pattern)
 │       │   └── pg/         # PostgreSQL implementations
-│       ├── services/       # Business logic
 │       ├── routes/         # Hono endpoints
+│       │   └── ap/         # ActivityPub routes
+│       ├── services/       # Business logic
+│       │   └── ap/         # ActivityPub services
 │       ├── lib/            # Shared utilities
-│       │   ├── routeUtils.ts   # Route handler utilities
-│       │   └── validation.ts   # Zod validation schemas
+│       ├── tests/          # Test files
+│       │   ├── unit/
+│       │   ├── integration/
+│       │   └── e2e/
 │       └── index.ts        # Application entry point
 └── frontend/
     └── src/
         ├── components/     # React components
+        │   ├── ui/         # Reusable UI components
+        │   ├── note/       # Note-related components
+        │   ├── user/       # User-related components
+        │   └── admin/      # Admin components
+        ├── hooks/          # Custom React hooks
         ├── lib/            # Frontend utilities
+        │   ├── api/        # API client
+        │   ├── atoms/      # Jotai atoms
+        │   └── auth/       # Authentication
         ├── pages/          # Waku pages
         └── locales/        # i18n translations (en, ja)
 ```
@@ -156,9 +249,9 @@ packages/
 
 ### Databases (DB_TYPE)
 
-- **PostgreSQL** (default/recommended for VPS)
-- **MySQL / MariaDB**
-- **SQLite / Cloudflare D1** (for edge deployment)
+- **PostgreSQL** (default/recommended for production)
+- **MySQL / MariaDB** (planned)
+- **SQLite** (planned)
 
 ### Storage (STORAGE_TYPE)
 
@@ -171,7 +264,7 @@ Critical environment variables that control infrastructure selection:
 
 ```ini
 # Database selection
-DB_TYPE=postgres|mysql|sqlite|d1
+DB_TYPE=postgres
 DATABASE_URL=<connection-string>
 
 # Storage selection
@@ -188,111 +281,8 @@ S3_REGION=<region>
 PORT=3000
 NODE_ENV=development|production
 URL=<public-url>
-```
-
-## Implementation Phases
-
-### Phase 1: Foundation
-
-- Bun + Hono project initialization (monorepo recommended)
-- Drizzle ORM setup with schemas for PostgreSQL, MySQL, SQLite
-- Environment-based DB/storage switching logic
-- Dependency injection mechanism (via Hono Context)
-
-### Phase 2: Misskey-Compatible API (Local API)
-
-- **Authentication**: MiAuth session generation and verification
-- **Account Management**: User registration, profile updates (`/api/i/update`)
-- **Note Features**:
-  - Create posts (`/api/notes/create`): text, images, CW, visibility
-  - Timeline retrieval (`/api/notes/local-timeline`): pagination support
-  - Reactions (`/api/notes/reactions/create`): emoji reactions
-- **File Management**: Minimal drive functionality (`/api/drive/*`)
-
-### Phase 3: Frontend (Waku Client)
-
-- Waku + Jotai environment setup
-- UI component kit with Tailwind CSS
-- MiAuth authentication flow integration
-- Timeline rendering with Server Components (RSC) for fast initial load
-- Client Components for dynamic post/reaction interactions
-
-### Phase 4: ActivityPub Federation
-
-- **Actor Implementation**: `/users/:id` returning JSON-LD (Person)
-- **WebFinger**: `/.well-known/webfinger` endpoint
-- **Signature Processing**: HTTP Signatures (RSA-SHA256 / Ed25519)
-- **Delivery System**:
-  - Inbox (`/users/:id/inbox`) for activity reception and verification
-  - Job Queue (Dragonfly/BullMQ) for async outbound delivery to remote servers
-
-## Shared Package (`packages/shared`)
-
-The shared package contains code used by both frontend and backend to ensure consistency.
-
-### Validation Constants (`constants/validation.ts`)
-
-Centralized validation rules to keep frontend and backend in sync:
-
-```typescript
-import {
-  USERNAME_MIN_LENGTH,      // 3
-  USERNAME_MAX_LENGTH,      // 20
-  USERNAME_PATTERN,         // /^[a-zA-Z0-9_]+$/
-  PASSWORD_MIN_LENGTH,      // 8
-  NOTE_TEXT_MAX_LENGTH,     // 3000
-  NOTE_CW_MAX_LENGTH,       // 100
-  NOTE_MAX_FILES,           // 4
-  DISPLAY_NAME_MAX_LENGTH,  // 100
-  BIO_MAX_LENGTH,           // 500
-  REACTION_MAX_LENGTH,      // 50
-  FILE_COMMENT_MAX_LENGTH,  // 512
-  DEFAULT_PAGE_LIMIT,       // 20
-  MAX_PAGE_LIMIT,           // 100
-} from "shared";
-```
-
-### Shared Types
-
-Common TypeScript types used across packages:
-
-- `User`, `UserProfile` - User entity types
-- `Note`, `NoteWithRelations` - Note entity types
-- `Visibility` - Note visibility enum (`public`, `home`, `followers`, `specified`)
-- `UISettings` - User UI preferences
-
-## Backend Utilities
-
-### Route Utilities (`lib/routeUtils.ts`)
-
-Common utilities for Hono route handlers to reduce code duplication:
-
-```typescript
-import {
-  sanitizeUser,      // Remove passwordHash/privateKey from user objects
-  parsePagination,   // Parse limit/offset query params with defaults
-  normalizeHostname, // Normalize hostname for instance blocking
-  errorResponse,     // Standardized JSON error responses
-} from "../lib/routeUtils.js";
-
-// Usage examples:
-const { limit, offset } = parsePagination(c);
-return c.json(sanitizeUser(user));
-return errorResponse(c, "User not found", 404);
-```
-
-### Validation Schemas (`lib/validation.ts`)
-
-Zod schemas for API request validation, using shared constants:
-
-```typescript
-import { createNoteSchema, updateProfileSchema } from "../lib/validation.js";
-
-// Used with @hono/zod-validator middleware
-app.post("/api/notes/create", zValidator("json", createNoteSchema), async (c) => {
-  const data = c.req.valid("json");
-  // ...
-});
+ENABLE_REGISTRATION=true|false
+SESSION_EXPIRY_DAYS=30
 ```
 
 ## Key Architectural Considerations
@@ -302,13 +292,6 @@ app.post("/api/notes/create", zValidator("json", createNoteSchema), async (c) =>
 - Use Hono Context to provide repository implementations to controllers
 - Initialize concrete repository classes at application startup based on `DB_TYPE`
 - Example: `context.get('noteRepository')` returns the appropriate implementation
-
-### Multi-Database Schema Management
-
-- Each database type has its own schema file in `db/schema/`
-- Use Drizzle's migration system per database type
-- Keep schema definitions synchronized across database types
-- SQL-specific optimizations should be isolated to their respective repository implementations
 
 ### Storage Adapter Interface
 
@@ -324,6 +307,42 @@ The `IFileStorage` interface must support:
 - Use job queue for outbound delivery to handle retries and rate limiting
 - Actor documents must be cacheable and follow ActivityPub spec
 - WebFinger responses must include proper CORS headers
+
+## Release Procedure
+
+When bumping the version for a release, follow these steps:
+
+### Version Files
+
+Update version in **all** package.json files:
+
+1. `/package.json` (root) - Main version (e.g., `2025.12.0-beta.7`)
+2. `/packages/backend/package.json` - Package version (e.g., `0.1.0-beta.7`)
+3. `/packages/frontend/package.json` - Package version (e.g., `0.1.0-beta.7`)
+4. `/packages/shared/package.json` - Package version (e.g., `0.1.0-beta.7`)
+
+### Git Tag
+
+After committing version changes, create an annotated tag:
+
+```bash
+git tag -a v2025.12.0-beta.7 -m "Release v2025.12.0-beta.7"
+git push origin <branch> && git push origin v2025.12.0-beta.7
+```
+
+### Version Numbering
+
+- **Root version**: `YYYY.MM.patch-stage.N` (e.g., `2025.12.0-beta.7`)
+- **Package versions**: `0.1.0-stage.N` (e.g., `0.1.0-beta.7`)
+- Keep the beta/stage number synchronized across all packages
+
+### Release Checklist
+
+1. Update all 4 package.json files with new version
+2. Commit with message: `chore: bump version to X.X.X`
+3. Create annotated git tag: `git tag -a vX.X.X -m "Release vX.X.X"`
+4. Push commits and tag to remote
+5. Create PR to main (if on dev branch)
 
 ## Non-Functional Requirements
 
@@ -343,3 +362,12 @@ The `IFileStorage` interface must support:
 
 - Core logic kept loosely coupled for future plugin system
 - Interface-driven design enables swapping implementations
+
+## Historical Documentation
+
+For historical implementation plans and architecture decisions, see:
+
+- `docs/implementation/` - Phase-by-phase implementation records
+- `docs/implementation/archive/` - Completed task summaries
+- `docs/project/v1.md` - Original project specification (Japanese)
+- `docs/project/v1.en.md` - Original project specification (English)

@@ -198,8 +198,12 @@ reactions.get("/counts", optionalAuth(), async (c: Context) => {
  *
  * Get reaction counts with custom emoji URLs for a note
  *
+ * For remote notes (notes with a URI), this endpoint can optionally fetch
+ * reactions from the remote server if `fetchRemote=true` is specified.
+ *
  * @auth Optional
  * @query {string} noteId - Note ID
+ * @query {string} [fetchRemote=false] - Fetch reactions from remote server for remote notes
  * @returns {Object} Reaction counts and custom emoji URLs
  * @returns {Record<string, number>} counts - Reaction counts by emoji
  * @returns {Record<string, string>} emojis - Custom emoji URLs by emoji name
@@ -218,12 +222,35 @@ reactions.get("/counts-with-emojis", optionalAuth(), async (c: Context) => {
   );
 
   const noteId = c.req.query("noteId");
+  const fetchRemote = c.req.query("fetchRemote") === "true";
 
   if (!noteId) {
     return c.json({ error: "noteId is required" }, 400);
   }
 
   try {
+    // Check if this is a remote note and fetchRemote is requested
+    if (fetchRemote) {
+      const note = await noteRepository.findById(noteId);
+      if (note?.uri) {
+        // This is a remote note - try to fetch reactions from remote server
+        const { RemoteLikesService } = await import(
+          "../services/ap/RemoteLikesService.js"
+        );
+        const remoteLikesService = new RemoteLikesService(
+          reactionRepository,
+          noteRepository,
+          userRepository,
+        );
+
+        const result = await remoteLikesService.fetchRemoteLikes(noteId);
+        if (result) {
+          return c.json(result);
+        }
+        // Fall through to local fetch if remote fetch failed
+      }
+    }
+
     const result = await reactionService.getReactionCountsWithEmojis(noteId);
     return c.json(result);
   } catch (error) {

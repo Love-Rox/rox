@@ -163,11 +163,12 @@ export class ActivityDeliveryQueue {
 
       console.log("✅ Redis connected, using BullMQ for delivery queue");
 
-      // Initialize queue with hash tag prefix for Dragonfly/Redis cluster compatibility
-      // The {ap} hash tag ensures all keys are in the same slot
+      // Initialize queue
+      // Note: Using simple prefix without hash tags for Dragonfly compatibility
+      // Hash tags like {ap} cause "undeclared key" errors in Dragonfly's Lua scripts
       this.queue = new Queue<DeliveryJobData>("activitypub-delivery", {
         connection: this.redis,
-        prefix: "{ap}",
+        prefix: "bull",
       });
 
       // Initialize worker
@@ -178,7 +179,7 @@ export class ActivityDeliveryQueue {
         },
         {
           connection: this.redis,
-          prefix: "{ap}",
+          prefix: "bull",
           concurrency: 10, // Process up to 10 jobs concurrently
         },
       );
@@ -382,6 +383,8 @@ export class ActivityDeliveryQueue {
    *
    * Creates a job ID based on activity ID and inbox URL to prevent
    * duplicate deliveries within a short time window.
+   * Uses a simple numeric hash to avoid special characters that may
+   * cause issues with Dragonfly's Lua scripts.
    *
    * @param data - Delivery job data
    * @returns Job ID for deduplication
@@ -390,8 +393,16 @@ export class ActivityDeliveryQueue {
    */
   private generateJobId(data: DeliveryJobData): string {
     const activityId = data.activity.id || JSON.stringify(data.activity);
-    const hash = Buffer.from(`${activityId}-${data.inboxUrl}`).toString("base64").slice(0, 32);
-    return `deliver-${hash}`;
+    // Use a simple hash that avoids special characters
+    // Create a numeric hash from the string for cluster-safe job ID
+    const input = `${activityId}-${data.inboxUrl}`;
+    let hash = 0;
+    for (let i = 0; i < input.length; i++) {
+      const char = input.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return `${Math.abs(hash).toString(36)}`;
   }
 
   /**
