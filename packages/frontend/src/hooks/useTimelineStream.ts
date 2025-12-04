@@ -63,6 +63,17 @@ function getTimelineStreamUrl(timelineType: TimelineType, token: string | null):
 }
 
 /**
+ * Reaction event data from SSE
+ */
+export interface NoteReactedEvent {
+  noteId: string;
+  reaction: string;
+  action: "add" | "remove";
+  counts: Record<string, number>;
+  emojis: Record<string, string>;
+}
+
+/**
  * Connect to timeline SSE stream (singleton per timeline type)
  */
 function connectTimelineSSE(
@@ -70,6 +81,7 @@ function connectTimelineSSE(
   token: string | null,
   onNote: (note: Note) => void,
   onNoteDeleted: (noteId: string) => void,
+  onNoteReacted: (event: NoteReactedEvent) => void,
   setConnected: (connected: boolean) => void,
 ) {
   const connection = timelineConnections[timelineType];
@@ -110,6 +122,15 @@ function connectTimelineSSE(
     }
   });
 
+  eventSource.addEventListener("noteReacted", (event) => {
+    try {
+      const data = JSON.parse(event.data) as NoteReactedEvent;
+      onNoteReacted(data);
+    } catch (error) {
+      console.error("Failed to parse noteReacted event:", error);
+    }
+  });
+
   eventSource.addEventListener("heartbeat", () => {
     // Heartbeat received, connection is alive
   });
@@ -123,7 +144,7 @@ function connectTimelineSSE(
     // Reconnect after delay (only if there are still subscribers)
     if (connection.connectionCount > 0) {
       connection.reconnectTimeout = setTimeout(() => {
-        connectTimelineSSE(timelineType, token, onNote, onNoteDeleted, setConnected);
+        connectTimelineSSE(timelineType, token, onNote, onNoteDeleted, onNoteReacted, setConnected);
       }, 5000);
     }
   };
@@ -222,14 +243,38 @@ export function useTimelineStream(timelineType: TimelineType, enabled = true) {
   );
 
   /**
+   * Handle note reaction update from stream
+   */
+  const handleNoteReacted = useCallback(
+    (event: NoteReactedEvent) => {
+      if (!isActiveRef.current) return;
+
+      // Update the note's reactions in the timeline
+      setNotes((prev) =>
+        prev.map((note) => {
+          if (note.id === event.noteId) {
+            return {
+              ...note,
+              reactions: event.counts,
+              reactionEmojis: event.emojis,
+            };
+          }
+          return note;
+        }),
+      );
+    },
+    [setNotes],
+  );
+
+  /**
    * Connect to stream
    */
   const connect = useCallback(() => {
     // Home timeline requires authentication
     if (timelineType === "home" && !isAuthenticated) return;
 
-    connectTimelineSSE(timelineType, token, handleNote, handleNoteDeleted, setConnected);
-  }, [timelineType, isAuthenticated, token, handleNote, handleNoteDeleted, setConnected]);
+    connectTimelineSSE(timelineType, token, handleNote, handleNoteDeleted, handleNoteReacted, setConnected);
+  }, [timelineType, isAuthenticated, token, handleNote, handleNoteDeleted, handleNoteReacted, setConnected]);
 
   /**
    * Disconnect from stream

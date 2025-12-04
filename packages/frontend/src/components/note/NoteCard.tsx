@@ -76,6 +76,19 @@ function NoteCardComponent({
   );
   const [remoteInstance, setRemoteInstance] = useState<PublicRemoteInstance | null>(null);
 
+  // Sync reactions from props when they change (e.g., from SSE updates)
+  useEffect(() => {
+    if (note.reactions) {
+      setLocalReactions(note.reactions);
+    }
+  }, [note.reactions]);
+
+  useEffect(() => {
+    if (note.reactionEmojis) {
+      setReactionEmojis(note.reactionEmojis);
+    }
+  }, [note.reactionEmojis]);
+
   // Load remote instance info for remote users
   useEffect(() => {
     if (note.user.host) {

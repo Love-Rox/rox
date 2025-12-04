@@ -15,6 +15,7 @@ import type { Reaction } from "../../../shared/src/types/reaction.js";
 import { generateId } from "../../../shared/src/utils/id.js";
 import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
 import type { NotificationService } from "./NotificationService.js";
+import { getTimelineStreamService } from "./TimelineStreamService.js";
 
 /**
  * Reaction creation input data
@@ -173,7 +174,33 @@ export class ReactionService {
         });
     }
 
+    // Push reaction event to timeline streams for real-time updates
+    this.pushReactionEvent(noteId, note.userId, reaction, "add");
+
     return newReaction;
+  }
+
+  /**
+   * Push reaction event to timeline streams
+   *
+   * @param noteId - Note ID
+   * @param noteAuthorId - Note author's user ID
+   * @param reaction - Reaction emoji
+   * @param action - "add" or "remove"
+   */
+  private async pushReactionEvent(
+    noteId: string,
+    noteAuthorId: string,
+    reaction: string,
+    action: "add" | "remove",
+  ): Promise<void> {
+    try {
+      const { counts, emojis } = await this.getReactionCountsWithEmojis(noteId);
+      const streamService = getTimelineStreamService();
+      streamService.pushNoteReacted(noteId, noteAuthorId, reaction, action, counts, emojis);
+    } catch (error) {
+      console.error(`Failed to push reaction event:`, error);
+    }
   }
 
   /**
@@ -219,6 +246,11 @@ export class ReactionService {
       this.deliveryService.deliverUndoLike(reactor, note, noteAuthor).catch((error) => {
         console.error(`Failed to deliver Undo Like activity:`, error);
       });
+    }
+
+    // Push reaction event to timeline streams for real-time updates
+    if (note) {
+      this.pushReactionEvent(noteId, note.userId, reaction, "remove");
     }
   }
 
