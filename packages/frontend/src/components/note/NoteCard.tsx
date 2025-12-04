@@ -451,7 +451,7 @@ function NoteCardComponent({
           />
           {localReactions && Object.keys(localReactions).length > 0 && (
             <div
-              className="flex items-center gap-1 flex-wrap text-sm text-gray-600 dark:text-gray-400"
+              className="flex items-center gap-1.5 flex-wrap text-sm text-gray-600 dark:text-gray-400"
               role="group"
               aria-label="Reactions"
             >
@@ -466,9 +466,11 @@ function NoteCardComponent({
                     onClick={() => handleReaction(emoji)}
                     disabled={isReacting}
                     className={`
-                      flex items-center gap-1 px-2 py-1 rounded-full
-                      transition-all hover:bg-gray-100 dark:hover:bg-gray-700
-                      ${myReactions.includes(emoji) ? "bg-primary-100 dark:bg-primary-900/30 ring-1 ring-primary-500" : "bg-gray-50 dark:bg-gray-800"}
+                      flex items-center gap-1.5 px-2.5 py-1 rounded-full
+                      border transition-all
+                      ${myReactions.includes(emoji)
+                        ? "bg-primary-100 dark:bg-primary-900/30 border-primary-400 dark:border-primary-600"
+                        : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500"}
                     `}
                     aria-label={`${myReactions.includes(emoji) ? "Remove" : "Add"} ${emoji} reaction. ${count} ${count === 1 ? "reaction" : "reactions"}`}
                     aria-pressed={myReactions.includes(emoji)}
@@ -477,13 +479,13 @@ function NoteCardComponent({
                       <img
                         src={getProxiedImageUrl(customEmojiUrl) || ""}
                         alt={emoji}
-                        className="w-5 h-5 object-contain"
+                        className="w-6 h-6 object-contain"
                         loading="lazy"
                       />
                     ) : (
-                      <span aria-hidden="true">{emoji}</span>
+                      <span className="text-base leading-none" aria-hidden="true">{emoji}</span>
                     )}
-                    <span className="text-xs font-medium">{count}</span>
+                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{count}</span>
                   </button>
                 );
               })}
