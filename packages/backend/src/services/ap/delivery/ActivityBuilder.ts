@@ -70,6 +70,16 @@ const AS_CONTEXT = "https://www.w3.org/ns/activitystreams";
 const AS_PUBLIC = "https://www.w3.org/ns/activitystreams#Public";
 
 /**
+ * Custom emoji info for Like activity
+ */
+export interface CustomEmojiInfo {
+  /** Emoji name (without colons) */
+  name: string;
+  /** URL to the emoji image */
+  url: string;
+}
+
+/**
  * ActivityPub Activity Builder
  *
  * Provides helper methods for constructing common ActivityPub activities.
@@ -154,14 +164,26 @@ export class ActivityBuilder {
    *
    * Supports Misskey-compatible _misskey_reaction extension for custom emoji.
    * When a reaction is provided, it's included in both content and _misskey_reaction fields.
+   * For custom emojis, an Emoji tag is included with the image URL.
    *
    * @param noteId - ID of the note being reacted to
    * @param noteUri - ActivityPub URI of the note
    * @param reactor - User creating the reaction
    * @param reaction - Optional reaction emoji (e.g., "👍", ":custom_emoji:")
+   * @param customEmoji - Optional custom emoji info (name and URL)
    */
-  like(noteId: string, noteUri: string, reactor: User, reaction?: string): Activity {
-    const activity: Activity & { content?: string; _misskey_reaction?: string } = {
+  like(
+    noteId: string,
+    noteUri: string,
+    reactor: User,
+    reaction?: string,
+    customEmoji?: CustomEmojiInfo,
+  ): Activity {
+    const activity: Activity & {
+      content?: string;
+      _misskey_reaction?: string;
+      tag?: unknown[];
+    } = {
       "@context": AS_CONTEXT,
       type: "Like",
       id: this.activityId("like", noteId, Date.now()),
@@ -173,6 +195,23 @@ export class ActivityBuilder {
     if (reaction) {
       activity.content = reaction;
       activity._misskey_reaction = reaction;
+    }
+
+    // Add Emoji tag for custom emojis (Misskey compatible format)
+    if (customEmoji) {
+      activity.tag = [
+        {
+          type: "Emoji",
+          id: `${this.baseUrl}/emojis/${customEmoji.name}`,
+          name: `:${customEmoji.name}:`,
+          updated: new Date().toISOString(),
+          icon: {
+            type: "Image",
+            mediaType: "image/png",
+            url: customEmoji.url,
+          },
+        },
+      ];
     }
 
     return activity;
