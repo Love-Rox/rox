@@ -325,6 +325,42 @@ The `IFileStorage` interface must support:
 - Actor documents must be cacheable and follow ActivityPub spec
 - WebFinger responses must include proper CORS headers
 
+## Release Procedure
+
+When bumping the version for a release, follow these steps:
+
+### Version Files
+
+Update version in **all** package.json files:
+
+1. `/package.json` (root) - Main version (e.g., `2025.12.0-beta.7`)
+2. `/packages/backend/package.json` - Package version (e.g., `0.1.0-beta.7`)
+3. `/packages/frontend/package.json` - Package version (e.g., `0.1.0-beta.7`)
+4. `/packages/shared/package.json` - Package version (e.g., `0.1.0-beta.7`)
+
+### Git Tag
+
+After committing version changes, create an annotated tag:
+
+```bash
+git tag -a v2025.12.0-beta.7 -m "Release v2025.12.0-beta.7"
+git push origin <branch> && git push origin v2025.12.0-beta.7
+```
+
+### Version Numbering
+
+- **Root version**: `YYYY.MM.patch-stage.N` (e.g., `2025.12.0-beta.7`)
+- **Package versions**: `0.1.0-stage.N` (e.g., `0.1.0-beta.7`)
+- Keep the beta/stage number synchronized across all packages
+
+### Release Checklist
+
+1. Update all 4 package.json files with new version
+2. Commit with message: `chore: bump version to X.X.X`
+3. Create annotated git tag: `git tag -a vX.X.X -m "Release vX.X.X"`
+4. Push commits and tag to remote
+5. Create PR to main (if on dev branch)
+
 ## Non-Functional Requirements
 
 **Security:**
