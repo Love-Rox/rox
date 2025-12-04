@@ -8,9 +8,11 @@
 
 import { Hono } from "hono";
 import type { Context } from "hono";
+import { streamSSE } from "hono/streaming";
 import { requireAuth, optionalAuth } from "../middleware/auth.js";
 import { userRateLimit, RateLimitPresets } from "../middleware/rateLimit.js";
 import { NoteService } from "../services/NoteService.js";
+import { getTimelineStreamService } from "../services/TimelineStreamService.js";
 
 const notes = new Hono();
 
@@ -417,6 +419,291 @@ notes.get("/replies", optionalAuth(), async (c: Context) => {
 
   // TODO: Implement hydration with user and file data
   return c.json(replies);
+});
+
+/**
+ * GET /api/notes/timeline/stream
+ *
+ * Server-Sent Events (SSE) endpoint for real-time home timeline updates
+ *
+ * Establishes a persistent connection that pushes new notes as they are created
+ * by users that the authenticated user follows.
+ *
+ * Events are sent in SSE format with the following types:
+ * - note: A new note was created
+ * - noteDeleted: A note was deleted
+ *
+ * @auth Required (via header or query param for SSE compatibility)
+ * @query {string} [token] - Auth token (alternative to Authorization header for EventSource)
+ * @returns {SSE stream} Real-time timeline events
+ */
+notes.get("/timeline/stream", async (c: Context) => {
+  // SSE-compatible auth: support token from query param since EventSource doesn't support headers
+  const tokenFromQuery = c.req.query("token");
+  const authHeader = c.req.header("Authorization");
+  const token = tokenFromQuery || (authHeader ? authHeader.replace(/^Bearer\s+/i, "") : null);
+
+  if (!token) {
+    return c.json({ error: "Authentication required" }, 401);
+  }
+
+  // Validate session
+  const { AuthService } = await import("../services/AuthService.js");
+  const authService = new AuthService(c.get("userRepository"), c.get("sessionRepository"));
+  const result = await authService.validateSession(token);
+
+  if (!result) {
+    return c.json({ error: "Invalid or expired token" }, 401);
+  }
+
+  if (result.user.isSuspended) {
+    return c.json({ error: "Your account has been suspended" }, 403);
+  }
+
+  const user = result.user;
+  const streamService = getTimelineStreamService();
+
+  return streamSSE(c, async (stream) => {
+    let eventId = 0;
+    let running = true;
+
+    stream.onAbort(() => {
+      running = false;
+    });
+
+    // Send initial connection event
+    await stream.writeSSE({
+      event: "connected",
+      data: JSON.stringify({ userId: user.id, channel: "home" }),
+      id: String(eventId++),
+    });
+
+    // Queue for notes received from subscription
+    const noteQueue: Array<{ type: string; data: unknown }> = [];
+
+    // Subscribe to home timeline events for this user
+    const unsubscribe = streamService.subscribeHome(user.id, (event) => {
+      noteQueue.push(event);
+    });
+
+    // Main loop: send heartbeats and process note queue
+    while (running) {
+      // Process any pending notes
+      while (noteQueue.length > 0) {
+        const event = noteQueue.shift();
+        if (event) {
+          try {
+            await stream.writeSSE({
+              event: event.type,
+              data: JSON.stringify(event.data),
+              id: String(eventId++),
+            });
+          } catch {
+            running = false;
+            break;
+          }
+        }
+      }
+
+      if (!running) break;
+
+      // Send heartbeat
+      try {
+        await stream.writeSSE({
+          event: "heartbeat",
+          data: JSON.stringify({ timestamp: Date.now() }),
+          id: String(eventId++),
+        });
+      } catch {
+        running = false;
+        break;
+      }
+
+      // Wait before next heartbeat (15 seconds)
+      await stream.sleep(15000);
+    }
+
+    unsubscribe();
+  });
+});
+
+/**
+ * GET /api/notes/social-timeline/stream
+ *
+ * Server-Sent Events (SSE) endpoint for real-time social timeline updates
+ *
+ * Establishes a persistent connection that pushes new public notes
+ * from local users and followed remote users.
+ *
+ * @auth Optional (via header or query param for SSE compatibility)
+ * @query {string} [token] - Auth token (alternative to Authorization header for EventSource)
+ * @returns {SSE stream} Real-time timeline events
+ */
+notes.get("/social-timeline/stream", async (c: Context) => {
+  // SSE-compatible auth: support token from query param since EventSource doesn't support headers
+  const tokenFromQuery = c.req.query("token");
+  const authHeader = c.req.header("Authorization");
+  const token = tokenFromQuery || (authHeader ? authHeader.replace(/^Bearer\s+/i, "") : null);
+
+  let userId: string | null = null;
+
+  if (token) {
+    const { AuthService } = await import("../services/AuthService.js");
+    const authService = new AuthService(c.get("userRepository"), c.get("sessionRepository"));
+    const result = await authService.validateSession(token);
+
+    if (result && !result.user.isSuspended) {
+      userId = result.user.id;
+    }
+  }
+
+  const streamService = getTimelineStreamService();
+
+  return streamSSE(c, async (stream) => {
+    let eventId = 0;
+    let running = true;
+
+    stream.onAbort(() => {
+      running = false;
+    });
+
+    // Send initial connection event
+    await stream.writeSSE({
+      event: "connected",
+      data: JSON.stringify({ userId, channel: "social" }),
+      id: String(eventId++),
+    });
+
+    // Queue for notes received from subscriptions
+    const noteQueue: Array<{ type: string; data: unknown }> = [];
+
+    // Subscribe to local timeline (always)
+    const unsubscribeLocal = streamService.subscribeLocal((event) => {
+      noteQueue.push(event);
+    });
+
+    // Subscribe to social timeline if authenticated
+    let unsubscribeSocial: (() => void) | null = null;
+    if (userId) {
+      unsubscribeSocial = streamService.subscribeSocial(userId, (event) => {
+        noteQueue.push(event);
+      });
+    }
+
+    // Main loop
+    while (running) {
+      while (noteQueue.length > 0) {
+        const event = noteQueue.shift();
+        if (event) {
+          try {
+            await stream.writeSSE({
+              event: event.type,
+              data: JSON.stringify(event.data),
+              id: String(eventId++),
+            });
+          } catch {
+            running = false;
+            break;
+          }
+        }
+      }
+
+      if (!running) break;
+
+      try {
+        await stream.writeSSE({
+          event: "heartbeat",
+          data: JSON.stringify({ timestamp: Date.now() }),
+          id: String(eventId++),
+        });
+      } catch {
+        running = false;
+        break;
+      }
+
+      await stream.sleep(15000);
+    }
+
+    unsubscribeLocal();
+    if (unsubscribeSocial) {
+      unsubscribeSocial();
+    }
+  });
+});
+
+/**
+ * GET /api/notes/local-timeline/stream
+ *
+ * Server-Sent Events (SSE) endpoint for real-time local timeline updates
+ *
+ * Establishes a persistent connection that pushes new public notes
+ * from local users.
+ *
+ * @auth Not required
+ * @returns {SSE stream} Real-time timeline events
+ */
+notes.get("/local-timeline/stream", async (c: Context) => {
+  const streamService = getTimelineStreamService();
+
+  return streamSSE(c, async (stream) => {
+    let eventId = 0;
+    let running = true;
+
+    stream.onAbort(() => {
+      running = false;
+    });
+
+    // Send initial connection event
+    await stream.writeSSE({
+      event: "connected",
+      data: JSON.stringify({ channel: "local" }),
+      id: String(eventId++),
+    });
+
+    // Queue for notes
+    const noteQueue: Array<{ type: string; data: unknown }> = [];
+
+    // Subscribe to local timeline
+    const unsubscribe = streamService.subscribeLocal((event) => {
+      noteQueue.push(event);
+    });
+
+    // Main loop
+    while (running) {
+      while (noteQueue.length > 0) {
+        const event = noteQueue.shift();
+        if (event) {
+          try {
+            await stream.writeSSE({
+              event: event.type,
+              data: JSON.stringify(event.data),
+              id: String(eventId++),
+            });
+          } catch {
+            running = false;
+            break;
+          }
+        }
+      }
+
+      if (!running) break;
+
+      try {
+        await stream.writeSSE({
+          event: "heartbeat",
+          data: JSON.stringify({ timestamp: Date.now() }),
+          id: String(eventId++),
+        });
+      } catch {
+        running = false;
+        break;
+      }
+
+      await stream.sleep(15000);
+    }
+
+    unsubscribe();
+  });
 });
 
 export default notes;

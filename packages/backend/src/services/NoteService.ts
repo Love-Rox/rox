@@ -18,6 +18,7 @@ import { generateId } from "../../../shared/src/utils/id.js";
 import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
 import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.js";
 import type { NotificationService } from "./NotificationService.js";
+import { getTimelineStreamService } from "./TimelineStreamService.js";
 
 /**
  * Note creation input data
@@ -239,6 +240,11 @@ export class NoteService {
         },
       );
     }
+
+    // Push to timeline streams (async, non-blocking)
+    this.pushToTimelineStreams(note, userId, visibility, localOnly).catch((error) => {
+      console.error(`Failed to push note ${noteId} to timeline streams:`, error);
+    });
 
     return note;
   }
@@ -679,6 +685,54 @@ export class NoteService {
           );
         }
       }
+    }
+  }
+
+  /**
+   * Push note to timeline streams
+   *
+   * Sends real-time updates to connected clients via SSE.
+   *
+   * @param note - Created note
+   * @param authorId - Note author ID
+   * @param visibility - Note visibility
+   * @param localOnly - Whether note is local-only
+   *
+   * @private
+   */
+  private async pushToTimelineStreams(
+    note: Note,
+    authorId: string,
+    visibility: Visibility,
+    _localOnly: boolean,
+  ): Promise<void> {
+    const streamService = getTimelineStreamService();
+
+    // Get author info to check if local user
+    const author = await this.userRepository.findById(authorId);
+    if (!author) return;
+
+    // Only push public notes from local users
+    if (visibility !== "public" || author.host) return;
+
+    // Push to local timeline (all local public notes)
+    streamService.pushToLocalTimeline(note);
+
+    // Get followers to push to home/social timelines
+    // findByFolloweeId returns follows where authorId is the followee (i.e., their followers)
+    const followers = await this.followRepository.findByFolloweeId(authorId, 10000);
+    const followerIds = followers.map((f) => f.followerId);
+
+    if (followerIds.length > 0) {
+      // Push to home timelines of followers
+      streamService.pushToHomeTimelines(followerIds, note);
+
+      // Push to social timelines of followers (for followed remote user notes)
+      // For local users, social timeline = local + followed remote users
+      // Since this is a local user's note, it's already in local timeline
+      // So we only need to push to social timeline for remote followers
+      // But since we're filtering to local users only (author.host check above),
+      // we don't need to push to social timeline separately
     }
   }
 }
