@@ -137,12 +137,17 @@ export interface ReactionCountsWithEmojis {
  * Get reaction counts with custom emoji URLs for a note
  *
  * @param noteId - Note ID
+ * @param fetchRemote - Fetch reactions from remote server for remote notes (default: false)
  * @returns Reaction counts and custom emoji URLs
  */
 export async function getReactionCountsWithEmojis(
   noteId: string,
+  fetchRemote = false,
 ): Promise<ReactionCountsWithEmojis> {
   const params = new URLSearchParams({ noteId });
+  if (fetchRemote) {
+    params.append("fetchRemote", "true");
+  }
   const response = await fetch(`${getApiBase()}/api/notes/reactions/counts-with-emojis?${params}`);
 
   if (!response.ok) {

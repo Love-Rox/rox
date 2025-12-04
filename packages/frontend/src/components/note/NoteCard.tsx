@@ -91,7 +91,9 @@ function NoteCardComponent({
     const loadReactionData = async () => {
       try {
         // Load custom emoji URLs
-        const reactionData = await getReactionCountsWithEmojis(note.id);
+        // For remote user notes, fetch reactions from remote server
+        const isRemoteNote = Boolean(note.user.host);
+        const reactionData = await getReactionCountsWithEmojis(note.id, isRemoteNote);
         if (Object.keys(reactionData.counts).length > 0) {
           setLocalReactions(reactionData.counts);
         }
@@ -110,7 +112,7 @@ function NoteCardComponent({
     };
 
     loadReactionData();
-  }, [note.id, token]);
+  }, [note.id, note.user.host, token]);
 
   const handleReaction = async (reaction: string) => {
     if (isReacting || !token) return;
