@@ -27,6 +27,22 @@ interface APCollection {
 }
 
 /**
+ * Misskey API reaction response
+ */
+interface MisskeyReaction {
+  id: string;
+  createdAt: string;
+  user: {
+    id: string;
+    username: string;
+    host: string | null;
+    name?: string;
+    avatarUrl?: string;
+  };
+  type: string; // Reaction emoji or custom emoji like ":emoji@.:"
+}
+
+/**
  * ActivityPub Collection Page
  */
 interface APCollectionPage {
@@ -78,7 +94,8 @@ export class RemoteLikesService {
    * Fetch and store likes for a remote note
    *
    * Retrieves the likes collection from the remote server and stores
-   * new likes in the local database.
+   * new likes in the local database. Supports both ActivityPub likes
+   * collection and Misskey's proprietary API.
    *
    * @param noteId - Local note ID
    * @returns Object with counts and emojis, or null if fetch failed
@@ -115,6 +132,11 @@ export class RemoteLikesService {
     // Get likes collection URL (some servers use 'reactions' instead of 'likes')
     const likesUrl = this.getLikesUrl(noteResult.data);
     if (!likesUrl) {
+      // No ActivityPub likes collection - try Misskey API fallback
+      const misskeyResult = await this.fetchMisskeyReactions(note.uri, noteId);
+      if (misskeyResult) {
+        return misskeyResult;
+      }
       console.log(`No likes collection found for note ${note.uri}`);
       // Return existing local counts if no remote likes available
       return this.reactionRepository.countByNoteIdWithEmojis(noteId);
@@ -132,6 +154,76 @@ export class RemoteLikesService {
 
     // Return updated counts from local database
     return this.reactionRepository.countByNoteIdWithEmojis(noteId);
+  }
+
+  /**
+   * Fetch reactions from Misskey API
+   *
+   * Misskey doesn't expose reactions via ActivityPub, so we use
+   * their proprietary API as a fallback.
+   *
+   * @param noteUri - Remote note URI
+   * @param noteId - Local note ID
+   * @returns Reaction counts and emojis, or null if not a Misskey instance
+   */
+  private async fetchMisskeyReactions(
+    noteUri: string,
+    noteId: string,
+  ): Promise<{ counts: Record<string, number>; emojis: Record<string, string> } | null> {
+    try {
+      // Parse note URI to get base URL and note ID
+      const url = new URL(noteUri);
+      const pathParts = url.pathname.split("/");
+      const remoteNoteId = pathParts[pathParts.length - 1];
+
+      if (!remoteNoteId || !pathParts.includes("notes")) {
+        return null;
+      }
+
+      // Try Misskey API endpoint
+      const apiUrl = `${url.origin}/api/notes/reactions`;
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": "Rox/1.0 (ActivityPub)",
+        },
+        body: JSON.stringify({
+          noteId: remoteNoteId,
+          limit: 100,
+        }),
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const reactions = (await response.json()) as MisskeyReaction[];
+      if (!Array.isArray(reactions) || reactions.length === 0) {
+        return this.reactionRepository.countByNoteIdWithEmojis(noteId);
+      }
+
+      console.log(`📥 Fetched ${reactions.length} reactions from Misskey API for ${noteUri}`);
+
+      // Aggregate reaction counts
+      const counts: Record<string, number> = {};
+      const emojis: Record<string, string> = {};
+
+      for (const reaction of reactions) {
+        // Normalize reaction type (remove @.: suffix for local emojis)
+        let reactionType = reaction.type;
+        if (reactionType.endsWith("@.:")) {
+          reactionType = reactionType.slice(0, -3) + ":";
+        }
+
+        counts[reactionType] = (counts[reactionType] || 0) + 1;
+      }
+
+      return { counts, emojis };
+    } catch (error) {
+      console.warn(`Failed to fetch Misskey reactions:`, error);
+      return null;
+    }
   }
 
   /**
