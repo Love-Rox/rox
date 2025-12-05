@@ -1379,7 +1379,7 @@ app.post("/assets/upload", async (c) => {
   }
 
   // Validate asset type
-  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon"];
+  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon", "pwaIcon192", "pwaIcon512"];
   if (!assetType || !validAssetTypes.includes(assetType)) {
     return errorResponse(c, `type must be one of: ${validAssetTypes.join(", ")}`);
   }
@@ -1395,6 +1395,8 @@ app.post("/assets/upload", async (c) => {
     darkIcon: 2 * 1024 * 1024, // 2MB
     banner: 5 * 1024 * 1024, // 5MB
     favicon: 512 * 1024, // 512KB
+    pwaIcon192: 1 * 1024 * 1024, // 1MB
+    pwaIcon512: 2 * 1024 * 1024, // 2MB
   };
 
   if (file.size > sizeLimits[assetType]!) {
@@ -1432,6 +1434,12 @@ app.post("/assets/upload", async (c) => {
       case "favicon":
         updateData.faviconUrl = driveFile.url;
         break;
+      case "pwaIcon192":
+        updateData.pwaIcon192Url = driveFile.url;
+        break;
+      case "pwaIcon512":
+        updateData.pwaIcon512Url = driveFile.url;
+        break;
     }
 
     await instanceSettingsService.updateInstanceMetadata(updateData, admin?.id);
@@ -1466,7 +1474,7 @@ app.delete("/assets/:type", async (c) => {
   const assetType = c.req.param("type");
 
   // Validate asset type
-  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon"];
+  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon", "pwaIcon192", "pwaIcon512"];
   if (!validAssetTypes.includes(assetType)) {
     return errorResponse(c, `type must be one of: ${validAssetTypes.join(", ")}`);
   }
@@ -1485,6 +1493,12 @@ app.delete("/assets/:type", async (c) => {
       break;
     case "favicon":
       updateData.faviconUrl = null;
+      break;
+    case "pwaIcon192":
+      updateData.pwaIcon192Url = null;
+      break;
+    case "pwaIcon512":
+      updateData.pwaIcon512Url = null;
       break;
   }
 
@@ -1513,6 +1527,8 @@ app.get("/assets", async (c) => {
     darkIcon: metadata.darkIconUrl,
     banner: metadata.bannerUrl,
     favicon: metadata.faviconUrl,
+    pwaIcon192: metadata.pwaIcon192Url,
+    pwaIcon512: metadata.pwaIcon512Url,
   });
 });
 
