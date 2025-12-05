@@ -239,10 +239,12 @@ reactions.get("/counts-with-emojis", optionalAuth(), async (c: Context) => {
         const { RemoteLikesService } = await import(
           "../services/ap/RemoteLikesService.js"
         );
+        const customEmojiRepository = c.get("customEmojiRepository");
         const remoteLikesService = new RemoteLikesService(
           reactionRepository,
           noteRepository,
           userRepository,
+          customEmojiRepository,
         );
 
         const remoteResult = await remoteLikesService.fetchRemoteLikes(noteId);
