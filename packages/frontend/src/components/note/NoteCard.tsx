@@ -487,11 +487,14 @@ function NoteCardComponent({
             <Repeat2 className="w-4 h-4" />
             <span>{note.renoteCount || 0}</span>
           </Button>
-          <ReactionButton
-            onReactionSelect={handleReaction}
-            selectedReactions={myReactions}
-            isDisabled={isReacting}
-          />
+          {/* Hide reaction button for remote notes - reactions are display-only */}
+          {!note.user.host && (
+            <ReactionButton
+              onReactionSelect={handleReaction}
+              selectedReactions={myReactions}
+              isDisabled={isReacting}
+            />
+          )}
           {localReactions && Object.keys(localReactions).length > 0 && (
             <div
               className="flex items-center gap-1.5 flex-wrap text-sm text-gray-600 dark:text-gray-400"
@@ -502,21 +505,29 @@ function NoteCardComponent({
                 // Check if this is a custom emoji (format: :emoji_name:)
                 const isCustomEmoji = emoji.startsWith(":") && emoji.endsWith(":");
                 const customEmojiUrl = reactionEmojis[emoji];
+                const isRemoteNote = Boolean(note.user.host);
+
+                // For remote notes, use div (display-only); for local notes, use button (interactive)
+                const ReactionElement = isRemoteNote ? "div" : "button";
 
                 return (
-                  <button
+                  <ReactionElement
                     key={emoji}
-                    onClick={() => handleReaction(emoji)}
-                    disabled={isReacting}
+                    onClick={isRemoteNote ? undefined : () => handleReaction(emoji)}
+                    disabled={isRemoteNote ? undefined : isReacting}
                     className={`
                       flex items-center gap-1.5 px-2.5 py-1 rounded-full
                       border transition-all
-                      ${myReactions.includes(emoji)
-                        ? "bg-primary-100 dark:bg-primary-900/30 border-primary-400 dark:border-primary-600"
-                        : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500"}
+                      ${isRemoteNote
+                        ? "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 cursor-default"
+                        : myReactions.includes(emoji)
+                          ? "bg-primary-100 dark:bg-primary-900/30 border-primary-400 dark:border-primary-600 cursor-pointer"
+                          : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 cursor-pointer"}
                     `}
-                    aria-label={`${myReactions.includes(emoji) ? "Remove" : "Add"} ${emoji} reaction. ${count} ${count === 1 ? "reaction" : "reactions"}`}
-                    aria-pressed={myReactions.includes(emoji)}
+                    aria-label={isRemoteNote
+                      ? `${emoji} reaction. ${count} ${count === 1 ? "reaction" : "reactions"}`
+                      : `${myReactions.includes(emoji) ? "Remove" : "Add"} ${emoji} reaction. ${count} ${count === 1 ? "reaction" : "reactions"}`}
+                    aria-pressed={isRemoteNote ? undefined : myReactions.includes(emoji)}
                   >
                     {isCustomEmoji && customEmojiUrl ? (
                       <img
@@ -529,7 +540,7 @@ function NoteCardComponent({
                       <span className="text-base leading-none" aria-hidden="true">{emoji}</span>
                     )}
                     <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{count}</span>
-                  </button>
+                  </ReactionElement>
                 );
               })}
             </div>
