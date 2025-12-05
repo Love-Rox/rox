@@ -307,6 +307,10 @@ notifications.get("/stream", async (c: Context) => {
   const user = result.user;
   const streamService = getNotificationStreamService();
 
+  // Set headers to disable buffering for SSE compatibility with proxies (Nginx, Cloudflare)
+  c.header("X-Accel-Buffering", "no");
+  c.header("Cache-Control", "no-cache, no-store, must-revalidate");
+
   return streamSSE(c, async (stream) => {
     let eventId = 0;
     let running = true;
