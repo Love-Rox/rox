@@ -535,7 +535,7 @@ function NoteCardComponent({
                         loading="lazy"
                       />
                     ) : (
-                      <span className="text-base leading-none" aria-hidden="true">{emoji}</span>
+                      <span className="text-2xl leading-none" aria-hidden="true">{emoji}</span>
                     )}
                     <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{count}</span>
                   </ReactionElement>
