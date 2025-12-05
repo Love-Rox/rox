@@ -154,7 +154,7 @@ function NoteCardComponent({
         });
       } else {
         // Add reaction
-        await createReaction(note.id, reaction, token);
+        const newReaction = await createReaction(note.id, reaction, token);
         setMyReactions([...myReactions, reaction]);
 
         // Update local reaction count
@@ -162,6 +162,14 @@ function NoteCardComponent({
           ...prev,
           [reaction]: (prev[reaction] || 0) + 1,
         }));
+
+        // Update emoji URL if this is a custom emoji with URL
+        if (newReaction.customEmojiUrl) {
+          setReactionEmojis((prev) => ({
+            ...prev,
+            [reaction]: newReaction.customEmojiUrl!,
+          }));
+        }
 
         addToast({
           type: "success",
