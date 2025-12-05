@@ -102,23 +102,41 @@ function NoteCardComponent({
 
   // Load user's existing reactions and custom emoji URLs on mount
   useEffect(() => {
+    let isMounted = true;
+
     const loadReactionData = async () => {
       try {
+        // Load user's own reactions first if logged in
+        let userReactions: string[] = [];
+        if (token) {
+          const reactions = await getMyReactions(note.id, token);
+          userReactions = reactions.map((r) => r.reaction);
+          if (isMounted) {
+            setMyReactions(userReactions);
+          }
+        }
+
         // Load custom emoji URLs
         // For remote user notes, fetch reactions from remote server
         const isRemoteNote = Boolean(note.user.host);
         const reactionData = await getReactionCountsWithEmojis(note.id, isRemoteNote);
+
+        if (!isMounted) return;
+
         if (Object.keys(reactionData.counts).length > 0) {
-          setLocalReactions(reactionData.counts);
+          // Merge with user's own reactions to prevent count from jumping back
+          // This ensures optimistic updates aren't overwritten by stale remote data
+          const merged = { ...reactionData.counts };
+          // For each of user's reactions, ensure count is at least 1
+          for (const reaction of userReactions) {
+            if (merged[reaction] === undefined || merged[reaction] < 1) {
+              merged[reaction] = Math.max(merged[reaction] || 0, 1);
+            }
+          }
+          setLocalReactions(merged);
         }
         if (Object.keys(reactionData.emojis).length > 0) {
           setReactionEmojis(reactionData.emojis);
-        }
-
-        // Load user's own reactions if logged in
-        if (token) {
-          const reactions = await getMyReactions(note.id, token);
-          setMyReactions(reactions.map((r) => r.reaction));
         }
       } catch (error) {
         console.error("Failed to load reaction data:", error);
@@ -126,6 +144,10 @@ function NoteCardComponent({
     };
 
     loadReactionData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [note.id, note.user.host, token]);
 
   const handleReaction = async (reaction: string) => {
