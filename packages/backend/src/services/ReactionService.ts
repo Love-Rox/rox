@@ -122,12 +122,30 @@ export class ReactionService {
       return existingReaction;
     }
 
+    // Check if this is a custom emoji and get its URL
+    // Look for local emojis first, then remote emojis (saved from incoming Like activities)
+    let customEmojiUrl: string | undefined;
+    const customEmojiMatch = reaction.match(/^:([^:]+):$/);
+    if (customEmojiMatch?.[1] && this.customEmojiRepository) {
+      const emojiName = customEmojiMatch[1];
+      // Try local emoji first (host = null)
+      let emoji = await this.customEmojiRepository.findByName(emojiName, null);
+      // If not found locally, try to find as remote emoji (any host)
+      if (!emoji) {
+        emoji = await this.customEmojiRepository.findByNameAnyHost(emojiName);
+      }
+      if (emoji?.url) {
+        customEmojiUrl = emoji.url;
+      }
+    }
+
     // 新しいリアクションを作成
     const newReaction = await this.reactionRepository.create({
       id: generateId(),
       userId,
       noteId,
       reaction,
+      ...(customEmojiUrl && { customEmojiUrl }),
     });
 
     // Deliver Like activity to remote note author (async, non-blocking)
@@ -140,23 +158,6 @@ export class ReactionService {
       // 2. Note author is a remote user (noteAuthor.host is not null)
       // 3. Note author has an inbox URL
 
-      // Check if this is a custom emoji and get its URL
-      // Look for local emojis first, then remote emojis (saved from incoming Like activities)
-      let customEmojiInfo: { name: string; url: string } | undefined;
-      const customEmojiMatch = reaction.match(/^:([^:]+):$/);
-      if (customEmojiMatch?.[1] && this.customEmojiRepository) {
-        const emojiName = customEmojiMatch[1];
-        // Try local emoji first (host = null)
-        let emoji = await this.customEmojiRepository.findByName(emojiName, null);
-        // If not found locally, try to find as remote emoji (any host)
-        if (!emoji) {
-          emoji = await this.customEmojiRepository.findByNameAnyHost(emojiName);
-        }
-        if (emoji?.url) {
-          customEmojiInfo = { name: emojiName, url: emoji.url };
-        }
-      }
-
       this.deliveryService
         .deliverLikeActivity(
           note.id,
@@ -164,7 +165,7 @@ export class ReactionService {
           noteAuthor.inbox,
           reactor,
           reaction, // Include the reaction emoji for Misskey compatibility
-          customEmojiInfo, // Include custom emoji info for tag
+          customEmojiUrl ? { name: customEmojiMatch![1]!, url: customEmojiUrl } : undefined,
         )
         .catch((error) => {
           console.error(`Failed to deliver Like activity for reaction ${newReaction.id}:`, error);

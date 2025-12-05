@@ -92,6 +92,30 @@ export interface CustomEmojiInfo {
 }
 
 /**
+ * Detect media type from URL extension
+ */
+function getMediaTypeFromUrl(url: string): string {
+  const extension = url.split(".").pop()?.toLowerCase().split("?")[0];
+  switch (extension) {
+    case "png":
+      return "image/png";
+    case "jpg":
+    case "jpeg":
+      return "image/jpeg";
+    case "gif":
+      return "image/gif";
+    case "webp":
+      return "image/webp";
+    case "svg":
+      return "image/svg+xml";
+    case "avif":
+      return "image/avif";
+    default:
+      return "image/png"; // Default fallback
+  }
+}
+
+/**
  * ActivityPub Activity Builder
  *
  * Provides helper methods for constructing common ActivityPub activities.
@@ -224,7 +248,7 @@ export class ActivityBuilder {
           updated: new Date().toISOString(),
           icon: {
             type: "Image",
-            mediaType: "image/png",
+            mediaType: getMediaTypeFromUrl(customEmoji.url),
             url: customEmoji.url,
           },
         },
