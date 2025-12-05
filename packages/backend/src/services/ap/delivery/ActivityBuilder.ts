@@ -255,6 +255,7 @@ export class ActivityBuilder {
       ];
     }
 
+    console.log(`📤 Built Like activity:`, JSON.stringify(activity, null, 2));
     return activity;
   }
 

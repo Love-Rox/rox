@@ -136,6 +136,11 @@ export class ReactionService {
       }
       if (emoji?.url) {
         customEmojiUrl = emoji.url;
+        console.log(
+          `🎨 Found custom emoji "${emojiName}" from ${emoji.host || "local"}: ${emoji.url}`,
+        );
+      } else {
+        console.log(`⚠️ Custom emoji "${emojiName}" not found in database`);
       }
     }
 
