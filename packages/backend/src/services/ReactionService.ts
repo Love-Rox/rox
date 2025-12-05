@@ -141,11 +141,17 @@ export class ReactionService {
       // 3. Note author has an inbox URL
 
       // Check if this is a custom emoji and get its URL
+      // Look for local emojis first, then remote emojis (saved from incoming Like activities)
       let customEmojiInfo: { name: string; url: string } | undefined;
       const customEmojiMatch = reaction.match(/^:([^:]+):$/);
       if (customEmojiMatch?.[1] && this.customEmojiRepository) {
         const emojiName = customEmojiMatch[1];
-        const emoji = await this.customEmojiRepository.findByName(emojiName, null);
+        // Try local emoji first (host = null)
+        let emoji = await this.customEmojiRepository.findByName(emojiName, null);
+        // If not found locally, try to find as remote emoji (any host)
+        if (!emoji) {
+          emoji = await this.customEmojiRepository.findByNameAnyHost(emojiName);
+        }
         if (emoji?.url) {
           customEmojiInfo = { name: emojiName, url: emoji.url };
         }
