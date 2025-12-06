@@ -19,6 +19,7 @@ import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService
 import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.js";
 import type { NotificationService } from "./NotificationService.js";
 import { getTimelineStreamService } from "./TimelineStreamService.js";
+import { logger } from "../lib/logger.js";
 
 /**
  * Note creation input data
@@ -208,7 +209,7 @@ export class NoteService {
     if (author && !author.host && !localOnly && visibility === "public") {
       // Fire and forget - don't await to avoid blocking the response
       this.deliveryService.deliverCreateNote(note, author).catch((error) => {
-        console.error(`Failed to deliver Create activity for note ${noteId}:`, error);
+        logger.error({ err: error, noteId }, "Failed to deliver Create activity");
       });
     }
 
@@ -220,7 +221,7 @@ export class NoteService {
         this.deliveryService
           .deliverAnnounceActivity(note.id, renoteTarget, author, renoteAuthor)
           .catch((error) => {
-            console.error(`Failed to deliver Announce activity for renote ${noteId}:`, error);
+            logger.error({ err: error, noteId }, "Failed to deliver Announce activity for renote");
           });
       }
     }
@@ -228,7 +229,7 @@ export class NoteService {
     // Invalidate timeline cache on new local note
     if (this.cacheService?.isAvailable() && visibility === "public") {
       this.cacheService.deletePattern(`${CachePrefix.TIMELINE_LOCAL}:*`).catch((error) => {
-        console.warn("Failed to invalidate timeline cache:", error);
+        logger.debug({ err: error }, "Failed to invalidate timeline cache");
       });
     }
 
@@ -236,14 +237,14 @@ export class NoteService {
     if (this.notificationService) {
       this.createNotifications(note, userId, mentions, replyId, renoteId, renoteTarget).catch(
         (error) => {
-          console.error(`Failed to create notifications for note ${noteId}:`, error);
+          logger.error({ err: error, noteId }, "Failed to create notifications");
         },
       );
     }
 
     // Push to timeline streams (async, non-blocking)
     this.pushToTimelineStreams(note, userId, visibility, localOnly).catch((error) => {
-      console.error(`Failed to push note ${noteId} to timeline streams:`, error);
+      logger.error({ err: error, noteId }, "Failed to push note to timeline streams");
     });
 
     return note;
@@ -303,7 +304,7 @@ export class NoteService {
     if (author && !author.host) {
       // Only deliver if author is a local user
       this.deliveryService.deliverDelete(note, author).catch((error) => {
-        console.error(`Failed to deliver Delete activity for note ${noteId}:`, error);
+        logger.error({ err: error, noteId }, "Failed to deliver Delete activity");
       });
     }
   }

@@ -15,6 +15,7 @@ import {
   normalizeHostname,
   errorResponse,
 } from "../lib/routeUtils.js";
+import { logger } from "../lib/logger.js";
 
 const app = new Hono();
 
@@ -1269,7 +1270,7 @@ app.delete("/storage/files/:fileId", async (c) => {
   try {
     await fileStorage.delete(file.storageKey);
   } catch (error) {
-    console.error("Failed to delete file from storage:", error);
+    logger.error({ err: error, fileId, storageKey: file.storageKey }, "Failed to delete file from storage");
     // Continue to delete database record even if storage deletion fails
   }
 
