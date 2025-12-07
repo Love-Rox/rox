@@ -334,18 +334,19 @@ export function useNotifications() {
 
   // Effect to manage WebSocket connection based on auth state
   // Uses reference counting to ensure connection persists across multiple hook instances
+  // TEMPORARILY DISABLED: Debugging browser freeze issue - only fetch, no WebSocket
   useEffect(() => {
     if (isAuthenticated && token) {
       wsConnectionCount++;
 
-      // Only fetch and connect on first subscriber
+      // Only fetch on first subscriber - WebSocket disabled for debugging
       if (wsConnectionCount === 1 && !isInitializedRef.current) {
         isInitializedRef.current = true;
         // Use Promise.resolve to avoid blocking and potential race conditions
         Promise.resolve().then(() => {
           fetchNotifications();
           fetchUnreadCount();
-          connectWS();
+          // connectWS(); // DISABLED FOR DEBUGGING
         });
       }
     }
