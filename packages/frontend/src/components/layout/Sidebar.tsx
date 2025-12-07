@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import {
   Home,
@@ -31,8 +31,8 @@ import { useInstanceInfo } from "../../hooks/useInstanceInfo";
  * Responsive: Desktop shows fixed sidebar, mobile shows hamburger menu
  */
 export function Sidebar() {
-  const [currentUser] = useAtom(currentUserAtom);
-  const [, logout] = useAtom(logoutAtom);
+  const currentUser = useAtomValue(currentUserAtom);
+  const logout = useSetAtom(logoutAtom);
   const { instanceInfo } = useInstanceInfo();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useAtom(sidebarCollapsedWithPersistenceAtom);

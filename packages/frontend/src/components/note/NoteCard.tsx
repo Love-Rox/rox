@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, memo, useMemo, useRef, useCallback } from "react";
-import { useAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import type { Note, NoteFile } from "../../lib/types/note";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
@@ -64,9 +64,9 @@ function NoteCardComponent({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showReportDialog, setShowReportDialog] = useState(false);
-  const [token] = useAtom(tokenAtom);
-  const [currentUser] = useAtom(currentUserAtom);
-  const [, addToast] = useAtom(addToastAtom);
+  const token = useAtomValue(tokenAtom);
+  const currentUser = useAtomValue(currentUserAtom);
+  const addToast = useSetAtom(addToastAtom);
   const [myReactions, setMyReactions] = useState<string[]>([]);
   const [localReactions, setLocalReactions] = useState<Record<string, number>>(
     note.reactions || {},
