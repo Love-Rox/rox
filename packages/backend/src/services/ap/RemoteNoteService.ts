@@ -38,6 +38,11 @@ interface APNote {
     type: string;
     name?: string;
     href?: string;
+    icon?: {
+      type?: string;
+      mediaType?: string;
+      url: string;
+    };
   }>;
 }
 
@@ -100,6 +105,9 @@ export class RemoteNoteService {
     // Extract hashtags
     const tags = this.extractHashtags(noteObject.tag);
 
+    // Extract custom emojis from tags
+    const emojis = this.extractEmojis(noteObject.tag);
+
     // Find reply target
     let replyId: string | null = null;
     if (noteObject.inReplyTo) {
@@ -119,7 +127,7 @@ export class RemoteNoteService {
       renoteId: null, // TODO: Handle Announce activities separately
       fileIds: [], // TODO: Handle attachments
       mentions,
-      emojis: [], // TODO: Extract custom emojis
+      emojis,
       tags,
       uri: noteObject.id,
       isDeleted: false,
@@ -236,5 +244,38 @@ export class RemoteNoteService {
     }
 
     return hashtags;
+  }
+
+  /**
+   * Extract custom emoji names from tags
+   *
+   * ActivityPub Emoji tags contain the emoji name and icon URL.
+   * We store the emoji names (with colons) for later rendering.
+   *
+   * @param tags - ActivityPub tags array
+   * @returns Array of emoji names (e.g., [":blobcat:", ":heart_eyes:"])
+   */
+  private extractEmojis(
+    tags?: Array<{ type: string; name?: string; href?: string; icon?: { url: string } }>,
+  ): string[] {
+    if (!tags) return [];
+
+    const emojis: string[] = [];
+
+    for (const tag of tags) {
+      if (tag.type === "Emoji" && tag.name) {
+        // Emoji names should be in :name: format
+        let emojiName = tag.name;
+        if (!emojiName.startsWith(":")) {
+          emojiName = `:${emojiName}`;
+        }
+        if (!emojiName.endsWith(":")) {
+          emojiName = `${emojiName}:`;
+        }
+        emojis.push(emojiName);
+      }
+    }
+
+    return emojis;
   }
 }
