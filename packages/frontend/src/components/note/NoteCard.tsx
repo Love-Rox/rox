@@ -443,7 +443,7 @@ function NoteCardComponent({
                     aria-label={`View image ${index + 1} of ${note.files?.length ?? 0}${file.comment ? `: ${file.comment}` : ""}`}
                   >
                     <img
-                      src={file.thumbnailUrl || file.url}
+                      src={getProxiedImageUrl(file.thumbnailUrl || file.url) || ""}
                       alt={
                         file.comment ||
                         `Image ${index + 1} from ${note.user.name || note.user.username}'s post`
@@ -459,7 +459,7 @@ function NoteCardComponent({
             {/* Image Modal */}
             {showImageModal && note.files && note.files.length > 0 && (
               <ImageModal
-                images={note.files.map((file) => file.url)}
+                images={note.files.map((file) => getProxiedImageUrl(file.url) || file.url)}
                 initialIndex={selectedImageIndex}
                 onClose={() => setShowImageModal(false)}
                 alt={`${note.user.name || note.user.username}'s post`}
