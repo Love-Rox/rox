@@ -106,34 +106,25 @@ export function MfmRenderer({
     return names;
   }, [nodes]);
 
-  // Fetch custom emoji URLs
-  useEffect(() => {
-    // Skip if no emoji names to look up or if all are already provided via props
-    const missingEmojis = emojiNames.filter(
-      (name) => !customEmojis[name] && !customEmojis[`:${name}:`],
-    );
-
-    if (missingEmojis.length === 0) return;
-
-    let cancelled = false;
-
-    lookupEmojis(missingEmojis).then((emojiMap) => {
-      if (cancelled) return;
-
-      const newEmojis: Record<string, string> = {};
-      for (const [name, url] of emojiMap) {
-        newEmojis[name] = url;
-      }
-
-      if (Object.keys(newEmojis).length > 0) {
-        setFetchedEmojis((prev) => ({ ...prev, ...newEmojis }));
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [emojiNames, customEmojis]);
+  // TEMPORARILY DISABLED: Fetch custom emoji URLs - debugging freeze issue
+  // useEffect(() => {
+  //   const missingEmojis = emojiNames.filter(
+  //     (name) => !customEmojis[name] && !customEmojis[`:${name}:`],
+  //   );
+  //   if (missingEmojis.length === 0) return;
+  //   let cancelled = false;
+  //   lookupEmojis(missingEmojis).then((emojiMap) => {
+  //     if (cancelled) return;
+  //     const newEmojis: Record<string, string> = {};
+  //     for (const [name, url] of emojiMap) {
+  //       newEmojis[name] = url;
+  //     }
+  //     if (Object.keys(newEmojis).length > 0) {
+  //       setFetchedEmojis((prev) => ({ ...prev, ...newEmojis }));
+  //     }
+  //   });
+  //   return () => { cancelled = true; };
+  // }, [emojiNames, customEmojis]);
 
   // Merge provided and fetched emojis
   const mergedEmojis = useMemo(() => {
