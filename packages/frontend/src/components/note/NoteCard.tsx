@@ -24,8 +24,7 @@ import {
 } from "../../lib/api/reactions";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { tokenAtom, currentUserAtom } from "../../lib/atoms/auth";
-// TEMPORARILY DISABLED: MfmRenderer to debug freeze issue
-// import { MfmRenderer } from "../mfm/MfmRenderer";
+import { MfmRenderer } from "../mfm/MfmRenderer";
 import { addToastAtom } from "../../lib/atoms/toast";
 
 /**
@@ -130,9 +129,8 @@ function NoteCardComponent({
     }
   }, [note.user.host]);
 
-  // TEMPORARILY DISABLED: emoji maps for MfmRenderer - debugging freeze issue
   // Convert profileEmojis array to emoji map for MfmRenderer
-  const _userProfileEmojiMap = useMemo(() => {
+  const userProfileEmojiMap = useMemo(() => {
     if (!note.user.profileEmojis || note.user.profileEmojis.length === 0) return {};
     return note.user.profileEmojis.reduce(
       (acc, emoji) => {
@@ -144,7 +142,7 @@ function NoteCardComponent({
   }, [note.user.profileEmojis]);
 
   // Convert renote user's profileEmojis to emoji map
-  const _renoteUserProfileEmojiMap = useMemo(() => {
+  const renoteUserProfileEmojiMap = useMemo(() => {
     if (!note.renote?.user?.profileEmojis || note.renote.user.profileEmojis.length === 0) return {};
     return note.renote.user.profileEmojis.reduce(
       (acc, emoji) => {
@@ -168,27 +166,26 @@ function NoteCardComponent({
     }
   }, [note.reactionEmojis]);
 
-  // TEMPORARILY DISABLED: Lazy loading to debug freeze issue
-  // All reaction data and instance info loading is disabled
-  // useEffect(() => {
-  //   const element = cardRef.current;
-  //   if (!element) return;
-  //
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       const entry = entries[0];
-  //       if (entry?.isIntersecting) {
-  //         loadReactionData();
-  //         loadInstanceInfo();
-  //         observer.disconnect();
-  //       }
-  //     },
-  //     { rootMargin: "100px", threshold: 0 },
-  //   );
-  //
-  //   observer.observe(element);
-  //   return () => observer.disconnect();
-  // }, [loadReactionData, loadInstanceInfo]);
+  // Lazy load reaction data and instance info when card becomes visible
+  useEffect(() => {
+    const element = cardRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry?.isIntersecting) {
+          loadReactionData();
+          loadInstanceInfo();
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "100px", threshold: 0 },
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [loadReactionData, loadInstanceInfo]);
 
   const handleReaction = async (reaction: string) => {
     if (isReacting || !token) return;
@@ -309,7 +306,11 @@ function NoteCardComponent({
                 }
                 className="font-semibold text-(--text-primary) truncate hover:underline"
               >
-                {note.user.name || note.user.username}
+                {note.user.name ? (
+                  <MfmRenderer text={note.user.name} plain customEmojis={userProfileEmojiMap} />
+                ) : (
+                  note.user.username
+                )}
               </SpaLink>
               <SpaLink
                 to={
@@ -410,10 +411,9 @@ function NoteCardComponent({
         {(!note.cw || showCw) && (
           <>
             {/* Text */}
-            {/* TEMPORARILY DISABLED MfmRenderer to debug freeze issue */}
             {note.text && (
               <div className="mb-3 whitespace-pre-wrap wrap-break-word text-gray-900 dark:text-gray-100">
-                {note.text}
+                <MfmRenderer text={note.text} />
               </div>
             )}
 
@@ -481,7 +481,11 @@ function NoteCardComponent({
                     to={`/${note.renote.user.username}`}
                     className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
                   >
-                    {note.renote.user.name || note.renote.user.username}
+                    {note.renote.user.name ? (
+                      <MfmRenderer text={note.renote.user.name} plain customEmojis={renoteUserProfileEmojiMap} />
+                    ) : (
+                      note.renote.user.username
+                    )}
                   </SpaLink>
                   <SpaLink
                     to={`/${note.renote.user.username}`}
@@ -492,7 +496,7 @@ function NoteCardComponent({
                 </div>
                 {note.renote.text && (
                   <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap wrap-break-word">
-                    {note.renote.text}
+                    <MfmRenderer text={note.renote.text} />
                   </div>
                 )}
               </div>

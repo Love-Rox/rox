@@ -47,10 +47,9 @@ export function Timeline({ type = "local" }: TimelineProps) {
 
   // Enable real-time updates via SSE for supported timeline types
   // "global" type maps to "local" stream since global includes all public notes
-  // TEMPORARILY DISABLED: Debugging browser freeze issue
   const streamType: StreamTimelineType | null =
     type === "home" ? "home" : type === "social" ? "social" : type === "local" ? "local" : "local";
-  useTimelineStream(streamType, false); // Disabled for debugging
+  useTimelineStream(streamType, true);
 
   // Reset and load data when type changes (component remounts via key)
   useEffect(() => {
