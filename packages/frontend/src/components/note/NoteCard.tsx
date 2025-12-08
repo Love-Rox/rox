@@ -297,7 +297,11 @@ function NoteCardComponent({
         {/* User Info */}
         <div className="mb-3 flex items-start gap-3">
           <SpaLink
-            to={`/${note.user.username}`}
+            to={
+              note.user.host
+                ? `/@${note.user.username}@${note.user.host}`
+                : `/${note.user.username}`
+            }
             className="shrink-0"
             aria-label={`View profile of ${note.user.name || note.user.username}`}
           >
@@ -399,7 +403,7 @@ function NoteCardComponent({
               <Trans>Replying to</Trans>
             </div>
             <div className="flex items-center gap-2">
-              <SpaLink to={`/${note.reply.user.username}`} className="shrink-0">
+              <SpaLink to={note.reply.user.host ? `/@${note.reply.user.username}@${note.reply.user.host}` : `/${note.reply.user.username}`} className="shrink-0">
                 <Avatar
                   src={note.reply.user.avatarUrl}
                   alt={note.reply.user.name || note.reply.user.username}
@@ -408,7 +412,7 @@ function NoteCardComponent({
               </SpaLink>
               <div className="min-w-0 flex-1">
                 <SpaLink
-                  to={`/${note.reply.user.username}`}
+                  to={note.reply.user.host ? `/@${note.reply.user.username}@${note.reply.user.host}` : `/${note.reply.user.username}`}
                   className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
                 >
                   {note.reply.user.name ? (
@@ -524,7 +528,7 @@ function NoteCardComponent({
             {note.renote && (
               <div className="mb-3 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
                 <div className="mb-2 flex items-center gap-2">
-                  <SpaLink to={`/${note.renote.user.username}`} className="shrink-0">
+                  <SpaLink to={note.renote.user.host ? `/@${note.renote.user.username}@${note.renote.user.host}` : `/${note.renote.user.username}`} className="shrink-0">
                     <Avatar
                       src={note.renote.user.avatarUrl}
                       alt={note.renote.user.name || note.renote.user.username}
@@ -532,7 +536,7 @@ function NoteCardComponent({
                     />
                   </SpaLink>
                   <SpaLink
-                    to={`/${note.renote.user.username}`}
+                    to={note.renote.user.host ? `/@${note.renote.user.username}@${note.renote.user.host}` : `/${note.renote.user.username}`}
                     className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
                   >
                     {note.renote.user.name ? (
@@ -542,10 +546,10 @@ function NoteCardComponent({
                     )}
                   </SpaLink>
                   <SpaLink
-                    to={`/${note.renote.user.username}`}
+                    to={note.renote.user.host ? `/@${note.renote.user.username}@${note.renote.user.host}` : `/${note.renote.user.username}`}
                     className="text-xs text-gray-500 dark:text-gray-400 hover:underline"
                   >
-                    @{note.renote.user.username}
+                    @{note.renote.user.username}{note.renote.user.host ? `@${note.renote.user.host}` : ""}
                   </SpaLink>
                 </div>
                 {note.renote.text && (
