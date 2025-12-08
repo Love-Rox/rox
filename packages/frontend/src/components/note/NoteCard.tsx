@@ -153,6 +153,18 @@ function NoteCardComponent({
     );
   }, [note.renote?.user?.profileEmojis]);
 
+  // Convert reply user's profileEmojis to emoji map
+  const replyUserProfileEmojiMap = useMemo(() => {
+    if (!note.reply?.user?.profileEmojis || note.reply.user.profileEmojis.length === 0) return {};
+    return note.reply.user.profileEmojis.reduce(
+      (acc, emoji) => {
+        acc[emoji.name] = emoji.url;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [note.reply?.user?.profileEmojis]);
+
   // Sync reactions from props when they change (e.g., from SSE updates)
   useEffect(() => {
     if (note.reactions) {
@@ -378,6 +390,48 @@ function NoteCardComponent({
             </SpaLink>
           </div>
         </div>
+
+        {/* Reply Indicator - shows the note being replied to */}
+        {note.reply && (
+          <div className="mb-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-3">
+            <div className="mb-1 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+              <MessageCircle className="h-3 w-3" />
+              <Trans>Replying to</Trans>
+            </div>
+            <div className="flex items-center gap-2">
+              <SpaLink to={`/${note.reply.user.username}`} className="shrink-0">
+                <Avatar
+                  src={note.reply.user.avatarUrl}
+                  alt={note.reply.user.name || note.reply.user.username}
+                  size="sm"
+                />
+              </SpaLink>
+              <div className="min-w-0 flex-1">
+                <SpaLink
+                  to={`/${note.reply.user.username}`}
+                  className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
+                >
+                  {note.reply.user.name ? (
+                    <MfmRenderer text={note.reply.user.name} plain customEmojis={replyUserProfileEmojiMap} />
+                  ) : (
+                    note.reply.user.username
+                  )}
+                </SpaLink>
+                {note.reply.text && (
+                  <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    {note.reply.text.slice(0, 100)}{note.reply.text.length > 100 ? "..." : ""}
+                  </div>
+                )}
+              </div>
+              <SpaLink
+                to={`/notes/${note.reply.id}`}
+                className="text-xs text-blue-500 hover:underline shrink-0"
+              >
+                <Trans>View</Trans>
+              </SpaLink>
+            </div>
+          </div>
+        )}
 
         {/* Renote Indicator */}
         {note.renote && (

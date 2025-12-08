@@ -257,6 +257,9 @@ export const notes = pgTable(
     emojis: jsonb("emojis").$type<string[]>().notNull().default([]),
     tags: jsonb("tags").$type<string[]>().notNull().default([]),
     uri: text("uri"), // ActivityPub URI for remote notes
+    // Counters for replies and renotes
+    repliesCount: integer("replies_count").notNull().default(0),
+    renoteCount: integer("renote_count").notNull().default(0),
     // Soft delete fields for moderation
     isDeleted: boolean("is_deleted").notNull().default(false),
     deletedAt: timestamp("deleted_at"),
@@ -281,7 +284,7 @@ export const notes = pgTable(
     // Index for soft delete queries
     isDeletedIdx: index("note_is_deleted_idx").on(table.isDeleted),
   }),
-);
+);;
 
 /**
  * File source type
