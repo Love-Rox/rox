@@ -118,6 +118,10 @@ msgstr "Action Log"
 msgid "Actions"
 msgstr "Actions"
 
+#: src/pages/admin/queue.tsx:199
+msgid "ActivityPub delivery is running in synchronous mode."
+msgstr "ActivityPub delivery is running in synchronous mode."
+
 #: src/components/settings/AccountMigrationSection.tsx:254
 msgid "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
 msgstr "Add aliases to link this account with your accounts on other servers. This allows followers from those accounts to find you here."
@@ -288,6 +292,10 @@ msgstr "Avatar removed"
 msgid "Avatar updated successfully"
 msgstr "Avatar updated successfully"
 
+#: src/pages/admin/queue.tsx:410
+msgid "Avg per Server"
+msgstr "Avg per Server"
+
 #: src/components/pages/NoteDetailPageClient.tsx:97
 msgid "Back to timeline"
 msgstr "Back to timeline"
@@ -308,7 +316,7 @@ msgstr "Banner updated successfully"
 msgid "Banner URL"
 msgstr "Banner URL"
 
-#: src/components/timeline/Timeline.tsx:223
+#: src/components/timeline/Timeline.tsx:230
 msgid "Be the first to post something!"
 msgstr "Be the first to post something!"
 
@@ -486,11 +494,15 @@ msgstr "Configure your instance settings"
 msgid "Connect with users across the fediverse using ActivityPub protocol"
 msgstr "Connect with users across the fediverse using ActivityPub protocol"
 
+#: src/pages/admin/queue.tsx:402
+msgid "Connected Servers"
+msgstr "Connected Servers"
+
 #: src/components/LandingPage.tsx:263
 msgid "Contact"
 msgstr "Contact"
 
-#: src/components/note/NoteCard.tsx:350
+#: src/components/note/NoteCard.tsx:394
 msgid "Content Warning"
 msgstr "Content Warning"
 
@@ -815,7 +827,7 @@ msgstr "Enter username (e.g., alice or alice@remote.server)"
 msgid "Enter your invitation code to register"
 msgstr "Enter your invitation code to register"
 
-#: src/components/timeline/Timeline.tsx:163
+#: src/components/timeline/Timeline.tsx:165
 msgid "Error loading timeline"
 msgstr "Error loading timeline"
 
@@ -851,6 +863,8 @@ msgid "Expires: {0}"
 msgstr "Expires: {0}"
 
 #: src/pages/admin/emojis.tsx:1083
+#: src/pages/admin/queue.tsx:278
+#: src/pages/admin/queue.tsx:454
 msgid "Failed"
 msgstr "Failed"
 
@@ -862,7 +876,7 @@ msgstr "Failed to add alias"
 msgid "Failed to add emoji"
 msgstr "Failed to add emoji"
 
-#: src/components/note/NoteCard.tsx:205
+#: src/components/note/NoteCard.tsx:242
 msgid "Failed to add reaction"
 msgstr "Failed to add reaction"
 
@@ -996,7 +1010,7 @@ msgstr "Failed to remove instance"
 msgid "Failed to rename passkey"
 msgstr "Failed to rename passkey"
 
-#: src/components/note/NoteCard.tsx:223
+#: src/components/note/NoteCard.tsx:260
 msgid "Failed to renote"
 msgstr "Failed to renote"
 
@@ -1160,7 +1174,7 @@ msgstr "Found on remote server"
 msgid "Get Started"
 msgstr "Get Started"
 
-#: src/pages/timeline.tsx:155
+#: src/pages/timeline.tsx:157
 msgid "Global"
 msgstr "Global"
 
@@ -1183,7 +1197,7 @@ msgstr "High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls bac
 
 #: src/components/layout/Sidebar.tsx:86
 #: src/components/note/NoteComposer.tsx:408
-#: src/pages/timeline.tsx:169
+#: src/pages/timeline.tsx:171
 msgid "Home"
 msgstr "Home"
 
@@ -1350,6 +1364,11 @@ msgstr "Invite Only"
 msgid "Issue Warning"
 msgstr "Issue Warning"
 
+#: src/pages/admin/queue.tsx:181
+#: src/pages/admin/queue.tsx:218
+msgid "Job Queue"
+msgstr "Job Queue"
+
 #: src/pages/signup.tsx:133
 msgid "Join Rox and start sharing"
 msgstr "Join Rox and start sharing"
@@ -1397,16 +1416,16 @@ msgid "Line Height"
 msgstr "Line Height"
 
 #: src/components/drive/DrivePickerDialog.tsx:486
-#: src/components/timeline/Timeline.tsx:232
+#: src/components/timeline/Timeline.tsx:239
 #: src/components/user/UserProfile.tsx:518
 msgid "Load more"
 msgstr "Load more"
 
-#: src/components/timeline/Timeline.tsx:191
+#: src/components/timeline/Timeline.tsx:198
 msgid "Loading more posts..."
 msgstr "Loading more posts..."
 
-#: src/components/timeline/Timeline.tsx:176
+#: src/components/timeline/Timeline.tsx:178
 msgid "Loading posts..."
 msgstr "Loading posts..."
 
@@ -1415,7 +1434,7 @@ msgstr "Loading posts..."
 msgid "Loading..."
 msgstr "Loading..."
 
-#: src/pages/timeline.tsx:127
+#: src/pages/timeline.tsx:129
 msgid "Local"
 msgstr "Local"
 
@@ -1542,7 +1561,12 @@ msgstr "Moderator access required"
 msgid "Moderator Role"
 msgstr "Moderator Role"
 
-#: src/components/note/NoteCard.tsx:556
+#: src/pages/admin/queue.tsx:184
+#: src/pages/admin/queue.tsx:221
+msgid "Monitor ActivityPub delivery queue status"
+msgstr "Monitor ActivityPub delivery queue status"
+
+#: src/components/note/NoteCard.tsx:598
 msgid "More options"
 msgstr "More options"
 
@@ -1600,6 +1624,10 @@ msgstr "No custom emojis yet"
 msgid "No deleted notes"
 msgstr "No deleted notes"
 
+#: src/pages/admin/queue.tsx:341
+msgid "No deliveries recorded yet"
+msgstr "No deliveries recorded yet"
+
 #: src/components/note/NoteComposer.tsx:742
 msgid "No drafts saved"
 msgstr "No drafts saved"
@@ -1637,7 +1665,11 @@ msgstr "No invitation codes yet"
 msgid "No matching notifications"
 msgstr "No matching notifications"
 
-#: src/components/timeline/Timeline.tsx:220
+#: src/pages/admin/queue.tsx:436
+msgid "No metrics available"
+msgstr "No metrics available"
+
+#: src/components/timeline/Timeline.tsx:227
 msgid "No notes yet"
 msgstr "No notes yet"
 
@@ -1675,6 +1707,10 @@ msgstr "No reports found"
 msgid "No roles yet"
 msgstr "No roles yet"
 
+#: src/pages/admin/queue.tsx:440
+msgid "No server metrics recorded yet"
+msgstr "No server metrics recorded yet"
+
 #: src/pages/admin/storage.tsx:396
 msgid "No system files"
 msgstr "No system files"
@@ -1710,7 +1746,7 @@ msgstr "Note not found"
 msgid "Note posted successfully"
 msgstr "Note posted successfully"
 
-#: src/components/note/NoteCard.tsx:217
+#: src/components/note/NoteCard.tsx:254
 msgid "Note renoted"
 msgstr "Note renoted"
 
@@ -1773,6 +1809,14 @@ msgstr "Optional"
 msgid "Or continue with password"
 msgstr "Or continue with password"
 
+#: src/pages/admin/queue.tsx:384
+msgid "Overall Success Rate"
+msgstr "Overall Success Rate"
+
+#: src/pages/admin/queue.tsx:313
+msgid "Overview"
+msgstr "Overview"
+
 #. placeholder {0}: new Date().toLocaleDateString()
 #: src/components/settings/PasskeySection.tsx:95
 msgid "Passkey {0}"
@@ -1826,6 +1870,10 @@ msgstr "Pending"
 #: src/pages/mod/reports.tsx:254
 msgid "Pending Reports"
 msgstr "Pending Reports"
+
+#: src/pages/admin/queue.tsx:323
+msgid "Per Server"
+msgstr "Per Server"
 
 #: src/pages/admin/roles.tsx:456
 msgid "Permissions"
@@ -1956,6 +2004,14 @@ msgstr "PWA Icon (192x192)"
 msgid "PWA Icon (512x512)"
 msgstr "PWA Icon (512x512)"
 
+#: src/pages/admin/queue.tsx:375
+msgid "Queue Health"
+msgstr "Queue Health"
+
+#: src/pages/admin/queue.tsx:193
+msgid "Queue Not Available"
+msgstr "Queue Not Available"
+
 #: src/pages/admin/storage.tsx:240
 msgid "Quota updated"
 msgstr "Quota updated"
@@ -1973,6 +2029,10 @@ msgstr "Quote"
 msgid "quoted your note"
 msgstr "quoted your note"
 
+#: src/pages/admin/queue.tsx:460
+msgid "Rate"
+msgstr "Rate"
+
 #: src/components/notification/NotificationItem.tsx:83
 msgid "reacted with"
 msgstr "reacted with"
@@ -1981,7 +2041,7 @@ msgstr "reacted with"
 msgid "Reaction"
 msgstr "Reaction"
 
-#: src/components/note/NoteCard.tsx:198
+#: src/components/note/NoteCard.tsx:235
 msgid "Reaction added"
 msgstr "Reaction added"
 
@@ -2018,7 +2078,7 @@ msgstr "Reason: {0}"
 msgid "Recent Moderation History"
 msgstr "Recent Moderation History"
 
-#: src/pages/timeline.tsx:104
+#: src/pages/timeline.tsx:106
 msgid "Recent posts from your community"
 msgstr "Recent posts from your community"
 
@@ -2035,6 +2095,7 @@ msgstr "Recommended: Square image, max 2MB"
 #: src/pages/admin/emojis.tsx:520
 #: src/pages/admin/emojis.tsx:538
 #: src/pages/admin/federation.tsx:440
+#: src/pages/admin/queue.tsx:230
 msgid "Refresh"
 msgstr "Refresh"
 
@@ -2126,7 +2187,7 @@ msgstr "Rename"
 msgid "Renote"
 msgstr "Renote"
 
-#: src/components/note/NoteCard.tsx:341
+#: src/components/note/NoteCard.tsx:385
 msgid "Renoted"
 msgstr "Renoted"
 
@@ -2152,7 +2213,7 @@ msgstr "Reply"
 msgid "Replying to"
 msgstr "Replying to"
 
-#: src/components/note/NoteCard.tsx:571
+#: src/components/note/NoteCard.tsx:613
 msgid "Report"
 msgstr "Report"
 
@@ -2439,9 +2500,17 @@ msgstr "Send test"
 msgid "Sensitive content (NSFW)"
 msgstr "Sensitive content (NSFW)"
 
+#: src/pages/admin/queue.tsx:448
+msgid "Server"
+msgstr "Server"
+
 #: src/pages/admin/settings.tsx:778
 msgid "Server Assets"
 msgstr "Server Assets"
+
+#: src/pages/admin/queue.tsx:430
+msgid "Server Metrics"
+msgstr "Server Metrics"
 
 #: src/pages/settings.tsx:329
 msgid "Session"
@@ -2461,7 +2530,7 @@ msgstr "Share your thoughts, connect with friends, and join conversations across
 msgid "Show all {0} files"
 msgstr "Show all {0} files"
 
-#: src/components/note/NoteCard.tsx:360
+#: src/components/note/NoteCard.tsx:404
 msgid "Show content"
 msgstr "Show content"
 
@@ -2514,7 +2583,7 @@ msgstr "Signing in..."
 msgid "Skipped"
 msgstr "Skipped"
 
-#: src/pages/timeline.tsx:141
+#: src/pages/timeline.tsx:143
 msgid "Social"
 msgstr "Social"
 
@@ -2550,6 +2619,18 @@ msgstr "Storage Usage"
 #: src/components/report/ReportDialog.tsx:178
 msgid "Submit Report"
 msgstr "Submit Report"
+
+#: src/pages/admin/queue.tsx:451
+msgid "Success"
+msgstr "Success"
+
+#: src/pages/admin/queue.tsx:294
+msgid "Success Rate"
+msgstr "Success Rate"
+
+#: src/pages/admin/queue.tsx:262
+msgid "Successful"
+msgstr "Successful"
 
 #: src/pages/admin/emojis.tsx:1003
 msgid "Supported formats: PNG, GIF, WebP, APNG"
@@ -2621,6 +2702,10 @@ msgstr "Test notification"
 msgid "Text exceeds {maxLength} characters"
 msgstr "Text exceeds {maxLength} characters"
 
+#: src/pages/admin/queue.tsx:196
+msgid "The job queue system is not currently configured or running."
+msgstr "The job queue system is not currently configured or running."
+
 #: src/components/settings/UISettingsSection.tsx:249
 #: src/pages/admin/settings.tsx:314
 msgid "Theme"
@@ -2659,13 +2744,21 @@ msgid "This user hasn't posted anything yet"
 msgstr "This user hasn't posted anything yet"
 
 #: src/components/pages/NoteDetailPageClient.tsx:115
-#: src/pages/timeline.tsx:101
+#: src/pages/timeline.tsx:103
 msgid "Timeline"
 msgstr "Timeline"
 
 #: src/pages/search.tsx:400
 msgid "Tip: To find users on other servers, enter their full address like @user@example.com"
 msgstr "Tip: To find users on other servers, enter their full address like @user@example.com"
+
+#: src/pages/admin/queue.tsx:335
+msgid "Top Servers by Delivery"
+msgstr "Top Servers by Delivery"
+
+#: src/pages/admin/queue.tsx:457
+msgid "Total"
+msgstr "Total"
 
 #: src/pages/mod/audit-logs.tsx:221
 msgid "Total Actions"
@@ -2674,6 +2767,10 @@ msgstr "Total Actions"
 #: src/pages/admin/invitations.tsx:237
 msgid "Total Codes"
 msgstr "Total Codes"
+
+#: src/pages/admin/queue.tsx:246
+msgid "Total Deliveries"
+msgstr "Total Deliveries"
 
 #: src/pages/admin/storage.tsx:303
 msgid "Total Files"
@@ -2995,7 +3092,7 @@ msgstr "You're all caught up!"
 msgid "You've reached the end"
 msgstr "You've reached the end"
 
-#: src/components/timeline/Timeline.tsx:206
+#: src/components/timeline/Timeline.tsx:213
 msgid "You've reached the end of the timeline"
 msgstr "You've reached the end of the timeline"
 

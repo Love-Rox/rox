@@ -1533,4 +1533,91 @@ app.get("/assets", async (c) => {
   });
 });
 
+// ============================================================================
+// Job Queue Statistics Endpoints
+// ============================================================================
+
+/**
+ * Get Delivery Queue Statistics
+ *
+ * GET /api/admin/queue/stats
+ *
+ * Returns ActivityPub delivery queue statistics including success rates
+ * and per-server breakdown.
+ */
+app.get("/queue/stats", async (c) => {
+  const deliveryQueue = c.get("activityDeliveryQueue");
+
+  if (!deliveryQueue) {
+    return c.json({
+      available: false,
+      message: "Delivery queue is not configured (USE_QUEUE=false or Redis unavailable)",
+    });
+  }
+
+  const stats = deliveryQueue.getDeliveryStatistics();
+
+  return c.json({
+    available: true,
+    ...stats,
+    // Convert topServers inbox URLs to just hostnames for readability
+    topServers: stats.topServers.map((server) => ({
+      ...server,
+      host: extractHostname(server.inbox),
+    })),
+  });
+});
+
+/**
+ * Get Per-Server Delivery Metrics
+ *
+ * GET /api/admin/queue/metrics
+ *
+ * Returns detailed delivery metrics for all known servers.
+ */
+app.get("/queue/metrics", async (c) => {
+  const deliveryQueue = c.get("activityDeliveryQueue");
+
+  if (!deliveryQueue) {
+    return c.json({
+      available: false,
+      servers: [],
+    });
+  }
+
+  const metrics = deliveryQueue.getMetrics();
+
+  // Convert to array with hostnames
+  const servers = Array.from(metrics.entries())
+    .map(([inbox, data]) => ({
+      host: extractHostname(inbox),
+      inbox,
+      success: data.success,
+      failure: data.failure,
+      total: data.success + data.failure,
+      successRate:
+        data.success + data.failure > 0
+          ? Math.round((data.success / (data.success + data.failure)) * 100 * 100) / 100
+          : 0,
+    }))
+    .sort((a, b) => b.total - a.total);
+
+  return c.json({
+    available: true,
+    serverCount: servers.length,
+    servers,
+  });
+});
+
+/**
+ * Extract hostname from URL
+ */
+function extractHostname(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+}
+
 export default app;
