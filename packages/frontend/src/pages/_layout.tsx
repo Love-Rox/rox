@@ -26,18 +26,11 @@ const uiSettingsScript = `
     html.style.setProperty('--rox-line-height', lineHeights[settings.lineHeight] || '1.6');
     html.style.setProperty('--rox-content-width', contentWidths[settings.contentWidth] || '800px');
 
-    // Apply theme (light/dark/system)
-    var theme = settings.theme || 'system';
-    if (theme === 'dark') {
-      html.classList.add('dark');
-    } else if (theme === 'light') {
-      html.classList.remove('dark');
-    } else {
-      // System preference
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        html.classList.add('dark');
-      }
-    }
+    // NOTE: Theme (dark/light) class is NOT applied here to avoid hydration mismatch.
+    // In Waku RSC, this script is serialized into __FLIGHT_DATA__ and executes during/after
+    // React hydration, not before. If we modify html.classList here, it causes a mismatch
+    // between server-rendered HTML (no class) and client-rendered HTML (with dark class).
+    // Theme class is instead applied by ThemeProvider.tsx's useEffect after hydration completes.
 
     // Apply primary color from cached instance theme
     var primaryColor = instanceTheme.primaryColor;
