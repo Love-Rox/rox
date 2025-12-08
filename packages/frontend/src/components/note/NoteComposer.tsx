@@ -649,9 +649,52 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 placeholder={replyTo ? `Reply to ${replyTo}` : "What's happening?"}
-                className="w-full min-h-[100px] resize-none rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full min-h-[100px] resize-none rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-3 py-2 pr-16 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 disabled={isSubmitting}
               />
+              {/* Character counter - fixed position in textarea corner */}
+              <div className="absolute bottom-2 right-2 flex items-center gap-1.5">
+                <span
+                  className={`text-xs font-medium tabular-nums transition-colors ${
+                    remainingChars < 0
+                      ? "text-red-500"
+                      : remainingChars < 100
+                        ? "text-yellow-600 dark:text-yellow-400"
+                        : "text-gray-400 dark:text-gray-500"
+                  }`}
+                >
+                  {remainingChars}
+                </span>
+                {/* Small circular indicator */}
+                <svg className="w-4 h-4 -rotate-90" viewBox="0 0 16 16">
+                  <circle
+                    cx="8"
+                    cy="8"
+                    r="6"
+                    fill="none"
+                    strokeWidth="2"
+                    className="text-gray-200 dark:text-gray-600"
+                    stroke="currentColor"
+                  />
+                  <circle
+                    cx="8"
+                    cy="8"
+                    r="6"
+                    fill="none"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeDasharray={`${Math.min(Math.max((text.length / maxLength) * 37.7, 0), 37.7)} 37.7`}
+                    className={`transition-all duration-150 ${
+                      remainingChars < 0
+                        ? "text-red-500"
+                        : remainingChars < 100
+                          ? "text-yellow-500"
+                          : "text-green-500"
+                    }`}
+                    stroke="currentColor"
+                  />
+                </svg>
+              </div>
 
               {/* Mention suggestions popup */}
               {showMentionSuggestions && (
@@ -1089,87 +1132,32 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 )}
               </div>
 
-              {/* Character counter - circular indicator */}
-              <div className="flex items-center gap-2 shrink-0">
-                {text.length > 0 && (
-                  <div className="relative flex items-center justify-center">
-                    {/* Circular progress */}
-                    <svg className="w-8 h-8 -rotate-90" viewBox="0 0 36 36">
-                      {/* Background circle */}
-                      <circle
-                        cx="18"
-                        cy="18"
-                        r="15"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="3"
-                        className="text-gray-200 dark:text-gray-600"
-                      />
-                      {/* Progress circle */}
-                      <circle
-                        cx="18"
-                        cy="18"
-                        r="15"
-                        fill="none"
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        strokeDasharray={`${Math.min((text.length / maxLength) * 94.2, 94.2)} 94.2`}
-                        className={`transition-all duration-150 ${
-                          remainingChars < 0
-                            ? "text-red-500"
-                            : remainingChars < 100
-                              ? "text-yellow-500"
-                              : remainingChars < maxLength * 0.2
-                                ? "text-green-500"
-                                : "text-green-400"
-                        }`}
-                        stroke="currentColor"
-                      />
-                    </svg>
-                    {/* Character count in center (only when near limit) */}
-                    {(remainingChars < 100 || remainingChars < 0) && (
-                      <span
-                        className={`absolute text-[10px] font-bold ${
-                          remainingChars < 0
-                            ? "text-red-500"
-                            : remainingChars < 50
-                              ? "text-yellow-600 dark:text-yellow-400"
-                              : "text-gray-600 dark:text-gray-400"
-                        }`}
-                      >
-                        {remainingChars}
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {/* Submit button */}
-                <Button
-                  onPress={() => handleSubmit()}
-                  isDisabled={
-                    isSubmitting ||
-                    isUploading ||
-                    (!text.trim() && totalFileCount === 0) ||
-                    text.length > maxLength
-                  }
-                  variant="primary"
-                  size="sm"
-                  className="min-w-[72px]"
-                >
-                  <span className="flex items-center justify-center gap-2 whitespace-nowrap">
-                    {(isUploading || isSubmitting) && <Spinner size="xs" variant="white" />}
-                    {isUploading ? (
-                      <Trans>Uploading...</Trans>
-                    ) : isSubmitting ? (
-                      <Trans>Posting...</Trans>
-                    ) : replyId ? (
-                      <Trans>Reply</Trans>
-                    ) : (
-                      <Trans>Post</Trans>
-                    )}
-                  </span>
-                </Button>
-              </div>
+              {/* Submit button */}
+              <Button
+                onPress={() => handleSubmit()}
+                isDisabled={
+                  isSubmitting ||
+                  isUploading ||
+                  (!text.trim() && totalFileCount === 0) ||
+                  text.length > maxLength
+                }
+                variant="primary"
+                size="sm"
+                className="min-w-[72px] shrink-0"
+              >
+                <span className="flex items-center justify-center gap-2 whitespace-nowrap">
+                  {(isUploading || isSubmitting) && <Spinner size="xs" variant="white" />}
+                  {isUploading ? (
+                    <Trans>Uploading...</Trans>
+                  ) : isSubmitting ? (
+                    <Trans>Posting...</Trans>
+                  ) : replyId ? (
+                    <Trans>Reply</Trans>
+                  ) : (
+                    <Trans>Post</Trans>
+                  )}
+                </span>
+              </Button>
             </div>
           </div>
         </div>
