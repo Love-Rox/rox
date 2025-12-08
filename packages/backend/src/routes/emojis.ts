@@ -82,6 +82,74 @@ app.get("/categories", async (c: Context) => {
 });
 
 /**
+ * List Remote Emojis (Admin)
+ *
+ * GET /api/emojis/remote
+ *
+ * Returns all remote custom emojis saved from incoming reactions.
+ * These can be adopted as local emojis.
+ *
+ * Query params:
+ * - host: Filter by remote host
+ * - search: Search by name
+ * - limit: Max results (default: 100)
+ * - offset: Pagination offset
+ *
+ * NOTE: This route must be defined BEFORE /:id to avoid "remote" being matched as an ID
+ */
+app.get("/remote", async (c: Context) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  const roleService = c.get("roleService");
+  const policies = await roleService.getEffectivePolicies(user.id);
+  if (!policies.canManageCustomEmojis) {
+    return c.json({ error: "Forbidden: Admin permission required" }, 403);
+  }
+
+  const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
+
+  const host = c.req.query("host");
+  const search = c.req.query("search");
+  const limit = Math.min(parseInt(c.req.query("limit") || "100", 10), 500);
+  const offset = parseInt(c.req.query("offset") || "0", 10);
+
+  // Get all remote emojis (host is NOT null)
+  // We need to use list with a special query to get remote emojis
+  const emojis = await customEmojiRepository.list({
+    host: host || undefined, // If host specified, filter by it
+    search: search || undefined,
+    limit,
+    offset,
+    includeSensitive: true,
+  });
+
+  // Filter to only remote emojis (host is not null)
+  const remoteEmojis = host ? emojis : emojis.filter((e) => e.host !== null);
+
+  // Get unique hosts for filtering UI
+  const hosts = [...new Set(remoteEmojis.map((e) => e.host).filter(Boolean))] as string[];
+
+  const response = remoteEmojis.map((emoji) => ({
+    id: emoji.id,
+    name: emoji.name,
+    host: emoji.host,
+    url: emoji.publicUrl || emoji.url,
+    category: emoji.category,
+    isSensitive: emoji.isSensitive,
+    createdAt: emoji.createdAt,
+  }));
+
+  return c.json({
+    emojis: response,
+    hosts,
+    total: remoteEmojis.length,
+  });
+});
+
+/**
  * Get Emojis by Names
  *
  * POST /api/emojis/lookup
@@ -394,72 +462,6 @@ app.delete("/:id", async (c: Context) => {
 });
 
 // === Remote Emoji Management (Admin) ===
-
-/**
- * List Remote Emojis (Admin)
- *
- * GET /api/emojis/remote
- *
- * Returns all remote custom emojis saved from incoming reactions.
- * These can be adopted as local emojis.
- *
- * Query params:
- * - host: Filter by remote host
- * - search: Search by name
- * - limit: Max results (default: 100)
- * - offset: Pagination offset
- */
-app.get("/remote", async (c: Context) => {
-  const user = c.get("user");
-  if (!user) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
-  const roleService = c.get("roleService");
-  const policies = await roleService.getEffectivePolicies(user.id);
-  if (!policies.canManageCustomEmojis) {
-    return c.json({ error: "Forbidden: Admin permission required" }, 403);
-  }
-
-  const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
-
-  const host = c.req.query("host");
-  const search = c.req.query("search");
-  const limit = Math.min(parseInt(c.req.query("limit") || "100", 10), 500);
-  const offset = parseInt(c.req.query("offset") || "0", 10);
-
-  // Get all remote emojis (host is NOT null)
-  // We need to use list with a special query to get remote emojis
-  const emojis = await customEmojiRepository.list({
-    host: host || undefined, // If host specified, filter by it
-    search: search || undefined,
-    limit,
-    offset,
-    includeSensitive: true,
-  });
-
-  // Filter to only remote emojis (host is not null)
-  const remoteEmojis = host ? emojis : emojis.filter((e) => e.host !== null);
-
-  // Get unique hosts for filtering UI
-  const hosts = [...new Set(remoteEmojis.map((e) => e.host).filter(Boolean))] as string[];
-
-  const response = remoteEmojis.map((emoji) => ({
-    id: emoji.id,
-    name: emoji.name,
-    host: emoji.host,
-    url: emoji.publicUrl || emoji.url,
-    category: emoji.category,
-    isSensitive: emoji.isSensitive,
-    createdAt: emoji.createdAt,
-  }));
-
-  return c.json({
-    emojis: response,
-    hosts,
-    total: remoteEmojis.length,
-  });
-});
 
 /**
  * Adopt Remote Emoji as Local (Admin)
