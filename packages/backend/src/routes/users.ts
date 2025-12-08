@@ -11,6 +11,7 @@ import { AuthService } from "../services/AuthService.js";
 import { UserService } from "../services/UserService.js";
 import { requireAuth, optionalAuth } from "../middleware/auth.js";
 import { errorResponse } from "../lib/routeUtils.js";
+import { verifyPassword } from "../utils/password.js";
 
 const app = new Hono();
 
@@ -826,6 +827,85 @@ app.delete("/@me/banner", requireAuth(), async (c) => {
     });
 
     return c.json({ success: true });
+  } catch (error) {
+    if (error instanceof Error) {
+      return errorResponse(c, error.message);
+    }
+    throw error;
+  }
+});
+
+/**
+ * Delete Own Account
+ *
+ * POST /api/users/@me/delete
+ *
+ * Permanently deletes the authenticated user's account.
+ * Requires password confirmation for security.
+ *
+ * @remarks
+ * Request Body:
+ * ```json
+ * {
+ *   "password": "currentPassword123"
+ * }
+ * ```
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "success": true,
+ *   "message": "Account deleted successfully"
+ * }
+ * ```
+ *
+ * Errors:
+ * - 400: Password required or incorrect
+ * - 401: Unauthorized
+ * - 403: Admin users cannot delete their own accounts
+ */
+app.post("/@me/delete", requireAuth(), async (c) => {
+  const user = c.get("user");
+  if (!user) {
+    return errorResponse(c, "Unauthorized", 401);
+  }
+
+  const body = await c.req.json<{ password?: string }>();
+  const { password } = body;
+
+  // Password is required for account deletion
+  if (!password) {
+    return errorResponse(c, "Password is required to delete your account", 400);
+  }
+
+  const userRepository = c.get("userRepository");
+  const userDeletionService = c.get("userDeletionService");
+
+  // Get full user data with password hash
+  const fullUser = await userRepository.findById(user.id);
+  if (!fullUser || !fullUser.passwordHash) {
+    return errorResponse(c, "User not found or no password set", 400);
+  }
+
+  // Verify password
+  const isValidPassword = await verifyPassword(password, fullUser.passwordHash);
+  if (!isValidPassword) {
+    return errorResponse(c, "Incorrect password", 400);
+  }
+
+  try {
+    const result = await userDeletionService.deleteLocalUser(user.id, {
+      deleteNotes: true, // Delete all user's notes as well
+    });
+
+    if (!result.success) {
+      return errorResponse(c, result.message, 403);
+    }
+
+    return c.json({
+      success: true,
+      message: "Account deleted successfully",
+    });
   } catch (error) {
     if (error instanceof Error) {
       return errorResponse(c, error.message);

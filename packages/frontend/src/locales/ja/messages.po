@@ -101,6 +101,10 @@ msgstr "があなたのフォローリクエストを承認しました"
 msgid "Account Aliases"
 msgstr "アカウントエイリアス"
 
+#: src/components/settings/AccountDeletionSection.tsx:57
+msgid "Account deleted successfully"
+msgstr "アカウントを削除しました"
+
 #: src/components/settings/AccountMigrationSection.tsx:217
 msgid "Account has been migrated"
 msgstr "アカウントは移行済みです"
@@ -260,6 +264,10 @@ msgstr "すでにアカウントをお持ちですか？サインイン"
 msgid "Also delete all notes by this user"
 msgstr "このユーザーの全ての投稿も削除する"
 
+#: src/components/settings/AccountDeletionSection.tsx:109
+msgid "Are you absolutely sure?"
+msgstr "本当に削除しますか？"
+
 #. placeholder {0}: emoji.name
 #: src/pages/admin/emojis.tsx:430
 msgid "Are you sure you want to delete \":{0}:\"?"
@@ -343,7 +351,7 @@ msgstr "最初の投稿をしてみましょう！"
 msgid "Before migrating, make sure to add this account as an alias on your target account."
 msgstr "引っ越し前に、移行先アカウントでこのアカウントをエイリアスとして追加してください。"
 
-#: src/pages/settings.tsx:186
+#: src/pages/settings.tsx:187
 msgid "Bio"
 msgstr "自己紹介"
 
@@ -443,6 +451,7 @@ msgstr "ユーザーを凍結可能"
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/note/NoteComposer.tsx:1094
 #: src/components/report/ReportDialog.tsx:170
+#: src/components/settings/AccountDeletionSection.tsx:177
 #: src/components/settings/PasskeySection.tsx:333
 #: src/pages/admin/emojis.tsx:770
 #: src/pages/admin/roles.tsx:568
@@ -450,7 +459,7 @@ msgstr "ユーザーを凍結可能"
 #: src/pages/admin/users.tsx:619
 #: src/pages/mod/instances.tsx:389
 #: src/pages/mod/users.tsx:568
-#: src/pages/settings.tsx:288
+#: src/pages/settings.tsx:289
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -522,7 +531,7 @@ msgstr "接続サーバー"
 msgid "Contact"
 msgstr "連絡先"
 
-#: src/components/note/NoteCard.tsx:448
+#: src/components/note/NoteCard.tsx:452
 msgid "Content Warning"
 msgstr "閲覧注意"
 
@@ -584,7 +593,7 @@ msgstr "アカウント作成中..."
 msgid "Custom Code (optional)"
 msgstr "カスタムコード（任意）"
 
-#: src/pages/settings.tsx:235
+#: src/pages/settings.tsx:236
 msgid "Custom CSS"
 msgstr "カスタムCSS"
 
@@ -596,7 +605,7 @@ msgstr "カスタムCSS（アプリ全体）"
 msgid "Custom CSS applied to the entire app (max 10KB)"
 msgstr "アプリ全体に適用されるカスタムCSS（最大10KB）"
 
-#: src/pages/settings.tsx:249
+#: src/pages/settings.tsx:250
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 
@@ -604,6 +613,10 @@ msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 #: src/pages/admin/emojis.tsx:514
 msgid "Custom Emojis"
 msgstr "カスタム絵文字"
+
+#: src/components/settings/AccountDeletionSection.tsx:85
+msgid "Danger Zone"
+msgstr "危険な設定"
 
 #: src/pages/admin/settings.tsx:727
 msgid "Dark"
@@ -634,6 +647,10 @@ msgstr "デフォルトロール数"
 #: src/pages/admin/users.tsx:632
 msgid "Delete"
 msgstr "削除"
+
+#: src/components/settings/AccountDeletionSection.tsx:102
+msgid "Delete Account"
+msgstr "アカウントを削除"
 
 #: src/components/settings/InvitationCodeSection.tsx:269
 #: src/pages/admin/invitations.tsx:409
@@ -687,6 +704,10 @@ msgstr "削除されたノート"
 msgid "Deleted: {0}"
 msgstr "削除日時: {0}"
 
+#: src/components/settings/AccountDeletionSection.tsx:169
+msgid "Deleting..."
+msgstr "削除中..."
+
 #: src/pages/mod/users.tsx:525
 msgid "Describe the reason for this warning..."
 msgstr "この警告の理由を説明してください..."
@@ -708,7 +729,7 @@ msgstr "無効にする"
 msgid "Discard"
 msgstr "破棄"
 
-#: src/pages/settings.tsx:163
+#: src/pages/settings.tsx:164
 #: src/pages/signup.tsx:193
 msgid "Display Name"
 msgstr "表示名"
@@ -865,6 +886,10 @@ msgstr "ユーザー名を入力（例: alice または alice@remote.server）"
 msgid "Enter your invitation code to register"
 msgstr "登録には招待コードを入力してください"
 
+#: src/components/settings/AccountDeletionSection.tsx:142
+msgid "Enter your password"
+msgstr "パスワードを入力してください"
+
 #: src/components/timeline/Timeline.tsx:184
 msgid "Error loading timeline"
 msgstr "タイムラインの読み込みに失敗しました"
@@ -939,6 +964,11 @@ msgstr "フォルダの作成に失敗しました"
 #: src/pages/admin/invitations.tsx:144
 msgid "Failed to create invitation code"
 msgstr "招待コードの作成に失敗しました"
+
+#: src/components/settings/AccountDeletionSection.tsx:63
+#: src/components/settings/AccountDeletionSection.tsx:66
+msgid "Failed to delete account"
+msgstr "アカウントの削除に失敗しました"
 
 #: src/pages/admin/emojis.tsx:446
 msgid "Failed to delete emoji"
@@ -1516,7 +1546,7 @@ msgstr "ログイン"
 
 #: src/components/layout/Sidebar.tsx:214
 #: src/components/layout/Sidebar.tsx:345
-#: src/pages/settings.tsx:343
+#: src/pages/settings.tsx:344
 msgid "Logging out..."
 msgstr "ログアウト中..."
 
@@ -1526,7 +1556,7 @@ msgstr "ログインに失敗しました。認証情報を確認してくださ
 
 #: src/components/layout/Sidebar.tsx:214
 #: src/components/layout/Sidebar.tsx:345
-#: src/pages/settings.tsx:347
+#: src/pages/settings.tsx:348
 msgid "Logout"
 msgstr "ログアウト"
 
@@ -1566,7 +1596,7 @@ msgstr "リモートインスタンスと連合ステータスを管理"
 msgid "Manage user accounts"
 msgstr "ユーザーアカウントを管理"
 
-#: src/pages/settings.tsx:147
+#: src/pages/settings.tsx:148
 msgid "Manage your profile information"
 msgstr "プロフィール情報を管理"
 
@@ -1642,7 +1672,7 @@ msgstr "モデレーターロール"
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "ActivityPub配信キューの状態を監視"
 
-#: src/components/note/NoteCard.tsx:652
+#: src/components/note/NoteCard.tsx:656
 msgid "More options"
 msgstr "その他のオプション"
 
@@ -1842,7 +1872,7 @@ msgstr "ノートを復元しました"
 msgid "Note scheduled successfully"
 msgstr "予約投稿を設定しました"
 
-#: src/pages/settings.tsx:256
+#: src/pages/settings.tsx:257
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
 msgstr "注意: カスタムCSSはセキュリティのため一部のプロパティが制限されます。"
 
@@ -1875,6 +1905,10 @@ msgstr "通知"
 #: src/components/settings/PushNotificationSection.tsx:129
 msgid "Notifications are blocked"
 msgstr "通知がブロックされています"
+
+#: src/components/settings/AccountDeletionSection.tsx:92
+msgid "Once you delete your account, there is no going back. This action is permanent and will delete all your data, including notes, followers, and profile information."
+msgstr "アカウントを削除すると、元に戻すことはできません。この操作は永久的で、投稿、フォロワー、プロフィール情報を含むすべてのデータが削除されます。"
 
 #: src/components/LandingPage.tsx:104
 msgid "Open Registration"
@@ -1954,6 +1988,10 @@ msgstr "保留中の報告"
 msgid "Per Server"
 msgstr "サーバー別"
 
+#: src/components/settings/AccountDeletionSection.tsx:173
+msgid "Permanently Delete Account"
+msgstr "アカウントを完全に削除"
+
 #: src/pages/admin/roles.tsx:456
 msgid "Permissions"
 msgstr "権限"
@@ -1966,7 +2004,11 @@ msgstr "プッシュ通知を受け取るには、ブラウザの設定で通知
 msgid "Please enter text or attach files"
 msgstr "テキストを入力するかファイルを添付してください"
 
-#: src/pages/settings.tsx:85
+#: src/components/settings/AccountDeletionSection.tsx:44
+msgid "Please enter your password"
+msgstr "パスワードを入力してください"
+
+#: src/pages/settings.tsx:86
 msgid "Please log in to update your profile"
 msgstr "プロフィールを更新するにはログインしてください"
 
@@ -1978,6 +2020,10 @@ msgstr "ZIPファイルを選択してください"
 #: src/components/settings/ProfileImageSection.tsx:99
 msgid "Please select an image file"
 msgstr "画像ファイルを選択してください"
+
+#: src/components/settings/AccountDeletionSection.tsx:40
+msgid "Please type \"{CONFIRM_TEXT}\" to confirm"
+msgstr "確認のため「{CONFIRM_TEXT}」と入力してください"
 
 #: src/components/note/NoteComposer.tsx:1141
 msgid "Post"
@@ -2040,7 +2086,7 @@ msgstr "プロフィール"
 msgid "Profile Images"
 msgstr "プロフィール画像"
 
-#: src/pages/settings.tsx:105
+#: src/pages/settings.tsx:106
 msgid "Profile updated successfully"
 msgstr "プロフィールを更新しました"
 
@@ -2283,7 +2329,7 @@ msgstr "名前を変更"
 msgid "Renote"
 msgstr "リノート"
 
-#: src/components/note/NoteCard.tsx:439
+#: src/components/note/NoteCard.tsx:443
 msgid "Renoted"
 msgstr "リノート"
 
@@ -2305,12 +2351,12 @@ msgstr "返信 ({0})"
 msgid "Reply"
 msgstr "返信"
 
-#: src/components/note/NoteCard.tsx:399
+#: src/components/note/NoteCard.tsx:403
 #: src/components/note/NoteComposer.tsx:615
 msgid "Replying to"
 msgstr "返信先:"
 
-#: src/components/note/NoteCard.tsx:667
+#: src/components/note/NoteCard.tsx:671
 msgid "Report"
 msgstr "報告"
 
@@ -2485,7 +2531,7 @@ msgstr "ルート"
 msgid "Save"
 msgstr "保存"
 
-#: src/pages/settings.tsx:276
+#: src/pages/settings.tsx:277
 msgid "Save Changes"
 msgstr "変更を保存"
 
@@ -2511,7 +2557,7 @@ msgid "Save Theme Settings"
 msgstr "テーマ設定を保存"
 
 #: src/components/settings/UISettingsSection.tsx:366
-#: src/pages/settings.tsx:272
+#: src/pages/settings.tsx:273
 msgid "Saving..."
 msgstr "保存中..."
 
@@ -2614,12 +2660,12 @@ msgstr "サーバー素材"
 msgid "Server Metrics"
 msgstr "サーバーメトリクス"
 
-#: src/pages/settings.tsx:329
+#: src/pages/settings.tsx:330
 msgid "Session"
 msgstr "セッション"
 
 #: src/components/layout/Sidebar.tsx:110
-#: src/pages/settings.tsx:144
+#: src/pages/settings.tsx:145
 msgid "Settings"
 msgstr "設定"
 
@@ -2632,7 +2678,7 @@ msgstr "思いを共有し、友人とつながり、Fediverse全体での会話
 msgid "Show all {0} files"
 msgstr "すべて表示（{0}ファイル）"
 
-#: src/components/note/NoteCard.tsx:458
+#: src/components/note/NoteCard.tsx:462
 msgid "Show content"
 msgstr "内容を表示"
 
@@ -2673,7 +2719,7 @@ msgstr "{0}でサインイン"
 msgid "Sign in with Passkey"
 msgstr "パスキーでサインイン"
 
-#: src/pages/settings.tsx:332
+#: src/pages/settings.tsx:333
 msgid "Sign out of your account on this device."
 msgstr "このデバイスからログアウトします。"
 
@@ -2787,7 +2833,7 @@ msgstr "移行先アカウントURI"
 msgid "Target ID:"
 msgstr "対象ID:"
 
-#: src/pages/settings.tsx:192
+#: src/pages/settings.tsx:193
 msgid "Tell us about yourself..."
 msgstr "自己紹介を入力..."
 
@@ -2835,6 +2881,10 @@ msgstr "テーマ設定を保存しました"
 #: src/components/settings/AccountMigrationSection.tsx:220
 msgid "This account was migrated to:"
 msgstr "このアカウントは以下に引っ越しました:"
+
+#: src/components/settings/AccountDeletionSection.tsx:112
+msgid "This action cannot be undone. This will permanently delete your account and remove all your data from our servers."
+msgstr "この操作は取り消せません。アカウントが完全に削除され、すべてのデータがサーバーから削除されます。"
 
 #: src/pages/signup.tsx:110
 msgid "This instance is not accepting new registrations at this time."
@@ -2929,6 +2979,10 @@ msgstr "フィルターを調整してみてください"
 #: src/pages/search.tsx:444
 msgid "Try searching \"All\" to include remote users"
 msgstr "「すべて」で検索するとリモートユーザーも含まれます"
+
+#: src/components/settings/AccountDeletionSection.tsx:124
+msgid "Type \"{CONFIRM_TEXT}\" to confirm"
+msgstr "確認のため「{CONFIRM_TEXT}」と入力"
 
 #: src/components/settings/UISettingsSection.tsx:152
 msgid "UI settings saved"
@@ -3080,12 +3134,12 @@ msgid "User unsuspended successfully"
 msgstr "ユーザーの停止を解除しました"
 
 #: src/pages/login.tsx:235
-#: src/pages/settings.tsx:214
+#: src/pages/settings.tsx:215
 #: src/pages/signup.tsx:164
 msgid "Username"
 msgstr "ユーザー名"
 
-#: src/pages/settings.tsx:225
+#: src/pages/settings.tsx:226
 msgid "Username cannot be changed"
 msgstr "ユーザー名は変更できません"
 
@@ -3125,7 +3179,7 @@ msgstr "検証"
 msgid "Validation failed"
 msgstr "検証に失敗しました"
 
-#: src/components/note/NoteCard.tsx:430
+#: src/components/note/NoteCard.tsx:434
 msgid "View"
 msgstr "表示"
 
@@ -3248,7 +3302,7 @@ msgstr "タイムラインの最後に到達しました"
 msgid "Your account will need to be approved by an administrator before you can use it."
 msgstr "アカウントは管理者の承認後に使用可能になります。"
 
-#: src/pages/settings.tsx:200
+#: src/pages/settings.tsx:201
 msgid "Your bio (max 500 characters)"
 msgstr "自己紹介（最大500文字）"
 
@@ -3264,7 +3318,7 @@ msgstr "お使いのブラウザはプッシュ通知に対応していません
 msgid "Your Files"
 msgstr "あなたのファイル"
 
-#: src/pages/settings.tsx:176
+#: src/pages/settings.tsx:177
 msgid "Your public display name (max 50 characters)"
 msgstr "表示名（最大50文字）"
 

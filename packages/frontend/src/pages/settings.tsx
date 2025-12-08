@@ -19,6 +19,7 @@ import { PushNotificationSection } from "../components/settings/PushNotification
 import { StorageSection } from "../components/settings/StorageSection";
 import { ProfileImageSection } from "../components/settings/ProfileImageSection";
 import { PasskeySection } from "../components/settings/PasskeySection";
+import { AccountDeletionSection } from "../components/settings/AccountDeletionSection";
 
 /**
  * Settings page
@@ -349,6 +350,11 @@ export default function SettingsPage() {
           </Button>
         </CardContent>
       </Card>
+
+      {/* Account Deletion Section */}
+      <div className="mt-6">
+        <AccountDeletionSection />
+      </div>
     </Layout>
   );
 }

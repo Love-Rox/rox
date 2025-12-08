@@ -101,6 +101,10 @@ msgstr "accepted your follow request"
 msgid "Account Aliases"
 msgstr "Account Aliases"
 
+#: src/components/settings/AccountDeletionSection.tsx:57
+msgid "Account deleted successfully"
+msgstr "Account deleted successfully"
+
 #: src/components/settings/AccountMigrationSection.tsx:217
 msgid "Account has been migrated"
 msgstr "Account has been migrated"
@@ -260,6 +264,10 @@ msgstr "Already have an account? Sign in"
 msgid "Also delete all notes by this user"
 msgstr "Also delete all notes by this user"
 
+#: src/components/settings/AccountDeletionSection.tsx:109
+msgid "Are you absolutely sure?"
+msgstr "Are you absolutely sure?"
+
 #. placeholder {0}: emoji.name
 #: src/pages/admin/emojis.tsx:430
 msgid "Are you sure you want to delete \":{0}:\"?"
@@ -343,7 +351,7 @@ msgstr "Be the first to post something!"
 msgid "Before migrating, make sure to add this account as an alias on your target account."
 msgstr "Before migrating, make sure to add this account as an alias on your target account."
 
-#: src/pages/settings.tsx:186
+#: src/pages/settings.tsx:187
 msgid "Bio"
 msgstr "Bio"
 
@@ -443,6 +451,7 @@ msgstr "Can suspend users"
 #: src/components/drive/DrivePickerDialog.tsx:504
 #: src/components/note/NoteComposer.tsx:1094
 #: src/components/report/ReportDialog.tsx:170
+#: src/components/settings/AccountDeletionSection.tsx:177
 #: src/components/settings/PasskeySection.tsx:333
 #: src/pages/admin/emojis.tsx:770
 #: src/pages/admin/roles.tsx:568
@@ -450,7 +459,7 @@ msgstr "Can suspend users"
 #: src/pages/admin/users.tsx:619
 #: src/pages/mod/instances.tsx:389
 #: src/pages/mod/users.tsx:568
-#: src/pages/settings.tsx:288
+#: src/pages/settings.tsx:289
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -522,7 +531,7 @@ msgstr "Connected Servers"
 msgid "Contact"
 msgstr "Contact"
 
-#: src/components/note/NoteCard.tsx:448
+#: src/components/note/NoteCard.tsx:452
 msgid "Content Warning"
 msgstr "Content Warning"
 
@@ -584,7 +593,7 @@ msgstr "Creating account..."
 msgid "Custom Code (optional)"
 msgstr "Custom Code (optional)"
 
-#: src/pages/settings.tsx:235
+#: src/pages/settings.tsx:236
 msgid "Custom CSS"
 msgstr "Custom CSS"
 
@@ -596,7 +605,7 @@ msgstr "Custom CSS (App-wide)"
 msgid "Custom CSS applied to the entire app (max 10KB)"
 msgstr "Custom CSS applied to the entire app (max 10KB)"
 
-#: src/pages/settings.tsx:249
+#: src/pages/settings.tsx:250
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "Custom CSS for your profile page (max 10KB)"
 
@@ -604,6 +613,10 @@ msgstr "Custom CSS for your profile page (max 10KB)"
 #: src/pages/admin/emojis.tsx:514
 msgid "Custom Emojis"
 msgstr "Custom Emojis"
+
+#: src/components/settings/AccountDeletionSection.tsx:85
+msgid "Danger Zone"
+msgstr "Danger Zone"
 
 #: src/pages/admin/settings.tsx:727
 msgid "Dark"
@@ -634,6 +647,10 @@ msgstr "Default Roles"
 #: src/pages/admin/users.tsx:632
 msgid "Delete"
 msgstr "Delete"
+
+#: src/components/settings/AccountDeletionSection.tsx:102
+msgid "Delete Account"
+msgstr "Delete Account"
 
 #: src/components/settings/InvitationCodeSection.tsx:269
 #: src/pages/admin/invitations.tsx:409
@@ -687,6 +704,10 @@ msgstr "Deleted Notes"
 msgid "Deleted: {0}"
 msgstr "Deleted: {0}"
 
+#: src/components/settings/AccountDeletionSection.tsx:169
+msgid "Deleting..."
+msgstr "Deleting..."
+
 #: src/pages/mod/users.tsx:525
 msgid "Describe the reason for this warning..."
 msgstr "Describe the reason for this warning..."
@@ -708,7 +729,7 @@ msgstr "Disable"
 msgid "Discard"
 msgstr "Discard"
 
-#: src/pages/settings.tsx:163
+#: src/pages/settings.tsx:164
 #: src/pages/signup.tsx:193
 msgid "Display Name"
 msgstr "Display Name"
@@ -865,6 +886,10 @@ msgstr "Enter username (e.g., alice or alice@remote.server)"
 msgid "Enter your invitation code to register"
 msgstr "Enter your invitation code to register"
 
+#: src/components/settings/AccountDeletionSection.tsx:142
+msgid "Enter your password"
+msgstr "Enter your password"
+
 #: src/components/timeline/Timeline.tsx:184
 msgid "Error loading timeline"
 msgstr "Error loading timeline"
@@ -939,6 +964,11 @@ msgstr "Failed to create folder"
 #: src/pages/admin/invitations.tsx:144
 msgid "Failed to create invitation code"
 msgstr "Failed to create invitation code"
+
+#: src/components/settings/AccountDeletionSection.tsx:63
+#: src/components/settings/AccountDeletionSection.tsx:66
+msgid "Failed to delete account"
+msgstr "Failed to delete account"
 
 #: src/pages/admin/emojis.tsx:446
 msgid "Failed to delete emoji"
@@ -1516,7 +1546,7 @@ msgstr "Log In"
 
 #: src/components/layout/Sidebar.tsx:214
 #: src/components/layout/Sidebar.tsx:345
-#: src/pages/settings.tsx:343
+#: src/pages/settings.tsx:344
 msgid "Logging out..."
 msgstr "Logging out..."
 
@@ -1526,7 +1556,7 @@ msgstr "Login failed. Please check your credentials."
 
 #: src/components/layout/Sidebar.tsx:214
 #: src/components/layout/Sidebar.tsx:345
-#: src/pages/settings.tsx:347
+#: src/pages/settings.tsx:348
 msgid "Logout"
 msgstr "Logout"
 
@@ -1566,7 +1596,7 @@ msgstr "Manage remote instances and federation status"
 msgid "Manage user accounts"
 msgstr "Manage user accounts"
 
-#: src/pages/settings.tsx:147
+#: src/pages/settings.tsx:148
 msgid "Manage your profile information"
 msgstr "Manage your profile information"
 
@@ -1642,7 +1672,7 @@ msgstr "Moderator Role"
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "Monitor ActivityPub delivery queue status"
 
-#: src/components/note/NoteCard.tsx:652
+#: src/components/note/NoteCard.tsx:656
 msgid "More options"
 msgstr "More options"
 
@@ -1842,7 +1872,7 @@ msgstr "Note restored successfully"
 msgid "Note scheduled successfully"
 msgstr "Note scheduled successfully"
 
-#: src/pages/settings.tsx:256
+#: src/pages/settings.tsx:257
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
 msgstr "Note: Custom CSS is sanitized and some properties may be restricted for security."
 
@@ -1875,6 +1905,10 @@ msgstr "Notifications"
 #: src/components/settings/PushNotificationSection.tsx:129
 msgid "Notifications are blocked"
 msgstr "Notifications are blocked"
+
+#: src/components/settings/AccountDeletionSection.tsx:92
+msgid "Once you delete your account, there is no going back. This action is permanent and will delete all your data, including notes, followers, and profile information."
+msgstr "Once you delete your account, there is no going back. This action is permanent and will delete all your data, including notes, followers, and profile information."
 
 #: src/components/LandingPage.tsx:104
 msgid "Open Registration"
@@ -1954,6 +1988,10 @@ msgstr "Pending Reports"
 msgid "Per Server"
 msgstr "Per Server"
 
+#: src/components/settings/AccountDeletionSection.tsx:173
+msgid "Permanently Delete Account"
+msgstr "Permanently Delete Account"
+
 #: src/pages/admin/roles.tsx:456
 msgid "Permissions"
 msgstr "Permissions"
@@ -1966,7 +2004,11 @@ msgstr "Please enable notifications in your browser settings to receive push not
 msgid "Please enter text or attach files"
 msgstr "Please enter text or attach files"
 
-#: src/pages/settings.tsx:85
+#: src/components/settings/AccountDeletionSection.tsx:44
+msgid "Please enter your password"
+msgstr "Please enter your password"
+
+#: src/pages/settings.tsx:86
 msgid "Please log in to update your profile"
 msgstr "Please log in to update your profile"
 
@@ -1978,6 +2020,10 @@ msgstr "Please select a ZIP file"
 #: src/components/settings/ProfileImageSection.tsx:99
 msgid "Please select an image file"
 msgstr "Please select an image file"
+
+#: src/components/settings/AccountDeletionSection.tsx:40
+msgid "Please type \"{CONFIRM_TEXT}\" to confirm"
+msgstr "Please type \"{CONFIRM_TEXT}\" to confirm"
 
 #: src/components/note/NoteComposer.tsx:1141
 msgid "Post"
@@ -2040,7 +2086,7 @@ msgstr "Profile"
 msgid "Profile Images"
 msgstr "Profile Images"
 
-#: src/pages/settings.tsx:105
+#: src/pages/settings.tsx:106
 msgid "Profile updated successfully"
 msgstr "Profile updated successfully"
 
@@ -2283,7 +2329,7 @@ msgstr "Rename"
 msgid "Renote"
 msgstr "Renote"
 
-#: src/components/note/NoteCard.tsx:439
+#: src/components/note/NoteCard.tsx:443
 msgid "Renoted"
 msgstr "Renoted"
 
@@ -2305,12 +2351,12 @@ msgstr "Replies ({0})"
 msgid "Reply"
 msgstr "Reply"
 
-#: src/components/note/NoteCard.tsx:399
+#: src/components/note/NoteCard.tsx:403
 #: src/components/note/NoteComposer.tsx:615
 msgid "Replying to"
 msgstr "Replying to"
 
-#: src/components/note/NoteCard.tsx:667
+#: src/components/note/NoteCard.tsx:671
 msgid "Report"
 msgstr "Report"
 
@@ -2485,7 +2531,7 @@ msgstr "Root"
 msgid "Save"
 msgstr "Save"
 
-#: src/pages/settings.tsx:276
+#: src/pages/settings.tsx:277
 msgid "Save Changes"
 msgstr "Save Changes"
 
@@ -2511,7 +2557,7 @@ msgid "Save Theme Settings"
 msgstr "Save Theme Settings"
 
 #: src/components/settings/UISettingsSection.tsx:366
-#: src/pages/settings.tsx:272
+#: src/pages/settings.tsx:273
 msgid "Saving..."
 msgstr "Saving..."
 
@@ -2614,12 +2660,12 @@ msgstr "Server Assets"
 msgid "Server Metrics"
 msgstr "Server Metrics"
 
-#: src/pages/settings.tsx:329
+#: src/pages/settings.tsx:330
 msgid "Session"
 msgstr "Session"
 
 #: src/components/layout/Sidebar.tsx:110
-#: src/pages/settings.tsx:144
+#: src/pages/settings.tsx:145
 msgid "Settings"
 msgstr "Settings"
 
@@ -2632,7 +2678,7 @@ msgstr "Share your thoughts, connect with friends, and join conversations across
 msgid "Show all {0} files"
 msgstr "Show all {0} files"
 
-#: src/components/note/NoteCard.tsx:458
+#: src/components/note/NoteCard.tsx:462
 msgid "Show content"
 msgstr "Show content"
 
@@ -2673,7 +2719,7 @@ msgstr "Sign in with {0}"
 msgid "Sign in with Passkey"
 msgstr "Sign in with Passkey"
 
-#: src/pages/settings.tsx:332
+#: src/pages/settings.tsx:333
 msgid "Sign out of your account on this device."
 msgstr "Sign out of your account on this device."
 
@@ -2787,7 +2833,7 @@ msgstr "Target Account URI"
 msgid "Target ID:"
 msgstr "Target ID:"
 
-#: src/pages/settings.tsx:192
+#: src/pages/settings.tsx:193
 msgid "Tell us about yourself..."
 msgstr "Tell us about yourself..."
 
@@ -2835,6 +2881,10 @@ msgstr "Theme settings saved"
 #: src/components/settings/AccountMigrationSection.tsx:220
 msgid "This account was migrated to:"
 msgstr "This account was migrated to:"
+
+#: src/components/settings/AccountDeletionSection.tsx:112
+msgid "This action cannot be undone. This will permanently delete your account and remove all your data from our servers."
+msgstr "This action cannot be undone. This will permanently delete your account and remove all your data from our servers."
 
 #: src/pages/signup.tsx:110
 msgid "This instance is not accepting new registrations at this time."
@@ -2929,6 +2979,10 @@ msgstr "Try adjusting your filters"
 #: src/pages/search.tsx:444
 msgid "Try searching \"All\" to include remote users"
 msgstr "Try searching \"All\" to include remote users"
+
+#: src/components/settings/AccountDeletionSection.tsx:124
+msgid "Type \"{CONFIRM_TEXT}\" to confirm"
+msgstr "Type \"{CONFIRM_TEXT}\" to confirm"
 
 #: src/components/settings/UISettingsSection.tsx:152
 msgid "UI settings saved"
@@ -3080,12 +3134,12 @@ msgid "User unsuspended successfully"
 msgstr "User unsuspended successfully"
 
 #: src/pages/login.tsx:235
-#: src/pages/settings.tsx:214
+#: src/pages/settings.tsx:215
 #: src/pages/signup.tsx:164
 msgid "Username"
 msgstr "Username"
 
-#: src/pages/settings.tsx:225
+#: src/pages/settings.tsx:226
 msgid "Username cannot be changed"
 msgstr "Username cannot be changed"
 
@@ -3125,7 +3179,7 @@ msgstr "Validate"
 msgid "Validation failed"
 msgstr "Validation failed"
 
-#: src/components/note/NoteCard.tsx:430
+#: src/components/note/NoteCard.tsx:434
 msgid "View"
 msgstr "View"
 
@@ -3248,7 +3302,7 @@ msgstr "You've reached the end of the timeline"
 msgid "Your account will need to be approved by an administrator before you can use it."
 msgstr "Your account will need to be approved by an administrator before you can use it."
 
-#: src/pages/settings.tsx:200
+#: src/pages/settings.tsx:201
 msgid "Your bio (max 500 characters)"
 msgstr "Your bio (max 500 characters)"
 
@@ -3264,7 +3318,7 @@ msgstr "Your browser does not support push notifications."
 msgid "Your Files"
 msgstr "Your Files"
 
-#: src/pages/settings.tsx:176
+#: src/pages/settings.tsx:177
 msgid "Your public display name (max 50 characters)"
 msgstr "Your public display name (max 50 characters)"
 
