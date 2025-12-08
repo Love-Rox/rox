@@ -88,6 +88,7 @@ export default function AdminContactsPage() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [permissionDenied, setPermissionDenied] = useState(false);
 
   // Filter state
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -120,12 +121,18 @@ export default function AdminContactsPage() {
       const response = await listContactThreadsAdmin(params);
       setThreads(response.threads as AdminThreadSummary[]);
       setTotal(response.pagination.total);
+      setPermissionDenied(false);
 
       // Also load unread count
       const unreadRes = await getContactUnreadCountAdmin();
       setUnreadCount(unreadRes.unreadCount);
     } catch (err: any) {
-      setError(err.message || "Failed to load contact threads");
+      if (err.message === "Permission denied" || err.status === 403) {
+        setPermissionDenied(true);
+        setError(null);
+      } else {
+        setError(err.message || "Failed to load contact threads");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -233,6 +240,28 @@ export default function AdminContactsPage() {
       <Layout>
         <div className="flex items-center justify-center py-20">
           <Spinner size="lg" />
+        </div>
+      </Layout>
+    );
+  }
+
+  // Permission denied view
+  if (permissionDenied) {
+    return (
+      <Layout>
+        <div className="max-w-6xl mx-auto">
+          <AdminNav currentPath="/admin/contacts" />
+          <Card>
+            <CardContent className="p-8 text-center">
+              <Shield className="w-16 h-16 mx-auto mb-4 text-(--text-muted) opacity-50" />
+              <h2 className="text-xl font-bold text-(--text-primary) mb-2">
+                <Trans>Permission Denied</Trans>
+              </h2>
+              <p className="text-(--text-muted)">
+                <Trans>You don't have permission to manage contact inquiries.</Trans>
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </Layout>
     );
