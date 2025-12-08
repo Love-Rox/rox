@@ -225,7 +225,7 @@ export default function ContactThreadPage({ threadId }: { threadId: string }) {
                   >
                     <div className="flex items-start gap-3">
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                           isUser
                             ? "bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
                             : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
@@ -242,7 +242,7 @@ export default function ContactThreadPage({ threadId }: { threadId: string }) {
                             {new Date(msg.createdAt).toLocaleString()}
                           </span>
                         </div>
-                        <p className="text-(--text-secondary) whitespace-pre-wrap break-words">
+                        <p className="text-(--text-secondary) whitespace-pre-wrap wrap-break-word">
                           {msg.content}
                         </p>
                       </div>

@@ -323,7 +323,7 @@ export default function AdminContactsPage() {
                           >
                             <div className="flex items-start gap-3">
                               <div
-                                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                                   isUser
                                     ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
                                     : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
@@ -349,7 +349,7 @@ export default function AdminContactsPage() {
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-(--text-secondary) whitespace-pre-wrap break-words">
+                                <p className="text-(--text-secondary) whitespace-pre-wrap wrap-break-word">
                                   {msg.content}
                                 </p>
                               </div>
@@ -548,7 +548,7 @@ export default function AdminContactsPage() {
                             <span>{thread.messageCount} messages</span>
                           </div>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-(--text-muted) flex-shrink-0 ml-2" />
+                        <ChevronRight className="w-5 h-5 text-(--text-muted) shrink-0 ml-2" />
                       </div>
                     </button>
                   );

@@ -327,7 +327,7 @@ export default function ContactPage() {
                             {new Date(thread.updatedAt).toLocaleDateString()}
                           </p>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-(--text-muted) flex-shrink-0 ml-2" />
+                        <ChevronRight className="w-5 h-5 text-(--text-muted) shrink-0 ml-2" />
                       </div>
                     </SpaLink>
                   ))}
