@@ -166,36 +166,27 @@ function NoteCardComponent({
     }
   }, [note.reactionEmojis]);
 
-  // Lazy load reaction data and instance info when card becomes visible
-  // This prevents N+1 API calls from blocking the main thread on initial render
-  useEffect(() => {
-    const element = cardRef.current;
-    if (!element) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (entry?.isIntersecting) {
-          // Load data when card becomes visible
-          loadReactionData();
-          loadInstanceInfo();
-          // Disconnect after first intersection - we only need to load once
-          observer.disconnect();
-        }
-      },
-      {
-        // Start loading slightly before the card enters the viewport
-        rootMargin: "100px",
-        threshold: 0,
-      },
-    );
-
-    observer.observe(element);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [loadReactionData, loadInstanceInfo]);
+  // TEMPORARILY DISABLED: Lazy loading to debug freeze issue
+  // All reaction data and instance info loading is disabled
+  // useEffect(() => {
+  //   const element = cardRef.current;
+  //   if (!element) return;
+  //
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       const entry = entries[0];
+  //       if (entry?.isIntersecting) {
+  //         loadReactionData();
+  //         loadInstanceInfo();
+  //         observer.disconnect();
+  //       }
+  //     },
+  //     { rootMargin: "100px", threshold: 0 },
+  //   );
+  //
+  //   observer.observe(element);
+  //   return () => observer.disconnect();
+  // }, [loadReactionData, loadInstanceInfo]);
 
   const handleReaction = async (reaction: string) => {
     if (isReacting || !token) return;
