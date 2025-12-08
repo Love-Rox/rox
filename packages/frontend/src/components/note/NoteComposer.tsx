@@ -649,7 +649,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 placeholder={replyTo ? `Reply to ${replyTo}` : "What's happening?"}
-                className="w-full min-h-[100px] resize-none rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-3 py-2 pb-6 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full min-h-[100px] resize-none rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 disabled={isSubmitting}
               />
 
@@ -743,33 +743,6 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                       </div>
                     ))
                   )}
-                </div>
-              )}
-              {/* Character counter progress bar - attached to bottom of textarea */}
-              <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-b-md overflow-hidden">
-                <div
-                  className={`h-full transition-all duration-150 ${
-                    remainingChars < 0
-                      ? "bg-red-500"
-                      : remainingChars < 100
-                        ? "bg-orange-500"
-                        : "bg-primary-500"
-                  }`}
-                  style={{ width: `${Math.min((text.length / maxLength) * 100, 100)}%` }}
-                />
-              </div>
-              {/* Character count text - shown when approaching limit */}
-              {(text.length > maxLength - 200 || remainingChars < 0) && (
-                <div
-                  className={`absolute bottom-2 right-2 text-xs font-medium px-1.5 py-0.5 rounded ${
-                    remainingChars < 0
-                      ? "bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400"
-                      : remainingChars < 100
-                        ? "bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400"
-                        : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
-                  }`}
-                >
-                  {remainingChars}
                 </div>
               )}
             </div>
@@ -1116,32 +1089,87 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 )}
               </div>
 
-              {/* Submit button */}
-              <Button
-                onPress={() => handleSubmit()}
-                isDisabled={
-                  isSubmitting ||
-                  isUploading ||
-                  (!text.trim() && totalFileCount === 0) ||
-                  text.length > maxLength
-                }
-                variant="primary"
-                size="sm"
-                className="min-w-[72px] shrink-0"
-              >
-                <span className="flex items-center justify-center gap-2 whitespace-nowrap">
-                  {(isUploading || isSubmitting) && <Spinner size="xs" variant="white" />}
-                  {isUploading ? (
-                    <Trans>Uploading...</Trans>
-                  ) : isSubmitting ? (
-                    <Trans>Posting...</Trans>
-                  ) : replyId ? (
-                    <Trans>Reply</Trans>
-                  ) : (
-                    <Trans>Post</Trans>
-                  )}
-                </span>
-              </Button>
+              {/* Character counter - circular indicator */}
+              <div className="flex items-center gap-2 shrink-0">
+                {text.length > 0 && (
+                  <div className="relative flex items-center justify-center">
+                    {/* Circular progress */}
+                    <svg className="w-8 h-8 -rotate-90" viewBox="0 0 36 36">
+                      {/* Background circle */}
+                      <circle
+                        cx="18"
+                        cy="18"
+                        r="15"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        className="text-gray-200 dark:text-gray-600"
+                      />
+                      {/* Progress circle */}
+                      <circle
+                        cx="18"
+                        cy="18"
+                        r="15"
+                        fill="none"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeDasharray={`${Math.min((text.length / maxLength) * 94.2, 94.2)} 94.2`}
+                        className={`transition-all duration-150 ${
+                          remainingChars < 0
+                            ? "text-red-500"
+                            : remainingChars < 100
+                              ? "text-yellow-500"
+                              : remainingChars < maxLength * 0.2
+                                ? "text-green-500"
+                                : "text-green-400"
+                        }`}
+                        stroke="currentColor"
+                      />
+                    </svg>
+                    {/* Character count in center (only when near limit) */}
+                    {(remainingChars < 100 || remainingChars < 0) && (
+                      <span
+                        className={`absolute text-[10px] font-bold ${
+                          remainingChars < 0
+                            ? "text-red-500"
+                            : remainingChars < 50
+                              ? "text-yellow-600 dark:text-yellow-400"
+                              : "text-gray-600 dark:text-gray-400"
+                        }`}
+                      >
+                        {remainingChars}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Submit button */}
+                <Button
+                  onPress={() => handleSubmit()}
+                  isDisabled={
+                    isSubmitting ||
+                    isUploading ||
+                    (!text.trim() && totalFileCount === 0) ||
+                    text.length > maxLength
+                  }
+                  variant="primary"
+                  size="sm"
+                  className="min-w-[72px]"
+                >
+                  <span className="flex items-center justify-center gap-2 whitespace-nowrap">
+                    {(isUploading || isSubmitting) && <Spinner size="xs" variant="white" />}
+                    {isUploading ? (
+                      <Trans>Uploading...</Trans>
+                    ) : isSubmitting ? (
+                      <Trans>Posting...</Trans>
+                    ) : replyId ? (
+                      <Trans>Reply</Trans>
+                    ) : (
+                      <Trans>Post</Trans>
+                    )}
+                  </span>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
