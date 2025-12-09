@@ -1,3 +1,6 @@
+// Set process title for top/ps visibility
+process.title = "hono-rox";
+
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import {

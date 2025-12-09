@@ -146,6 +146,9 @@ const FRONTEND_PORT = process.env.FRONTEND_PORT || "3001";
 
 // Main startup sequence
 async function main(): Promise<void> {
+  // Set process title for top/ps visibility
+  process.title = "rox";
+
   console.log("═".repeat(50));
   console.log("🦊 Rox Production Server");
   console.log("═".repeat(50));
