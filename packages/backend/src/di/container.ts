@@ -148,6 +148,7 @@ export function createContainer(): AppContainer {
     repositories.userRepository,
     remoteActorService,
     repositories.customEmojiRepository,
+    repositories.driveFileRepository,
   );
 
   // ActivityPub Delivery Service
@@ -261,13 +262,33 @@ function createRepositories(db: any, dbType: string) {
       };
 
     case "mysql":
-      // TODO: MySQL実装（Phase 0完了後に追加）
-      throw new Error("MySQL is not yet implemented");
+      // MySQL support is planned but not yet implemented
+      // The schema (db/schema/mysql.ts) and database connection (db/index.ts) are ready
+      // Repository implementations need to be added to repositories/mysql/
+      logger.warn(
+        "MySQL database support is not yet fully implemented. " +
+        "Please use PostgreSQL (DB_TYPE=postgres) for production environments."
+      );
+      throw new Error(
+        "MySQL is not yet implemented. " +
+        "The database schema and connection layer are ready, but repository implementations are pending. " +
+        "Please use PostgreSQL (DB_TYPE=postgres) or contribute MySQL repository implementations."
+      );
 
     case "sqlite":
     case "d1":
-      // TODO: SQLite/D1実装（Phase 0完了後に追加）
-      throw new Error("SQLite/D1 is not yet implemented");
+      // SQLite/D1 support is planned for edge environments
+      // The schema (db/schema/sqlite.ts) and database connection (db/index.ts) are ready
+      // Repository implementations need to be added to repositories/sqlite/
+      logger.warn(
+        "SQLite/D1 database support is not yet fully implemented. " +
+        "Please use PostgreSQL (DB_TYPE=postgres) for production environments."
+      );
+      throw new Error(
+        "SQLite/D1 is not yet implemented. " +
+        "The database schema and connection layer are ready, but repository implementations are pending. " +
+        "Please use PostgreSQL (DB_TYPE=postgres) or contribute SQLite repository implementations."
+      );
 
     default:
       throw new Error(`Unsupported database type: ${dbType}`);
