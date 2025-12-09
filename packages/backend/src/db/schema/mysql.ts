@@ -254,6 +254,10 @@ export const notes = mysqlTable(
     emojis: json("emojis").$type<string[]>().notNull().default([]),
     tags: json("tags").$type<string[]>().notNull().default([]),
     uri: varchar("uri", { length: 512 }),
+    // Counters for replies and renotes
+    repliesCount: int("replies_count").notNull().default(0),
+    renoteCount: int("renote_count").notNull().default(0),
+    // Soft delete fields for moderation
     isDeleted: boolean("is_deleted").notNull().default(false),
     deletedAt: datetime("deleted_at"),
     deletedById: varchar("deleted_by_id", { length: 32 }).references(() => users.id, {
@@ -787,6 +791,84 @@ export const scheduledNotes = mysqlTable(
   }),
 );
 
+/**
+ * Contact thread status type
+ */
+export type ContactThreadStatus = "open" | "in_progress" | "resolved" | "closed";
+
+/**
+ * Contact message sender type
+ */
+export type ContactSenderType = "user" | "admin" | "moderator";
+
+// Contact threads table (one per inquiry)
+export const contactThreads = mysqlTable(
+  "contact_threads",
+  {
+    id: varchar("id", { length: 32 }).primaryKey(),
+    // User who created the inquiry (null for anonymous/guest inquiries)
+    userId: varchar("user_id", { length: 32 }).references(() => users.id, { onDelete: "set null" }),
+    // Subject/title of the inquiry
+    subject: text("subject").notNull(),
+    // Category for organization (general, bug, feature, abuse, account, etc.)
+    category: varchar("category", { length: 64 }).notNull().default("general"),
+    // Current status
+    status: varchar("status", { length: 32 }).notNull().default("open").$type<ContactThreadStatus>(),
+    // Email for non-logged-in users or notification purposes
+    email: varchar("email", { length: 256 }),
+    // Assigned staff member (for internal tracking, not shown to user)
+    assignedToId: varchar("assigned_to_id", { length: 32 }).references(() => users.id, { onDelete: "set null" }),
+    // Priority level (1 = low, 2 = normal, 3 = high, 4 = urgent)
+    priority: int("priority").notNull().default(2),
+    // Internal notes (only visible to staff)
+    internalNotes: text("internal_notes"),
+    createdAt: datetime("created_at")
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: datetime("updated_at")
+      .notNull()
+      .$defaultFn(() => new Date()),
+    // When the thread was resolved/closed
+    closedAt: datetime("closed_at"),
+  },
+  (table) => ({
+    userIdIdx: index("contact_thread_user_id_idx").on(table.userId),
+    statusIdx: index("contact_thread_status_idx").on(table.status),
+    categoryIdx: index("contact_thread_category_idx").on(table.category),
+    createdAtIdx: index("contact_thread_created_at_idx").on(table.createdAt),
+    assignedToIdx: index("contact_thread_assigned_to_idx").on(table.assignedToId),
+  }),
+);
+
+// Contact messages table (messages within a thread)
+export const contactMessages = mysqlTable(
+  "contact_messages",
+  {
+    id: varchar("id", { length: 32 }).primaryKey(),
+    threadId: varchar("thread_id", { length: 32 })
+      .notNull()
+      .references(() => contactThreads.id, { onDelete: "cascade" }),
+    // Who sent the message (user ID for users, staff ID for staff)
+    senderId: varchar("sender_id", { length: 32 }).references(() => users.id, { onDelete: "set null" }),
+    // Type of sender (for display purposes - staff shown as "admin" or "moderator")
+    senderType: varchar("sender_type", { length: 32 }).notNull().$type<ContactSenderType>(),
+    // Message content
+    content: text("content").notNull(),
+    // Whether this message has been read by the recipient
+    isRead: boolean("is_read").notNull().default(false),
+    // Attached file IDs (for screenshots, etc.)
+    attachmentIds: json("attachment_ids").$type<string[]>().notNull().default([]),
+    createdAt: datetime("created_at")
+      .notNull()
+      .$defaultFn(() => new Date()),
+  },
+  (table) => ({
+    threadIdIdx: index("contact_message_thread_id_idx").on(table.threadId),
+    senderIdIdx: index("contact_message_sender_id_idx").on(table.senderId),
+    createdAtIdx: index("contact_message_created_at_idx").on(table.createdAt),
+  }),
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -832,4 +914,10 @@ export type RemoteInstance = typeof remoteInstances.$inferSelect;
 export type NewRemoteInstance = typeof remoteInstances.$inferInsert;
 export type ScheduledNote = typeof scheduledNotes.$inferSelect;
 export type NewScheduledNote = typeof scheduledNotes.$inferInsert;
+export type OAuthAccount = typeof oauthAccounts.$inferSelect;
+export type NewOAuthAccount = typeof oauthAccounts.$inferInsert;
+export type ContactThread = typeof contactThreads.$inferSelect;
+export type NewContactThread = typeof contactThreads.$inferInsert;
+export type ContactMessage = typeof contactMessages.$inferSelect;
+export type NewContactMessage = typeof contactMessages.$inferInsert;
 export type FileSource = "user" | "system";
