@@ -96,6 +96,17 @@ export interface IUserRepository {
   countRemote(): Promise<number>;
 
   /**
+   * Count active local users within a time period
+   *
+   * Active users are those who have created at least one note within the period.
+   * This is used for NodeInfo statistics.
+   *
+   * @param days - Number of days to look back (e.g., 30 for monthly, 180 for half-year)
+   * @returns Number of active local users
+   */
+  countActiveLocal(days: number): Promise<number>;
+
+  /**
    * Search users by username or displayName
    *
    * Performs a case-insensitive partial match on username and displayName.
