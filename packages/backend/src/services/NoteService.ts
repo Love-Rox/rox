@@ -599,6 +599,36 @@ export class NoteService {
     return await this.hydrateRenotes(notes);
   }
 
+
+  /**
+   * Get replies to a note
+   *
+   * Returns all replies to the specified note with hydrated user and renote data.
+   *
+   * @param noteId - Parent note ID
+   * @param options - Timeline options (limit, sinceId, untilId)
+   * @returns List of reply notes with hydrated data
+   *
+   * @example
+   * ```ts
+   * const replies = await noteService.getReplies(noteId, {
+   *   limit: 20,
+   * });
+   * ```
+   */
+  async getReplies(noteId: string, options: TimelineOptions = {}): Promise<Note[]> {
+    const limit = this.normalizeLimit(options.limit);
+
+    const replies = await this.noteRepository.findReplies(noteId, {
+      limit,
+      sinceId: options.sinceId,
+      untilId: options.untilId,
+    });
+
+    // Hydrate renote and nested reply information
+    return await this.hydrateRenotes(replies);
+  }
+
   /**
    * Verify file ownership
    *
