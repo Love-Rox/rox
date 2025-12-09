@@ -248,6 +248,8 @@ export const notes = sqliteTable(
     deletedAt: integer("deleted_at", { mode: "timestamp" }),
     deletedById: text("deleted_by_id").references(() => users.id, { onDelete: "set null" }),
     deletionReason: text("deletion_reason"),
+    repliesCount: integer("replies_count").notNull().default(0),
+    renoteCount: integer("renote_count").notNull().default(0),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),
@@ -799,4 +801,8 @@ export type RemoteInstance = typeof remoteInstances.$inferSelect;
 export type NewRemoteInstance = typeof remoteInstances.$inferInsert;
 export type ScheduledNote = typeof scheduledNotes.$inferSelect;
 export type NewScheduledNote = typeof scheduledNotes.$inferInsert;
+export type OAuthAccount = typeof oauthAccounts.$inferSelect;
+export type NewOAuthAccount = typeof oauthAccounts.$inferInsert;
+export type DriveFolder = typeof driveFolders.$inferSelect;
+export type NewDriveFolder = typeof driveFolders.$inferInsert;
 export type FileSource = "user" | "system";
