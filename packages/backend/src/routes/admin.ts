@@ -1701,4 +1701,152 @@ function extractHostname(url: string): string {
   }
 }
 
+// ============================================================================
+// Gone Users Management Endpoints
+// ============================================================================
+
+/**
+ * List Users with Fetch Errors (410 Gone, etc.)
+ *
+ * GET /api/admin/gone-users
+ *
+ * Returns a paginated list of remote users that have encountered fetch errors.
+ * These are users whose remote servers have returned 410 Gone or similar errors.
+ *
+ * Query Parameters:
+ * - limit: Maximum number of users (default: 100, max: 1000)
+ * - offset: Number of users to skip (default: 0)
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "users": [
+ *     {
+ *       "id": "...",
+ *       "username": "alice",
+ *       "host": "remote.example.com",
+ *       "goneDetectedAt": "2024-01-15T10:30:00Z",
+ *       "fetchFailureCount": 5,
+ *       "lastFetchAttemptAt": "2024-01-20T14:00:00Z",
+ *       "lastFetchError": "410 Gone"
+ *     }
+ *   ],
+ *   "total": 42
+ * }
+ * ```
+ */
+app.get("/gone-users", async (c) => {
+  const userRepository = c.get("userRepository");
+  const { limit, offset } = parsePagination(c);
+
+  const users = await userRepository.findWithFetchErrors({ limit, offset });
+  const total = await userRepository.countWithFetchErrors();
+
+  // Return users with relevant fetch error info
+  const sanitizedUsers = users.map((user) => ({
+    ...sanitizeUser(user),
+    goneDetectedAt: user.goneDetectedAt,
+    fetchFailureCount: user.fetchFailureCount,
+    lastFetchAttemptAt: user.lastFetchAttemptAt,
+    lastFetchError: user.lastFetchError,
+  }));
+
+  return c.json({ users: sanitizedUsers, total });
+});
+
+/**
+ * Mark Gone Users as Deleted
+ *
+ * POST /api/admin/gone-users/mark-deleted
+ *
+ * Marks specified gone users as deleted (soft delete).
+ * This is used when admin confirms these users should be cleaned up.
+ *
+ * Request Body:
+ * - userIds: Array of user IDs to mark as deleted
+ * - all: If true, mark all gone users as deleted (ignores userIds)
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "success": true,
+ *   "deletedCount": 10
+ * }
+ * ```
+ */
+app.post("/gone-users/mark-deleted", async (c) => {
+  const userRepository = c.get("userRepository");
+  const body = await c.req.json<{ userIds?: string[]; all?: boolean }>();
+
+  let usersToDelete: { id: string }[];
+
+  if (body.all) {
+    // Get all users with fetch errors
+    usersToDelete = await userRepository.findWithFetchErrors({ limit: 10000 });
+  } else if (body.userIds && body.userIds.length > 0) {
+    usersToDelete = body.userIds.map((id) => ({ id }));
+  } else {
+    return errorResponse(c, "Either userIds or all:true must be specified");
+  }
+
+  let deletedCount = 0;
+  for (const user of usersToDelete) {
+    try {
+      await userRepository.update(user.id, {
+        isDeleted: true,
+        deletedAt: new Date(),
+      });
+      deletedCount++;
+    } catch (error) {
+      logger.error({ error, userId: user.id }, "Failed to mark user as deleted");
+    }
+  }
+
+  logger.info({ deletedCount, total: usersToDelete.length }, "Marked gone users as deleted");
+
+  return c.json({ success: true, deletedCount });
+});
+
+/**
+ * Clear Fetch Failure Status
+ *
+ * POST /api/admin/gone-users/clear
+ *
+ * Clears the fetch failure status for specified users.
+ * Use this when you want to retry fetching these users.
+ *
+ * Request Body:
+ * - userIds: Array of user IDs to clear
+ *
+ * Response (200):
+ * ```json
+ * {
+ *   "success": true,
+ *   "clearedCount": 5
+ * }
+ * ```
+ */
+app.post("/gone-users/clear", async (c) => {
+  const userRepository = c.get("userRepository");
+  const body = await c.req.json<{ userIds: string[] }>();
+
+  if (!body.userIds || body.userIds.length === 0) {
+    return errorResponse(c, "userIds is required");
+  }
+
+  let clearedCount = 0;
+  for (const userId of body.userIds) {
+    try {
+      await userRepository.clearFetchFailure(userId);
+      clearedCount++;
+    } catch (error) {
+      logger.error({ error, userId }, "Failed to clear fetch failure");
+    }
+  }
+
+  logger.info({ clearedCount, total: body.userIds.length }, "Cleared fetch failure status");
+
+  return c.json({ success: true, clearedCount });
+});
+
 export default app;

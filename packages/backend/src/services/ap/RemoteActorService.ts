@@ -205,7 +205,21 @@ export class RemoteActorService {
     }
 
     // Fetch actor document from remote server
-    const actor = await this.fetchActor(actorUri);
+    let actor: ActorDocument;
+    try {
+      actor = await this.fetchActor(actorUri);
+    } catch (error) {
+      // Record fetch failure if we have an existing user
+      if (existing) {
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        await this.userRepository.recordFetchFailure(existing.id, errorMessage);
+        logger.debug(
+          { username: existing.username, host: existing.host, error: errorMessage },
+          "Recorded fetch failure for remote user",
+        );
+      }
+      throw error;
+    }
 
     // Extract host from actor URI
     const host = new URL(actorUri).hostname;
@@ -228,6 +242,15 @@ export class RemoteActorService {
         sharedInbox: actor.endpoints?.sharedInbox || null,
         profileEmojis,
       });
+
+      // Clear any previous fetch failures since we successfully fetched
+      if (existing.goneDetectedAt) {
+        await this.userRepository.clearFetchFailure(existing.id);
+        logger.debug(
+          { username: actor.preferredUsername, host },
+          "Cleared fetch failure status for recovered remote user",
+        );
+      }
 
       logger.debug({ username: actor.preferredUsername, host }, "Refreshed remote user");
 
@@ -273,6 +296,11 @@ export class RemoteActorService {
       movedAt: null,
       // Storage quota (null for remote users - not applicable)
       storageQuotaMb: null,
+      // Fetch status (initialized as no failures)
+      goneDetectedAt: null,
+      fetchFailureCount: 0,
+      lastFetchAttemptAt: null,
+      lastFetchError: null,
     });
 
     logger.debug({ username: actor.preferredUsername, host }, "Created remote user");

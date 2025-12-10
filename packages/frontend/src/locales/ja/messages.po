@@ -45,6 +45,11 @@ msgstr "{0}はブロックされていません"
 msgid "{0} reports against this user"
 msgstr "このユーザーに対する通報: {0}件"
 
+#. placeholder {0}: selectedIds.size
+#: src/pages/admin/gone-users.tsx:230
+msgid "{0} selected"
+msgstr "{0}件選択中"
+
 #. placeholder {0}: selectedFiles.length
 #: src/components/drive/DrivePickerDialog.tsx:498
 msgid "{0} selected (up to {remainingSlots} remaining)"
@@ -73,6 +78,10 @@ msgstr "{assetType}を削除しました"
 msgid "{assetType} uploaded successfully"
 msgstr "{assetType}をアップロードしました"
 
+#: src/pages/admin/gone-users.tsx:162
+msgid "{days} days ago"
+msgstr "{days}日前"
+
 #: src/pages/legal/privacy.tsx:108
 msgid "<0>Account information:</0> Username, email address, and password (securely hashed)"
 msgstr "<0>アカウント情報:</0> ユーザー名、メールアドレス、パスワード（安全にハッシュ化）"
@@ -92,6 +101,10 @@ msgstr "<0>技術データ:</0> IPアドレス、ブラウザタイプ、セキ�
 #: src/pages/admin/invitations.tsx:305
 msgid "1 Day"
 msgstr "1日"
+
+#: src/pages/admin/gone-users.tsx:161
+msgid "1 day ago"
+msgstr "1日前"
 
 #: src/pages/legal/terms.tsx:106
 msgid "1. Acceptance of Terms"
@@ -200,6 +213,10 @@ msgstr "このインスタンスについて"
 #: src/components/notification/NotificationItem.tsx:137
 msgid "accepted your follow request"
 msgstr "があなたのフォローリクエストを承認しました"
+
+#: src/pages/403.tsx:12
+msgid "Access Denied"
+msgstr "アクセスが拒否されました"
 
 #: src/pages/legal/privacy.tsx:196
 msgid "Access your personal data"
@@ -650,6 +667,19 @@ msgstr "サインイン方法を選択してください"
 msgid "Clear all"
 msgstr "すべてクリア"
 
+#: src/pages/admin/gone-users.tsx:326
+msgid "Clear failure status"
+msgstr "失敗ステータスをクリア"
+
+#: src/pages/admin/gone-users.tsx:240
+msgid "Clear Status"
+msgstr "ステータスをクリア"
+
+#. placeholder {0}: idsToClear.length
+#: src/pages/admin/gone-users.tsx:139
+msgid "Cleared failure status for {0} users"
+msgstr "{0}人のユーザーの失敗ステータスをクリアしました"
+
 #: src/pages/admin/emojis.tsx:1049
 msgid "Click to select a ZIP file or drag and drop"
 msgstr "クリックしてZIPファイルを選択、またはドラッグ＆ドロップ"
@@ -909,6 +939,7 @@ msgstr "警告を削除"
 msgid "Delete your account and associated data"
 msgstr "アカウントと関連データの削除"
 
+#: src/pages/admin/gone-users.tsx:296
 #: src/pages/admin/users.tsx:482
 msgid "Deleted"
 msgstr "削除済み"
@@ -1236,6 +1267,10 @@ msgstr "インスタンスの確認に失敗しました"
 msgid "Failed to check server status"
 msgstr "サーバー状態の確認に失敗しました"
 
+#: src/pages/admin/gone-users.tsx:147
+msgid "Failed to clear failure status"
+msgstr "失敗ステータスのクリアに失敗しました"
+
 #: src/pages/onboarding.tsx:186
 msgid "Failed to complete setup. Please try again."
 msgstr "セットアップの完了に失敗しました。もう一度お試しください。"
@@ -1342,6 +1377,10 @@ msgstr "ストレージ統計の読み込みに失敗しました"
 msgid "Failed to load user storage details"
 msgstr "ユーザーストレージ詳細の読み込みに失敗しました"
 
+#: src/pages/admin/gone-users.tsx:120
+msgid "Failed to mark users as deleted"
+msgstr "ユーザーの削除済みマークに失敗しました"
+
 #: src/pages/admin/reports.tsx:185
 #: src/pages/mod/reports.tsx:173
 msgid "Failed to process report"
@@ -1446,6 +1485,10 @@ msgstr "バナーのアップロードに失敗しました"
 msgid "Failed to upload file"
 msgstr "ファイルのアップロードに失敗しました"
 
+#: src/pages/admin/gone-users.tsx:315
+msgid "Failures"
+msgstr "失敗回数"
+
 #: src/components/LandingPage.tsx:202
 msgid "Fast and efficient with minimal resource usage"
 msgstr "最小限のリソース使用で高速かつ効率的"
@@ -1498,6 +1541,10 @@ msgstr "通知をフィルター"
 #: src/pages/search.tsx:337
 msgid "Find users by username or display name"
 msgstr "ユーザー名または表示名でユーザーを検索"
+
+#: src/pages/admin/gone-users.tsx:312
+msgid "First detected"
+msgstr "初回検知"
 
 #: src/components/drive/DrivePickerDialog.tsx:332
 msgid "Folder name"
@@ -1576,6 +1623,14 @@ msgstr "始める"
 msgid "Global"
 msgstr "グローバル"
 
+#: src/components/ErrorPage.tsx:88
+msgid "Go Back"
+msgstr "戻る"
+
+#: src/components/ErrorPage.tsx:106
+msgid "Go Home"
+msgstr "ホームへ"
+
 #: src/pages/onboarding.tsx:219
 msgid "Go to login"
 msgstr "ログインへ"
@@ -1583,6 +1638,14 @@ msgstr "ログインへ"
 #: src/components/LandingPage.tsx:129
 msgid "Go to Timeline"
 msgstr "タイムラインへ"
+
+#: src/pages/410.tsx:13
+msgid "Gone"
+msgstr "削除済み"
+
+#: src/pages/admin/gone-users.tsx:187
+msgid "Gone Users"
+msgstr "到達不能ユーザー"
 
 #: src/pages/legal/terms.tsx:139
 msgid "Harass, abuse, or threaten other users"
@@ -1999,9 +2062,22 @@ msgstr "アカウント設定を管理"
 msgid "Mark all as read"
 msgstr "すべて既読にする"
 
+#: src/pages/admin/gone-users.tsx:335
+msgid "Mark as deleted"
+msgstr "削除済みにする"
+
+#: src/pages/admin/gone-users.tsx:249
+msgid "Mark as Deleted"
+msgstr "削除済みにする"
+
 #: src/pages/admin/users.tsx:587
 msgid "Mark the account as deleted"
 msgstr "アカウントを削除済みとしてマーク"
+
+#. placeholder {0}: idsToDelete.length
+#: src/pages/admin/gone-users.tsx:112
+msgid "Marked {0} users as deleted"
+msgstr "{0}人のユーザーを削除済みにしました"
 
 #: src/pages/admin/invitations.tsx:276
 msgid "Max Uses"
@@ -2252,6 +2328,10 @@ msgstr "テキストコンテンツなし"
 msgid "No users found"
 msgstr "ユーザーが見つかりませんでした"
 
+#: src/pages/admin/gone-users.tsx:209
+msgid "No users with fetch errors found"
+msgstr "取得エラーのあるユーザーはいません"
+
 #: src/components/pages/NoteDetailPageClient.tsx:129
 msgid "Note"
 msgstr "ノート"
@@ -2368,6 +2448,10 @@ msgstr "特定の通知タイプのデフォルトサウンドを上書きしま
 #: src/pages/admin/queue.tsx:313
 msgid "Overview"
 msgstr "概要"
+
+#: src/pages/404.tsx:12
+msgid "Page Not Found"
+msgstr "ページが見つかりません"
 
 #. placeholder {0}: new Date().toLocaleDateString()
 #: src/components/settings/PasskeySection.tsx:95
@@ -2512,6 +2596,10 @@ msgstr "投稿"
 #: src/components/LandingPage.tsx:327
 msgid "Powered by"
 msgstr "Powered by"
+
+#: src/components/ErrorPage.tsx:116
+msgid "Powered by Rox - Lightweight ActivityPub Server"
+msgstr "Powered by Rox - 軽量ActivityPubサーバー"
 
 #: src/components/note/NoteComposer.tsx:797
 #: src/components/settings/UISettingsSection.tsx:488
@@ -2722,6 +2810,10 @@ msgstr "更新"
 #: src/pages/admin/federation.tsx:245
 msgid "Refresh List"
 msgstr "リストを更新"
+
+#: src/components/ui/RefreshButton.tsx:14
+msgid "Refresh page"
+msgstr "ページを更新"
 
 #: src/pages/admin/users.tsx:545
 msgid "Refresh user information"
@@ -3144,6 +3236,10 @@ msgstr "セキュリティ"
 msgid "Select"
 msgstr "選択する"
 
+#: src/pages/admin/gone-users.tsx:227
+msgid "Select All"
+msgstr "すべて選択"
+
 #: src/components/note/NoteComposer.tsx:893
 #: src/components/note/NoteComposer.tsx:894
 msgid "Select from drive"
@@ -3186,6 +3282,10 @@ msgstr "サーバー"
 msgid "Server Assets"
 msgstr "サーバー素材"
 
+#: src/pages/500.tsx:13
+msgid "Server Error"
+msgstr "サーバーエラー"
+
 #: src/pages/admin/queue.tsx:430
 msgid "Server Metrics"
 msgstr "サーバーメトリクス"
@@ -3193,6 +3293,10 @@ msgstr "サーバーメトリクス"
 #: src/pages/onboarding.tsx:233
 msgid "Server Setup"
 msgstr "サーバーセットアップ"
+
+#: src/pages/503.tsx:13
+msgid "Service Unavailable"
+msgstr "サービス利用不可"
 
 #: src/pages/settings.tsx:364
 msgid "Session"
@@ -3281,6 +3385,10 @@ msgstr "ソーシャル"
 #: src/components/LandingPage.tsx:278
 msgid "Software"
 msgstr "ソフトウェア"
+
+#: src/pages/500.tsx:15
+msgid "Something went wrong on our end. Please try again later or contact support if the problem persists."
+msgstr "サーバー側で問題が発生しました。しばらくしてから再度お試しいただくか、問題が続く場合はサポートにお問い合わせください。"
 
 #: src/pages/mod/instances.tsx:371
 msgid "spam.example.com"
@@ -3431,6 +3539,14 @@ msgstr "エクスポート内容："
 msgid "The job queue system is not currently configured or running."
 msgstr "ジョブキューシステムは現在設定されていないか、実行されていません。"
 
+#: src/pages/404.tsx:13
+msgid "The page you're looking for doesn't exist or has been moved."
+msgstr "お探しのページは存在しないか、移動されました。"
+
+#: src/pages/503.tsx:15
+msgid "The server is temporarily unavailable due to maintenance or high load. Please try again in a few minutes."
+msgstr "メンテナンスまたは高負荷のため、サーバーは一時的に利用できません。数分後に再度お試しください。"
+
 #: src/components/settings/UISettingsSection.tsx:300
 #: src/pages/admin/settings.tsx:314
 msgid "Theme"
@@ -3444,6 +3560,10 @@ msgstr "テーマ設定"
 msgid "Theme settings saved"
 msgstr "テーマ設定を保存しました"
 
+#: src/pages/admin/gone-users.tsx:199
+msgid "These are remote users whose servers have returned errors (like 410 Gone) when trying to fetch their profiles. You can mark them as deleted or clear the failure status to retry fetching."
+msgstr "これらは、プロファイル取得時にサーバーがエラー（410 Goneなど）を返したリモートユーザーです。削除済みとしてマークするか、失敗ステータスをクリアして再取得を試みることができます。"
+
 #: src/components/settings/AccountMigrationSection.tsx:220
 msgid "This account was migrated to:"
 msgstr "このアカウントは以下に引っ越しました:"
@@ -3455,6 +3575,10 @@ msgstr "この操作は取り消せません。アカウントが完全に削除
 #: src/pages/admin/settings.tsx:583
 msgid "This color represents your server's brand identity. It will be used for buttons, links, and UI accents across the instance, and shared with other federated servers."
 msgstr "この色はサーバーのブランドカラーです。ボタン、リンク、UIのアクセントカラーとして使用され、連合先のサーバーにも共有されます。"
+
+#: src/pages/410.tsx:14
+msgid "This content has been permanently deleted and is no longer available."
+msgstr "このコンテンツは完全に削除されており、利用できません。"
 
 #: src/components/pages/ContactThreadPageClient.tsx:299
 msgid "This inquiry has been closed. Please create a new inquiry if you need further assistance."
@@ -3529,6 +3653,10 @@ msgstr "ヒント: 他のサーバーのユーザーを見つけるには、@use
 msgid "To exercise these rights, use the settings in your account or <0>contact us</0>."
 msgstr "これらの権利を行使するには、アカウント設定をご利用いただくか、<0>お問い合わせ</0>ください。"
 
+#: src/pages/admin/gone-users.tsx:160
+msgid "Today"
+msgstr "今日"
+
 #: src/pages/admin/queue.tsx:335
 msgid "Top Servers by Delivery"
 msgstr "配信数上位サーバー"
@@ -3589,6 +3717,10 @@ msgstr "フィルターを調整してみてください"
 #: src/pages/notifications.tsx:284
 msgid "Try adjusting your filters"
 msgstr "フィルターを調整してみてください"
+
+#: src/pages/500.tsx:25
+#~ msgid "Try refreshing the page"
+#~ msgstr "ページを更新してみてください"
 
 #: src/pages/search.tsx:444
 msgid "Try searching \"All\" to include remote users"
@@ -3979,6 +4111,10 @@ msgstr "いつでも個人データのコピーをダウンロードできます
 #: src/pages/contact/index.tsx:346
 msgid "You can submit an inquiry without an account. To track your inquiry history, please log in."
 msgstr "アカウントがなくてもお問い合わせを送信できます。お問い合わせ履歴を追跡するには、ログインしてください。"
+
+#: src/pages/403.tsx:13
+msgid "You don't have permission to access this page or resource."
+msgstr "このページまたはリソースにアクセスする権限がありません。"
 
 #: src/pages/admin/contacts.tsx:261
 msgid "You don't have permission to manage contact inquiries."

@@ -116,4 +116,41 @@ export interface IUserRepository {
    * @returns Array of matching users
    */
   search(options: SearchUsersOptions): Promise<User[]>;
+
+  /**
+   * Find remote users with fetch failures (410 Gone or other errors)
+   *
+   * Used by admin panel to list users that may need cleanup.
+   *
+   * @param options - Pagination options
+   * @returns Array of users with goneDetectedAt set
+   */
+  findWithFetchErrors(options?: { limit?: number; offset?: number }): Promise<User[]>;
+
+  /**
+   * Count remote users with fetch failures
+   *
+   * @returns Number of users with goneDetectedAt set
+   */
+  countWithFetchErrors(): Promise<number>;
+
+  /**
+   * Record a fetch failure for a remote user
+   *
+   * Updates goneDetectedAt (if first failure), increments fetchFailureCount,
+   * and records the error message.
+   *
+   * @param userId - User ID
+   * @param errorMessage - Error message (e.g., "410 Gone", "404 Not Found")
+   */
+  recordFetchFailure(userId: string, errorMessage: string): Promise<void>;
+
+  /**
+   * Clear fetch failure status for a remote user
+   *
+   * Called when a remote user is successfully fetched again.
+   *
+   * @param userId - User ID
+   */
+  clearFetchFailure(userId: string): Promise<void>;
 }

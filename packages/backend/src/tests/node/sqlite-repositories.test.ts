@@ -110,6 +110,10 @@ function createTestUser(overrides: {
     movedAt: null,
     profileEmojis: null,
     storageQuotaMb: null,
+    goneDetectedAt: null,
+    fetchFailureCount: 0,
+    lastFetchAttemptAt: null,
+    lastFetchError: null,
   };
 }
 
@@ -187,6 +191,10 @@ describe("SQLite Repository Integration Tests", () => {
         ui_settings TEXT,
         profile_emojis TEXT DEFAULT '[]',
         storage_quota_mb INTEGER,
+        gone_detected_at INTEGER,
+        fetch_failure_count INTEGER NOT NULL DEFAULT 0,
+        last_fetch_attempt_at INTEGER,
+        last_fetch_error TEXT,
         created_at INTEGER NOT NULL,
         updated_at INTEGER NOT NULL
       );

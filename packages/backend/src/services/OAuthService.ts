@@ -640,6 +640,11 @@ export class OAuthService {
         profileEmojis: [],
         // Storage quota
         storageQuotaMb: null,
+        // Remote actor fetch status (not applicable to local users)
+        goneDetectedAt: null,
+        fetchFailureCount: 0,
+        lastFetchAttemptAt: null,
+        lastFetchError: null,
       });
 
       isNew = true;

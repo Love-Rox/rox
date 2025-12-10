@@ -114,6 +114,11 @@ export const users = mysqlTable(
     uiSettings: json("ui_settings").$type<UISettings>(),
     profileEmojis: json("profile_emojis").$type<ProfileEmoji[]>().default([]),
     storageQuotaMb: int("storage_quota_mb"),
+    // Remote actor fetch status (for detecting 410 Gone)
+    goneDetectedAt: datetime("gone_detected_at"),
+    fetchFailureCount: int("fetch_failure_count").notNull().default(0),
+    lastFetchAttemptAt: datetime("last_fetch_attempt_at"),
+    lastFetchError: text("last_fetch_error"),
     createdAt: datetime("created_at")
       .notNull()
       .$defaultFn(() => new Date()),
@@ -126,6 +131,7 @@ export const users = mysqlTable(
     emailIdx: uniqueIndex("email_idx").on(table.email),
     uriIdx: index("uri_idx").on(table.uri),
     isDeletedIdx: index("user_is_deleted_idx").on(table.isDeleted),
+    goneDetectedIdx: index("user_gone_detected_idx").on(table.goneDetectedAt),
   }),
 );
 

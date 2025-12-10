@@ -202,4 +202,56 @@ export class MysqlUserRepository implements IUserRepository {
 
     return results as User[];
   }
+
+  async findWithFetchErrors(options: { limit?: number; offset?: number } = {}): Promise<User[]> {
+    const { limit = 100, offset = 0 } = options;
+
+    const results = await this.db
+      .select()
+      .from(users)
+      .where(isNotNull(users.goneDetectedAt))
+      .orderBy(desc(users.goneDetectedAt))
+      .limit(limit)
+      .offset(offset);
+
+    return results as User[];
+  }
+
+  async countWithFetchErrors(): Promise<number> {
+    const [result] = await this.db
+      .select({ count: sql<number>`count(*)` })
+      .from(users)
+      .where(isNotNull(users.goneDetectedAt));
+
+    return result?.count ?? 0;
+  }
+
+  async recordFetchFailure(userId: string, errorMessage: string): Promise<void> {
+    const now = new Date();
+
+    // MySQL: Use COALESCE to conditionally set goneDetectedAt only if it's null
+    await this.db.execute(sql`
+      UPDATE users
+      SET
+        gone_detected_at = COALESCE(gone_detected_at, ${now}),
+        fetch_failure_count = fetch_failure_count + 1,
+        last_fetch_attempt_at = ${now},
+        last_fetch_error = ${errorMessage},
+        updated_at = ${now}
+      WHERE id = ${userId}
+    `);
+  }
+
+  async clearFetchFailure(userId: string): Promise<void> {
+    await this.db
+      .update(users)
+      .set({
+        goneDetectedAt: null,
+        fetchFailureCount: 0,
+        lastFetchAttemptAt: new Date(),
+        lastFetchError: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  }
 }

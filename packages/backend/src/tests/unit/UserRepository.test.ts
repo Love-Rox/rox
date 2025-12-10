@@ -43,6 +43,10 @@ describe("UserRepository", () => {
     movedAt: null,
     profileEmojis: null,
     storageQuotaMb: null,
+    goneDetectedAt: null,
+    fetchFailureCount: 0,
+    lastFetchAttemptAt: null,
+    lastFetchError: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -118,6 +122,10 @@ describe("UserRepository", () => {
       countRemote: mock(async () => Promise.resolve(2)),
       countActiveLocal: mock(async () => Promise.resolve(2)),
       search: mock(async () => Promise.resolve([mockLocalUser])),
+      findWithFetchErrors: mock(async () => Promise.resolve([])),
+      countWithFetchErrors: mock(async () => Promise.resolve(0)),
+      recordFetchFailure: mock(async () => Promise.resolve()),
+      clearFetchFailure: mock(async () => Promise.resolve()),
     };
   });
 
@@ -152,6 +160,10 @@ describe("UserRepository", () => {
         movedAt: null,
         profileEmojis: null,
         storageQuotaMb: null,
+        goneDetectedAt: null,
+        fetchFailureCount: 0,
+        lastFetchAttemptAt: null,
+        lastFetchError: null,
       };
 
       const result = await mockRepo.create(input);
@@ -193,6 +205,10 @@ describe("UserRepository", () => {
         movedAt: null,
         profileEmojis: null,
         storageQuotaMb: null,
+        goneDetectedAt: null,
+        fetchFailureCount: 0,
+        lastFetchAttemptAt: null,
+        lastFetchError: null,
       };
 
       const result = await mockRepo.create(input);
@@ -466,6 +482,96 @@ describe("UserRepository", () => {
       const result = await mockRepo.search({ query: "xxxxxxxx", limit: 20 });
 
       expect(result).toEqual([]);
+    });
+  });
+
+  describe("Fetch Error Tracking (Gone Users)", () => {
+    const mockGoneUser: User = {
+      ...mockRemoteUser,
+      id: "gone-user",
+      username: "goneuser",
+      host: "gone.example",
+      goneDetectedAt: new Date("2024-01-01"),
+      fetchFailureCount: 5,
+      lastFetchAttemptAt: new Date("2024-01-15"),
+      lastFetchError: "410 Gone",
+    };
+
+    describe("findWithFetchErrors", () => {
+      test("should return users with fetch errors", async () => {
+        mockRepo.findWithFetchErrors = mock(async () => Promise.resolve([mockGoneUser]));
+
+        const result = await mockRepo.findWithFetchErrors();
+
+        expect(Array.isArray(result)).toBe(true);
+        expect(result.length).toBe(1);
+        expect(result[0]!.goneDetectedAt).not.toBeNull();
+        expect(result[0]!.fetchFailureCount).toBeGreaterThan(0);
+      });
+
+      test("should return empty array when no users have fetch errors", async () => {
+        const result = await mockRepo.findWithFetchErrors();
+
+        expect(result).toEqual([]);
+      });
+
+      test("should support pagination options", async () => {
+        mockRepo.findWithFetchErrors = mock(async (options?: { limit?: number; offset?: number }) => {
+          expect(options?.limit).toBe(50);
+          return Promise.resolve([mockGoneUser]);
+        });
+
+        await mockRepo.findWithFetchErrors({ limit: 50 });
+
+        expect(mockRepo.findWithFetchErrors).toHaveBeenCalledWith({ limit: 50 });
+      });
+    });
+
+    describe("countWithFetchErrors", () => {
+      test("should return count of users with fetch errors", async () => {
+        mockRepo.countWithFetchErrors = mock(async () => Promise.resolve(3));
+
+        const result = await mockRepo.countWithFetchErrors();
+
+        expect(result).toBe(3);
+      });
+
+      test("should return zero when no users have fetch errors", async () => {
+        const result = await mockRepo.countWithFetchErrors();
+
+        expect(result).toBe(0);
+      });
+    });
+
+    describe("recordFetchFailure", () => {
+      test("should record a fetch failure for a user", async () => {
+        const errorMessage = "410 Gone";
+
+        await mockRepo.recordFetchFailure("user2", errorMessage);
+
+        expect(mockRepo.recordFetchFailure).toHaveBeenCalledWith("user2", errorMessage);
+      });
+
+      test("should handle different error types", async () => {
+        await mockRepo.recordFetchFailure("user2", "Connection timeout");
+        await mockRepo.recordFetchFailure("user2", "DNS resolution failed");
+
+        expect(mockRepo.recordFetchFailure).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe("clearFetchFailure", () => {
+      test("should clear fetch failure status for a user", async () => {
+        await mockRepo.clearFetchFailure("gone-user");
+
+        expect(mockRepo.clearFetchFailure).toHaveBeenCalledWith("gone-user");
+      });
+
+      test("should not throw when clearing non-existent failure", async () => {
+        // clearFetchFailure should complete without errors even for non-existent users
+        await mockRepo.clearFetchFailure("user1");
+        expect(mockRepo.clearFetchFailure).toHaveBeenCalledWith("user1");
+      });
     });
   });
 });
