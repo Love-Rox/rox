@@ -13,6 +13,7 @@ import { usersApi, type User, type Follow } from "../../lib/api/users";
 import { Avatar } from "../ui/Avatar";
 import { SpaLink } from "../ui/SpaLink";
 import { Button } from "../ui/Button";
+import { MfmRenderer } from "../mfm/MfmRenderer";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 
 /**
@@ -58,7 +59,9 @@ function FollowUserCard({
         size="md"
       />
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-(--text-primary) truncate">{displayName}</p>
+        <p className="font-medium text-(--text-primary) truncate">
+          <MfmRenderer text={displayName} />
+        </p>
         <p className="text-sm text-(--text-muted) truncate">{handle}</p>
       </div>
     </SpaLink>
@@ -80,37 +83,40 @@ export function FollowListModal({
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [offset, setOffset] = useState(0);
+
+  const limit = 20;
 
   // Fetch users
-  const fetchUsers = useCallback(async (append = false) => {
+  const fetchUsers = useCallback(async (currentOffset = 0) => {
     if (!isOpen) return;
 
     try {
-      if (append) {
+      if (currentOffset > 0) {
         setLoadingMore(true);
       } else {
         setLoading(true);
         setError(null);
       }
 
-      const limit = 20;
       const response =
         type === "followers"
-          ? await usersApi.getFollowers(userId, limit)
-          : await usersApi.getFollowing(userId, limit);
+          ? await usersApi.getFollowers(userId, limit, currentOffset)
+          : await usersApi.getFollowing(userId, limit, currentOffset);
 
       // Extract users from follow relationships
       const newUsers = response.map((follow: Follow) =>
         type === "followers" ? follow.follower : follow.followee,
       ).filter((u): u is User => u !== undefined);
 
-      if (append) {
+      if (currentOffset > 0) {
         setUsers((prev) => [...prev, ...newUsers]);
       } else {
         setUsers(newUsers);
       }
 
       setHasMore(newUsers.length >= limit);
+      setOffset(currentOffset + newUsers.length);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load users");
     } finally {
@@ -124,7 +130,8 @@ export function FollowListModal({
     if (isOpen) {
       setUsers([]);
       setHasMore(true);
-      fetchUsers();
+      setOffset(0);
+      fetchUsers(0);
     }
   }, [isOpen, fetchUsers]);
 
@@ -206,7 +213,7 @@ export function FollowListModal({
                 <div className="flex justify-center py-4">
                   <Button
                     variant="secondary"
-                    onPress={() => fetchUsers(true)}
+                    onPress={() => fetchUsers(offset)}
                     isDisabled={loadingMore}
                   >
                     {loadingMore ? (

@@ -86,11 +86,11 @@ msgstr "{assetType} uploaded successfully"
 msgid "{days} days ago"
 msgstr "{days} days ago"
 
-#: src/components/user/FollowListModal.tsx:165
+#: src/components/user/FollowListModal.tsx:172
 msgid "{username}'s Followers"
 msgstr "{username}'s Followers"
 
-#: src/components/user/FollowListModal.tsx:167
+#: src/components/user/FollowListModal.tsx:174
 msgid "{username}'s Following"
 msgstr "{username}'s Following"
 
@@ -276,8 +276,8 @@ msgstr "Add aliases to link this account with your accounts on other servers. Th
 msgid "Add Emoji"
 msgstr "Add Emoji"
 
-#: src/components/note/NoteComposer.tsx:1058
-#: src/components/note/NoteComposer.tsx:1059
+#: src/components/note/NoteComposer.tsx:1080
+#: src/components/note/NoteComposer.tsx:1081
 msgid "Add images"
 msgstr "Add images"
 
@@ -298,7 +298,7 @@ msgstr "Add notes about this inquiry..."
 msgid "Add Passkey"
 msgstr "Add Passkey"
 
-#: src/components/note/NoteComposer.tsx:801
+#: src/components/note/NoteComposer.tsx:823
 msgid "Add recipient"
 msgstr "Add recipient"
 
@@ -467,7 +467,7 @@ msgstr "Attempt to gain unauthorized access to systems"
 msgid "Audit Logs"
 msgstr "Audit Logs"
 
-#: src/components/note/NoteComposer.tsx:478
+#: src/components/note/NoteComposer.tsx:500
 msgid "Authentication required"
 msgstr "Authentication required"
 
@@ -647,7 +647,7 @@ msgstr "Can suspend users"
 
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
-#: src/components/note/NoteComposer.tsx:1295
+#: src/components/note/NoteComposer.tsx:1317
 #: src/components/report/ReportDialog.tsx:170
 #: src/components/settings/AccountDeletionSection.tsx:177
 #: src/components/settings/PasskeySection.tsx:333
@@ -662,7 +662,7 @@ msgstr "Can suspend users"
 msgid "Cancel"
 msgstr "Cancel"
 
-#: src/components/note/NoteComposer.tsx:243
+#: src/components/note/NoteComposer.tsx:265
 msgid "Cannot save empty draft"
 msgstr "Cannot save empty draft"
 
@@ -931,7 +931,7 @@ msgstr "Delete Account"
 msgid "Delete code"
 msgstr "Delete code"
 
-#: src/components/note/NoteComposer.tsx:1202
+#: src/components/note/NoteComposer.tsx:1224
 msgid "Delete draft"
 msgstr "Delete draft"
 
@@ -997,11 +997,11 @@ msgstr "Describe the reason for this warning..."
 msgid "Description"
 msgstr "Description"
 
-#: src/components/note/NoteComposer.tsx:612
+#: src/components/note/NoteComposer.tsx:634
 msgid "Direct"
 msgstr "Direct"
 
-#: src/components/note/NoteComposer.tsx:699
+#: src/components/note/NoteComposer.tsx:721
 msgid "Direct Message Recipients"
 msgstr "Direct Message Recipients"
 
@@ -1013,7 +1013,7 @@ msgstr "Disable"
 msgid "Disabled"
 msgstr "Disabled"
 
-#: src/components/note/NoteComposer.tsx:668
+#: src/components/note/NoteComposer.tsx:690
 msgid "Discard"
 msgstr "Discard"
 
@@ -1043,29 +1043,29 @@ msgstr "Don't have an account?"
 msgid "Download My Data"
 msgstr "Download My Data"
 
-#: src/components/note/NoteComposer.tsx:282
+#: src/components/note/NoteComposer.tsx:304
 msgid "Draft deleted"
 msgstr "Draft deleted"
 
-#: src/components/note/NoteComposer.tsx:235
+#: src/components/note/NoteComposer.tsx:257
 msgid "Draft discarded"
 msgstr "Draft discarded"
 
-#: src/components/note/NoteComposer.tsx:272
+#: src/components/note/NoteComposer.tsx:294
 msgid "Draft loaded"
 msgstr "Draft loaded"
 
-#: src/components/note/NoteComposer.tsx:225
+#: src/components/note/NoteComposer.tsx:247
 msgid "Draft restored"
 msgstr "Draft restored"
 
-#: src/components/note/NoteComposer.tsx:251
+#: src/components/note/NoteComposer.tsx:273
 msgid "Draft saved"
 msgstr "Draft saved"
 
-#: src/components/note/NoteComposer.tsx:1144
-#: src/components/note/NoteComposer.tsx:1145
-#: src/components/note/NoteComposer.tsx:1161
+#: src/components/note/NoteComposer.tsx:1166
+#: src/components/note/NoteComposer.tsx:1167
+#: src/components/note/NoteComposer.tsx:1183
 msgid "Drafts"
 msgstr "Drafts"
 
@@ -1149,7 +1149,7 @@ msgstr "emoji_name"
 msgid "Emojis"
 msgstr "Emojis"
 
-#: src/components/note/NoteComposer.tsx:1192
+#: src/components/note/NoteComposer.tsx:1214
 msgid "Empty draft"
 msgstr "Empty draft"
 
@@ -1501,7 +1501,7 @@ msgid "Failed to update user"
 msgstr "Failed to update user"
 
 #. placeholder {0}: file.name
-#: src/components/note/NoteComposer.tsx:521
+#: src/components/note/NoteComposer.tsx:543
 msgid "Failed to upload {0}"
 msgstr "Failed to upload {0}"
 
@@ -1595,7 +1595,7 @@ msgstr "Follow"
 msgid "followed you"
 msgstr "followed you"
 
-#: src/components/note/NoteComposer.tsx:611
+#: src/components/note/NoteComposer.tsx:633
 #: src/components/user/UserProfile.tsx:515
 msgid "Followers"
 msgstr "Followers"
@@ -1707,7 +1707,7 @@ msgid "High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls back
 msgstr "High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls back to instance icon if not set."
 
 #: src/components/layout/Sidebar.tsx:91
-#: src/components/note/NoteComposer.tsx:610
+#: src/components/note/NoteComposer.tsx:632
 #: src/pages/timeline.tsx:171
 msgid "Home"
 msgstr "Home"
@@ -1991,7 +1991,7 @@ msgstr "Line Height"
 
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/timeline/Timeline.tsx:258
-#: src/components/user/FollowListModal.tsx:218
+#: src/components/user/FollowListModal.tsx:225
 #: src/components/user/UserProfile.tsx:578
 msgid "Load more"
 msgstr "Load more"
@@ -2013,9 +2013,9 @@ msgid "Loading posts..."
 msgstr "Loading posts..."
 
 #: src/components/drive/DrivePickerDialog.tsx:483
-#: src/components/note/NoteComposer.tsx:890
-#: src/components/note/NoteComposer.tsx:937
-#: src/components/user/FollowListModal.tsx:215
+#: src/components/note/NoteComposer.tsx:912
+#: src/components/note/NoteComposer.tsx:959
+#: src/components/user/FollowListModal.tsx:222
 #: src/components/user/UserProfile.tsx:574
 msgid "Loading..."
 msgstr "Loading..."
@@ -2228,7 +2228,7 @@ msgstr "Name"
 msgid "Never"
 msgstr "Never"
 
-#: src/components/note/NoteComposer.tsx:1168
+#: src/components/note/NoteComposer.tsx:1190
 msgid "New"
 msgstr "New"
 
@@ -2288,11 +2288,11 @@ msgstr "No deleted notes"
 msgid "No deliveries recorded yet"
 msgstr "No deliveries recorded yet"
 
-#: src/components/note/NoteComposer.tsx:1174
+#: src/components/note/NoteComposer.tsx:1196
 msgid "No drafts saved"
 msgstr "No drafts saved"
 
-#: src/components/note/NoteComposer.tsx:941
+#: src/components/note/NoteComposer.tsx:963
 #: src/components/ui/EmojiPicker.tsx:973
 msgid "No emojis found"
 msgstr "No emojis found"
@@ -2309,7 +2309,7 @@ msgstr "No files in drive"
 msgid "No files uploaded yet"
 msgstr "No files uploaded yet"
 
-#: src/components/user/FollowListModal.tsx:193
+#: src/components/user/FollowListModal.tsx:200
 msgid "No followers yet"
 msgstr "No followers yet"
 
@@ -2402,7 +2402,7 @@ msgstr "No system files"
 msgid "No text content"
 msgstr "No text content"
 
-#: src/components/note/NoteComposer.tsx:894
+#: src/components/note/NoteComposer.tsx:916
 #: src/pages/admin/storage.tsx:495
 #: src/pages/admin/users.tsx:432
 #: src/pages/search.tsx:437
@@ -2413,7 +2413,7 @@ msgstr "No users found"
 msgid "No users with fetch errors found"
 msgstr "No users with fetch errors found"
 
-#: src/components/user/FollowListModal.tsx:195
+#: src/components/user/FollowListModal.tsx:202
 msgid "Not following anyone yet"
 msgstr "Not following anyone yet"
 
@@ -2433,7 +2433,7 @@ msgstr "Note Moderation"
 msgid "Note not found"
 msgstr "Note not found"
 
-#: src/components/note/NoteComposer.tsx:564
+#: src/components/note/NoteComposer.tsx:586
 msgid "Note posted successfully"
 msgstr "Note posted successfully"
 
@@ -2450,7 +2450,7 @@ msgstr "Note Report"
 msgid "Note restored successfully"
 msgstr "Note restored successfully"
 
-#: src/components/note/NoteComposer.tsx:546
+#: src/components/note/NoteComposer.tsx:568
 msgid "Note scheduled successfully"
 msgstr "Note scheduled successfully"
 
@@ -2641,7 +2641,7 @@ msgstr "Please enable notifications in your browser settings to receive push not
 msgid "Please enter a valid email address"
 msgstr "Please enter a valid email address"
 
-#: src/components/note/NoteComposer.tsx:468
+#: src/components/note/NoteComposer.tsx:490
 msgid "Please enter text or attach files"
 msgstr "Please enter text or attach files"
 
@@ -2666,7 +2666,7 @@ msgstr "Please select a ZIP file"
 msgid "Please select an image file"
 msgstr "Please select an image file"
 
-#: src/components/note/NoteComposer.tsx:484
+#: src/components/note/NoteComposer.tsx:506
 msgid "Please select at least one recipient for direct message"
 msgstr "Please select at least one recipient for direct message"
 
@@ -2676,7 +2676,7 @@ msgstr "Please type \"{CONFIRM_TEXT}\" to confirm"
 
 #: src/components/layout/Sidebar.tsx:188
 #: src/components/layout/Sidebar.tsx:315
-#: src/components/note/NoteComposer.tsx:1342
+#: src/components/note/NoteComposer.tsx:1364
 msgid "Post"
 msgstr "Post"
 
@@ -2684,7 +2684,7 @@ msgstr "Post"
 msgid "Post illegal content or engage in illegal activities"
 msgstr "Post illegal content or engage in illegal activities"
 
-#: src/components/note/NoteComposer.tsx:1338
+#: src/components/note/NoteComposer.tsx:1360
 msgid "Posting..."
 msgstr "Posting..."
 
@@ -2702,7 +2702,7 @@ msgstr "Powered by"
 msgid "Powered by Rox - Lightweight ActivityPub Server"
 msgstr "Powered by Rox - Lightweight ActivityPub Server"
 
-#: src/components/note/NoteComposer.tsx:982
+#: src/components/note/NoteComposer.tsx:1004
 #: src/components/settings/UISettingsSection.tsx:488
 #: src/pages/admin/emojis.tsx:737
 #: src/pages/admin/settings.tsx:716
@@ -2770,7 +2770,7 @@ msgstr "Provide and maintain the service"
 msgid "Provide more context about your report..."
 msgstr "Provide more context about your report..."
 
-#: src/components/note/NoteComposer.tsx:609
+#: src/components/note/NoteComposer.tsx:631
 #: src/pages/admin/roles.tsx:616
 msgid "Public"
 msgstr "Public"
@@ -2998,7 +2998,7 @@ msgid "Remove"
 msgstr "Remove"
 
 #. placeholder {0}: recipient.username
-#: src/components/note/NoteComposer.tsx:724
+#: src/components/note/NoteComposer.tsx:746
 msgid "Remove {0}"
 msgstr "Remove {0}"
 
@@ -3047,12 +3047,12 @@ msgstr "replied to your note"
 msgid "Replies ({0})"
 msgstr "Replies ({0})"
 
-#: src/components/note/NoteComposer.tsx:1340
+#: src/components/note/NoteComposer.tsx:1362
 #: src/pages/notifications.tsx:244
 msgid "Reply"
 msgstr "Reply"
 
-#: src/components/note/NoteComposer.tsx:687
+#: src/components/note/NoteComposer.tsx:709
 msgid "Replying to"
 msgstr "Replying to"
 
@@ -3185,7 +3185,7 @@ msgstr "Resolved"
 msgid "Resolved: {0}"
 msgstr "Resolved: {0}"
 
-#: src/components/note/NoteComposer.tsx:660
+#: src/components/note/NoteComposer.tsx:682
 #: src/pages/mod/notes.tsx:275
 msgid "Restore"
 msgstr "Restore"
@@ -3264,8 +3264,8 @@ msgstr "Save"
 msgid "Save Changes"
 msgstr "Save Changes"
 
-#: src/components/note/NoteComposer.tsx:1127
-#: src/components/note/NoteComposer.tsx:1128
+#: src/components/note/NoteComposer.tsx:1149
+#: src/components/note/NoteComposer.tsx:1150
 msgid "Save draft"
 msgstr "Save draft"
 
@@ -3298,17 +3298,17 @@ msgstr "Save Theme Settings"
 msgid "Saving..."
 msgstr "Saving..."
 
-#: src/components/note/NoteComposer.tsx:1310
+#: src/components/note/NoteComposer.tsx:1332
 msgid "Schedule"
 msgstr "Schedule"
 
-#: src/components/note/NoteComposer.tsx:1255
-#: src/components/note/NoteComposer.tsx:1256
-#: src/components/note/NoteComposer.tsx:1267
+#: src/components/note/NoteComposer.tsx:1277
+#: src/components/note/NoteComposer.tsx:1278
+#: src/components/note/NoteComposer.tsx:1289
 msgid "Schedule post"
 msgstr "Schedule post"
 
-#: src/components/note/NoteComposer.tsx:492
+#: src/components/note/NoteComposer.tsx:514
 msgid "Scheduled time must be in the future"
 msgstr "Scheduled time must be in the future"
 
@@ -3343,7 +3343,7 @@ msgstr "Search in:"
 msgid "Search User"
 msgstr "Search User"
 
-#: src/components/note/NoteComposer.tsx:743
+#: src/components/note/NoteComposer.tsx:765
 #: src/pages/admin/storage.tsx:461
 #: src/pages/admin/users.tsx:381
 msgid "Search users..."
@@ -3353,7 +3353,7 @@ msgstr "Search users..."
 msgid "Search users... (e.g., alice or alice@mastodon.social)"
 msgstr "Search users... (e.g., alice or alice@mastodon.social)"
 
-#: src/components/note/NoteComposer.tsx:754
+#: src/components/note/NoteComposer.tsx:776
 msgid "Searching..."
 msgstr "Searching..."
 
@@ -3373,8 +3373,8 @@ msgstr "Select"
 msgid "Select All"
 msgstr "Select All"
 
-#: src/components/note/NoteComposer.tsx:1078
-#: src/components/note/NoteComposer.tsx:1079
+#: src/components/note/NoteComposer.tsx:1100
+#: src/components/note/NoteComposer.tsx:1101
 msgid "Select from drive"
 msgstr "Select from drive"
 
@@ -3669,7 +3669,7 @@ msgstr "Test"
 msgid "Test notification"
 msgstr "Test notification"
 
-#: src/components/note/NoteComposer.tsx:473
+#: src/components/note/NoteComposer.tsx:495
 msgid "Text exceeds {maxLength} characters"
 msgstr "Text exceeds {maxLength} characters"
 
@@ -3986,11 +3986,11 @@ msgstr "Upload images for your instance branding. Files are automatically conver
 msgid "Uploaded media files metadata"
 msgstr "Uploaded media files metadata"
 
-#: src/components/note/NoteComposer.tsx:1041
+#: src/components/note/NoteComposer.tsx:1063
 msgid "Uploading files..."
 msgstr "Uploading files..."
 
-#: src/components/note/NoteComposer.tsx:1336
+#: src/components/note/NoteComposer.tsx:1358
 #: src/components/settings/ProfileImageSection.tsx:253
 #: src/components/settings/ProfileImageSection.tsx:329
 #: src/pages/admin/emojis.tsx:644
@@ -4255,7 +4255,7 @@ msgid "Why Join?"
 msgstr "Why Join?"
 
 #. placeholder {0}: new Date(scheduledAt).toLocaleString()
-#: src/components/note/NoteComposer.tsx:1280
+#: src/components/note/NoteComposer.tsx:1302
 msgid "Will be posted at {0}"
 msgstr "Will be posted at {0}"
 
@@ -4315,7 +4315,7 @@ msgstr "You don't have permission to manage contact inquiries."
 msgid "You have already reported this"
 msgstr "You have already reported this"
 
-#: src/components/note/NoteComposer.tsx:650
+#: src/components/note/NoteComposer.tsx:672
 msgid "You have an unsaved draft"
 msgstr "You have an unsaved draft"
 

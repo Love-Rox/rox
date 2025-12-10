@@ -171,7 +171,29 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
     const searchTimeout = setTimeout(async () => {
       setIsSearchingRecipients(true);
       try {
-        const results = await usersApi.search(recipientSearchQuery, { limit: 10 });
+        const query = recipientSearchQuery.trim();
+        let results: User[] = [];
+
+        // Check if query looks like a remote user (user@host format)
+        const remoteUserMatch = query.match(/^@?([^@\s]+)@([^@\s]+)$/);
+        if (remoteUserMatch && remoteUserMatch[1] && remoteUserMatch[2]) {
+          // Try to resolve remote user
+          const username = remoteUserMatch[1];
+          const host = remoteUserMatch[2];
+          try {
+            const remoteUser = await usersApi.getByUsername(username, host);
+            if (remoteUser) {
+              results = [remoteUser];
+            }
+          } catch {
+            // Remote user not found, fall back to local search
+            results = await usersApi.search(query, { limit: 10 });
+          }
+        } else {
+          // Regular local search
+          results = await usersApi.search(query, { limit: 10 });
+        }
+
         // Filter out already selected recipients and current user
         setRecipientSearchResults(
           results.filter(

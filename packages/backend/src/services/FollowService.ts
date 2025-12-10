@@ -156,15 +156,16 @@ export class FollowService {
    *
    * @param userId - User ID
    * @param limit - Maximum number of followers to retrieve (default: 100)
+   * @param offset - Number of records to skip (default: 0)
    * @returns List of Follow records
    *
    * @example
    * ```typescript
-   * const followers = await followService.getFollowers(user.id, 50);
+   * const followers = await followService.getFollowers(user.id, 50, 0);
    * ```
    */
-  async getFollowers(userId: string, limit?: number): Promise<Follow[]> {
-    return await this.followRepository.findByFolloweeId(userId, limit);
+  async getFollowers(userId: string, limit?: number, offset?: number): Promise<Follow[]> {
+    return await this.followRepository.findByFolloweeId(userId, limit, offset);
   }
 
   /**
@@ -174,15 +175,16 @@ export class FollowService {
    *
    * @param userId - User ID
    * @param limit - Maximum number of following to retrieve (default: 100)
+   * @param offset - Number of records to skip (default: 0)
    * @returns List of Follow records
    *
    * @example
    * ```typescript
-   * const following = await followService.getFollowing(user.id, 50);
+   * const following = await followService.getFollowing(user.id, 50, 0);
    * ```
    */
-  async getFollowing(userId: string, limit?: number): Promise<Follow[]> {
-    return await this.followRepository.findByFollowerId(userId, limit);
+  async getFollowing(userId: string, limit?: number, offset?: number): Promise<Follow[]> {
+    return await this.followRepository.findByFollowerId(userId, limit, offset);
   }
 
   /**

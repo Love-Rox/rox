@@ -80,11 +80,13 @@ export const usersApi = {
    *
    * @param userId - User ID
    * @param limit - Maximum number of followers to retrieve
+   * @param offset - Number of records to skip
    * @returns List of follow relationships
    */
-  async getFollowers(userId: string, limit?: number): Promise<Follow[]> {
+  async getFollowers(userId: string, limit?: number, offset?: number): Promise<Follow[]> {
     const params = new URLSearchParams({ userId });
     if (limit) params.append("limit", limit.toString());
+    if (offset) params.append("offset", offset.toString());
     return apiClient.get<Follow[]>(`/api/following/users/followers?${params.toString()}`);
   },
 
@@ -93,11 +95,13 @@ export const usersApi = {
    *
    * @param userId - User ID
    * @param limit - Maximum number of following to retrieve
+   * @param offset - Number of records to skip
    * @returns List of follow relationships
    */
-  async getFollowing(userId: string, limit?: number): Promise<Follow[]> {
+  async getFollowing(userId: string, limit?: number, offset?: number): Promise<Follow[]> {
     const params = new URLSearchParams({ userId });
     if (limit) params.append("limit", limit.toString());
+    if (offset) params.append("offset", offset.toString());
     return apiClient.get<Follow[]>(`/api/following/users/following?${params.toString()}`);
   },
 

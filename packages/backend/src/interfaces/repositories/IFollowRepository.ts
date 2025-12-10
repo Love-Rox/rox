@@ -19,12 +19,12 @@ export interface IFollowRepository {
   /**
    * フォロワー一覧を取得（followeeIdがフォローされているユーザー）
    */
-  findByFolloweeId(followeeId: string, limit?: number): Promise<Follow[]>;
+  findByFolloweeId(followeeId: string, limit?: number, offset?: number): Promise<Follow[]>;
 
   /**
    * フォロイング一覧を取得（followerIdがフォローしているユーザー）
    */
-  findByFollowerId(followerId: string, limit?: number): Promise<Follow[]>;
+  findByFollowerId(followerId: string, limit?: number, offset?: number): Promise<Follow[]>;
 
   /**
    * フォロワー数を取得

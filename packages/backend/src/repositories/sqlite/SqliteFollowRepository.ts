@@ -56,18 +56,26 @@ export class SqliteFollowRepository implements IFollowRepository {
     return result !== undefined;
   }
 
-  async findByFolloweeId(followeeId: string, limit = 100): Promise<Follow[]> {
+  async findByFolloweeId(followeeId: string, limit = 100, offset = 0): Promise<Follow[]> {
     const results = this.db
-      .select()
+      .select({
+        follow: follows,
+        follower: users,
+      })
       .from(follows)
+      .leftJoin(users, eq(follows.followerId, users.id))
       .where(eq(follows.followeeId, followeeId))
       .limit(limit)
+      .offset(offset)
       .all();
 
-    return results as Follow[];
+    return results.map((r) => ({
+      ...r.follow,
+      follower: r.follower,
+    })) as Follow[];
   }
 
-  async findByFollowerId(followerId: string, limit = 100): Promise<Follow[]> {
+  async findByFollowerId(followerId: string, limit = 100, offset = 0): Promise<Follow[]> {
     const results = this.db
       .select({
         follow: follows,
@@ -77,6 +85,7 @@ export class SqliteFollowRepository implements IFollowRepository {
       .leftJoin(users, eq(follows.followeeId, users.id))
       .where(eq(follows.followerId, followerId))
       .limit(limit)
+      .offset(offset)
       .all();
 
     return results.map((r) => ({
