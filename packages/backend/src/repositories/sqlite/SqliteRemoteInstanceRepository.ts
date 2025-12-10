@@ -45,12 +45,12 @@ export class SqliteRemoteInstanceRepository implements IRemoteInstanceRepository
     const now = new Date();
 
     // Check if exists
-    const existing = this.db
+    const [existing] = this.db
       .select()
       .from(remoteInstances)
       .where(eq(remoteInstances.host, instance.host))
       .limit(1)
-      .all()[0];
+      .all();
 
     if (existing) {
       this.db

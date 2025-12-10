@@ -25,6 +25,27 @@ type SqliteDatabase = BetterSQLite3Database<typeof sqliteSchema>;
 export class SqliteNoteRepository implements INoteRepository {
   constructor(private db: SqliteDatabase) {}
 
+  /**
+   * Maps a joined note+user result to a Note object with embedded user
+   */
+  private mapNoteWithUser(result: {
+    notes: typeof notes.$inferSelect;
+    users: typeof users.$inferSelect;
+  }): Note {
+    return {
+      ...result.notes,
+      user: {
+        id: result.users.id,
+        username: result.users.username,
+        name: result.users.displayName || result.users.username,
+        displayName: result.users.displayName,
+        avatarUrl: result.users.avatarUrl,
+        host: result.users.host,
+        profileEmojis: result.users.profileEmojis,
+      },
+    } as Note;
+  }
+
   async create(note: NoteCreateInput): Promise<Note> {
     const now = new Date();
     this.db.insert(notes).values({
@@ -52,21 +73,7 @@ export class SqliteNoteRepository implements INoteRepository {
       .limit(1)
       .all();
 
-    if (!result) {
-      return null;
-    }
-
-    return {
-      ...result.notes,
-      user: {
-        id: result.users.id,
-        username: result.users.username,
-        name: result.users.displayName || result.users.username,
-        displayName: result.users.displayName,
-        avatarUrl: result.users.avatarUrl,
-        host: result.users.host,
-      },
-    } as Note;
+    return result ? this.mapNoteWithUser(result) : null;
   }
 
   async findByUri(uri: string): Promise<Note | null> {
@@ -78,21 +85,7 @@ export class SqliteNoteRepository implements INoteRepository {
       .limit(1)
       .all();
 
-    if (!result) {
-      return null;
-    }
-
-    return {
-      ...result.notes,
-      user: {
-        id: result.users.id,
-        username: result.users.username,
-        name: result.users.displayName || result.users.username,
-        displayName: result.users.displayName,
-        avatarUrl: result.users.avatarUrl,
-        host: result.users.host,
-      },
-    } as Note;
+    return result ? this.mapNoteWithUser(result) : null;
   }
 
   async getLocalTimeline(options: TimelineOptions): Promise<Note[]> {
@@ -122,21 +115,7 @@ export class SqliteNoteRepository implements INoteRepository {
       .limit(limit)
       .all();
 
-    return results.map(
-      (r) =>
-        ({
-          ...r.notes,
-          user: {
-            id: r.users.id,
-            username: r.users.username,
-            name: r.users.displayName || r.users.username,
-            displayName: r.users.displayName,
-            avatarUrl: r.users.avatarUrl,
-            host: r.users.host,
-            profileEmojis: r.users.profileEmojis,
-          },
-        }) as Note,
-    );
+    return results.map((r) => this.mapNoteWithUser(r));
   }
 
   async getTimeline(options: TimelineOptions & { userIds: string[] }): Promise<Note[]> {
@@ -165,21 +144,7 @@ export class SqliteNoteRepository implements INoteRepository {
       .limit(limit)
       .all();
 
-    return results.map(
-      (r) =>
-        ({
-          ...r.notes,
-          user: {
-            id: r.users.id,
-            username: r.users.username,
-            name: r.users.displayName || r.users.username,
-            displayName: r.users.displayName,
-            avatarUrl: r.users.avatarUrl,
-            host: r.users.host,
-            profileEmojis: r.users.profileEmojis,
-          },
-        }) as Note,
-    );
+    return results.map((r) => this.mapNoteWithUser(r));
   }
 
   async getSocialTimeline(options: TimelineOptions & { userIds?: string[] }): Promise<Note[]> {
@@ -212,21 +177,7 @@ export class SqliteNoteRepository implements INoteRepository {
       .limit(limit)
       .all();
 
-    return results.map(
-      (r) =>
-        ({
-          ...r.notes,
-          user: {
-            id: r.users.id,
-            username: r.users.username,
-            name: r.users.displayName || r.users.username,
-            displayName: r.users.displayName,
-            avatarUrl: r.users.avatarUrl,
-            host: r.users.host,
-            profileEmojis: r.users.profileEmojis,
-          },
-        }) as Note,
-    );
+    return results.map((r) => this.mapNoteWithUser(r));
   }
 
   async getGlobalTimeline(options: TimelineOptions): Promise<Note[]> {
@@ -251,21 +202,7 @@ export class SqliteNoteRepository implements INoteRepository {
       .limit(limit)
       .all();
 
-    return results.map(
-      (r) =>
-        ({
-          ...r.notes,
-          user: {
-            id: r.users.id,
-            username: r.users.username,
-            name: r.users.displayName || r.users.username,
-            displayName: r.users.displayName,
-            avatarUrl: r.users.avatarUrl,
-            host: r.users.host,
-            profileEmojis: r.users.profileEmojis,
-          },
-        }) as Note,
-    );
+    return results.map((r) => this.mapNoteWithUser(r));
   }
 
   async findByUserId(userId: string, options: TimelineOptions): Promise<Note[]> {
@@ -290,21 +227,7 @@ export class SqliteNoteRepository implements INoteRepository {
       .limit(limit)
       .all();
 
-    return results.map(
-      (r) =>
-        ({
-          ...r.notes,
-          user: {
-            id: r.users.id,
-            username: r.users.username,
-            name: r.users.displayName || r.users.username,
-            displayName: r.users.displayName,
-            avatarUrl: r.users.avatarUrl,
-            host: r.users.host,
-            profileEmojis: r.users.profileEmojis,
-          },
-        }) as Note,
-    );
+    return results.map((r) => this.mapNoteWithUser(r));
   }
 
   async findReplies(noteId: string, options: TimelineOptions): Promise<Note[]> {
@@ -329,21 +252,7 @@ export class SqliteNoteRepository implements INoteRepository {
       .limit(limit)
       .all();
 
-    return results.map(
-      (r) =>
-        ({
-          ...r.notes,
-          user: {
-            id: r.users.id,
-            username: r.users.username,
-            name: r.users.displayName || r.users.username,
-            displayName: r.users.displayName,
-            avatarUrl: r.users.avatarUrl,
-            host: r.users.host,
-            profileEmojis: r.users.profileEmojis,
-          },
-        }) as Note,
-    );
+    return results.map((r) => this.mapNoteWithUser(r));
   }
 
   async findRenotes(noteId: string, options: TimelineOptions): Promise<Note[]> {
@@ -368,21 +277,7 @@ export class SqliteNoteRepository implements INoteRepository {
       .limit(limit)
       .all();
 
-    return results.map(
-      (r) =>
-        ({
-          ...r.notes,
-          user: {
-            id: r.users.id,
-            username: r.users.username,
-            name: r.users.displayName || r.users.username,
-            displayName: r.users.displayName,
-            avatarUrl: r.users.avatarUrl,
-            host: r.users.host,
-            profileEmojis: r.users.profileEmojis,
-          },
-        }) as Note,
-    );
+    return results.map((r) => this.mapNoteWithUser(r));
   }
 
   async update(id: string, data: Partial<Omit<Note, "id" | "createdAt">>): Promise<Note> {
@@ -533,19 +428,6 @@ export class SqliteNoteRepository implements INoteRepository {
       .offset(offset)
       .all();
 
-    return results.map(
-      (r) =>
-        ({
-          ...r.notes,
-          user: {
-            id: r.users.id,
-            username: r.users.username,
-            name: r.users.displayName || r.users.username,
-            displayName: r.users.displayName,
-            avatarUrl: r.users.avatarUrl,
-            host: r.users.host,
-          },
-        }) as Note,
-    );
+    return results.map((r) => this.mapNoteWithUser(r));
   }
 }

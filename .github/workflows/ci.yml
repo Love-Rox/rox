@@ -72,10 +72,39 @@ jobs:
           LOCAL_STORAGE_PATH: ./uploads
           URL: http://localhost:3000
 
+  sqlite-tests:
+    name: SQLite Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies with npm (for Node.js native modules)
+        run: npm install
+        working-directory: packages/backend
+
+      - name: Install root dependencies
+        run: npm install
+
+      - name: Run SQLite integration tests
+        run: npx vitest run src/tests/node/sqlite-repositories.vitest.ts
+        working-directory: packages/backend
+        env:
+          DB_TYPE: sqlite
+          STORAGE_TYPE: local
+          LOCAL_STORAGE_PATH: ./uploads
+          URL: http://localhost:3000
+
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [lint-and-typecheck, unit-tests]
+    needs: [lint-and-typecheck, unit-tests, sqlite-tests]
 
     steps:
       - name: Checkout

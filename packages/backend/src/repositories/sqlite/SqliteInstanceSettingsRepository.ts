@@ -40,12 +40,12 @@ export class SqliteInstanceSettingsRepository implements IInstanceSettingsReposi
 
   async set<T>(key: InstanceSettingKey, value: T, updatedById?: string): Promise<InstanceSetting> {
     // SQLite uses INSERT OR REPLACE
-    const existing = this.db
+    const [existing] = this.db
       .select()
       .from(instanceSettings)
       .where(eq(instanceSettings.key, key))
       .limit(1)
-      .all()[0];
+      .all();
 
     if (existing) {
       this.db
