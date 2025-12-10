@@ -29,6 +29,7 @@ const notes = new Hono();
  * @body {string} [replyId] - Reply target note ID
  * @body {string} [renoteId] - Renote target note ID
  * @body {string[]} [fileIds] - File IDs to attach
+ * @body {string[]} [visibleUserIds] - User IDs for DM recipients (required when visibility is 'specified')
  * @returns {Note} Created note
  */
 notes.post(
@@ -67,6 +68,7 @@ notes.post(
         replyId: body.replyId ?? null,
         renoteId: body.renoteId ?? null,
         fileIds: body.fileIds ?? [],
+        visibleUserIds: body.visibleUserIds ?? [],
       });
 
       return c.json(note, 201);

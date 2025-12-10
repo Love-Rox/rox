@@ -430,4 +430,42 @@ export class SqliteNoteRepository implements INoteRepository {
 
     return results.map((r) => this.mapNoteWithUser(r));
   }
+
+  async findMentionsAndReplies(_userId: string, _options: TimelineOptions): Promise<Note[]> {
+    // TODO: Implement SQLite-specific query for mentions and replies
+    throw new Error("Not implemented for SQLite");
+  }
+
+  async findDirectMessages(_userId: string, _options: TimelineOptions): Promise<Note[]> {
+    // TODO: Implement SQLite-specific query for direct messages
+    throw new Error("Not implemented for SQLite");
+  }
+
+  async findDirectMessageThread(
+    _userId: string,
+    _partnerId: string,
+    _options: TimelineOptions,
+  ): Promise<Note[]> {
+    // TODO: Implement SQLite-specific query for DM thread
+    throw new Error("Not implemented for SQLite");
+  }
+
+  async getConversationPartners(
+    _userId: string,
+    _limit: number,
+  ): Promise<
+    Array<{
+      partnerId: string;
+      partnerUsername: string;
+      partnerDisplayName: string | null;
+      partnerAvatarUrl: string | null;
+      partnerHost: string | null;
+      lastNoteId: string;
+      lastNoteText: string | null;
+      lastNoteCreatedAt: Date;
+    }>
+  > {
+    // TODO: Implement SQLite-specific query for conversation partners
+    throw new Error("Not implemented for SQLite");
+  }
 }

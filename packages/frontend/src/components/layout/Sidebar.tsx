@@ -16,6 +16,8 @@ import {
   PanelLeft,
   LogOut,
   PenSquare,
+  AtSign,
+  Mail,
 } from "lucide-react";
 import { currentUserAtom, logoutAtom } from "../../lib/atoms/auth";
 import { openComposeModalAtom } from "../../lib/atoms/compose";
@@ -101,6 +103,18 @@ export function Sidebar() {
       label: <Trans>Notifications</Trans>,
       href: "/notifications",
       key: "notifications",
+    },
+    {
+      icon: <AtSign className="w-6 h-6" />,
+      label: <Trans>Mentions</Trans>,
+      href: "/mentions",
+      key: "mentions",
+    },
+    {
+      icon: <Mail className="w-6 h-6" />,
+      label: <Trans>Messages</Trans>,
+      href: "/messages",
+      key: "messages",
     },
     {
       icon: <User className="w-6 h-6" />,

@@ -18,6 +18,7 @@ import { TimelineSkeleton } from "../ui/Skeleton";
 import { Layout } from "../layout/Layout";
 import { ReportDialog } from "../report/ReportDialog";
 import { RoleBadgeList } from "./RoleBadge";
+import { FollowListModal } from "./FollowListModal";
 import { useRouter } from "../ui/SpaLink";
 
 /**
@@ -108,6 +109,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [publicRoles, setPublicRoles] = useState<PublicRole[]>([]);
+  const [showFollowList, setShowFollowList] = useState<"followers" | "following" | null>(null);
 
   // Generate unique ID for custom CSS scoping
   const profileContainerId = useId().replace(/:/g, "-");
@@ -501,22 +503,30 @@ export function UserProfile({ username, host }: UserProfileProps) {
                   <Trans>Posts</Trans>
                 </span>
               </div>
-              <div>
+              <button
+                type="button"
+                onClick={() => setShowFollowList("followers")}
+                className="hover:bg-gray-100 dark:hover:bg-gray-700 px-2 py-1 -mx-2 -my-1 rounded transition-colors"
+              >
                 <span className="font-bold text-gray-900 dark:text-gray-100">
                   {user.followersCount ?? 0}
                 </span>{" "}
                 <span className="text-gray-600 dark:text-gray-400">
                   <Trans>Followers</Trans>
                 </span>
-              </div>
-              <div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowFollowList("following")}
+                className="hover:bg-gray-100 dark:hover:bg-gray-700 px-2 py-1 -mx-2 -my-1 rounded transition-colors"
+              >
                 <span className="font-bold text-gray-900 dark:text-gray-100">
                   {user.followingCount ?? 0}
                 </span>{" "}
                 <span className="text-gray-600 dark:text-gray-400">
                   <Trans>Following</Trans>
                 </span>
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -587,6 +597,15 @@ export function UserProfile({ username, host }: UserProfileProps) {
         targetType="user"
         targetUserId={user.id}
         targetUsername={user.username}
+      />
+
+      {/* Followers/Following List Modal */}
+      <FollowListModal
+        isOpen={showFollowList !== null}
+        onClose={() => setShowFollowList(null)}
+        userId={user.id}
+        type={showFollowList || "followers"}
+        username={user.username}
       />
     </Layout>
   );

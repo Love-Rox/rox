@@ -79,6 +79,8 @@ export interface CreateNoteParams {
   replyId?: string;
   renoteId?: string;
   fileIds?: string[];
+  /** User IDs for DM recipients (required when visibility is 'direct'/'specified') */
+  visibleUserIds?: string[];
 }
 
 /**

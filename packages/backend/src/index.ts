@@ -41,6 +41,8 @@ import pushRoute from "./routes/push.js";
 import scheduledNotesRoute from "./routes/scheduled-notes.js";
 import contactRoute from "./routes/contact.js";
 import onboardingRoute from "./routes/onboarding.js";
+import mentionsRoute from "./routes/mentions.js";
+import directRoute from "./routes/direct.js";
 import wsRoute, { websocket } from "./routes/ws.js";
 import packageJson from "../../../package.json";
 import { ReceivedActivitiesCleanupService } from "./services/ReceivedActivitiesCleanupService.js";
@@ -93,6 +95,8 @@ app.route("/api/push", pushRoute);
 app.route("/api/scheduled-notes", scheduledNotesRoute);
 app.route("/api/contact", contactRoute);
 app.route("/api/onboarding", onboardingRoute);
+app.route("/api/mentions", mentionsRoute);
+app.route("/api/direct", directRoute);
 
 // WebSocket routes for real-time updates
 app.route("/ws", wsRoute);

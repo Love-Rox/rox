@@ -42,6 +42,8 @@ export interface NoteCreateInput {
   renoteId?: string | null;
   /** File IDs to attach */
   fileIds?: string[];
+  /** Visible user IDs for DM (visibility: specified) */
+  visibleUserIds?: string[];
 }
 
 /**
@@ -138,6 +140,7 @@ export class NoteService {
       replyId = null,
       renoteId = null,
       fileIds = [],
+      visibleUserIds = [],
     } = input;
 
     // バリデーション: テキストまたはファイルが必須（Renoteの場合は除く）
@@ -148,6 +151,11 @@ export class NoteService {
     // バリデーション: ファイル数制限
     if (fileIds.length > this.maxFilesPerNote) {
       throw new Error(`Maximum ${this.maxFilesPerNote} files allowed per note`);
+    }
+
+    // バリデーション: DM (visibility: specified) には受信者が必要
+    if (visibility === "specified" && visibleUserIds.length === 0) {
+      throw new Error("Direct message must have at least one recipient");
     }
 
     // ファイル所有権の確認
@@ -173,7 +181,9 @@ export class NoteService {
     }
 
     // メンション抽出（簡易実装、Phase 1.1で拡張予定）
-    const mentions = this.extractMentions(text || "");
+    // For DMs, use visibleUserIds as mentions (recipient user IDs)
+    const extractedMentions = this.extractMentions(text || "");
+    const mentions = visibility === "specified" ? visibleUserIds : extractedMentions;
 
     // ハッシュタグ抽出（簡易実装、Phase 1.1で拡張予定）
     const tags = this.extractHashtags(text || "");

@@ -525,4 +525,42 @@ export class MysqlNoteRepository implements INoteRepository {
         }) as Note,
     );
   }
+
+  async findMentionsAndReplies(_userId: string, _options: TimelineOptions): Promise<Note[]> {
+    // TODO: Implement MySQL-specific query for mentions and replies
+    throw new Error("Not implemented for MySQL");
+  }
+
+  async findDirectMessages(_userId: string, _options: TimelineOptions): Promise<Note[]> {
+    // TODO: Implement MySQL-specific query for direct messages
+    throw new Error("Not implemented for MySQL");
+  }
+
+  async findDirectMessageThread(
+    _userId: string,
+    _partnerId: string,
+    _options: TimelineOptions,
+  ): Promise<Note[]> {
+    // TODO: Implement MySQL-specific query for DM thread
+    throw new Error("Not implemented for MySQL");
+  }
+
+  async getConversationPartners(
+    _userId: string,
+    _limit: number,
+  ): Promise<
+    Array<{
+      partnerId: string;
+      partnerUsername: string;
+      partnerDisplayName: string | null;
+      partnerAvatarUrl: string | null;
+      partnerHost: string | null;
+      lastNoteId: string;
+      lastNoteText: string | null;
+      lastNoteCreatedAt: Date;
+    }>
+  > {
+    // TODO: Implement MySQL-specific query for conversation partners
+    throw new Error("Not implemented for MySQL");
+  }
 }

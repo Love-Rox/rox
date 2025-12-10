@@ -39,6 +39,8 @@ export interface CreateScheduledNoteParams {
   renoteId?: string;
   fileIds?: string[];
   scheduledAt: string; // ISO 8601 date string
+  /** User IDs for DM recipients (required when visibility is 'direct'/'specified') */
+  visibleUserIds?: string[];
 }
 
 /**

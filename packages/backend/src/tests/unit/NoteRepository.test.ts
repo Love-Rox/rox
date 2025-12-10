@@ -96,6 +96,10 @@ describe("NoteRepository", () => {
       decrementRepliesCount: mock(async () => Promise.resolve()),
       incrementRenoteCount: mock(async () => Promise.resolve()),
       decrementRenoteCount: mock(async () => Promise.resolve()),
+      findMentionsAndReplies: mock(async () => Promise.resolve([])),
+      findDirectMessages: mock(async () => Promise.resolve([])),
+      findDirectMessageThread: mock(async () => Promise.resolve([])),
+      getConversationPartners: mock(async () => Promise.resolve([])),
     };
   });
 
@@ -591,6 +595,228 @@ describe("NoteRepository", () => {
         await mockRepo.decrementRenoteCount("note1");
 
         expect(mockRepo.decrementRenoteCount).toHaveBeenCalledWith("note1");
+      });
+    });
+  });
+
+  describe("Mentions and Replies", () => {
+    const mockMention: Note = {
+      ...mockNote,
+      id: "mention1",
+      text: "@user1 hello!",
+      mentions: ["user1"],
+    };
+
+    const mockReplyToUser: Note = {
+      ...mockNote,
+      id: "reply1",
+      text: "Reply to your note",
+      replyId: "user1-note",
+    };
+
+    describe("findMentionsAndReplies", () => {
+      test("should return mentions and replies for a user", async () => {
+        mockRepo.findMentionsAndReplies = mock(async () =>
+          Promise.resolve([mockMention, mockReplyToUser])
+        );
+
+        const result = await mockRepo.findMentionsAndReplies("user1", { limit: 20 });
+
+        expect(Array.isArray(result)).toBe(true);
+        expect(result.length).toBe(2);
+        expect(mockRepo.findMentionsAndReplies).toHaveBeenCalledWith("user1", { limit: 20 });
+      });
+
+      test("should return empty array when no mentions exist", async () => {
+        mockRepo.findMentionsAndReplies = mock(async () => Promise.resolve([]));
+
+        const result = await mockRepo.findMentionsAndReplies("user1", { limit: 20 });
+
+        expect(result).toEqual([]);
+      });
+
+      test("should support pagination with sinceId", async () => {
+        mockRepo.findMentionsAndReplies = mock(async () => Promise.resolve([mockMention]));
+
+        await mockRepo.findMentionsAndReplies("user1", { limit: 20, sinceId: "note0" });
+
+        expect(mockRepo.findMentionsAndReplies).toHaveBeenCalledWith("user1", {
+          limit: 20,
+          sinceId: "note0",
+        });
+      });
+
+      test("should support pagination with untilId", async () => {
+        mockRepo.findMentionsAndReplies = mock(async () => Promise.resolve([mockMention]));
+
+        await mockRepo.findMentionsAndReplies("user1", { limit: 20, untilId: "note5" });
+
+        expect(mockRepo.findMentionsAndReplies).toHaveBeenCalledWith("user1", {
+          limit: 20,
+          untilId: "note5",
+        });
+      });
+    });
+  });
+
+  describe("Direct Messages", () => {
+    const mockDM: Note = {
+      ...mockNote,
+      id: "dm1",
+      text: "Private message",
+      visibility: "specified",
+    };
+
+    const mockDMThread: Note[] = [
+      { ...mockDM, id: "dm1", text: "Hi there!" },
+      { ...mockDM, id: "dm2", text: "Hello!", userId: "user2" },
+      { ...mockDM, id: "dm3", text: "How are you?" },
+    ];
+
+    describe("findDirectMessages", () => {
+      test("should return direct messages for a user", async () => {
+        mockRepo.findDirectMessages = mock(async () => Promise.resolve([mockDM]));
+
+        const result = await mockRepo.findDirectMessages("user1", { limit: 20 });
+
+        expect(Array.isArray(result)).toBe(true);
+        expect(result[0]?.visibility).toBe("specified");
+        expect(mockRepo.findDirectMessages).toHaveBeenCalledWith("user1", { limit: 20 });
+      });
+
+      test("should return empty array when no DMs exist", async () => {
+        mockRepo.findDirectMessages = mock(async () => Promise.resolve([]));
+
+        const result = await mockRepo.findDirectMessages("user1", { limit: 20 });
+
+        expect(result).toEqual([]);
+      });
+
+      test("should support pagination", async () => {
+        mockRepo.findDirectMessages = mock(async () => Promise.resolve([mockDM]));
+
+        await mockRepo.findDirectMessages("user1", { limit: 10, untilId: "dm5" });
+
+        expect(mockRepo.findDirectMessages).toHaveBeenCalledWith("user1", {
+          limit: 10,
+          untilId: "dm5",
+        });
+      });
+    });
+
+    describe("findDirectMessageThread", () => {
+      test("should return DM thread between two users", async () => {
+        mockRepo.findDirectMessageThread = mock(async () => Promise.resolve(mockDMThread));
+
+        const result = await mockRepo.findDirectMessageThread("user1", "user2", { limit: 50 });
+
+        expect(Array.isArray(result)).toBe(true);
+        expect(result.length).toBe(3);
+        expect(mockRepo.findDirectMessageThread).toHaveBeenCalledWith("user1", "user2", {
+          limit: 50,
+        });
+      });
+
+      test("should return empty array for new conversation", async () => {
+        mockRepo.findDirectMessageThread = mock(async () => Promise.resolve([]));
+
+        const result = await mockRepo.findDirectMessageThread("user1", "user3", { limit: 50 });
+
+        expect(result).toEqual([]);
+      });
+
+      test("should support pagination with sinceId", async () => {
+        mockRepo.findDirectMessageThread = mock(async () => Promise.resolve([mockDM]));
+
+        await mockRepo.findDirectMessageThread("user1", "user2", { limit: 50, sinceId: "dm0" });
+
+        expect(mockRepo.findDirectMessageThread).toHaveBeenCalledWith("user1", "user2", {
+          limit: 50,
+          sinceId: "dm0",
+        });
+      });
+
+      test("should support pagination with untilId", async () => {
+        mockRepo.findDirectMessageThread = mock(async () => Promise.resolve([mockDM]));
+
+        await mockRepo.findDirectMessageThread("user1", "user2", { limit: 50, untilId: "dm10" });
+
+        expect(mockRepo.findDirectMessageThread).toHaveBeenCalledWith("user1", "user2", {
+          limit: 50,
+          untilId: "dm10",
+        });
+      });
+    });
+
+    describe("getConversationPartners", () => {
+      const mockPartners = [
+        {
+          partnerId: "user2",
+          partnerUsername: "user2",
+          partnerDisplayName: "User Two",
+          partnerAvatarUrl: "https://example.com/avatar2.png",
+          partnerHost: null,
+          lastNoteId: "note123",
+          lastNoteText: "See you!",
+          lastNoteCreatedAt: new Date(),
+        },
+        {
+          partnerId: "user3",
+          partnerUsername: "user3",
+          partnerDisplayName: "User Three",
+          partnerAvatarUrl: null,
+          partnerHost: "remote.example",
+          lastNoteId: "note456",
+          lastNoteText: "Thanks!",
+          lastNoteCreatedAt: new Date(),
+        },
+      ];
+
+      test("should return conversation partners for a user", async () => {
+        mockRepo.getConversationPartners = mock(async () => Promise.resolve(mockPartners));
+
+        const result = await mockRepo.getConversationPartners("user1", 20);
+
+        expect(Array.isArray(result)).toBe(true);
+        expect(result.length).toBe(2);
+        expect(mockRepo.getConversationPartners).toHaveBeenCalledWith("user1", 20);
+      });
+
+      test("should return empty array when no conversations exist", async () => {
+        mockRepo.getConversationPartners = mock(async () => Promise.resolve([]));
+
+        const result = await mockRepo.getConversationPartners("user1", 20);
+
+        expect(result).toEqual([]);
+      });
+
+      test("should include last message info", async () => {
+        mockRepo.getConversationPartners = mock(async () => Promise.resolve(mockPartners));
+
+        const result = await mockRepo.getConversationPartners("user1", 20);
+
+        expect(result[0]).toHaveProperty("lastNoteText");
+        expect(result[0]).toHaveProperty("lastNoteCreatedAt");
+      });
+
+      test("should include partner user info", async () => {
+        mockRepo.getConversationPartners = mock(async () => Promise.resolve(mockPartners));
+
+        const result = await mockRepo.getConversationPartners("user1", 20);
+
+        expect(result[0]).toHaveProperty("partnerUsername");
+        expect(result[0]).toHaveProperty("partnerDisplayName");
+        expect(result[0]).toHaveProperty("partnerAvatarUrl");
+      });
+
+      test("should support remote users", async () => {
+        mockRepo.getConversationPartners = mock(async () => Promise.resolve(mockPartners));
+
+        const result = await mockRepo.getConversationPartners("user1", 20);
+
+        const remotePartner = result.find((p) => p.partnerHost !== null);
+        expect(remotePartner).toBeDefined();
+        expect(remotePartner?.partnerHost).toBe("remote.example");
       });
     });
   });

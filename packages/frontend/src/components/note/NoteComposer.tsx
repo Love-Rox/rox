@@ -19,6 +19,8 @@ import {
   HardDrive,
   Clock,
   AtSign,
+  UserPlus,
+  Search,
 } from "lucide-react";
 import { NOTE_TEXT_MAX_LENGTH } from "shared";
 import { MfmRenderer } from "../mfm/MfmRenderer";
@@ -44,6 +46,7 @@ import { useEmojiSuggestions } from "../../hooks/useEmojiSuggestions";
 import { scheduledNotesApi } from "../../lib/api/scheduled-notes";
 import { DrivePickerDialog } from "../drive/DrivePickerDialog";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
+import { usersApi, type User } from "../../lib/api/users";
 
 export interface NoteComposerProps {
   /**
@@ -92,6 +95,14 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
   const [showPreview, setShowPreview] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // DM recipient selection state
+  const [dmRecipients, setDmRecipients] = useState<User[]>([]);
+  const [showRecipientSearch, setShowRecipientSearch] = useState(false);
+  const [recipientSearchQuery, setRecipientSearchQuery] = useState("");
+  const [recipientSearchResults, setRecipientSearchResults] = useState<User[]>([]);
+  const [isSearchingRecipients, setIsSearchingRecipients] = useState(false);
+  const recipientSearchRef = useRef<HTMLInputElement>(null);
 
   // Total file count (new uploads + drive files)
   const totalFileCount = files.length + driveFiles.length;
@@ -145,6 +156,50 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
       setShowDraftBanner(true);
     }
   }, [replyId, hasDraft]);
+
+  // Search for DM recipients
+  useEffect(() => {
+    if (!recipientSearchQuery.trim()) {
+      setRecipientSearchResults([]);
+      return;
+    }
+
+    const searchTimeout = setTimeout(async () => {
+      setIsSearchingRecipients(true);
+      try {
+        const results = await usersApi.search(recipientSearchQuery, { limit: 10 });
+        // Filter out already selected recipients and current user
+        setRecipientSearchResults(
+          results.filter(
+            (u) => u.id !== currentUser?.id && !dmRecipients.some((r) => r.id === u.id),
+          ),
+        );
+      } catch (err) {
+        console.error("Failed to search users:", err);
+      } finally {
+        setIsSearchingRecipients(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(searchTimeout);
+  }, [recipientSearchQuery, currentUser?.id, dmRecipients]);
+
+  // Auto-show recipient picker when switching to direct visibility
+  useEffect(() => {
+    if (visibility === "direct" && dmRecipients.length === 0) {
+      setShowRecipientSearch(true);
+    }
+  }, [visibility, dmRecipients.length]);
+
+  const addRecipient = (user: User) => {
+    setDmRecipients((prev) => [...prev, user]);
+    setRecipientSearchQuery("");
+    setRecipientSearchResults([]);
+  };
+
+  const removeRecipient = (userId: string) => {
+    setDmRecipients((prev) => prev.filter((r) => r.id !== userId));
+  };
 
   const handleRestoreDraft = () => {
     const draft = loadDraft();
@@ -420,6 +475,12 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
       return;
     }
 
+    // Validate DM recipients for direct visibility
+    if (visibility === "direct" && dmRecipients.length === 0) {
+      setError(t`Please select at least one recipient for direct message`);
+      return;
+    }
+
     // Validate scheduled date is in the future
     if (scheduleDate) {
       const scheduledTime = new Date(scheduleDate).getTime();
@@ -461,6 +522,9 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
         setUploadProgress(0);
       }
 
+      // Prepare visibleUserIds for DMs
+      const visibleUserIds = visibility === "direct" ? dmRecipients.map((r) => r.id) : undefined;
+
       if (scheduleDate) {
         // Create scheduled note
         await scheduledNotesApi.create({
@@ -470,6 +534,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
           fileIds: fileIds.length > 0 ? fileIds : undefined,
           replyId,
           scheduledAt: scheduleDate,
+          visibleUserIds,
         });
 
         addToast({
@@ -484,6 +549,7 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
           visibility,
           fileIds: fileIds.length > 0 ? fileIds : undefined,
           replyId,
+          visibleUserIds,
         });
 
         // Play success sound
@@ -504,6 +570,8 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
       setDriveFiles([]);
       setScheduledAt(null);
       setShowSchedulePicker(false);
+      setDmRecipients([]);
+      setShowRecipientSearch(false);
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
       }
@@ -616,6 +684,119 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId }: NoteComposerPr
                 <span className="text-primary-600 dark:text-primary-400 font-medium">
                   {replyTo}
                 </span>
+              </div>
+            )}
+
+            {/* DM Recipient Selection - shown when visibility is "direct" */}
+            {visibility === "direct" && (
+              <div className="space-y-2 p-3 rounded-md bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                <div className="flex items-center gap-2 text-sm font-medium text-blue-900 dark:text-blue-100">
+                  <Mail className="w-4 h-4" />
+                  <Trans>Direct Message Recipients</Trans>
+                </div>
+
+                {/* Selected recipients */}
+                {dmRecipients.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {dmRecipients.map((recipient) => (
+                      <div
+                        key={recipient.id}
+                        className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white dark:bg-gray-800 border border-blue-300 dark:border-blue-700 text-sm"
+                      >
+                        <Avatar
+                          src={recipient.avatarUrl}
+                          alt={recipient.name || recipient.username}
+                          fallback={recipient.username.slice(0, 2).toUpperCase()}
+                          size="sm"
+                          className="w-5! h-5!"
+                        />
+                        <span className="text-gray-900 dark:text-gray-100">
+                          @{recipient.username}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeRecipient(recipient.id)}
+                          className="p-0.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+                          aria-label={t`Remove ${recipient.username}`}
+                        >
+                          <X className="w-3 h-3 text-gray-500" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Recipient search input */}
+                {showRecipientSearch && (
+                  <div className="relative">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        ref={recipientSearchRef}
+                        type="text"
+                        value={recipientSearchQuery}
+                        onChange={(e) => setRecipientSearchQuery(e.target.value)}
+                        placeholder={t`Search users...`}
+                        className="w-full pl-9 pr-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      />
+                    </div>
+
+                    {/* Search results dropdown */}
+                    {(recipientSearchResults.length > 0 || isSearchingRecipients) && (
+                      <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden z-50 max-h-48 overflow-y-auto">
+                        {isSearchingRecipients ? (
+                          <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                            <Spinner size="xs" />
+                            <Trans>Searching...</Trans>
+                          </div>
+                        ) : (
+                          recipientSearchResults.map((user) => (
+                            <div
+                              key={user.id}
+                              onClick={() => addRecipient(user)}
+                              onKeyDown={(e) => e.key === "Enter" && addRecipient(user)}
+                              className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                              role="button"
+                              tabIndex={0}
+                            >
+                              <Avatar
+                                src={user.avatarUrl}
+                                alt={user.name || user.username}
+                                fallback={user.username.slice(0, 2).toUpperCase()}
+                                size="sm"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                  {user.name || user.username}
+                                </div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                  @{user.username}
+                                  {user.host && `@${user.host}`}
+                                </div>
+                              </div>
+                              <UserPlus className="w-4 h-4 text-gray-400" />
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Add recipient button */}
+                {!showRecipientSearch && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowRecipientSearch(true);
+                      setTimeout(() => recipientSearchRef.current?.focus(), 0);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/30 rounded-md transition-colors"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                    <Trans>Add recipient</Trans>
+                  </button>
+                )}
               </div>
             )}
 
