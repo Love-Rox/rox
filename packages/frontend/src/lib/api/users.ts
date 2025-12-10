@@ -85,7 +85,7 @@ export const usersApi = {
   async getFollowers(userId: string, limit?: number): Promise<Follow[]> {
     const params = new URLSearchParams({ userId });
     if (limit) params.append("limit", limit.toString());
-    return apiClient.get<Follow[]>(`/api/users/followers?${params.toString()}`);
+    return apiClient.get<Follow[]>(`/api/following/users/followers?${params.toString()}`);
   },
 
   /**
@@ -98,7 +98,7 @@ export const usersApi = {
   async getFollowing(userId: string, limit?: number): Promise<Follow[]> {
     const params = new URLSearchParams({ userId });
     if (limit) params.append("limit", limit.toString());
-    return apiClient.get<Follow[]>(`/api/users/following?${params.toString()}`);
+    return apiClient.get<Follow[]>(`/api/following/users/following?${params.toString()}`);
   },
 
   /**
