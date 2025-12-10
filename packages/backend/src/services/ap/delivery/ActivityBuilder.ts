@@ -439,6 +439,7 @@ export class ActivityBuilder {
    * Direct messages use specific addressing:
    * - to: list of recipient actor URIs (no public addressing)
    * - cc: empty (no followers)
+   * - tag: Mention tags for each recipient (required for proper DM delivery)
    *
    * @param note - The direct message note
    * @param author - The note author
@@ -448,21 +449,34 @@ export class ActivityBuilder {
     const actorUri = this.actorUri(author.username);
     const published = note.createdAt.toISOString();
 
-    // Build recipient URIs - use their ActivityPub URIs
-    const recipientUris = recipients.map((r) => {
-      if (r.uri) return r.uri;
-      // Fallback: construct URI from host/username
-      return `https://${r.host}/users/${r.username}`;
-    });
+    // Build recipient URIs and mention tags
+    const recipientUris: string[] = [];
+    const mentionTags: Array<{ type: "Mention"; href: string; name: string }> = [];
+
+    for (const r of recipients) {
+      const uri = r.uri || `https://${r.host}/users/${r.username}`;
+      recipientUris.push(uri);
+
+      // Add Mention tag for each recipient (required for DM delivery)
+      mentionTags.push({
+        type: "Mention",
+        href: uri,
+        name: `@${r.username}@${r.host}`,
+      });
+    }
+
+    // Convert plain text to simple HTML (escape special characters and wrap in <p>)
+    const htmlContent = this.textToHtml(note.text || "");
 
     const noteObject: NoteObject = {
       id: note.uri || `${this.baseUrl}/notes/${note.id}`,
       type: "Note",
       attributedTo: actorUri,
-      content: note.text || "",
+      content: htmlContent,
       published,
       to: recipientUris,
       cc: [],
+      tag: mentionTags,
     };
 
     // Add optional fields
@@ -484,6 +498,27 @@ export class ActivityBuilder {
       cc: [],
       object: noteObject,
     };
+  }
+
+  /**
+   * Convert plain text to simple HTML for ActivityPub content
+   *
+   * Escapes HTML special characters and wraps in <p> tags.
+   * Converts newlines to <br> tags.
+   */
+  private textToHtml(text: string): string {
+    if (!text) return "<p></p>";
+
+    // Escape HTML special characters
+    const escaped = text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+    // Convert newlines to <br> and wrap in <p>
+    return `<p>${escaped.replace(/\n/g, "<br>")}</p>`;
   }
 }
 
