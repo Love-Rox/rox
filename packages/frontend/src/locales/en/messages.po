@@ -13,7 +13,7 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/pages/messages/index.tsx:75
+#: src/pages/messages/index.tsx:85
 msgid "(No message)"
 msgstr "(No message)"
 
@@ -86,11 +86,11 @@ msgstr "{assetType} uploaded successfully"
 msgid "{days} days ago"
 msgstr "{days} days ago"
 
-#: src/components/user/FollowListModal.tsx:172
+#: src/components/user/FollowListModal.tsx:181
 msgid "{username}'s Followers"
 msgstr "{username}'s Followers"
 
-#: src/components/user/FollowListModal.tsx:174
+#: src/components/user/FollowListModal.tsx:183
 msgid "{username}'s Following"
 msgstr "{username}'s Following"
 
@@ -509,7 +509,7 @@ msgstr "Back to Contact"
 msgid "Back to list"
 msgstr "Back to list"
 
-#: src/components/pages/MessageThreadPageClient.tsx:311
+#: src/components/pages/MessageThreadPageClient.tsx:336
 msgid "Back to messages"
 msgstr "Back to messages"
 
@@ -768,7 +768,7 @@ msgstr "Contact Inquiries"
 msgid "Contact Us"
 msgstr "Contact Us"
 
-#: src/components/note/NoteCard.tsx:410
+#: src/components/note/NoteCard.tsx:425
 msgid "Content Warning"
 msgstr "Content Warning"
 
@@ -997,9 +997,14 @@ msgstr "Describe the reason for this warning..."
 msgid "Description"
 msgstr "Description"
 
+#: src/components/note/NoteCard.tsx:354
 #: src/components/note/NoteComposer.tsx:634
 msgid "Direct"
 msgstr "Direct"
+
+#: src/components/note/NoteCard.tsx:351
+msgid "Direct message - Only visible to specified recipients"
+msgstr "Direct message - Only visible to specified recipients"
 
 #: src/components/note/NoteComposer.tsx:721
 msgid "Direct Message Recipients"
@@ -1462,7 +1467,7 @@ msgstr "Failed to save role"
 msgid "Failed to save UI settings"
 msgstr "Failed to save UI settings"
 
-#: src/components/pages/MessageThreadPageClient.tsx:144
+#: src/components/pages/MessageThreadPageClient.tsx:157
 msgid "Failed to send message"
 msgstr "Failed to send message"
 
@@ -1767,7 +1772,7 @@ msgstr "Import Results"
 msgid "Importing emojis..."
 msgstr "Importing emojis..."
 
-#: src/components/note/NoteCard.tsx:527
+#: src/components/note/NoteCard.tsx:542
 msgid "In reply to"
 msgstr "In reply to"
 
@@ -1991,7 +1996,7 @@ msgstr "Line Height"
 
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/timeline/Timeline.tsx:258
-#: src/components/user/FollowListModal.tsx:225
+#: src/components/user/FollowListModal.tsx:234
 #: src/components/user/UserProfile.tsx:578
 msgid "Load more"
 msgstr "Load more"
@@ -2015,7 +2020,7 @@ msgstr "Loading posts..."
 #: src/components/drive/DrivePickerDialog.tsx:483
 #: src/components/note/NoteComposer.tsx:912
 #: src/components/note/NoteComposer.tsx:959
-#: src/components/user/FollowListModal.tsx:222
+#: src/components/user/FollowListModal.tsx:231
 #: src/components/user/UserProfile.tsx:574
 msgid "Loading..."
 msgstr "Loading..."
@@ -2163,7 +2168,7 @@ msgid "Message"
 msgstr "Message"
 
 #: src/components/layout/Sidebar.tsx:115
-#: src/pages/messages/index.tsx:141
+#: src/pages/messages/index.tsx:151
 msgid "Messages"
 msgstr "Messages"
 
@@ -2206,7 +2211,7 @@ msgstr "Moderator Role"
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "Monitor ActivityPub delivery queue status"
 
-#: src/components/note/NoteCard.tsx:666
+#: src/components/note/NoteCard.tsx:681
 msgid "More options"
 msgstr "More options"
 
@@ -2246,7 +2251,7 @@ msgid "New Inquiry"
 msgstr "New Inquiry"
 
 #: src/components/note/ComposeModal.tsx:84
-#: src/pages/messages/index.tsx:150
+#: src/pages/messages/index.tsx:160
 msgid "New Message"
 msgstr "New Message"
 
@@ -2309,7 +2314,7 @@ msgstr "No files in drive"
 msgid "No files uploaded yet"
 msgstr "No files uploaded yet"
 
-#: src/components/user/FollowListModal.tsx:200
+#: src/components/user/FollowListModal.tsx:209
 msgid "No followers yet"
 msgstr "No followers yet"
 
@@ -2338,11 +2343,11 @@ msgstr "No matching notifications"
 msgid "No mentions yet"
 msgstr "No mentions yet"
 
-#: src/pages/messages/index.tsx:168
+#: src/pages/messages/index.tsx:178
 msgid "No messages yet"
 msgstr "No messages yet"
 
-#: src/components/pages/MessageThreadPageClient.tsx:391
+#: src/components/pages/MessageThreadPageClient.tsx:425
 msgid "No messages yet. Start the conversation!"
 msgstr "No messages yet. Start the conversation!"
 
@@ -2413,7 +2418,7 @@ msgstr "No users found"
 msgid "No users with fetch errors found"
 msgstr "No users with fetch errors found"
 
-#: src/components/user/FollowListModal.tsx:202
+#: src/components/user/FollowListModal.tsx:211
 msgid "Not following anyone yet"
 msgstr "Not following anyone yet"
 
@@ -3030,7 +3035,7 @@ msgstr "Rename"
 msgid "Renote"
 msgstr "Renote"
 
-#: src/components/note/NoteCard.tsx:401
+#: src/components/note/NoteCard.tsx:416
 msgid "Renoted"
 msgstr "Renoted"
 
@@ -3056,7 +3061,7 @@ msgstr "Reply"
 msgid "Replying to"
 msgstr "Replying to"
 
-#: src/components/note/NoteCard.tsx:681
+#: src/components/note/NoteCard.tsx:696
 msgid "Report"
 msgstr "Report"
 
@@ -3453,7 +3458,7 @@ msgstr "Share your thoughts, connect with friends, and join conversations across
 msgid "Show all {0} files"
 msgstr "Show all {0} files"
 
-#: src/components/note/NoteCard.tsx:420
+#: src/components/note/NoteCard.tsx:435
 msgid "Show content"
 msgstr "Show content"
 
@@ -3535,7 +3540,7 @@ msgstr "spam.example.com"
 msgid "Standard Emojis"
 msgstr "Standard Emojis"
 
-#: src/pages/messages/index.tsx:171
+#: src/pages/messages/index.tsx:181
 msgid "Start a conversation by composing a direct message"
 msgstr "Start a conversation by composing a direct message"
 
@@ -4035,7 +4040,7 @@ msgstr "User List"
 msgid "User Moderation"
 msgstr "User Moderation"
 
-#: src/components/pages/MessageThreadPageClient.tsx:257
+#: src/components/pages/MessageThreadPageClient.tsx:270
 #: src/components/user/UserProfile.tsx:359
 #: src/pages/mod/users.tsx:115
 msgid "User not found"
@@ -4125,7 +4130,7 @@ msgstr "Validation failed"
 msgid "Version"
 msgstr "Version"
 
-#: src/components/note/NoteCard.tsx:566
+#: src/components/note/NoteCard.tsx:581
 msgid "View"
 msgstr "View"
 
@@ -4264,7 +4269,7 @@ msgstr "Will be posted at {0}"
 msgid "With Errors"
 msgstr "With Errors"
 
-#: src/components/pages/MessageThreadPageClient.tsx:179
+#: src/components/pages/MessageThreadPageClient.tsx:192
 msgid "Write a message..."
 msgstr "Write a message..."
 
@@ -4377,7 +4382,7 @@ msgstr "Your browser does not support passkeys."
 msgid "Your browser does not support push notifications."
 msgstr "Your browser does not support push notifications."
 
-#: src/pages/messages/index.tsx:154
+#: src/pages/messages/index.tsx:164
 msgid "Your direct message conversations"
 msgstr "Your direct message conversations"
 

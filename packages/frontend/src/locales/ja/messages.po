@@ -13,7 +13,7 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/pages/messages/index.tsx:75
+#: src/pages/messages/index.tsx:85
 msgid "(No message)"
 msgstr "(メッセージなし)"
 
@@ -86,11 +86,11 @@ msgstr "{assetType}をアップロードしました"
 msgid "{days} days ago"
 msgstr "{days}日前"
 
-#: src/components/user/FollowListModal.tsx:172
+#: src/components/user/FollowListModal.tsx:181
 msgid "{username}'s Followers"
 msgstr "{username}のフォロワー"
 
-#: src/components/user/FollowListModal.tsx:174
+#: src/components/user/FollowListModal.tsx:183
 msgid "{username}'s Following"
 msgstr "{username}のフォロー中"
 
@@ -509,7 +509,7 @@ msgstr "お問い合わせに戻る"
 msgid "Back to list"
 msgstr "一覧に戻る"
 
-#: src/components/pages/MessageThreadPageClient.tsx:311
+#: src/components/pages/MessageThreadPageClient.tsx:336
 msgid "Back to messages"
 msgstr "メッセージに戻る"
 
@@ -768,7 +768,7 @@ msgstr "お問い合わせ一覧"
 msgid "Contact Us"
 msgstr "お問い合わせ"
 
-#: src/components/note/NoteCard.tsx:410
+#: src/components/note/NoteCard.tsx:425
 msgid "Content Warning"
 msgstr "閲覧注意"
 
@@ -997,9 +997,14 @@ msgstr "この警告の理由を説明してください..."
 msgid "Description"
 msgstr "説明"
 
+#: src/components/note/NoteCard.tsx:354
 #: src/components/note/NoteComposer.tsx:634
 msgid "Direct"
 msgstr "ダイレクト"
+
+#: src/components/note/NoteCard.tsx:351
+msgid "Direct message - Only visible to specified recipients"
+msgstr "ダイレクトメッセージ - 指定した宛先のみに表示されます"
 
 #: src/components/note/NoteComposer.tsx:721
 msgid "Direct Message Recipients"
@@ -1462,7 +1467,7 @@ msgstr "ロールの保存に失敗しました"
 msgid "Failed to save UI settings"
 msgstr "表示設定の保存に失敗しました"
 
-#: src/components/pages/MessageThreadPageClient.tsx:144
+#: src/components/pages/MessageThreadPageClient.tsx:157
 msgid "Failed to send message"
 msgstr "メッセージの送信に失敗しました"
 
@@ -1767,7 +1772,7 @@ msgstr "インポート結果"
 msgid "Importing emojis..."
 msgstr "絵文字をインポート中..."
 
-#: src/components/note/NoteCard.tsx:527
+#: src/components/note/NoteCard.tsx:542
 msgid "In reply to"
 msgstr "返信元"
 
@@ -1991,7 +1996,7 @@ msgstr "行の高さ"
 
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/timeline/Timeline.tsx:258
-#: src/components/user/FollowListModal.tsx:225
+#: src/components/user/FollowListModal.tsx:234
 #: src/components/user/UserProfile.tsx:578
 msgid "Load more"
 msgstr "もっと読み込む"
@@ -2015,7 +2020,7 @@ msgstr "投稿を読み込み中..."
 #: src/components/drive/DrivePickerDialog.tsx:483
 #: src/components/note/NoteComposer.tsx:912
 #: src/components/note/NoteComposer.tsx:959
-#: src/components/user/FollowListModal.tsx:222
+#: src/components/user/FollowListModal.tsx:231
 #: src/components/user/UserProfile.tsx:574
 msgid "Loading..."
 msgstr "読み込み中..."
@@ -2163,7 +2168,7 @@ msgid "Message"
 msgstr "メッセージ"
 
 #: src/components/layout/Sidebar.tsx:115
-#: src/pages/messages/index.tsx:141
+#: src/pages/messages/index.tsx:151
 msgid "Messages"
 msgstr "メッセージ"
 
@@ -2206,7 +2211,7 @@ msgstr "モデレーターロール"
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "ActivityPub配信キューの状態を監視"
 
-#: src/components/note/NoteCard.tsx:666
+#: src/components/note/NoteCard.tsx:681
 msgid "More options"
 msgstr "その他のオプション"
 
@@ -2246,7 +2251,7 @@ msgid "New Inquiry"
 msgstr "新規お問い合わせ"
 
 #: src/components/note/ComposeModal.tsx:84
-#: src/pages/messages/index.tsx:150
+#: src/pages/messages/index.tsx:160
 msgid "New Message"
 msgstr "新しいメッセージ"
 
@@ -2309,7 +2314,7 @@ msgstr "ドライブにファイルがありません"
 msgid "No files uploaded yet"
 msgstr "まだファイルがアップロードされていません"
 
-#: src/components/user/FollowListModal.tsx:200
+#: src/components/user/FollowListModal.tsx:209
 msgid "No followers yet"
 msgstr "まだフォロワーがいません"
 
@@ -2338,11 +2343,11 @@ msgstr "一致する通知がありません"
 msgid "No mentions yet"
 msgstr "まだメンションはありません"
 
-#: src/pages/messages/index.tsx:168
+#: src/pages/messages/index.tsx:178
 msgid "No messages yet"
 msgstr "まだメッセージはありません"
 
-#: src/components/pages/MessageThreadPageClient.tsx:391
+#: src/components/pages/MessageThreadPageClient.tsx:425
 msgid "No messages yet. Start the conversation!"
 msgstr "まだメッセージはありません。会話を始めましょう！"
 
@@ -2413,7 +2418,7 @@ msgstr "ユーザーが見つかりませんでした"
 msgid "No users with fetch errors found"
 msgstr "取得エラーのあるユーザーはいません"
 
-#: src/components/user/FollowListModal.tsx:202
+#: src/components/user/FollowListModal.tsx:211
 msgid "Not following anyone yet"
 msgstr "まだ誰もフォローしていません"
 
@@ -3030,7 +3035,7 @@ msgstr "名前を変更"
 msgid "Renote"
 msgstr "リノート"
 
-#: src/components/note/NoteCard.tsx:401
+#: src/components/note/NoteCard.tsx:416
 msgid "Renoted"
 msgstr "リノート"
 
@@ -3056,7 +3061,7 @@ msgstr "返信"
 msgid "Replying to"
 msgstr "返信先:"
 
-#: src/components/note/NoteCard.tsx:681
+#: src/components/note/NoteCard.tsx:696
 msgid "Report"
 msgstr "報告"
 
@@ -3453,7 +3458,7 @@ msgstr "思いを共有し、友人とつながり、Fediverse全体での会話
 msgid "Show all {0} files"
 msgstr "すべて表示（{0}ファイル）"
 
-#: src/components/note/NoteCard.tsx:420
+#: src/components/note/NoteCard.tsx:435
 msgid "Show content"
 msgstr "内容を表示"
 
@@ -3535,7 +3540,7 @@ msgstr "spam.example.com"
 msgid "Standard Emojis"
 msgstr "標準絵文字"
 
-#: src/pages/messages/index.tsx:171
+#: src/pages/messages/index.tsx:181
 msgid "Start a conversation by composing a direct message"
 msgstr "ダイレクトメッセージを送信して会話を始めましょう"
 
@@ -4035,7 +4040,7 @@ msgstr "ユーザー一覧"
 msgid "User Moderation"
 msgstr "ユーザーのモデレーション"
 
-#: src/components/pages/MessageThreadPageClient.tsx:257
+#: src/components/pages/MessageThreadPageClient.tsx:270
 #: src/components/user/UserProfile.tsx:359
 #: src/pages/mod/users.tsx:115
 msgid "User not found"
@@ -4125,7 +4130,7 @@ msgstr "検証に失敗しました"
 msgid "Version"
 msgstr "バージョン"
 
-#: src/components/note/NoteCard.tsx:566
+#: src/components/note/NoteCard.tsx:581
 msgid "View"
 msgstr "表示"
 
@@ -4264,7 +4269,7 @@ msgstr "{0}に投稿予定"
 msgid "With Errors"
 msgstr "エラーあり"
 
-#: src/components/pages/MessageThreadPageClient.tsx:179
+#: src/components/pages/MessageThreadPageClient.tsx:192
 msgid "Write a message..."
 msgstr "メッセージを入力..."
 
@@ -4377,7 +4382,7 @@ msgstr "お使いのブラウザはパスキーに対応していません。"
 msgid "Your browser does not support push notifications."
 msgstr "お使いのブラウザはプッシュ通知に対応していません。"
 
-#: src/pages/messages/index.tsx:154
+#: src/pages/messages/index.tsx:164
 msgid "Your direct message conversations"
 msgstr "あなたのダイレクトメッセージ"
 
