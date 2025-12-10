@@ -25,6 +25,7 @@ import { usersApi } from "../lib/api/users";
 import { Layout } from "../components/layout/Layout";
 import { Avatar } from "../components/ui/Avatar";
 import { MfmRenderer } from "../components/mfm/MfmRenderer";
+import { UserDisplayName } from "../components/user/UserDisplayName";
 import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
 import { apiClient } from "../lib/api/client";
 
@@ -468,15 +469,11 @@ export default function SearchPage() {
                       />
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-(--text-primary) truncate">
-                          {resolvedRemoteUser.displayName ? (
-                            <MfmRenderer
-                              text={resolvedRemoteUser.displayName}
-                              plain
-                              customEmojis={getEmojiMap(resolvedRemoteUser)}
-                            />
-                          ) : (
-                            resolvedRemoteUser.username
-                          )}
+                          <UserDisplayName
+                            name={resolvedRemoteUser.displayName}
+                            username={resolvedRemoteUser.username}
+                            profileEmojis={resolvedRemoteUser.profileEmojis}
+                          />
                         </p>
                         <p className="text-sm text-(--text-muted) truncate">
                           {formatHandle(resolvedRemoteUser)}
@@ -557,15 +554,11 @@ export default function SearchPage() {
                     />
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-(--text-primary) truncate">
-                        {user.displayName ? (
-                          <MfmRenderer
-                            text={user.displayName}
-                            plain
-                            customEmojis={getEmojiMap(user)}
-                          />
-                        ) : (
-                          user.username
-                        )}
+                        <UserDisplayName
+                          name={user.displayName}
+                          username={user.username}
+                          profileEmojis={user.profileEmojis}
+                        />
                       </p>
                       <p className="text-sm text-(--text-muted) truncate">{formatHandle(user)}</p>
                       {user.bio && (

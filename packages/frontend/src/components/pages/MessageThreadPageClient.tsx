@@ -16,6 +16,7 @@ import { Avatar } from "../ui/Avatar";
 import { Spinner } from "../ui/Spinner";
 import { InlineError } from "../ui/ErrorMessage";
 import { MfmRenderer } from "../mfm/MfmRenderer";
+import { UserDisplayName } from "../user/UserDisplayName";
 import { useDirectMessageThread } from "../../hooks/useDirectMessages";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
@@ -345,15 +346,6 @@ export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
     ? `@${partner.username}@${partner.host}`
     : `@${partner?.username}`;
 
-  // Convert profileEmojis array to emoji map for MfmRenderer
-  const partnerCustomEmojis = partner?.profileEmojis?.reduce(
-    (acc, emoji) => {
-      acc[emoji.name] = emoji.url;
-      return acc;
-    },
-    {} as Record<string, string>,
-  ) ?? {};
-
   return (
     <Layout>
       <div className="flex flex-col h-[calc(100vh-200px)] md:h-[calc(100vh-64px)] max-w-2xl mx-auto">
@@ -376,7 +368,11 @@ export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
               />
               <div className="flex-1 min-w-0">
                 <h1 className="font-semibold text-(--text-primary) truncate">
-                  <MfmRenderer text={partnerDisplayName} customEmojis={partnerCustomEmojis} />
+                  <UserDisplayName
+                    name={partner.name}
+                    username={partner.username}
+                    profileEmojis={partner.profileEmojis}
+                  />
                 </h1>
                 <p className="text-sm text-(--text-muted) truncate">{partnerHandle}</p>
               </div>

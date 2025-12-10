@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useId, useMemo } from "react";
+import { useState, useEffect, useCallback, useId } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { usersApi, type User } from "../../lib/api/users";
@@ -12,6 +12,7 @@ import { Flag } from "lucide-react";
 import { Button } from "../ui/Button";
 import { NoteCard } from "../note/NoteCard";
 import { MfmRenderer } from "../mfm/MfmRenderer";
+import { UserDisplayName, useProfileEmojiMap } from "./UserDisplayName";
 import { Spinner } from "../ui/Spinner";
 import { ErrorMessage } from "../ui/ErrorMessage";
 import { TimelineSkeleton } from "../ui/Skeleton";
@@ -283,18 +284,9 @@ export function UserProfile({ username, host }: UserProfileProps) {
     setUser((prev) => (prev ? { ...prev, notesCount: (prev.notesCount ?? 0) - 1 } : null));
   }, []);
 
-  // Convert profileEmojis array to emoji map for MfmRenderer
+  // Convert profileEmojis array to emoji map for MfmRenderer (used for bio)
   // Must be called before any early returns to maintain hook order
-  const profileEmojiMap = useMemo(() => {
-    if (!user?.profileEmojis || user.profileEmojis.length === 0) return {};
-    return user.profileEmojis.reduce(
-      (acc, emoji) => {
-        acc[emoji.name] = emoji.url;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-  }, [user?.profileEmojis]);
+  const profileEmojiMap = useProfileEmojiMap(user?.profileEmojis);
 
   // Loading state
   if (loading) {
@@ -465,11 +457,11 @@ export function UserProfile({ username, host }: UserProfileProps) {
             <div className="mt-4">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  {user.displayName ? (
-                    <MfmRenderer text={user.displayName} plain customEmojis={profileEmojiMap} />
-                  ) : (
-                    user.username
-                  )}
+                  <UserDisplayName
+                    name={user.displayName}
+                    username={user.username}
+                    profileEmojis={user.profileEmojis}
+                  />
                 </h1>
                 {user.isBot && (
                   <span className="px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded">

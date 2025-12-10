@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, memo, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, memo, useRef, useCallback } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import type { Note, NoteFile } from "../../lib/types/note";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { MessageCircle, Repeat2, MoreHorizontal, Flag, Globe } from "lucide-react";
+import { MessageCircle, Repeat2, MoreHorizontal, Flag, Globe, Lock } from "lucide-react";
 import { getRemoteInstanceInfo, type PublicRemoteInstance } from "../../lib/api/instance";
 import { Card, CardContent } from "../ui/Card";
 import { Avatar } from "../ui/Avatar";
@@ -15,6 +15,7 @@ import { ImageModal } from "../ui/ImageModal";
 import { notesApi } from "../../lib/api/notes";
 import { NoteComposer } from "./NoteComposer";
 import { ReactionButton } from "./ReactionPicker";
+import { UserDisplayName } from "../user/UserDisplayName";
 import { ReportDialog } from "../report/ReportDialog";
 import {
   createReaction,
@@ -129,41 +130,6 @@ function NoteCardComponent({
     }
   }, [note.user.host]);
 
-  // Convert profileEmojis array to emoji map for MfmRenderer
-  const userProfileEmojiMap = useMemo(() => {
-    if (!note.user.profileEmojis || note.user.profileEmojis.length === 0) return {};
-    return note.user.profileEmojis.reduce(
-      (acc, emoji) => {
-        acc[emoji.name] = emoji.url;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-  }, [note.user.profileEmojis]);
-
-  // Convert renote user's profileEmojis to emoji map
-  const renoteUserProfileEmojiMap = useMemo(() => {
-    if (!note.renote?.user?.profileEmojis || note.renote.user.profileEmojis.length === 0) return {};
-    return note.renote.user.profileEmojis.reduce(
-      (acc, emoji) => {
-        acc[emoji.name] = emoji.url;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-  }, [note.renote?.user?.profileEmojis]);
-
-  // Convert reply user's profileEmojis to emoji map
-  const replyUserProfileEmojiMap = useMemo(() => {
-    if (!note.reply?.user?.profileEmojis || note.reply.user.profileEmojis.length === 0) return {};
-    return note.reply.user.profileEmojis.reduce(
-      (acc, emoji) => {
-        acc[emoji.name] = emoji.url;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-  }, [note.reply?.user?.profileEmojis]);
 
   // Sync reactions from props when they change (e.g., from SSE updates)
   useEffect(() => {
@@ -284,13 +250,18 @@ function NoteCardComponent({
         .slice(0, 2)
     : note.user.username.slice(0, 2).toUpperCase();
 
+  // Check if this is a direct message
+  const isDirectMessage = note.visibility === "specified";
+
   return (
     <Card
       ref={cardRef}
       hover
-      className="transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+      className={`transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
+        isDirectMessage ? "border-l-4 border-l-purple-500 bg-purple-50/30 dark:bg-purple-900/10" : ""
+      }`}
       role="article"
-      aria-label={`Post by ${note.user.name || note.user.username}`}
+      aria-label={`${isDirectMessage ? "Direct message" : "Post"} by ${note.user.name || note.user.username}`}
       tabIndex={0}
     >
       <CardContent className="p-4">
@@ -322,11 +293,11 @@ function NoteCardComponent({
                 }
                 className="font-semibold text-(--text-primary) truncate hover:underline"
               >
-                {note.user.name ? (
-                  <MfmRenderer text={note.user.name} plain customEmojis={userProfileEmojiMap} />
-                ) : (
-                  note.user.username
-                )}
+                <UserDisplayName
+                  name={note.user.name}
+                  username={note.user.username}
+                  profileEmojis={note.user.profileEmojis}
+                />
               </SpaLink>
               <SpaLink
                 to={
@@ -339,6 +310,16 @@ function NoteCardComponent({
                 @{note.user.username}
                 {note.user.host && `@${note.user.host}`}
               </SpaLink>
+              {/* Direct message badge */}
+              {isDirectMessage && (
+                <span
+                  className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700"
+                  title={t`Direct message - Only visible to specified recipients`}
+                >
+                  <Lock className="w-3 h-3" />
+                  <Trans>Direct</Trans>
+                </span>
+              )}
               {/* Remote instance badge with server info */}
               {note.user.host && (
                 <a
@@ -497,11 +478,11 @@ function NoteCardComponent({
                     to={note.renote.user.host ? `/@${note.renote.user.username}@${note.renote.user.host}` : `/${note.renote.user.username}`}
                     className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
                   >
-                    {note.renote.user.name ? (
-                      <MfmRenderer text={note.renote.user.name} plain customEmojis={renoteUserProfileEmojiMap} />
-                    ) : (
-                      note.renote.user.username
-                    )}
+                    <UserDisplayName
+                      name={note.renote.user.name}
+                      username={note.renote.user.username}
+                      profileEmojis={note.renote.user.profileEmojis}
+                    />
                   </SpaLink>
                   <SpaLink
                     to={note.renote.user.host ? `/@${note.renote.user.username}@${note.renote.user.host}` : `/${note.renote.user.username}`}
@@ -543,11 +524,11 @@ function NoteCardComponent({
                           to={note.reply.user.host ? `/@${note.reply.user.username}@${note.reply.user.host}` : `/${note.reply.user.username}`}
                           className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
                         >
-                          {note.reply.user.name ? (
-                            <MfmRenderer text={note.reply.user.name} plain customEmojis={replyUserProfileEmojiMap} />
-                          ) : (
-                            note.reply.user.username
-                          )}
+                          <UserDisplayName
+                            name={note.reply.user.name}
+                            username={note.reply.user.username}
+                            profileEmojis={note.reply.user.profileEmojis}
+                          />
                         </SpaLink>
                         <span className="text-xs text-gray-500 dark:text-gray-400">
                           @{note.reply.user.username}{note.reply.user.host ? `@${note.reply.user.host}` : ""}
