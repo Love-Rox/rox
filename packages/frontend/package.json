@@ -1,6 +1,6 @@
 {
   "name": "waku_rox",
-  "version": "0.1.0-rc.6",
+  "version": "0.1.0-rc.7",
   "private": true,
   "type": "module",
   "scripts": {
@@ -18,7 +18,7 @@
     "@tailwindcss/vite": "^4.1.17",
     "babel-plugin-macros": "^3.1.0",
     "class-variance-authority": "^0.7.1",
-    "jotai": "^2.10.3",
+    "jotai": "^2.16.0",
     "katex": "^0.16.27",
     "lucide-react": "^0.554.0",
     "mfm-js": "^0.24.0",

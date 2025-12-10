@@ -38,5 +38,24 @@ export default defineConfig({
       /** Optimize Lingui macro for ESM compatibility */
       include: ["@lingui/macro", "@lingui/react", "babel-plugin-macros"],
     },
+    build: {
+      /** Suppress chunk size warnings (500kB -> 1MB threshold) */
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          /** Manual chunk splitting for better caching */
+          manualChunks: {
+            /** React core libraries */
+            "react-vendor": ["react", "react-dom"],
+            /** UI component libraries */
+            "ui-vendor": ["react-aria-components"],
+            /** i18n libraries */
+            "i18n-vendor": ["@lingui/react", "@lingui/core"],
+            /** State management */
+            "state-vendor": ["jotai"],
+          },
+        },
+      },
+    },
   },
 });

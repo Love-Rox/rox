@@ -17,7 +17,7 @@
     },
     "packages/backend": {
       "name": "hono_rox",
-      "version": "0.1.0-rc.5",
+      "version": "0.1.0-rc.6",
       "dependencies": {
         "@aws-sdk/client-s3": "^3.705.0",
         "@hono/zod-validator": "^0.7.5",
@@ -56,7 +56,7 @@
     },
     "packages/frontend": {
       "name": "waku_rox",
-      "version": "0.1.0-rc.5",
+      "version": "0.1.0-rc.6",
       "dependencies": {
         "@lingui/core": "^5.6.0",
         "@lingui/react": "^5.6.0",
@@ -64,7 +64,7 @@
         "@tailwindcss/vite": "^4.1.17",
         "babel-plugin-macros": "^3.1.0",
         "class-variance-authority": "^0.7.1",
-        "jotai": "^2.10.3",
+        "jotai": "^2.16.0",
         "katex": "^0.16.27",
         "lucide-react": "^0.554.0",
         "mfm-js": "^0.24.0",
@@ -94,7 +94,7 @@
     },
     "packages/shared": {
       "name": "shared",
-      "version": "0.1.0-rc.5",
+      "version": "0.1.0-rc.6",
       "devDependencies": {
         "bun-types": "^1.3.2",
         "typescript": "^5.7.2",
@@ -1350,7 +1350,7 @@
 
     "jiti": ["jiti@2.6.1", "", { "bin": { "jiti": "lib/jiti-cli.mjs" } }, "sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ=="],
 
-    "jotai": ["jotai@2.15.1", "", { "peerDependencies": { "@babel/core": ">=7.0.0", "@babel/template": ">=7.0.0", "@types/react": ">=17.0.0", "react": ">=17.0.0" }, "optionalPeers": ["@babel/core", "@babel/template", "@types/react", "react"] }, "sha512-yHT1HAZ3ba2Q8wgaUQ+xfBzEtcS8ie687I8XVCBinfg4bNniyqLIN+utPXWKQE93LMF5fPbQSVRZqgpcN5yd6Q=="],
+    "jotai": ["jotai@2.16.0", "", { "peerDependencies": { "@babel/core": ">=7.0.0", "@babel/template": ">=7.0.0", "@types/react": ">=17.0.0", "react": ">=17.0.0" }, "optionalPeers": ["@babel/core", "@babel/template", "@types/react", "react"] }, "sha512-NmkwPBet0SHQ28GBfEb10sqnbVOYyn6DL4iazZgGRDUKxSWL0iqcm+IK4TqTSFC2ixGk+XX2e46Wbv364a3cKg=="],
 
     "joycon": ["joycon@3.1.1", "", {}, "sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw=="],
 
