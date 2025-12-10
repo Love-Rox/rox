@@ -1,0 +1,128 @@
+name: "Bug Report / バグ報告"
+description: "Report a bug or unexpected behavior / バグや予期しない動作を報告"
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Thank you for reporting! / ご報告ありがとうございます！
+        Please fill out the form below. / 以下のフォームにご記入ください。
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description / 説明"
+      description: |
+        A clear description of the bug.
+        バグの明確な説明を記載してください。
+      placeholder: |
+        Example: When I click the submit button, nothing happens.
+        例: 送信ボタンをクリックしても何も起こりません。
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to Reproduce / 再現手順"
+      description: |
+        Steps to reproduce the behavior.
+        問題を再現するための手順を記載してください。
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+        ---
+        1. 「...」に移動
+        2. 「...」をクリック
+        3. エラーが表示される
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Expected Behavior / 期待される動作"
+      description: |
+        What you expected to happen.
+        期待される動作を記載してください。
+      placeholder: |
+        Example: The form should be submitted and show a success message.
+        例: フォームが送信され、成功メッセージが表示されるはずです。
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: "Actual Behavior / 実際の動作"
+      description: |
+        What actually happened.
+        実際に起こった動作を記載してください。
+      placeholder: |
+        Example: The button becomes unresponsive after clicking.
+        例: クリック後、ボタンが反応しなくなります。
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: "Environment / 環境"
+      description: |
+        Please provide your environment details.
+        環境の詳細を記載してください。
+      placeholder: |
+        - Rox Version: 2025.12.0
+        - OS: Ubuntu 22.04 / macOS 14.0 / Windows 11
+        - Browser: Chrome 120 / Firefox 121 / Safari 17
+        - Node.js/Bun version: Bun 1.1.x
+        ---
+        - Roxバージョン: 2025.12.0
+        - OS: Ubuntu 22.04 / macOS 14.0 / Windows 11
+        - ブラウザ: Chrome 120 / Firefox 121 / Safari 17
+        - Node.js/Bunバージョン: Bun 1.1.x
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Logs / ログ"
+      description: |
+        If applicable, add error logs or console output.
+        該当する場合は、エラーログやコンソール出力を追加してください。
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: "Screenshots / スクリーンショット"
+      description: |
+        If applicable, add screenshots to help explain your problem.
+        該当する場合は、問題の説明に役立つスクリーンショットを追加してください。
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: "Additional Context / 追加情報"
+      description: |
+        Any other context about the problem.
+        問題に関するその他の情報があれば記載してください。
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "Checklist / チェックリスト"
+      options:
+        - label: "I have searched existing issues to ensure this bug hasn't been reported. / 既存のIssueを検索し、このバグが報告されていないことを確認しました。"
+          required: true
+        - label: "I am using the latest version of Rox. / 最新バージョンのRoxを使用しています。"
+          required: false

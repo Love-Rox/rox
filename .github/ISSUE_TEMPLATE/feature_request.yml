@@ -1,0 +1,116 @@
+name: "Feature Request / 機能リクエスト"
+description: "Suggest a new feature or improvement / 新機能や改善の提案"
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Thank you for your suggestion! / ご提案ありがとうございます！
+        Please describe your feature request. / 機能リクエストの詳細を記載してください。
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: "Summary / 概要"
+      description: |
+        A brief summary of the feature you'd like.
+        希望する機能の簡潔な概要を記載してください。
+      placeholder: |
+        Example: Add dark mode support for the admin panel.
+        例: 管理パネルにダークモードのサポートを追加。
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Problem / 解決したい問題"
+      description: |
+        What problem does this feature solve? Is it related to a frustration?
+        この機能はどのような問題を解決しますか？何か不満に関連していますか？
+      placeholder: |
+        Example: I often use Rox at night, and the bright interface is hard on my eyes.
+        例: 夜間にRoxを使用することが多く、明るいインターフェースは目に負担がかかります。
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: "Proposed Solution / 提案する解決策"
+      description: |
+        Describe the solution you'd like.
+        希望する解決策を記載してください。
+      placeholder: |
+        Example: Add a toggle in settings to switch between light and dark themes.
+        例: 設定にライトテーマとダークテーマを切り替えるトグルを追加する。
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Alternatives Considered / 検討した代替案"
+      description: |
+        Any alternative solutions or features you've considered.
+        検討した代替の解決策や機能があれば記載してください。
+      placeholder: |
+        Example: Browser extensions for dark mode, but they don't work well with the app.
+        例: ダークモード用のブラウザ拡張機能を試しましたが、アプリではうまく動作しません。
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: "Area / 領域"
+      description: |
+        Which part of Rox does this relate to?
+        Roxのどの部分に関連しますか？
+      options:
+        - "Frontend (UI/UX) / フロントエンド"
+        - "Backend (API/Server) / バックエンド"
+        - "ActivityPub/Federation / 連合"
+        - "Admin Panel / 管理パネル"
+        - "Database / データベース"
+        - "Documentation / ドキュメント"
+        - "DevOps/Infrastructure / インフラ"
+        - "Other / その他"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "Priority (your opinion) / 優先度（ご意見）"
+      description: |
+        How important is this feature to you?
+        この機能はあなたにとってどれくらい重要ですか？
+      options:
+        - "Nice to have / あれば嬉しい"
+        - "Would be helpful / 役立つと思う"
+        - "Important / 重要"
+        - "Critical for my use case / 私の用途には必須"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: "Additional Context / 追加情報"
+      description: |
+        Any other context, mockups, or examples.
+        その他の情報、モックアップ、または例があれば追加してください。
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "Checklist / チェックリスト"
+      options:
+        - label: "I have searched existing issues to ensure this feature hasn't been requested. / 既存のIssueを検索し、この機能がリクエストされていないことを確認しました。"
+          required: true
+        - label: "I am willing to help implement this feature. / この機能の実装を手伝う意思があります。"
+          required: false

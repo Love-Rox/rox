@@ -1,0 +1,77 @@
+name: "Question / 質問"
+description: "Ask a question about Rox / Roxについて質問する"
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Got a question? / 質問がありますか？
+        We're happy to help! / お手伝いできて嬉しいです！
+
+  - type: textarea
+    id: question
+    attributes:
+      label: "Your Question / ご質問"
+      description: |
+        What would you like to know?
+        何を知りたいですか？
+      placeholder: |
+        Example: How do I configure S3 storage for media files?
+        例: メディアファイル用のS3ストレージはどのように設定しますか？
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "Context / 背景"
+      description: |
+        Provide any relevant context for your question.
+        質問に関連する背景情報を提供してください。
+      placeholder: |
+        Example: I'm trying to migrate from local storage to Cloudflare R2.
+        例: ローカルストレージからCloudflare R2に移行しようとしています。
+    validations:
+      required: false
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: "What I've Tried / 試したこと"
+      description: |
+        What have you already tried or researched?
+        既に試したことや調査したことを記載してください。
+      placeholder: |
+        Example: I read the documentation but couldn't find specific R2 configuration examples.
+        例: ドキュメントを読みましたが、R2の具体的な設定例が見つかりませんでした。
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: "Related Area / 関連領域"
+      description: |
+        Which part of Rox does this relate to?
+        Roxのどの部分に関連しますか？
+      options:
+        - "Installation/Setup / インストール・セットアップ"
+        - "Configuration / 設定"
+        - "Frontend (UI/UX) / フロントエンド"
+        - "Backend (API/Server) / バックエンド"
+        - "ActivityPub/Federation / 連合"
+        - "Admin Panel / 管理パネル"
+        - "Database / データベース"
+        - "Migration / 移行"
+        - "Other / その他"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "Checklist / チェックリスト"
+      options:
+        - label: "I have searched existing issues and documentation. / 既存のIssueとドキュメントを検索しました。"
+          required: true

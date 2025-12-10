@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Documentation / ドキュメント"
+    url: https://github.com/Love-Rox/rox#readme
+    about: "Check the documentation before asking. / 質問する前にドキュメントをご確認ください。"
+  - name: "Discussions (Coming Soon) / ディスカッション（準備中）"
+    url: https://github.com/Love-Rox/rox/discussions
+    about: "For general discussions and community support. / 一般的な議論やコミュニティサポート向け。"
