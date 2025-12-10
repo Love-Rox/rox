@@ -1,4 +1,4 @@
-name: Auto Tag on Version Change
+name: Auto Tag and Release
 
 on:
   push:
@@ -13,6 +13,9 @@ permissions:
 jobs:
   auto-tag:
     runs-on: ubuntu-latest
+    outputs:
+      tag_created: ${{ steps.create_tag.outputs.created }}
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,6 +42,7 @@ jobs:
           fi
 
       - name: Create and push tag
+        id: create_tag
         if: steps.check_tag.outputs.exists == 'false'
         run: |
           TAG="v${{ steps.version.outputs.version }}"
@@ -48,8 +52,152 @@ jobs:
           git tag -a "$TAG" -m "Release $TAG"
           git push origin "$TAG"
           echo "Successfully created and pushed tag: $TAG"
+          echo "created=true" >> $GITHUB_OUTPUT
 
       - name: Skip tag creation
         if: steps.check_tag.outputs.exists == 'true'
         run: |
           echo "Skipping tag creation - tag v${{ steps.version.outputs.version }} already exists"
+
+  # Run CI after tag is created
+  call-ci:
+    needs: auto-tag
+    if: needs.auto-tag.outputs.tag_created == 'true'
+    uses: ./.github/workflows/ci.yml
+
+  # Create release after CI passes
+  create-release:
+    needs: [auto-tag, call-ci]
+    if: needs.auto-tag.outputs.tag_created == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get previous tag
+        id: prev_tag
+        run: |
+          CURRENT_TAG="v${{ needs.auto-tag.outputs.version }}"
+          PREV_TAG=$(git describe --tags --abbrev=0 "${CURRENT_TAG}^" 2>/dev/null || echo "")
+          echo "prev_tag=$PREV_TAG" >> $GITHUB_OUTPUT
+          echo "Previous tag: $PREV_TAG"
+
+      - name: Extract package versions
+        id: pkg_versions
+        run: |
+          ROOT_VERSION=$(jq -r '.version' package.json)
+          BACKEND_VERSION=$(jq -r '.version' packages/backend/package.json)
+          FRONTEND_VERSION=$(jq -r '.version' packages/frontend/package.json)
+          SHARED_VERSION=$(jq -r '.version' packages/shared/package.json)
+
+          echo "root_version=$ROOT_VERSION" >> $GITHUB_OUTPUT
+          echo "backend_version=$BACKEND_VERSION" >> $GITHUB_OUTPUT
+          echo "frontend_version=$FRONTEND_VERSION" >> $GITHUB_OUTPUT
+          echo "shared_version=$SHARED_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Determine if prerelease
+        id: check
+        run: |
+          VERSION="${{ needs.auto-tag.outputs.version }}"
+          if [[ "$VERSION" == *"-alpha"* ]] || \
+             [[ "$VERSION" == *"-beta"* ]] || \
+             [[ "$VERSION" == *"-rc"* ]]; then
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate changelog
+        run: |
+          PREV_TAG="${{ steps.prev_tag.outputs.prev_tag }}"
+          CURRENT_TAG="v${{ needs.auto-tag.outputs.version }}"
+
+          if [ -n "$PREV_TAG" ]; then
+            RANGE="${PREV_TAG}..${CURRENT_TAG}"
+          else
+            RANGE="${CURRENT_TAG}"
+          fi
+
+          {
+            echo "## Version Information"
+            echo ""
+            echo "| Component | Version |"
+            echo "|-----------|---------|"
+            echo "| **Rox (Project)** | \`${{ steps.pkg_versions.outputs.root_version }}\` |"
+            echo "| Hono Rox (Backend) | \`${{ steps.pkg_versions.outputs.backend_version }}\` |"
+            echo "| Waku Rox (Frontend) | \`${{ steps.pkg_versions.outputs.frontend_version }}\` |"
+            echo "| Shared | \`${{ steps.pkg_versions.outputs.shared_version }}\` |"
+            echo ""
+            echo "## What's Changed"
+            echo ""
+
+            FEATURES=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^feat" 2>/dev/null || true)
+            if [ -n "$FEATURES" ]; then
+              echo "### 🚀 New Features"
+              echo "$FEATURES"
+              echo ""
+            fi
+
+            FIXES=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^fix" 2>/dev/null || true)
+            if [ -n "$FIXES" ]; then
+              echo "### 🐛 Bug Fixes"
+              echo "$FIXES"
+              echo ""
+            fi
+
+            PERF=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^perf" 2>/dev/null || true)
+            if [ -n "$PERF" ]; then
+              echo "### ⚡ Performance"
+              echo "$PERF"
+              echo ""
+            fi
+
+            DOCS=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^docs" 2>/dev/null || true)
+            if [ -n "$DOCS" ]; then
+              echo "### 📚 Documentation"
+              echo "$DOCS"
+              echo ""
+            fi
+
+            CHORE=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^chore" 2>/dev/null || true)
+            if [ -n "$CHORE" ]; then
+              echo "### 🧰 Maintenance"
+              echo "$CHORE"
+              echo ""
+            fi
+
+            REFACTOR=$(git log $RANGE --pretty=format:"- %s (%h)" --grep="^refactor" 2>/dev/null || true)
+            if [ -n "$REFACTOR" ]; then
+              echo "### ♻️ Refactoring"
+              echo "$REFACTOR"
+              echo ""
+            fi
+
+            OTHER=$(git log $RANGE --pretty=format:"- %s (%h)" --invert-grep --grep="^feat" --grep="^fix" --grep="^perf" --grep="^docs" --grep="^chore" --grep="^refactor" --grep="^Merge" 2>/dev/null || true)
+            if [ -n "$OTHER" ]; then
+              echo "### 📝 Other Changes"
+              echo "$OTHER"
+              echo ""
+            fi
+
+            echo "---"
+            echo ""
+            if [ -n "$PREV_TAG" ]; then
+              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${CURRENT_TAG}"
+            fi
+          } > CHANGELOG.md
+
+          cat CHANGELOG.md
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.auto-tag.outputs.version }}
+          name: "Rox ${{ needs.auto-tag.outputs.version }}"
+          body_path: CHANGELOG.md
+          prerelease: ${{ steps.check.outputs.is_prerelease }}
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
