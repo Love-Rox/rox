@@ -707,6 +707,9 @@ export class PostgresNoteRepository implements INoteRepository {
     }>
   > {
     // Use raw SQL for this complex query with DISTINCT ON
+    // For DMs:
+    // - When I send: user_id = me, mentions contains recipient(s) -> partner is first mention
+    // - When I receive: user_id = sender, mentions contains me -> partner is sender
     const result = await this.db.execute(sql`
       WITH dm_conversations AS (
         SELECT
@@ -716,14 +719,20 @@ export class PostgresNoteRepository implements INoteRepository {
           n.user_id,
           n.mentions,
           CASE
-            WHEN n.user_id = ${userId} THEN (n.mentions::jsonb->>0)::text
-            ELSE n.user_id
+            WHEN n.user_id = ${userId} THEN
+              -- I sent this DM: get first recipient from mentions (filter out myself if present)
+              (SELECT elem::text FROM jsonb_array_elements_text(n.mentions::jsonb) AS elem WHERE elem::text != ${userId} LIMIT 1)
+            ELSE
+              -- I received this DM: sender is the partner
+              n.user_id
           END as partner_id
         FROM notes n
         WHERE n.visibility = 'specified'
           AND n.is_deleted = false
           AND (
-            n.user_id = ${userId}
+            -- I sent the DM (mentions must have at least one recipient that isn't me)
+            (n.user_id = ${userId} AND jsonb_array_length(n.mentions::jsonb) > 0)
+            -- OR I received the DM (I'm in the mentions)
             OR n.mentions::jsonb @> ${JSON.stringify([userId])}::jsonb
           )
       ),
@@ -734,7 +743,7 @@ export class PostgresNoteRepository implements INoteRepository {
           note_text,
           created_at
         FROM dm_conversations
-        WHERE partner_id IS NOT NULL AND partner_id != ${userId}
+        WHERE partner_id IS NOT NULL AND partner_id != '' AND partner_id != ${userId}
         ORDER BY partner_id, created_at DESC
       )
       SELECT
