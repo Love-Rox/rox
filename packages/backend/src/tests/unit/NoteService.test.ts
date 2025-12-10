@@ -263,7 +263,7 @@ describe("NoteService", () => {
     });
 
     test("should verify file ownership during creation", async () => {
-      // When files don't exist or aren't found, the service should handle gracefully
+      // When files don't exist, the service should throw an error
       const mockDriveFileRepoEmpty: MockDriveFileRepo = {
         ...mockDriveFileRepo,
         findByIds: mock(() => Promise.resolve([])),
@@ -278,16 +278,16 @@ describe("NoteService", () => {
         mockCacheService as ICacheService,
       );
 
-      // File not found means it won't be included, but text note should still work
-      const result = await service.create({
-        userId: "user1",
-        text: "Test with missing file",
-        visibility: "public",
-        localOnly: false,
-        fileIds: ["nonexistent-file"],
-      });
-
-      expect(result.id).toBe("note1");
+      // File not found should throw an error
+      await expect(
+        service.create({
+          userId: "user1",
+          text: "Test with missing file",
+          visibility: "public",
+          localOnly: false,
+          fileIds: ["nonexistent-file"],
+        }),
+      ).rejects.toThrow("File not found: nonexistent-file");
     });
 
     test("should invalidate cache on public note creation", async () => {

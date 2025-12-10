@@ -13,6 +13,7 @@ import type { IFollowRepository } from "../interfaces/repositories/IFollowReposi
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
 import type { Note } from "../../../shared/src/types/note.js";
+import type { User } from "../../../shared/src/types/user.js";
 import type { Visibility } from "../../../shared/src/types/common.js";
 import { generateId } from "../../../shared/src/utils/id.js";
 import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
@@ -641,8 +642,16 @@ export class NoteService {
    * @private
    */
   private async verifyFileOwnership(fileIds: string[], userId: string): Promise<void> {
+    if (fileIds.length === 0) return;
+
+    // Batch fetch all files in one query instead of N+1 pattern
+    const files = await this.driveFileRepository.findByIds(fileIds);
+
+    // Create a map for quick lookup
+    const fileMap = new Map(files.map((f) => [f.id, f]));
+
     for (const fileId of fileIds) {
-      const file = await this.driveFileRepository.findById(fileId);
+      const file = fileMap.get(fileId);
 
       if (!file) {
         throw new Error(`File not found: ${fileId}`);
@@ -755,20 +764,23 @@ export class NoteService {
   ): Promise<void> {
     if (!this.notificationService) return;
 
-    // Reply notification
+    // Fetch reply target once if needed (avoid N+1 in mentions loop)
+    let replyTarget: Note | null = null;
+    let replyTargetUser: User | null = null;
     if (replyId) {
-      const replyTarget = await this.noteRepository.findById(replyId);
+      replyTarget = await this.noteRepository.findById(replyId);
       if (replyTarget && replyTarget.userId !== authorId) {
-        // Only notify if reply target author is a local user
-        const targetUser = await this.userRepository.findById(replyTarget.userId);
-        if (targetUser && !targetUser.host) {
-          await this.notificationService.createReplyNotification(
-            replyTarget.userId,
-            authorId,
-            note.id,
-          );
-        }
+        replyTargetUser = await this.userRepository.findById(replyTarget.userId);
       }
+    }
+
+    // Reply notification
+    if (replyTarget && replyTargetUser && !replyTargetUser.host) {
+      await this.notificationService.createReplyNotification(
+        replyTarget.userId,
+        authorId,
+        note.id,
+      );
     }
 
     // Renote notification (pure renote without text)
@@ -805,12 +817,10 @@ export class NoteService {
       for (const username of mentions) {
         const mentionedUser = await this.userRepository.findByUsername(username);
         if (mentionedUser && !mentionedUser.host && mentionedUser.id !== authorId) {
-          // Skip if this is also a reply (to avoid duplicate notification)
-          if (replyId) {
-            const replyTarget = await this.noteRepository.findById(replyId);
-            if (replyTarget && replyTarget.userId === mentionedUser.id) {
-              continue;
-            }
+          // Skip if this is also a reply target (to avoid duplicate notification)
+          // Using cached replyTarget instead of re-fetching
+          if (replyTarget && replyTarget.userId === mentionedUser.id) {
+            continue;
           }
           await this.notificationService.createMentionNotification(
             mentionedUser.id,
