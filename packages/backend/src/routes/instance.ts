@@ -52,6 +52,7 @@ app.get("/", async (c: Context) => {
     // Legal links
     tosUrl: info.tosUrl,
     privacyPolicyUrl: info.privacyPolicyUrl,
+    sourceCodeUrl: info.sourceCodeUrl,
 
     // Registration settings
     registration: {
