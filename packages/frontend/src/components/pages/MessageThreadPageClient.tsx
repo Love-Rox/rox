@@ -83,7 +83,7 @@ function MessageBubble({
           className={`rounded-2xl px-4 py-2 ${
             isOwn
               ? "bg-primary-500 text-white rounded-br-md"
-              : "bg-(--bg-secondary) text-(--text-primary) rounded-bl-md"
+              : "bg-gray-200 dark:bg-gray-700 text-(--text-primary) rounded-bl-md"
           }`}
         >
           {message.cw ? (
@@ -341,7 +341,7 @@ export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
     );
   }
 
-  const partnerDisplayName = partner?.name || partner?.username || "User";
+  const partnerDisplayName = partner?.displayName || partner?.name || partner?.username || "User";
   const partnerHandle = partner?.host
     ? `@${partner.username}@${partner.host}`
     : `@${partner?.username}`;
@@ -369,7 +369,7 @@ export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
               <div className="flex-1 min-w-0">
                 <h1 className="font-semibold text-(--text-primary) truncate">
                   <UserDisplayName
-                    name={partner.name}
+                    name={partner.displayName || partner.name}
                     username={partner.username}
                     profileEmojis={partner.profileEmojis}
                   />
