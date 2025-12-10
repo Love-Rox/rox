@@ -201,6 +201,10 @@ msgstr "このインスタンスについて"
 msgid "accepted your follow request"
 msgstr "があなたのフォローリクエストを承認しました"
 
+#: src/pages/403.tsx:14
+msgid "Access Denied"
+msgstr "アクセスが拒否されました"
+
 #: src/pages/legal/privacy.tsx:196
 msgid "Access your personal data"
 msgstr "個人データへのアクセス"
@@ -1576,6 +1580,14 @@ msgstr "始める"
 msgid "Global"
 msgstr "グローバル"
 
+#: src/components/ErrorPage.tsx:88
+msgid "Go Back"
+msgstr "戻る"
+
+#: src/components/ErrorPage.tsx:106
+msgid "Go Home"
+msgstr "ホームへ"
+
 #: src/pages/onboarding.tsx:219
 msgid "Go to login"
 msgstr "ログインへ"
@@ -2369,6 +2381,10 @@ msgstr "特定の通知タイプのデフォルトサウンドを上書きしま
 msgid "Overview"
 msgstr "概要"
 
+#: src/pages/404.tsx:14
+msgid "Page Not Found"
+msgstr "ページが見つかりません"
+
 #. placeholder {0}: new Date().toLocaleDateString()
 #: src/components/settings/PasskeySection.tsx:95
 msgid "Passkey {0}"
@@ -2512,6 +2528,10 @@ msgstr "投稿"
 #: src/components/LandingPage.tsx:327
 msgid "Powered by"
 msgstr "Powered by"
+
+#: src/components/ErrorPage.tsx:116
+msgid "Powered by Rox - Lightweight ActivityPub Server"
+msgstr "Powered by Rox - 軽量ActivityPubサーバー"
 
 #: src/components/note/NoteComposer.tsx:797
 #: src/components/settings/UISettingsSection.tsx:488
@@ -2722,6 +2742,10 @@ msgstr "更新"
 #: src/pages/admin/federation.tsx:245
 msgid "Refresh List"
 msgstr "リストを更新"
+
+#: src/pages/503.tsx:28
+msgid "Refresh page"
+msgstr "ページを更新"
 
 #: src/pages/admin/users.tsx:545
 msgid "Refresh user information"
@@ -3186,6 +3210,10 @@ msgstr "サーバー"
 msgid "Server Assets"
 msgstr "サーバー素材"
 
+#: src/pages/500.tsx:14
+msgid "Server Error"
+msgstr "サーバーエラー"
+
 #: src/pages/admin/queue.tsx:430
 msgid "Server Metrics"
 msgstr "サーバーメトリクス"
@@ -3193,6 +3221,10 @@ msgstr "サーバーメトリクス"
 #: src/pages/onboarding.tsx:233
 msgid "Server Setup"
 msgstr "サーバーセットアップ"
+
+#: src/pages/503.tsx:14
+msgid "Service Unavailable"
+msgstr "サービス利用不可"
 
 #: src/pages/settings.tsx:364
 msgid "Session"
@@ -3281,6 +3313,10 @@ msgstr "ソーシャル"
 #: src/components/LandingPage.tsx:278
 msgid "Software"
 msgstr "ソフトウェア"
+
+#: src/pages/500.tsx:16
+msgid "Something went wrong on our end. Please try again later or contact support if the problem persists."
+msgstr "サーバー側で問題が発生しました。しばらくしてから再度お試しいただくか、問題が続く場合はサポートにお問い合わせください。"
 
 #: src/pages/mod/instances.tsx:371
 msgid "spam.example.com"
@@ -3430,6 +3466,14 @@ msgstr "エクスポート内容："
 #: src/pages/admin/queue.tsx:196
 msgid "The job queue system is not currently configured or running."
 msgstr "ジョブキューシステムは現在設定されていないか、実行されていません。"
+
+#: src/pages/404.tsx:15
+msgid "The page you're looking for doesn't exist or has been moved."
+msgstr "お探しのページは存在しないか、移動されました。"
+
+#: src/pages/503.tsx:16
+msgid "The server is temporarily unavailable due to maintenance or high load. Please try again in a few minutes."
+msgstr "メンテナンスまたは高負荷のため、サーバーは一時的に利用できません。数分後に再度お試しください。"
 
 #: src/components/settings/UISettingsSection.tsx:300
 #: src/pages/admin/settings.tsx:314
@@ -3589,6 +3633,10 @@ msgstr "フィルターを調整してみてください"
 #: src/pages/notifications.tsx:284
 msgid "Try adjusting your filters"
 msgstr "フィルターを調整してみてください"
+
+#: src/pages/500.tsx:25
+msgid "Try refreshing the page"
+msgstr "ページを更新してみてください"
 
 #: src/pages/search.tsx:444
 msgid "Try searching \"All\" to include remote users"
@@ -3979,6 +4027,10 @@ msgstr "いつでも個人データのコピーをダウンロードできます
 #: src/pages/contact/index.tsx:346
 msgid "You can submit an inquiry without an account. To track your inquiry history, please log in."
 msgstr "アカウントがなくてもお問い合わせを送信できます。お問い合わせ履歴を追跡するには、ログインしてください。"
+
+#: src/pages/403.tsx:15
+msgid "You don't have permission to access this page or resource."
+msgstr "このページまたはリソースにアクセスする権限がありません。"
 
 #: src/pages/admin/contacts.tsx:261
 msgid "You don't have permission to manage contact inquiries."

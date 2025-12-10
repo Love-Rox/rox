@@ -201,6 +201,10 @@ msgstr "About This Instance"
 msgid "accepted your follow request"
 msgstr "accepted your follow request"
 
+#: src/pages/403.tsx:14
+msgid "Access Denied"
+msgstr "Access Denied"
+
 #: src/pages/legal/privacy.tsx:196
 msgid "Access your personal data"
 msgstr "Access your personal data"
@@ -1576,6 +1580,14 @@ msgstr "Get Started"
 msgid "Global"
 msgstr "Global"
 
+#: src/components/ErrorPage.tsx:88
+msgid "Go Back"
+msgstr "Go Back"
+
+#: src/components/ErrorPage.tsx:106
+msgid "Go Home"
+msgstr "Go Home"
+
 #: src/pages/onboarding.tsx:219
 msgid "Go to login"
 msgstr "Go to login"
@@ -2369,6 +2381,10 @@ msgstr "Override the default sound for specific notification types. Leave as def
 msgid "Overview"
 msgstr "Overview"
 
+#: src/pages/404.tsx:14
+msgid "Page Not Found"
+msgstr "Page Not Found"
+
 #. placeholder {0}: new Date().toLocaleDateString()
 #: src/components/settings/PasskeySection.tsx:95
 msgid "Passkey {0}"
@@ -2512,6 +2528,10 @@ msgstr "Posts"
 #: src/components/LandingPage.tsx:327
 msgid "Powered by"
 msgstr "Powered by"
+
+#: src/components/ErrorPage.tsx:116
+msgid "Powered by Rox - Lightweight ActivityPub Server"
+msgstr "Powered by Rox - Lightweight ActivityPub Server"
 
 #: src/components/note/NoteComposer.tsx:797
 #: src/components/settings/UISettingsSection.tsx:488
@@ -2722,6 +2742,10 @@ msgstr "Refresh"
 #: src/pages/admin/federation.tsx:245
 msgid "Refresh List"
 msgstr "Refresh List"
+
+#: src/pages/503.tsx:28
+msgid "Refresh page"
+msgstr "Refresh page"
 
 #: src/pages/admin/users.tsx:545
 msgid "Refresh user information"
@@ -3186,6 +3210,10 @@ msgstr "Server"
 msgid "Server Assets"
 msgstr "Server Assets"
 
+#: src/pages/500.tsx:14
+msgid "Server Error"
+msgstr "Server Error"
+
 #: src/pages/admin/queue.tsx:430
 msgid "Server Metrics"
 msgstr "Server Metrics"
@@ -3193,6 +3221,10 @@ msgstr "Server Metrics"
 #: src/pages/onboarding.tsx:233
 msgid "Server Setup"
 msgstr "Server Setup"
+
+#: src/pages/503.tsx:14
+msgid "Service Unavailable"
+msgstr "Service Unavailable"
 
 #: src/pages/settings.tsx:364
 msgid "Session"
@@ -3281,6 +3313,10 @@ msgstr "Social"
 #: src/components/LandingPage.tsx:278
 msgid "Software"
 msgstr "Software"
+
+#: src/pages/500.tsx:16
+msgid "Something went wrong on our end. Please try again later or contact support if the problem persists."
+msgstr "Something went wrong on our end. Please try again later or contact support if the problem persists."
 
 #: src/pages/mod/instances.tsx:371
 msgid "spam.example.com"
@@ -3430,6 +3466,14 @@ msgstr "The export includes:"
 #: src/pages/admin/queue.tsx:196
 msgid "The job queue system is not currently configured or running."
 msgstr "The job queue system is not currently configured or running."
+
+#: src/pages/404.tsx:15
+msgid "The page you're looking for doesn't exist or has been moved."
+msgstr "The page you're looking for doesn't exist or has been moved."
+
+#: src/pages/503.tsx:16
+msgid "The server is temporarily unavailable due to maintenance or high load. Please try again in a few minutes."
+msgstr "The server is temporarily unavailable due to maintenance or high load. Please try again in a few minutes."
 
 #: src/components/settings/UISettingsSection.tsx:300
 #: src/pages/admin/settings.tsx:314
@@ -3589,6 +3633,10 @@ msgstr "Try adjusting your filter"
 #: src/pages/notifications.tsx:284
 msgid "Try adjusting your filters"
 msgstr "Try adjusting your filters"
+
+#: src/pages/500.tsx:25
+msgid "Try refreshing the page"
+msgstr "Try refreshing the page"
 
 #: src/pages/search.tsx:444
 msgid "Try searching \"All\" to include remote users"
@@ -3979,6 +4027,10 @@ msgstr "You can download a copy of your personal data at any time. This includes
 #: src/pages/contact/index.tsx:346
 msgid "You can submit an inquiry without an account. To track your inquiry history, please log in."
 msgstr "You can submit an inquiry without an account. To track your inquiry history, please log in."
+
+#: src/pages/403.tsx:15
+msgid "You don't have permission to access this page or resource."
+msgstr "You don't have permission to access this page or resource."
 
 #: src/pages/admin/contacts.tsx:261
 msgid "You don't have permission to manage contact inquiries."
