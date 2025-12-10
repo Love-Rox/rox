@@ -169,6 +169,33 @@ export class RemoteActorService {
    * ```
    */
   async resolveActor(actorUri: string, forceRefresh = false): Promise<User> {
+    // Check if this is a local URI - if so, find user by URI directly (local users have host=null)
+    const localHost = new URL(process.env.URL || "http://localhost:3000").hostname;
+    const actorHost = new URL(actorUri).hostname;
+
+    if (actorHost === localHost) {
+      // This is a local user URI - find by URI (which includes local users)
+      const localUser = await this.userRepository.findByUri(actorUri);
+      if (localUser) {
+        logger.debug({ username: localUser.username, host: localUser.host }, "Found local user by URI");
+        return localUser;
+      }
+
+      // If not found by URI, try to extract username and find by username with host=null
+      // URI format: https://host/users/username
+      const match = actorUri.match(/\/users\/([^/]+)$/);
+      if (match?.[1]) {
+        const username = match[1];
+        const localUserByUsername = await this.userRepository.findByUsername(username, null);
+        if (localUserByUsername) {
+          logger.debug({ username }, "Found local user by username extraction");
+          return localUserByUsername;
+        }
+      }
+
+      throw new Error(`Local user not found for URI: ${actorUri}`);
+    }
+
     const cacheKey = `${CachePrefix.REMOTE_ACTOR}:${actorUri}`;
 
     // L1: Check memory cache first (fastest)
