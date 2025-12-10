@@ -1942,6 +1942,11 @@ msgstr "Legal Documents"
 msgid "License"
 msgstr "License"
 
+#: src/components/LandingPage.tsx:355
+#: src/components/layout/Layout.tsx:93
+msgid "Licenses"
+msgstr "Licenses"
+
 #: src/pages/admin/settings.tsx:685
 msgid "Light"
 msgstr "Light"
@@ -2635,6 +2640,7 @@ msgid "Primary Color"
 msgstr "Primary Color"
 
 #: src/components/LandingPage.tsx:352
+#: src/components/layout/Layout.tsx:90
 msgid "Privacy"
 msgstr "Privacy"
 
@@ -3541,6 +3547,7 @@ msgid "Tell us about yourself..."
 msgstr "Tell us about yourself..."
 
 #: src/components/LandingPage.tsx:344
+#: src/components/layout/Layout.tsx:82
 msgid "Terms"
 msgstr "Terms"
 
