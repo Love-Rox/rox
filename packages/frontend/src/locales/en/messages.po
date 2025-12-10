@@ -189,6 +189,10 @@ msgstr "9. Changes to Terms"
 msgid "9. Children's Privacy"
 msgstr "9. Children's Privacy"
 
+#: src/pages/onboarding.tsx:334
+msgid "A community for..."
+msgstr "A community for..."
+
 #: src/components/LandingPage.tsx:236
 msgid "About This Instance"
 msgstr "About This Instance"
@@ -243,8 +247,8 @@ msgstr "Add aliases to link this account with your accounts on other servers. Th
 msgid "Add Emoji"
 msgstr "Add Emoji"
 
-#: src/components/note/NoteComposer.tsx:857
-#: src/components/note/NoteComposer.tsx:858
+#: src/components/note/NoteComposer.tsx:873
+#: src/components/note/NoteComposer.tsx:874
 msgid "Add images"
 msgstr "Add images"
 
@@ -292,6 +296,10 @@ msgstr "Additional Details (optional)"
 msgid "Admin"
 msgstr "Admin"
 
+#: src/pages/onboarding.tsx:410
+msgid "Admin Account"
+msgstr "Admin Account"
+
 #: src/pages/admin/roles.tsx:435
 msgid "Admin Role"
 msgstr "Admin Role"
@@ -311,6 +319,10 @@ msgstr "Admin status removed"
 #: src/pages/mod/users.tsx:587
 msgid "Admin users cannot be suspended"
 msgstr "Admin users cannot be suspended"
+
+#: src/pages/onboarding.tsx:341
+msgid "admin@example.com"
+msgstr "admin@example.com"
 
 #: src/pages/admin/emojis.tsx:969
 msgid "Adopt"
@@ -384,6 +396,10 @@ msgstr "Already have an account? Sign in"
 msgid "Also delete all notes by this user"
 msgstr "Also delete all notes by this user"
 
+#: src/pages/onboarding.tsx:442
+msgid "Approval required"
+msgstr "Approval required"
+
 #: src/components/settings/AccountDeletionSection.tsx:109
 msgid "Are you absolutely sure?"
 msgstr "Are you absolutely sure?"
@@ -446,6 +462,10 @@ msgstr "Avatar updated successfully"
 #: src/pages/admin/queue.tsx:410
 msgid "Avg per Server"
 msgstr "Avg per Server"
+
+#: src/pages/onboarding.tsx:463
+msgid "Back"
+msgstr "Back"
 
 #: src/components/pages/ContactThreadPageClient.tsx:177
 #: src/components/pages/ContactThreadPageClient.tsx:200
@@ -590,7 +610,7 @@ msgstr "Can suspend users"
 
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
-#: src/components/note/NoteComposer.tsx:1094
+#: src/components/note/NoteComposer.tsx:1110
 #: src/components/report/ReportDialog.tsx:170
 #: src/components/settings/AccountDeletionSection.tsx:177
 #: src/components/settings/PasskeySection.tsx:333
@@ -658,6 +678,10 @@ msgstr "Color"
 msgid "comma, separated, aliases"
 msgstr "comma, separated, aliases"
 
+#: src/pages/onboarding.tsx:471
+msgid "Complete Setup"
+msgstr "Complete Setup"
+
 #: src/pages/legal/privacy.tsx:147
 msgid "Comply with legal obligations"
 msgstr "Comply with legal obligations"
@@ -669,6 +693,10 @@ msgstr "Configure links to your Terms of Service and Privacy Policy pages. These
 #: src/pages/admin/settings.tsx:276
 msgid "Configure your instance settings"
 msgstr "Configure your instance settings"
+
+#: src/pages/onboarding.tsx:305
+msgid "Confirm Password"
+msgstr "Confirm Password"
 
 #: src/components/LandingPage.tsx:179
 msgid "Connect with users across the fediverse using ActivityPub protocol"
@@ -718,6 +746,10 @@ msgstr "Correct inaccurate data"
 #: src/components/drive/DrivePickerDialog.tsx:349
 msgid "Create"
 msgstr "Create"
+
+#: src/pages/onboarding.tsx:271
+msgid "Create Admin Account"
+msgstr "Create Admin Account"
 
 #: src/pages/admin/roles.tsx:322
 msgid "Create and manage user roles with custom permissions"
@@ -845,7 +877,7 @@ msgstr "Delete Account"
 msgid "Delete code"
 msgstr "Delete code"
 
-#: src/components/note/NoteComposer.tsx:1001
+#: src/components/note/NoteComposer.tsx:1017
 msgid "Delete draft"
 msgstr "Delete draft"
 
@@ -906,6 +938,7 @@ msgstr "Describe the reason for this warning..."
 
 #: src/pages/admin/roles.tsx:388
 #: src/pages/admin/settings.tsx:370
+#: src/pages/onboarding.tsx:330
 msgid "Description"
 msgstr "Description"
 
@@ -917,10 +950,15 @@ msgstr "Direct"
 msgid "Disable"
 msgstr "Disable"
 
+#: src/pages/onboarding.tsx:447
+msgid "Disabled"
+msgstr "Disabled"
+
 #: src/components/note/NoteComposer.tsx:596
 msgid "Discard"
 msgstr "Discard"
 
+#: src/pages/onboarding.tsx:290
 #: src/pages/settings.tsx:208
 #: src/pages/signup.tsx:193
 msgid "Display Name"
@@ -966,9 +1004,9 @@ msgstr "Draft restored"
 msgid "Draft saved"
 msgstr "Draft saved"
 
-#: src/components/note/NoteComposer.tsx:943
-#: src/components/note/NoteComposer.tsx:944
+#: src/components/note/NoteComposer.tsx:959
 #: src/components/note/NoteComposer.tsx:960
+#: src/components/note/NoteComposer.tsx:976
 msgid "Drafts"
 msgstr "Drafts"
 
@@ -1001,6 +1039,7 @@ msgid "Edit Role"
 msgstr "Edit Role"
 
 #: src/pages/contact/index.tsx:193
+#: src/pages/onboarding.tsx:282
 #: src/pages/signup.tsx:174
 msgid "Email"
 msgstr "Email"
@@ -1051,7 +1090,7 @@ msgstr "emoji_name"
 msgid "Emojis"
 msgstr "Emojis"
 
-#: src/components/note/NoteComposer.tsx:991
+#: src/components/note/NoteComposer.tsx:1007
 msgid "Empty draft"
 msgstr "Empty draft"
 
@@ -1070,6 +1109,14 @@ msgstr "Enable Registration"
 #: src/components/settings/PushNotificationSection.tsx:168
 msgid "Enable to receive notifications in the background."
 msgstr "Enable to receive notifications in the background."
+
+#: src/pages/onboarding.tsx:361
+msgid "Enable user registration"
+msgstr "Enable user registration"
+
+#: src/pages/onboarding.tsx:432
+msgid "Enabled"
+msgstr "Enabled"
 
 #: src/pages/legal/privacy.tsx:146
 msgid "Ensure security and prevent abuse"
@@ -1184,6 +1231,14 @@ msgstr "Failed to block instance"
 #: src/pages/mod/instances.tsx:192
 msgid "Failed to check instance"
 msgstr "Failed to check instance"
+
+#: src/pages/onboarding.tsx:77
+msgid "Failed to check server status"
+msgstr "Failed to check server status"
+
+#: src/pages/onboarding.tsx:186
+msgid "Failed to complete setup. Please try again."
+msgstr "Failed to complete setup. Please try again."
 
 #: src/components/drive/DrivePickerDialog.tsx:228
 msgid "Failed to create folder"
@@ -1521,6 +1576,10 @@ msgstr "Get Started"
 msgid "Global"
 msgstr "Global"
 
+#: src/pages/onboarding.tsx:219
+msgid "Go to login"
+msgstr "Go to login"
+
 #: src/components/LandingPage.tsx:129
 msgid "Go to Timeline"
 msgstr "Go to Timeline"
@@ -1611,7 +1670,7 @@ msgstr "Import Results"
 msgid "Importing emojis..."
 msgstr "Importing emojis..."
 
-#: src/components/note/NoteCard.tsx:529
+#: src/components/note/NoteCard.tsx:527
 msgid "In reply to"
 msgstr "In reply to"
 
@@ -1620,6 +1679,7 @@ msgid "Initiate Migration"
 msgstr "Initiate Migration"
 
 #: src/pages/admin/settings.tsx:294
+#: src/pages/onboarding.tsx:418
 msgid "Instance"
 msgstr "Instance"
 
@@ -1665,8 +1725,13 @@ msgid "Instance Information"
 msgstr "Instance Information"
 
 #: src/pages/admin/settings.tsx:352
+#: src/pages/onboarding.tsx:322
 msgid "Instance Name"
 msgstr "Instance Name"
+
+#: src/pages/onboarding.tsx:110
+msgid "Instance name is required"
+msgstr "Instance name is required"
 
 #: src/pages/admin/storage.tsx:296
 msgid "Instance Overview"
@@ -1675,6 +1740,10 @@ msgstr "Instance Overview"
 #: src/pages/admin/federation.tsx:165
 msgid "Instance removed from cache"
 msgstr "Instance removed from cache"
+
+#: src/pages/onboarding.tsx:319
+msgid "Instance Settings"
+msgstr "Instance Settings"
 
 #: src/pages/admin/settings.tsx:146
 msgid "Instance settings saved"
@@ -1731,6 +1800,10 @@ msgstr "Invite"
 #: src/pages/admin/roles.tsx:474
 msgid "Invite limit:"
 msgstr "Invite limit:"
+
+#: src/pages/onboarding.tsx:436
+msgid "Invite only"
+msgstr "Invite only"
 
 #: src/components/LandingPage.tsx:93
 #: src/pages/admin/settings.tsx:525
@@ -1828,8 +1901,8 @@ msgid "Loading posts..."
 msgstr "Loading posts..."
 
 #: src/components/drive/DrivePickerDialog.tsx:483
-#: src/components/note/NoteComposer.tsx:662
-#: src/components/note/NoteComposer.tsx:709
+#: src/components/note/NoteComposer.tsx:705
+#: src/components/note/NoteComposer.tsx:752
 #: src/components/user/UserProfile.tsx:514
 msgid "Loading..."
 msgstr "Loading..."
@@ -1881,6 +1954,7 @@ msgid "Lowercase letters, numbers, and underscores only"
 msgstr "Lowercase letters, numbers, and underscores only"
 
 #: src/pages/admin/settings.tsx:388
+#: src/pages/onboarding.tsx:337
 msgid "Maintainer Email"
 msgstr "Maintainer Email"
 
@@ -1996,13 +2070,17 @@ msgstr "Moderator Role"
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "Monitor ActivityPub delivery queue status"
 
-#: src/components/note/NoteCard.tsx:668
+#: src/components/note/NoteCard.tsx:666
 msgid "More options"
 msgstr "More options"
 
 #: src/components/settings/AccountMigrationSection.tsx:304
 msgid "Move to a Different Account"
 msgstr "Move to a Different Account"
+
+#: src/pages/onboarding.tsx:326
+msgid "My Rox Server"
+msgstr "My Rox Server"
 
 #: src/pages/admin/emojis.tsx:602
 #: src/pages/admin/roles.tsx:362
@@ -2014,7 +2092,7 @@ msgstr "Name"
 msgid "Never"
 msgstr "Never"
 
-#: src/components/note/NoteComposer.tsx:967
+#: src/components/note/NoteComposer.tsx:983
 msgid "New"
 msgstr "New"
 
@@ -2041,6 +2119,7 @@ msgstr "New notification"
 
 #: src/pages/admin/contacts.tsx:608
 #: src/pages/admin/federation.tsx:481
+#: src/pages/onboarding.tsx:475
 msgid "Next"
 msgstr "Next"
 
@@ -2068,11 +2147,11 @@ msgstr "No deleted notes"
 msgid "No deliveries recorded yet"
 msgstr "No deliveries recorded yet"
 
-#: src/components/note/NoteComposer.tsx:973
+#: src/components/note/NoteComposer.tsx:989
 msgid "No drafts saved"
 msgstr "No drafts saved"
 
-#: src/components/note/NoteComposer.tsx:713
+#: src/components/note/NoteComposer.tsx:756
 #: src/components/ui/EmojiPicker.tsx:973
 msgid "No emojis found"
 msgstr "No emojis found"
@@ -2166,7 +2245,7 @@ msgstr "No system files"
 msgid "No text content"
 msgstr "No text content"
 
-#: src/components/note/NoteComposer.tsx:666
+#: src/components/note/NoteComposer.tsx:709
 #: src/pages/admin/storage.tsx:495
 #: src/pages/admin/users.tsx:432
 #: src/pages/search.tsx:437
@@ -2269,6 +2348,7 @@ msgstr "Only visible to staff"
 msgid "Open Registration"
 msgstr "Open Registration"
 
+#: src/pages/onboarding.tsx:294
 #: src/pages/signup.tsx:197
 msgid "Optional"
 msgstr "Optional"
@@ -2324,6 +2404,7 @@ msgid "Passkeys allow you to sign in securely without a password using your devi
 msgstr "Passkeys allow you to sign in securely without a password using your device's biometrics or security key."
 
 #: src/pages/login.tsx:244
+#: src/pages/onboarding.tsx:297
 #: src/pages/signup.tsx:183
 msgid "Password"
 msgstr "Password"
@@ -2332,6 +2413,14 @@ msgstr "Password"
 #: src/pages/signup.tsx:188
 msgid "Password is required"
 msgstr "Password is required"
+
+#: src/pages/onboarding.tsx:98
+msgid "Password must be at least 8 characters"
+msgstr "Password must be at least 8 characters"
+
+#: src/pages/onboarding.tsx:102
+msgid "Passwords do not match"
+msgstr "Passwords do not match"
 
 #: src/pages/admin/reports.tsx:305
 #: src/pages/mod/reports.tsx:289
@@ -2367,6 +2456,10 @@ msgstr "Please describe your inquiry in detail..."
 msgid "Please enable notifications in your browser settings to receive push notifications."
 msgstr "Please enable notifications in your browser settings to receive push notifications."
 
+#: src/pages/onboarding.tsx:94
+msgid "Please enter a valid email address"
+msgstr "Please enter a valid email address"
+
 #: src/components/note/NoteComposer.tsx:409
 msgid "Please enter text or attach files"
 msgstr "Please enter text or attach files"
@@ -2398,7 +2491,7 @@ msgstr "Please type \"{CONFIRM_TEXT}\" to confirm"
 
 #: src/components/layout/Sidebar.tsx:174
 #: src/components/layout/Sidebar.tsx:301
-#: src/components/note/NoteComposer.tsx:1141
+#: src/components/note/NoteComposer.tsx:1157
 msgid "Post"
 msgstr "Post"
 
@@ -2406,7 +2499,7 @@ msgstr "Post"
 msgid "Post illegal content or engage in illegal activities"
 msgstr "Post illegal content or engage in illegal activities"
 
-#: src/components/note/NoteComposer.tsx:1137
+#: src/components/note/NoteComposer.tsx:1153
 msgid "Posting..."
 msgstr "Posting..."
 
@@ -2420,7 +2513,7 @@ msgstr "Posts"
 msgid "Powered by"
 msgstr "Powered by"
 
-#: src/components/note/NoteComposer.tsx:781
+#: src/components/note/NoteComposer.tsx:797
 #: src/components/settings/UISettingsSection.tsx:488
 #: src/pages/admin/emojis.tsx:737
 #: src/pages/admin/settings.tsx:715
@@ -2643,6 +2736,7 @@ msgid "Registering..."
 msgstr "Registering..."
 
 #: src/pages/admin/settings.tsx:304
+#: src/pages/onboarding.tsx:427
 msgid "Registration"
 msgstr "Registration"
 
@@ -2656,6 +2750,7 @@ msgid "Registration failed. Please try again."
 msgstr "Registration failed. Please try again."
 
 #: src/pages/admin/settings.tsx:483
+#: src/pages/onboarding.tsx:350
 msgid "Registration Settings"
 msgstr "Registration Settings"
 
@@ -2748,7 +2843,7 @@ msgstr "replied to your note"
 msgid "Replies ({0})"
 msgstr "Replies ({0})"
 
-#: src/components/note/NoteComposer.tsx:1139
+#: src/components/note/NoteComposer.tsx:1155
 #: src/pages/notifications.tsx:244
 msgid "Reply"
 msgstr "Reply"
@@ -2757,7 +2852,7 @@ msgstr "Reply"
 msgid "Replying to"
 msgstr "Replying to"
 
-#: src/components/note/NoteCard.tsx:683
+#: src/components/note/NoteCard.tsx:681
 msgid "Report"
 msgstr "Report"
 
@@ -2827,6 +2922,10 @@ msgstr "Reports"
 msgid "Reports are reviewed by moderators. Your report will remain confidential."
 msgstr "Reports are reviewed by moderators. Your report will remain confidential."
 
+#: src/pages/onboarding.tsx:389
+msgid "Require admin approval"
+msgstr "Require admin approval"
+
 #: src/pages/admin/settings.tsx:528
 msgid "Require an invitation code to register"
 msgstr "Require an invitation code to register"
@@ -2834,6 +2933,10 @@ msgstr "Require an invitation code to register"
 #: src/pages/admin/settings.tsx:548
 msgid "Require Approval"
 msgstr "Require Approval"
+
+#: src/pages/onboarding.tsx:375
+msgid "Require invitation code"
+msgstr "Require invitation code"
 
 #: src/components/settings/UISettingsSection.tsx:442
 #: src/components/ui/ImageModal.tsx:209
@@ -2896,6 +2999,10 @@ msgstr "Retrying..."
 msgid "Review and manage user reports"
 msgstr "Review and manage user reports"
 
+#: src/pages/onboarding.tsx:405
+msgid "Review Settings"
+msgstr "Review Settings"
+
 #: src/pages/admin/roles.tsx:193
 msgid "Role created"
 msgstr "Role created"
@@ -2937,8 +3044,8 @@ msgstr "Save"
 msgid "Save Changes"
 msgstr "Save Changes"
 
-#: src/components/note/NoteComposer.tsx:926
-#: src/components/note/NoteComposer.tsx:927
+#: src/components/note/NoteComposer.tsx:942
+#: src/components/note/NoteComposer.tsx:943
 msgid "Save draft"
 msgstr "Save draft"
 
@@ -2971,13 +3078,13 @@ msgstr "Save Theme Settings"
 msgid "Saving..."
 msgstr "Saving..."
 
-#: src/components/note/NoteComposer.tsx:1109
+#: src/components/note/NoteComposer.tsx:1125
 msgid "Schedule"
 msgstr "Schedule"
 
-#: src/components/note/NoteComposer.tsx:1054
-#: src/components/note/NoteComposer.tsx:1055
-#: src/components/note/NoteComposer.tsx:1066
+#: src/components/note/NoteComposer.tsx:1070
+#: src/components/note/NoteComposer.tsx:1071
+#: src/components/note/NoteComposer.tsx:1082
 msgid "Schedule post"
 msgstr "Schedule post"
 
@@ -3037,8 +3144,8 @@ msgstr "Security"
 msgid "Select"
 msgstr "Select"
 
-#: src/components/note/NoteComposer.tsx:877
-#: src/components/note/NoteComposer.tsx:878
+#: src/components/note/NoteComposer.tsx:893
+#: src/components/note/NoteComposer.tsx:894
 msgid "Select from drive"
 msgstr "Select from drive"
 
@@ -3083,6 +3190,10 @@ msgstr "Server Assets"
 msgid "Server Metrics"
 msgstr "Server Metrics"
 
+#: src/pages/onboarding.tsx:233
+msgid "Server Setup"
+msgstr "Server Setup"
+
 #: src/pages/settings.tsx:364
 msgid "Session"
 msgstr "Session"
@@ -3091,6 +3202,10 @@ msgstr "Session"
 #: src/pages/settings.tsx:166
 msgid "Settings"
 msgstr "Settings"
+
+#: src/pages/onboarding.tsx:207
+msgid "Setup Complete"
+msgstr "Setup Complete"
 
 #: src/components/LandingPage.tsx:246
 msgid "Share your thoughts, connect with friends, and join conversations across the fediverse. Your data stays with you, and you control who sees what you share."
@@ -3178,6 +3293,12 @@ msgstr "Standard Emojis"
 #: src/pages/admin/emojis.tsx:1096
 msgid "Status"
 msgstr "Status"
+
+#. placeholder {0}: currentStepIndex + 1
+#. placeholder {1}: steps.length
+#: src/pages/onboarding.tsx:253
+msgid "Step {0} of {1}"
+msgstr "Step {0} of {1}"
 
 #: src/components/settings/StorageSection.tsx:145
 #: src/components/settings/StorageSection.tsx:165
@@ -3371,6 +3492,10 @@ msgstr "This is a Rox instance - a modern, lightweight ActivityPub server that c
 msgid "This passkey is already registered"
 msgstr "This passkey is already registered"
 
+#: src/pages/onboarding.tsx:210
+msgid "This server has already been set up."
+msgstr "This server has already been set up."
+
 #: src/pages/legal/privacy.tsx:260
 msgid "This service is not intended for children under 13 years of age. We do not knowingly collect personal information from children. If you believe a child has provided us with personal data, please contact us."
 msgstr "This service is not intended for children under 13 years of age. We do not knowingly collect personal information from children. If you believe a child has provided us with personal data, please contact us."
@@ -3563,11 +3688,11 @@ msgstr "Upload images for your instance branding. Files are automatically conver
 msgid "Uploaded media files metadata"
 msgstr "Uploaded media files metadata"
 
-#: src/components/note/NoteComposer.tsx:840
+#: src/components/note/NoteComposer.tsx:856
 msgid "Uploading files..."
 msgstr "Uploading files..."
 
-#: src/components/note/NoteComposer.tsx:1135
+#: src/components/note/NoteComposer.tsx:1151
 #: src/components/settings/ProfileImageSection.tsx:253
 #: src/components/settings/ProfileImageSection.tsx:329
 #: src/pages/admin/emojis.tsx:644
@@ -3643,6 +3768,7 @@ msgid "User unsuspended successfully"
 msgstr "User unsuspended successfully"
 
 #: src/pages/login.tsx:235
+#: src/pages/onboarding.tsx:274
 #: src/pages/settings.tsx:259
 #: src/pages/signup.tsx:164
 msgid "Username"
@@ -3656,6 +3782,10 @@ msgstr "Username cannot be changed"
 #: src/pages/signup.tsx:169
 msgid "Username is required"
 msgstr "Username is required"
+
+#: src/pages/onboarding.tsx:90
+msgid "Username must be at least 3 characters"
+msgstr "Username must be at least 3 characters"
 
 #: src/pages/admin/federation.tsx:398
 #: src/pages/admin/users.tsx:296
@@ -3688,7 +3818,7 @@ msgstr "Validate"
 msgid "Validation failed"
 msgstr "Validation failed"
 
-#: src/components/note/NoteCard.tsx:568
+#: src/components/note/NoteCard.tsx:566
 msgid "View"
 msgstr "View"
 
@@ -3789,6 +3919,10 @@ msgstr "We will respond as soon as possible."
 msgid "We'll use this to respond to your inquiry"
 msgstr "We'll use this to respond to your inquiry"
 
+#: src/pages/onboarding.tsx:236
+msgid "Welcome to Rox! Let's configure your server."
+msgstr "Welcome to Rox! Let's configure your server."
+
 #: src/pages/legal/privacy.tsx:102
 msgid "When you use {instanceName}, we collect the following types of information:"
 msgstr "When you use {instanceName}, we collect the following types of information:"
@@ -3802,7 +3936,7 @@ msgid "Why Join?"
 msgstr "Why Join?"
 
 #. placeholder {0}: new Date(scheduledAt).toLocaleString()
-#: src/components/note/NoteComposer.tsx:1079
+#: src/components/note/NoteComposer.tsx:1095
 msgid "Will be posted at {0}"
 msgstr "Will be posted at {0}"
 
@@ -3823,6 +3957,10 @@ msgstr "You are responsible for maintaining the confidentiality of your account 
 #: src/components/settings/StorageSection.tsx:356
 msgid "You are using {0}% of your storage. Consider deleting unused files."
 msgstr "You are using {0}% of your storage. Consider deleting unused files."
+
+#: src/pages/onboarding.tsx:394
+msgid "You can change these settings later in the admin panel."
+msgstr "You can change these settings later in the admin panel."
 
 #: src/components/settings/InvitationCodeSection.tsx:182
 msgid "You can create unlimited invitation codes"

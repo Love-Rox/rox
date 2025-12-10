@@ -189,6 +189,10 @@ msgstr "9. 利用規約の変更"
 msgid "9. Children's Privacy"
 msgstr "9. 児童のプライバシー"
 
+#: src/pages/onboarding.tsx:334
+msgid "A community for..."
+msgstr "コミュニティの説明..."
+
 #: src/components/LandingPage.tsx:236
 msgid "About This Instance"
 msgstr "このインスタンスについて"
@@ -243,8 +247,8 @@ msgstr "他のサーバーのアカウントとリンクするためにエイリ
 msgid "Add Emoji"
 msgstr "絵文字を追加"
 
-#: src/components/note/NoteComposer.tsx:857
-#: src/components/note/NoteComposer.tsx:858
+#: src/components/note/NoteComposer.tsx:873
+#: src/components/note/NoteComposer.tsx:874
 msgid "Add images"
 msgstr "画像を追加"
 
@@ -292,6 +296,10 @@ msgstr "詳細（任意）"
 msgid "Admin"
 msgstr "管理"
 
+#: src/pages/onboarding.tsx:410
+msgid "Admin Account"
+msgstr "管理者アカウント"
+
 #: src/pages/admin/roles.tsx:435
 msgid "Admin Role"
 msgstr "管理者ロール"
@@ -311,6 +319,10 @@ msgstr "管理者権限を解除しました"
 #: src/pages/mod/users.tsx:587
 msgid "Admin users cannot be suspended"
 msgstr "管理者ユーザーは停止できません"
+
+#: src/pages/onboarding.tsx:341
+msgid "admin@example.com"
+msgstr "admin@example.com"
 
 #: src/pages/admin/emojis.tsx:969
 msgid "Adopt"
@@ -384,6 +396,10 @@ msgstr "すでにアカウントをお持ちですか？サインイン"
 msgid "Also delete all notes by this user"
 msgstr "このユーザーの全ての投稿も削除する"
 
+#: src/pages/onboarding.tsx:442
+msgid "Approval required"
+msgstr "承認が必要"
+
 #: src/components/settings/AccountDeletionSection.tsx:109
 msgid "Are you absolutely sure?"
 msgstr "本当に削除しますか？"
@@ -446,6 +462,10 @@ msgstr "アバターを更新しました"
 #: src/pages/admin/queue.tsx:410
 msgid "Avg per Server"
 msgstr "サーバーあたりの平均"
+
+#: src/pages/onboarding.tsx:463
+msgid "Back"
+msgstr "戻る"
 
 #: src/components/pages/ContactThreadPageClient.tsx:177
 #: src/components/pages/ContactThreadPageClient.tsx:200
@@ -590,7 +610,7 @@ msgstr "ユーザーを凍結可能"
 
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
-#: src/components/note/NoteComposer.tsx:1094
+#: src/components/note/NoteComposer.tsx:1110
 #: src/components/report/ReportDialog.tsx:170
 #: src/components/settings/AccountDeletionSection.tsx:177
 #: src/components/settings/PasskeySection.tsx:333
@@ -658,6 +678,10 @@ msgstr "カラー"
 msgid "comma, separated, aliases"
 msgstr "カンマ, 区切り, エイリアス"
 
+#: src/pages/onboarding.tsx:471
+msgid "Complete Setup"
+msgstr "セットアップを完了"
+
 #: src/pages/legal/privacy.tsx:147
 msgid "Comply with legal obligations"
 msgstr "法的義務への準拠"
@@ -669,6 +693,10 @@ msgstr "利用規約とプライバシーポリシーページへのリンクを
 #: src/pages/admin/settings.tsx:276
 msgid "Configure your instance settings"
 msgstr "インスタンスの設定を構成"
+
+#: src/pages/onboarding.tsx:305
+msgid "Confirm Password"
+msgstr "パスワード（確認）"
 
 #: src/components/LandingPage.tsx:179
 msgid "Connect with users across the fediverse using ActivityPub protocol"
@@ -718,6 +746,10 @@ msgstr "不正確なデータの訂正"
 #: src/components/drive/DrivePickerDialog.tsx:349
 msgid "Create"
 msgstr "作成"
+
+#: src/pages/onboarding.tsx:271
+msgid "Create Admin Account"
+msgstr "管理者アカウントを作成"
 
 #: src/pages/admin/roles.tsx:322
 msgid "Create and manage user roles with custom permissions"
@@ -845,7 +877,7 @@ msgstr "アカウントを削除"
 msgid "Delete code"
 msgstr "コードを削除"
 
-#: src/components/note/NoteComposer.tsx:1001
+#: src/components/note/NoteComposer.tsx:1017
 msgid "Delete draft"
 msgstr "下書きを削除"
 
@@ -906,6 +938,7 @@ msgstr "この警告の理由を説明してください..."
 
 #: src/pages/admin/roles.tsx:388
 #: src/pages/admin/settings.tsx:370
+#: src/pages/onboarding.tsx:330
 msgid "Description"
 msgstr "説明"
 
@@ -917,10 +950,15 @@ msgstr "ダイレクト"
 msgid "Disable"
 msgstr "無効にする"
 
+#: src/pages/onboarding.tsx:447
+msgid "Disabled"
+msgstr "無効"
+
 #: src/components/note/NoteComposer.tsx:596
 msgid "Discard"
 msgstr "破棄"
 
+#: src/pages/onboarding.tsx:290
 #: src/pages/settings.tsx:208
 #: src/pages/signup.tsx:193
 msgid "Display Name"
@@ -966,9 +1004,9 @@ msgstr "下書きを復元しました"
 msgid "Draft saved"
 msgstr "下書きを保存しました"
 
-#: src/components/note/NoteComposer.tsx:943
-#: src/components/note/NoteComposer.tsx:944
+#: src/components/note/NoteComposer.tsx:959
 #: src/components/note/NoteComposer.tsx:960
+#: src/components/note/NoteComposer.tsx:976
 msgid "Drafts"
 msgstr "下書き"
 
@@ -1001,6 +1039,7 @@ msgid "Edit Role"
 msgstr "ロールを編集"
 
 #: src/pages/contact/index.tsx:193
+#: src/pages/onboarding.tsx:282
 #: src/pages/signup.tsx:174
 msgid "Email"
 msgstr "メールアドレス"
@@ -1051,7 +1090,7 @@ msgstr "絵文字名"
 msgid "Emojis"
 msgstr "絵文字"
 
-#: src/components/note/NoteComposer.tsx:991
+#: src/components/note/NoteComposer.tsx:1007
 msgid "Empty draft"
 msgstr "空の下書き"
 
@@ -1070,6 +1109,14 @@ msgstr "登録を有効化"
 #: src/components/settings/PushNotificationSection.tsx:168
 msgid "Enable to receive notifications in the background."
 msgstr "バックグラウンドで通知を受け取るには有効にしてください。"
+
+#: src/pages/onboarding.tsx:361
+msgid "Enable user registration"
+msgstr "ユーザー登録を有効にする"
+
+#: src/pages/onboarding.tsx:432
+msgid "Enabled"
+msgstr "有効"
 
 #: src/pages/legal/privacy.tsx:146
 msgid "Ensure security and prevent abuse"
@@ -1184,6 +1231,14 @@ msgstr "インスタンスのブロックに失敗しました"
 #: src/pages/mod/instances.tsx:192
 msgid "Failed to check instance"
 msgstr "インスタンスの確認に失敗しました"
+
+#: src/pages/onboarding.tsx:77
+msgid "Failed to check server status"
+msgstr "サーバー状態の確認に失敗しました"
+
+#: src/pages/onboarding.tsx:186
+msgid "Failed to complete setup. Please try again."
+msgstr "セットアップの完了に失敗しました。もう一度お試しください。"
 
 #: src/components/drive/DrivePickerDialog.tsx:228
 msgid "Failed to create folder"
@@ -1521,6 +1576,10 @@ msgstr "始める"
 msgid "Global"
 msgstr "グローバル"
 
+#: src/pages/onboarding.tsx:219
+msgid "Go to login"
+msgstr "ログインへ"
+
 #: src/components/LandingPage.tsx:129
 msgid "Go to Timeline"
 msgstr "タイムラインへ"
@@ -1611,7 +1670,7 @@ msgstr "インポート結果"
 msgid "Importing emojis..."
 msgstr "絵文字をインポート中..."
 
-#: src/components/note/NoteCard.tsx:529
+#: src/components/note/NoteCard.tsx:527
 msgid "In reply to"
 msgstr "返信元"
 
@@ -1620,6 +1679,7 @@ msgid "Initiate Migration"
 msgstr "引っ越しを開始"
 
 #: src/pages/admin/settings.tsx:294
+#: src/pages/onboarding.tsx:418
 msgid "Instance"
 msgstr "インスタンス"
 
@@ -1665,8 +1725,13 @@ msgid "Instance Information"
 msgstr "インスタンス情報"
 
 #: src/pages/admin/settings.tsx:352
+#: src/pages/onboarding.tsx:322
 msgid "Instance Name"
 msgstr "インスタンス名"
+
+#: src/pages/onboarding.tsx:110
+msgid "Instance name is required"
+msgstr "インスタンス名は必須です"
 
 #: src/pages/admin/storage.tsx:296
 msgid "Instance Overview"
@@ -1675,6 +1740,10 @@ msgstr "インスタンス概要"
 #: src/pages/admin/federation.tsx:165
 msgid "Instance removed from cache"
 msgstr "インスタンスをキャッシュから削除しました"
+
+#: src/pages/onboarding.tsx:319
+msgid "Instance Settings"
+msgstr "インスタンス設定"
 
 #: src/pages/admin/settings.tsx:146
 msgid "Instance settings saved"
@@ -1731,6 +1800,10 @@ msgstr "招待"
 #: src/pages/admin/roles.tsx:474
 msgid "Invite limit:"
 msgstr "招待上限:"
+
+#: src/pages/onboarding.tsx:436
+msgid "Invite only"
+msgstr "招待制"
 
 #: src/components/LandingPage.tsx:93
 #: src/pages/admin/settings.tsx:525
@@ -1828,8 +1901,8 @@ msgid "Loading posts..."
 msgstr "投稿を読み込み中..."
 
 #: src/components/drive/DrivePickerDialog.tsx:483
-#: src/components/note/NoteComposer.tsx:662
-#: src/components/note/NoteComposer.tsx:709
+#: src/components/note/NoteComposer.tsx:705
+#: src/components/note/NoteComposer.tsx:752
 #: src/components/user/UserProfile.tsx:514
 msgid "Loading..."
 msgstr "読み込み中..."
@@ -1881,6 +1954,7 @@ msgid "Lowercase letters, numbers, and underscores only"
 msgstr "小文字、数字、アンダースコアのみ使用可"
 
 #: src/pages/admin/settings.tsx:388
+#: src/pages/onboarding.tsx:337
 msgid "Maintainer Email"
 msgstr "管理者メールアドレス"
 
@@ -1996,13 +2070,17 @@ msgstr "モデレーターロール"
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "ActivityPub配信キューの状態を監視"
 
-#: src/components/note/NoteCard.tsx:668
+#: src/components/note/NoteCard.tsx:666
 msgid "More options"
 msgstr "その他のオプション"
 
 #: src/components/settings/AccountMigrationSection.tsx:304
 msgid "Move to a Different Account"
 msgstr "別のアカウントに引っ越す"
+
+#: src/pages/onboarding.tsx:326
+msgid "My Rox Server"
+msgstr "マイRoxサーバー"
 
 #: src/pages/admin/emojis.tsx:602
 #: src/pages/admin/roles.tsx:362
@@ -2014,7 +2092,7 @@ msgstr "名前"
 msgid "Never"
 msgstr "無期限"
 
-#: src/components/note/NoteComposer.tsx:967
+#: src/components/note/NoteComposer.tsx:983
 msgid "New"
 msgstr "新規"
 
@@ -2041,6 +2119,7 @@ msgstr "新しい通知"
 
 #: src/pages/admin/contacts.tsx:608
 #: src/pages/admin/federation.tsx:481
+#: src/pages/onboarding.tsx:475
 msgid "Next"
 msgstr "次へ"
 
@@ -2068,11 +2147,11 @@ msgstr "削除されたノートはありません"
 msgid "No deliveries recorded yet"
 msgstr "配信記録がありません"
 
-#: src/components/note/NoteComposer.tsx:973
+#: src/components/note/NoteComposer.tsx:989
 msgid "No drafts saved"
 msgstr "保存された下書きはありません"
 
-#: src/components/note/NoteComposer.tsx:713
+#: src/components/note/NoteComposer.tsx:756
 #: src/components/ui/EmojiPicker.tsx:973
 msgid "No emojis found"
 msgstr "絵文字が見つかりません"
@@ -2166,7 +2245,7 @@ msgstr "システムファイルはありません"
 msgid "No text content"
 msgstr "テキストコンテンツなし"
 
-#: src/components/note/NoteComposer.tsx:666
+#: src/components/note/NoteComposer.tsx:709
 #: src/pages/admin/storage.tsx:495
 #: src/pages/admin/users.tsx:432
 #: src/pages/search.tsx:437
@@ -2269,6 +2348,7 @@ msgstr "スタッフのみ閲覧可能"
 msgid "Open Registration"
 msgstr "登録受付中"
 
+#: src/pages/onboarding.tsx:294
 #: src/pages/signup.tsx:197
 msgid "Optional"
 msgstr "任意"
@@ -2324,6 +2404,7 @@ msgid "Passkeys allow you to sign in securely without a password using your devi
 msgstr "パスキーを使用すると、デバイスの生体認証やセキュリティキーでパスワードなしに安全にログインできます。"
 
 #: src/pages/login.tsx:244
+#: src/pages/onboarding.tsx:297
 #: src/pages/signup.tsx:183
 msgid "Password"
 msgstr "パスワード"
@@ -2332,6 +2413,14 @@ msgstr "パスワード"
 #: src/pages/signup.tsx:188
 msgid "Password is required"
 msgstr "パスワードを入力してください"
+
+#: src/pages/onboarding.tsx:98
+msgid "Password must be at least 8 characters"
+msgstr "パスワードは8文字以上必要です"
+
+#: src/pages/onboarding.tsx:102
+msgid "Passwords do not match"
+msgstr "パスワードが一致しません"
 
 #: src/pages/admin/reports.tsx:305
 #: src/pages/mod/reports.tsx:289
@@ -2367,6 +2456,10 @@ msgstr "お問い合わせ内容を詳しくご記入ください..."
 msgid "Please enable notifications in your browser settings to receive push notifications."
 msgstr "プッシュ通知を受け取るには、ブラウザの設定で通知を許可してください。"
 
+#: src/pages/onboarding.tsx:94
+msgid "Please enter a valid email address"
+msgstr "有効なメールアドレスを入力してください"
+
 #: src/components/note/NoteComposer.tsx:409
 msgid "Please enter text or attach files"
 msgstr "テキストを入力するかファイルを添付してください"
@@ -2398,7 +2491,7 @@ msgstr "確認のため「{CONFIRM_TEXT}」と入力してください"
 
 #: src/components/layout/Sidebar.tsx:174
 #: src/components/layout/Sidebar.tsx:301
-#: src/components/note/NoteComposer.tsx:1141
+#: src/components/note/NoteComposer.tsx:1157
 msgid "Post"
 msgstr "投稿"
 
@@ -2406,7 +2499,7 @@ msgstr "投稿"
 msgid "Post illegal content or engage in illegal activities"
 msgstr "違法なコンテンツの投稿や違法行為への関与"
 
-#: src/components/note/NoteComposer.tsx:1137
+#: src/components/note/NoteComposer.tsx:1153
 msgid "Posting..."
 msgstr "投稿中..."
 
@@ -2420,7 +2513,7 @@ msgstr "投稿"
 msgid "Powered by"
 msgstr "Powered by"
 
-#: src/components/note/NoteComposer.tsx:781
+#: src/components/note/NoteComposer.tsx:797
 #: src/components/settings/UISettingsSection.tsx:488
 #: src/pages/admin/emojis.tsx:737
 #: src/pages/admin/settings.tsx:715
@@ -2643,6 +2736,7 @@ msgid "Registering..."
 msgstr "登録中..."
 
 #: src/pages/admin/settings.tsx:304
+#: src/pages/onboarding.tsx:427
 msgid "Registration"
 msgstr "登録"
 
@@ -2656,6 +2750,7 @@ msgid "Registration failed. Please try again."
 msgstr "登録に失敗しました。もう一度お試しください。"
 
 #: src/pages/admin/settings.tsx:483
+#: src/pages/onboarding.tsx:350
 msgid "Registration Settings"
 msgstr "登録設定"
 
@@ -2748,7 +2843,7 @@ msgstr "があなたの投稿に返信しました"
 msgid "Replies ({0})"
 msgstr "返信 ({0})"
 
-#: src/components/note/NoteComposer.tsx:1139
+#: src/components/note/NoteComposer.tsx:1155
 #: src/pages/notifications.tsx:244
 msgid "Reply"
 msgstr "返信"
@@ -2757,7 +2852,7 @@ msgstr "返信"
 msgid "Replying to"
 msgstr "返信先:"
 
-#: src/components/note/NoteCard.tsx:683
+#: src/components/note/NoteCard.tsx:681
 msgid "Report"
 msgstr "報告"
 
@@ -2827,6 +2922,10 @@ msgstr "通報"
 msgid "Reports are reviewed by moderators. Your report will remain confidential."
 msgstr "報告はモデレーターによって確認されます。あなたの報告は機密として扱われます。"
 
+#: src/pages/onboarding.tsx:389
+msgid "Require admin approval"
+msgstr "管理者の承認を必要とする"
+
 #: src/pages/admin/settings.tsx:528
 msgid "Require an invitation code to register"
 msgstr "登録に招待コードが必要"
@@ -2834,6 +2933,10 @@ msgstr "登録に招待コードが必要"
 #: src/pages/admin/settings.tsx:548
 msgid "Require Approval"
 msgstr "承認が必要"
+
+#: src/pages/onboarding.tsx:375
+msgid "Require invitation code"
+msgstr "招待コードを必要とする"
 
 #: src/components/settings/UISettingsSection.tsx:442
 #: src/components/ui/ImageModal.tsx:209
@@ -2896,6 +2999,10 @@ msgstr "再試行中..."
 msgid "Review and manage user reports"
 msgstr "ユーザーからの報告を確認・管理"
 
+#: src/pages/onboarding.tsx:405
+msgid "Review Settings"
+msgstr "設定を確認"
+
 #: src/pages/admin/roles.tsx:193
 msgid "Role created"
 msgstr "ロールを作成しました"
@@ -2937,8 +3044,8 @@ msgstr "保存"
 msgid "Save Changes"
 msgstr "変更を保存"
 
-#: src/components/note/NoteComposer.tsx:926
-#: src/components/note/NoteComposer.tsx:927
+#: src/components/note/NoteComposer.tsx:942
+#: src/components/note/NoteComposer.tsx:943
 msgid "Save draft"
 msgstr "下書きを保存"
 
@@ -2971,13 +3078,13 @@ msgstr "テーマ設定を保存"
 msgid "Saving..."
 msgstr "保存中..."
 
-#: src/components/note/NoteComposer.tsx:1109
+#: src/components/note/NoteComposer.tsx:1125
 msgid "Schedule"
 msgstr "予約する"
 
-#: src/components/note/NoteComposer.tsx:1054
-#: src/components/note/NoteComposer.tsx:1055
-#: src/components/note/NoteComposer.tsx:1066
+#: src/components/note/NoteComposer.tsx:1070
+#: src/components/note/NoteComposer.tsx:1071
+#: src/components/note/NoteComposer.tsx:1082
 msgid "Schedule post"
 msgstr "予約投稿"
 
@@ -3037,8 +3144,8 @@ msgstr "セキュリティ"
 msgid "Select"
 msgstr "選択する"
 
-#: src/components/note/NoteComposer.tsx:877
-#: src/components/note/NoteComposer.tsx:878
+#: src/components/note/NoteComposer.tsx:893
+#: src/components/note/NoteComposer.tsx:894
 msgid "Select from drive"
 msgstr "ドライブから選択"
 
@@ -3083,6 +3190,10 @@ msgstr "サーバー素材"
 msgid "Server Metrics"
 msgstr "サーバーメトリクス"
 
+#: src/pages/onboarding.tsx:233
+msgid "Server Setup"
+msgstr "サーバーセットアップ"
+
 #: src/pages/settings.tsx:364
 msgid "Session"
 msgstr "セッション"
@@ -3091,6 +3202,10 @@ msgstr "セッション"
 #: src/pages/settings.tsx:166
 msgid "Settings"
 msgstr "設定"
+
+#: src/pages/onboarding.tsx:207
+msgid "Setup Complete"
+msgstr "セットアップ完了"
 
 #: src/components/LandingPage.tsx:246
 msgid "Share your thoughts, connect with friends, and join conversations across the fediverse. Your data stays with you, and you control who sees what you share."
@@ -3178,6 +3293,12 @@ msgstr "標準絵文字"
 #: src/pages/admin/emojis.tsx:1096
 msgid "Status"
 msgstr "ステータス"
+
+#. placeholder {0}: currentStepIndex + 1
+#. placeholder {1}: steps.length
+#: src/pages/onboarding.tsx:253
+msgid "Step {0} of {1}"
+msgstr "ステップ {0} / {1}"
 
 #: src/components/settings/StorageSection.tsx:145
 #: src/components/settings/StorageSection.tsx:165
@@ -3371,6 +3492,10 @@ msgstr "これはRoxインスタンスです - あなたを分散型ソーシャ
 msgid "This passkey is already registered"
 msgstr "このパスキーは既に登録されています"
 
+#: src/pages/onboarding.tsx:210
+msgid "This server has already been set up."
+msgstr "このサーバーは既にセットアップ済みです。"
+
 #: src/pages/legal/privacy.tsx:260
 msgid "This service is not intended for children under 13 years of age. We do not knowingly collect personal information from children. If you believe a child has provided us with personal data, please contact us."
 msgstr "このサービスは13歳未満のお子様を対象としていません。私たちは意図的にお子様から個人情報を収集することはありません。お子様が個人データを提供したと思われる場合は、お問い合わせください。"
@@ -3563,11 +3688,11 @@ msgstr "インスタンスのブランディング用画像をアップロード
 msgid "Uploaded media files metadata"
 msgstr "アップロードしたメディアファイルのメタデータ"
 
-#: src/components/note/NoteComposer.tsx:840
+#: src/components/note/NoteComposer.tsx:856
 msgid "Uploading files..."
 msgstr "ファイルをアップロード中..."
 
-#: src/components/note/NoteComposer.tsx:1135
+#: src/components/note/NoteComposer.tsx:1151
 #: src/components/settings/ProfileImageSection.tsx:253
 #: src/components/settings/ProfileImageSection.tsx:329
 #: src/pages/admin/emojis.tsx:644
@@ -3643,6 +3768,7 @@ msgid "User unsuspended successfully"
 msgstr "ユーザーの停止を解除しました"
 
 #: src/pages/login.tsx:235
+#: src/pages/onboarding.tsx:274
 #: src/pages/settings.tsx:259
 #: src/pages/signup.tsx:164
 msgid "Username"
@@ -3656,6 +3782,10 @@ msgstr "ユーザー名は変更できません"
 #: src/pages/signup.tsx:169
 msgid "Username is required"
 msgstr "ユーザー名を入力してください"
+
+#: src/pages/onboarding.tsx:90
+msgid "Username must be at least 3 characters"
+msgstr "ユーザー名は3文字以上必要です"
 
 #: src/pages/admin/federation.tsx:398
 #: src/pages/admin/users.tsx:296
@@ -3688,7 +3818,7 @@ msgstr "検証"
 msgid "Validation failed"
 msgstr "検証に失敗しました"
 
-#: src/components/note/NoteCard.tsx:568
+#: src/components/note/NoteCard.tsx:566
 msgid "View"
 msgstr "表示"
 
@@ -3789,6 +3919,10 @@ msgstr "できるだけ早くご返信いたします。"
 msgid "We'll use this to respond to your inquiry"
 msgstr "お問い合わせへの返信に使用します"
 
+#: src/pages/onboarding.tsx:236
+msgid "Welcome to Rox! Let's configure your server."
+msgstr "Roxへようこそ！サーバーの初期設定を行いましょう。"
+
 #: src/pages/legal/privacy.tsx:102
 msgid "When you use {instanceName}, we collect the following types of information:"
 msgstr "{instanceName}を利用する際、以下の種類の情報を収集します："
@@ -3802,7 +3936,7 @@ msgid "Why Join?"
 msgstr "なぜ参加するの？"
 
 #. placeholder {0}: new Date(scheduledAt).toLocaleString()
-#: src/components/note/NoteComposer.tsx:1079
+#: src/components/note/NoteComposer.tsx:1095
 msgid "Will be posted at {0}"
 msgstr "{0}に投稿予定"
 
@@ -3823,6 +3957,10 @@ msgstr "お客様はアカウント資格情報の機密性を維持し、アカ
 #: src/components/settings/StorageSection.tsx:356
 msgid "You are using {0}% of your storage. Consider deleting unused files."
 msgstr "ストレージを{0}%使用しています。不要なファイルの削除をご検討ください。"
+
+#: src/pages/onboarding.tsx:394
+msgid "You can change these settings later in the admin panel."
+msgstr "これらの設定は後で管理パネルから変更できます。"
 
 #: src/components/settings/InvitationCodeSection.tsx:182
 msgid "You can create unlimited invitation codes"

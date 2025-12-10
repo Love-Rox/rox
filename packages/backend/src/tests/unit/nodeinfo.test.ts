@@ -50,8 +50,8 @@ interface NodeInfoResponse {
 
 describe("NodeInfo Endpoints", () => {
   let app: Hono;
-  let mockUserRepository: { countLocal: ReturnType<typeof mock> };
-  let mockNoteRepository: { countLocal: ReturnType<typeof mock> };
+  let mockUserRepository: { count: ReturnType<typeof mock>; countActiveLocal: ReturnType<typeof mock> };
+  let mockNoteRepository: { count: ReturnType<typeof mock> };
   let mockInstanceSettingsRepository: {
     get: ReturnType<typeof mock>;
     getMany: ReturnType<typeof mock>;
@@ -72,11 +72,12 @@ describe("NodeInfo Endpoints", () => {
     settingsStore.set("theme.primaryColor", "#ff6b6b");
 
     mockUserRepository = {
-      countLocal: mock(() => Promise.resolve(42)),
+      count: mock(() => Promise.resolve(42)),
+      countActiveLocal: mock(() => Promise.resolve(10)),
     };
 
     mockNoteRepository = {
-      countLocal: mock(() => Promise.resolve(1234)),
+      count: mock(() => Promise.resolve(1234)),
     };
 
     mockInstanceSettingsRepository = {
@@ -210,8 +211,9 @@ describe("NodeInfo Endpoints", () => {
 
     test("should handle missing count methods gracefully", async () => {
       // Remove count methods - use type assertion for test purposes
-      (mockUserRepository as { countLocal: unknown }).countLocal = undefined;
-      (mockNoteRepository as { countLocal: unknown }).countLocal = undefined;
+      (mockUserRepository as { count: unknown }).count = undefined;
+      (mockUserRepository as { countActiveLocal: unknown }).countActiveLocal = undefined;
+      (mockNoteRepository as { count: unknown }).count = undefined;
 
       const res = await app.request("/nodeinfo/2.1");
 

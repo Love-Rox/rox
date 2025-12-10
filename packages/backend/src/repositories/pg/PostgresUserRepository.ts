@@ -100,6 +100,24 @@ export class PostgresUserRepository implements IUserRepository {
     return result?.count ?? 0;
   }
 
+
+  async countActiveLocal(days: number): Promise<number> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+
+    // Count distinct local users who have posted at least one note in the given period
+    const result = await this.db.execute<{ count: number }>(sql`
+      SELECT COUNT(DISTINCT u.id)::int as count
+      FROM users u
+      INNER JOIN notes n ON n.user_id = u.id
+      WHERE u.host IS NULL
+        AND u.is_deleted = false
+        AND n.created_at >= ${cutoffDate}
+    `);
+
+    return result.rows[0]?.count ?? 0;
+  }
+
   async findAll(options: ListUsersOptions = {}): Promise<User[]> {
     const { limit = 100, offset = 0, localOnly, remoteOnly, isAdmin, isSuspended } = options;
 

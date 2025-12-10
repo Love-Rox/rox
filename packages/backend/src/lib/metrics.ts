@@ -171,7 +171,7 @@ export function recordHttpRequest(
 /**
  * Record ActivityPub delivery metrics
  *
- * TODO: Integrate into ActivityPubDeliveryService for actual usage
+ * Integrated into ActivityPubDeliveryService.
  *
  * @param activityType - Type of activity (Create, Follow, etc.)
  * @param success - Whether delivery was successful
@@ -192,7 +192,7 @@ export function recordActivityDelivery(
 /**
  * Record ActivityPub inbox metrics
  *
- * TODO: Integrate into InboxService for actual usage
+ * Integrated into InboxService.
  *
  * @param activityType - Type of activity processed
  * @param success - Whether processing was successful
@@ -207,7 +207,7 @@ export function recordInboxActivity(activityType: string, success: boolean): voi
 /**
  * Record cache operation metrics
  *
- * TODO: Integrate into cache adapters for actual usage
+ * Integrated into DragonflyCacheAdapter.
  *
  * @param operation - Cache operation (get, set, delete)
  * @param hit - Whether it was a cache hit (for get operations)

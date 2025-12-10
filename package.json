@@ -1,6 +1,6 @@
 {
   "name": "rox",
-  "version": "2025.12.0-rc.4",
+  "version": "2025.12.0-rc.5",
   "devDependencies": {
     "@playwright/test": "^1.57.0",
     "@types/bun": "latest",
@@ -23,7 +23,7 @@
     "build": "bun run --cwd packages/backend build && bun run --cwd packages/frontend build",
     "build:backend": "bun run --cwd packages/backend build",
     "build:frontend": "bun run --cwd packages/frontend build",
-    "start": "bun scripts/start-production.ts",
+    "start": "./scripts/start.sh",
     "start:backend": "bun run --cwd packages/backend start",
     "start:frontend": "bun run --cwd packages/frontend start",
     "test": "bun test",

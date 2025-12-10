@@ -1,3 +1,6 @@
+// Set process title for top/ps visibility
+process.title = "hono-rox";
+
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import {
@@ -37,6 +40,7 @@ import notificationsRoute from "./routes/notifications.js";
 import pushRoute from "./routes/push.js";
 import scheduledNotesRoute from "./routes/scheduled-notes.js";
 import contactRoute from "./routes/contact.js";
+import onboardingRoute from "./routes/onboarding.js";
 import wsRoute, { websocket } from "./routes/ws.js";
 import packageJson from "../../../package.json";
 import { ReceivedActivitiesCleanupService } from "./services/ReceivedActivitiesCleanupService.js";
@@ -88,6 +92,7 @@ app.route("/api/notifications", notificationsRoute);
 app.route("/api/push", pushRoute);
 app.route("/api/scheduled-notes", scheduledNotesRoute);
 app.route("/api/contact", contactRoute);
+app.route("/api/onboarding", onboardingRoute);
 
 // WebSocket routes for real-time updates
 app.route("/ws", wsRoute);

@@ -110,6 +110,8 @@ actor.get("/:username", async (c: Context) => {
 
   return c.json(actorDocument, 200, {
     "Content-Type": "application/activity+json; charset=utf-8",
+    // Cache actor documents for 1 hour (ActivityPub spec recommends caching)
+    "Cache-Control": "public, max-age=3600",
   });
 });
 

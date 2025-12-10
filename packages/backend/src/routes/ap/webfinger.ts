@@ -82,6 +82,8 @@ webfinger.get("/.well-known/webfinger", async (c: Context) => {
   return c.json(jrd, 200, {
     "Content-Type": "application/jrd+json; charset=utf-8",
     "Access-Control-Allow-Origin": "*",
+    // Cache WebFinger responses for 1 hour (reduces federation lookup overhead)
+    "Cache-Control": "public, max-age=3600",
   });
 });
 

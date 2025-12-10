@@ -399,6 +399,20 @@ notes.get("/user-notes", optionalAuth(), async (c: Context) => {
  */
 notes.get("/replies", optionalAuth(), async (c: Context) => {
   const noteRepository = c.get("noteRepository");
+  const driveFileRepository = c.get("driveFileRepository");
+  const userRepository = c.get("userRepository");
+  const deliveryService = c.get("activityPubDeliveryService");
+  const cacheService = c.get("cacheService");
+
+  const followRepository = c.get("followRepository");
+  const noteService = new NoteService(
+    noteRepository,
+    driveFileRepository,
+    followRepository,
+    userRepository,
+    deliveryService,
+    cacheService,
+  );
 
   const noteId = c.req.query("noteId");
 
@@ -406,18 +420,16 @@ notes.get("/replies", optionalAuth(), async (c: Context) => {
     return c.json({ error: "noteId is required" }, 400);
   }
 
-  const limit = c.req.query("limit") ? Number.parseInt(c.req.query("limit")!, 10) : 20;
+  const limit = c.req.query("limit") ? Number.parseInt(c.req.query("limit")!, 10) : undefined;
   const sinceId = c.req.query("sinceId");
   const untilId = c.req.query("untilId");
 
-  // Get all replies to this note
-  const replies = await noteRepository.findReplies(noteId, {
+  const replies = await noteService.getReplies(noteId, {
     limit,
     sinceId,
     untilId,
   });
 
-  // TODO: Implement hydration with user and file data
   return c.json(replies);
 });
 

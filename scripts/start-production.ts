@@ -51,12 +51,20 @@ async function waitForPort(port: number, maxAttempts = 30): Promise<boolean> {
 
 /**
  * Start a subprocess and track it
+ * Uses exec -a to set custom process name visible in top/ps
  */
-function startProcess(name: string, cwd: string, command: string[]): ProcessInfo {
+function startProcess(
+  name: string,
+  cwd: string,
+  command: string[],
+  processName: string,
+): ProcessInfo {
   console.log(`🚀 Starting ${name}...`);
 
+  // Use bash exec -a to set the process name shown in top/ps
+  const quotedCmd = command.map((c) => `"${c}"`).join(" ");
   const proc = spawn({
-    cmd: command,
+    cmd: ["bash", "-c", `exec -a "${processName}" ${quotedCmd}`],
     cwd,
     stdout: "inherit",
     stderr: "inherit",
@@ -146,6 +154,9 @@ const FRONTEND_PORT = process.env.FRONTEND_PORT || "3001";
 
 // Main startup sequence
 async function main(): Promise<void> {
+  // Set process title for top/ps visibility
+  process.title = "rox";
+
   console.log("═".repeat(50));
   console.log("🦊 Rox Production Server");
   console.log("═".repeat(50));
@@ -159,11 +170,12 @@ async function main(): Promise<void> {
   const frontendPortNum = parseInt(FRONTEND_PORT, 10);
 
   // Start backend (API server)
-  startProcess("Backend (API)", join(ROOT_DIR, "packages/backend"), [
-    BUN_PATH,
-    "run",
-    "src/index.ts",
-  ]);
+  startProcess(
+    "Backend (API)",
+    join(ROOT_DIR, "packages/backend"),
+    [BUN_PATH, "run", "src/index.ts"],
+    "hono-rox",
+  );
 
   // Wait for backend to be ready
   const backendReady = await waitForPort(backendPortNum);
@@ -176,11 +188,12 @@ async function main(): Promise<void> {
 
   if (ENABLE_FRONTEND) {
     // Start frontend (Waku)
-    startProcess("Frontend (Waku)", join(ROOT_DIR, "packages/frontend"), [
-      BUN_PATH,
-      "run",
-      "start",
-    ]);
+    startProcess(
+      "Frontend (Waku)",
+      join(ROOT_DIR, "packages/frontend"),
+      [BUN_PATH, "run", "start"],
+      "waku-rox",
+    );
 
     // Wait for frontend to be ready
     const frontendReady = await waitForPort(frontendPortNum);

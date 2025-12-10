@@ -1,0 +1,205 @@
+/**
+ * MySQL User Repository
+ *
+ * MySQL implementation of the IUserRepository interface.
+ *
+ * @module repositories/mysql/MysqlUserRepository
+ */
+
+import { eq, and, isNull, isNotNull, sql, desc, or } from "drizzle-orm";
+import type { MySql2Database } from "drizzle-orm/mysql2";
+import { users, type User } from "../../db/schema/mysql.js";
+import type * as mysqlSchema from "../../db/schema/mysql.js";
+import type {
+  IUserRepository,
+  ListUsersOptions,
+  SearchUsersOptions,
+} from "../../interfaces/repositories/IUserRepository.js";
+
+type MysqlDatabase = MySql2Database<typeof mysqlSchema>;
+
+export class MysqlUserRepository implements IUserRepository {
+  constructor(private db: MysqlDatabase) {}
+
+  async create(user: Omit<User, "createdAt" | "updatedAt">): Promise<User> {
+    const now = new Date();
+    await this.db.insert(users).values({
+      ...user,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    // MySQL doesn't support RETURNING, so we need to fetch the inserted record
+    const [result] = await this.db.select().from(users).where(eq(users.id, user.id)).limit(1);
+
+    if (!result) {
+      throw new Error("Failed to create user");
+    }
+
+    return result as User;
+  }
+
+  async findById(id: string): Promise<User | null> {
+    const [result] = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+
+    return (result as User) ?? null;
+  }
+
+  async findByUsername(username: string, host: string | null = null): Promise<User | null> {
+    const [result] = await this.db
+      .select()
+      .from(users)
+      .where(
+        and(
+          eq(users.username, username),
+          host === null ? isNull(users.host) : eq(users.host, host),
+        ),
+      )
+      .limit(1);
+
+    return (result as User) ?? null;
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    const [result] = await this.db.select().from(users).where(eq(users.email, email)).limit(1);
+
+    return (result as User) ?? null;
+  }
+
+  async findByUri(uri: string): Promise<User | null> {
+    const [result] = await this.db.select().from(users).where(eq(users.uri, uri)).limit(1);
+
+    return (result as User) ?? null;
+  }
+
+  async update(id: string, data: Partial<Omit<User, "id" | "createdAt">>): Promise<User> {
+    await this.db
+      .update(users)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id));
+
+    // MySQL doesn't support RETURNING, so we need to fetch the updated record
+    const [result] = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+
+    if (!result) {
+      throw new Error("User not found");
+    }
+
+    return result as User;
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.db.delete(users).where(eq(users.id, id));
+  }
+
+  async count(localOnly = false): Promise<number> {
+    const [result] = await this.db
+      .select({ count: sql<number>`CAST(COUNT(*) AS SIGNED)` })
+      .from(users)
+      .where(localOnly ? isNull(users.host) : undefined);
+
+    return result?.count ?? 0;
+  }
+
+  async countRemote(): Promise<number> {
+    const [result] = await this.db
+      .select({ count: sql<number>`CAST(COUNT(*) AS SIGNED)` })
+      .from(users)
+      .where(isNotNull(users.host));
+
+    return result?.count ?? 0;
+  }
+
+  async countActiveLocal(days: number): Promise<number> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+
+    // Count distinct local users who have posted at least one note in the given period
+    const result = await this.db.execute(sql`
+      SELECT CAST(COUNT(DISTINCT u.id) AS SIGNED) as count
+      FROM users u
+      INNER JOIN notes n ON n.user_id = u.id
+      WHERE u.host IS NULL
+        AND u.is_deleted = false
+        AND n.created_at >= ${cutoffDate}
+    `);
+
+    // MySQL execute returns [rows, fields], we need the first row
+    const rows = result[0] as unknown as Array<{ count: number }>;
+    return rows[0]?.count ?? 0;
+  }
+
+  async findAll(options: ListUsersOptions = {}): Promise<User[]> {
+    const { limit = 100, offset = 0, localOnly, remoteOnly, isAdmin, isSuspended } = options;
+
+    const conditions = [];
+
+    if (localOnly === true) {
+      conditions.push(isNull(users.host));
+    } else if (remoteOnly === true) {
+      conditions.push(isNotNull(users.host));
+    }
+
+    if (isAdmin !== undefined) {
+      conditions.push(eq(users.isAdmin, isAdmin));
+    }
+
+    if (isSuspended !== undefined) {
+      conditions.push(eq(users.isSuspended, isSuspended));
+    }
+
+    const results = await this.db
+      .select()
+      .from(users)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(users.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    return results as User[];
+  }
+
+  async search(options: SearchUsersOptions): Promise<User[]> {
+    const { query, limit = 20, offset = 0, localOnly } = options;
+
+    // Escape special characters for LIKE pattern
+    const escapedQuery = query.replace(/[%_\\]/g, "\\$&");
+    const searchPattern = `%${escapedQuery}%`;
+
+    // MySQL uses LIKE with LOWER() for case-insensitive search
+    const conditions = [
+      or(
+        sql`LOWER(${users.username}) LIKE LOWER(${searchPattern})`,
+        sql`LOWER(${users.displayName}) LIKE LOWER(${searchPattern})`,
+      ),
+    ];
+
+    if (localOnly === true) {
+      conditions.push(isNull(users.host));
+    }
+
+    // Exclude suspended users from search results
+    conditions.push(eq(users.isSuspended, false));
+
+    const results = await this.db
+      .select()
+      .from(users)
+      .where(and(...conditions))
+      .orderBy(
+        // Prioritize exact username matches, then prefix matches
+        sql`CASE
+          WHEN LOWER(${users.username}) = LOWER(${query}) THEN 0
+          WHEN LOWER(${users.username}) LIKE LOWER(${query + "%"}) THEN 1
+          ELSE 2
+        END`,
+        desc(users.createdAt),
+      )
+      .limit(limit)
+      .offset(offset);
+
+    return results as User[];
+  }
+}

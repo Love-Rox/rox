@@ -1,73 +1,60 @@
-# Session Status - 2025-12-09
+# Session Status - 2025-12-10
 
 ## Current Status
 
 ### Recently Completed Features
 
-#### Production Bug Fixes (Latest - 2025-12-09)
-- **Media Proxy for External Images**: External images from remote servers now load through `/api/proxy` to bypass hotlink protection
-  - Files: `NoteCard.tsx`, `EmojiPicker.tsx`, `admin/emojis.tsx`
-  - Utility: `src/lib/utils/imageProxy.ts` - `getProxiedImageUrl()`
+#### Server Onboarding Wizard (Latest - 2025-12-10)
+- **Complete onboarding flow for new server setup**
+  - Added `onboarding.completed` setting key to `IInstanceSettingsRepository`
+  - Added `isOnboardingCompleted()` and `setOnboardingCompleted()` methods to `InstanceSettingsService`
+  - Created `/api/onboarding` API routes:
+    - `GET /api/onboarding/status` - Check if onboarding is needed
+    - `POST /api/onboarding/complete` - Create admin user and configure instance
+  - Created frontend onboarding wizard (`/onboarding`) with 4 steps:
+    1. Admin account creation
+    2. Instance settings
+    3. Registration settings
+    4. Review and confirm
+  - Added automatic redirect to onboarding from home page when needed
+  - Added Japanese translations for all onboarding UI strings
+  - Files:
+    - `packages/backend/src/interfaces/repositories/IInstanceSettingsRepository.ts`
+    - `packages/backend/src/services/InstanceSettingsService.ts`
+    - `packages/backend/src/routes/onboarding.ts`
+    - `packages/frontend/src/pages/onboarding.tsx`
+    - `packages/frontend/src/pages/index.tsx`
 
-- **canManageCustomEmojis Permission Fix**: Added legacy `isAdmin` fallback for role permission check
-  - File: `src/components/ui/EmojiPicker.tsx:80`
+#### Web Push Notifications (2025-12-09)
+- **Full Web Push implementation**
+  - Backend: `WebPushService.ts` with VAPID key generation
+  - Service Worker: `sw.js` with push event handling
+  - API routes: `/api/push/*` (subscribe, unsubscribe, test, status)
+  - Frontend hook: `usePushNotifications.ts`
 
+#### Plugin Architecture Design (2025-12-10)
+- **Design document created** (not implemented yet)
+  - EventBus for decoupled communication
+  - Plugin interface and lifecycle management
+  - Plugin Loader for dynamic loading
+  - Slot system for UI extensions
+  - Distribution via Git repos/direct downloads (not npm)
+  - See memory: `plugin_architecture_design`
+
+#### Production Bug Fixes (2025-12-09)
+- **Media Proxy for External Images**: External images from remote servers now load through `/api/proxy`
+- **canManageCustomEmojis Permission Fix**: Added legacy `isAdmin` fallback
 - **optionalAuth Middleware for Emojis Route**: Fixed 401/403 errors on `/api/emojis/remote`
-  - File: `src/routes/emojis.ts`
-
-#### OAuth 2.0 Implementation (2025-12-08)
-- **Full OAuth 2.0 with PKCE support**: Complete OAuth flow for MiAuth compatibility
-  - Authorization endpoint: `/oauth/authorize`
-  - Token endpoint: `/oauth/token`
-  - Token revocation: `/oauth/revoke`
-  - Token introspection: `/oauth/introspect`
-  - Files: `src/routes/oauth.ts`, `src/services/OAuthService.ts`
-  - Database: `oauthApps`, `oauthAuthorizationCodes`, `oauthAccessTokens` tables
-
-- **MiAuth Compatibility Layer**: Legacy Misskey authentication support
-  - Session-based flow: `/miauth/:sessionId`
-  - Check endpoint: `/api/miauth/:sessionId/check`
-  - Files: `src/routes/miauth.ts`, `src/services/MiAuthService.ts`
-
-#### UI Improvements
-- **Collapsible Sidebar**: Desktop sidebar can collapse to icon-only mode
-  - Uses favicon when collapsed, full logo when expanded
-  - Persists state to localStorage via Jotai atom
-  - Files: `src/lib/atoms/sidebar.ts`, `src/components/layout/Sidebar.tsx`
-
-- **Scroll-to-Top Button**: Floating button on timeline when scrolling down
-  - File: `src/components/ui/ScrollToTop.tsx`
-
-- **Global UI Settings**: Font size and line height now apply to entire UI
-  - CSS applies `--rox-font-size` to `html` element
-  - All Tailwind rem-based sizes scale accordingly
-  - File: `src/styles/globals.css`
-
-- **Note Page Routing Fix**: `/notes/:id` now properly serves HTML pages
-  - ActivityPub endpoint only responds to AP Accept headers
-  - File: `src/routes/ap/note.ts`
-
-#### Admin Features
-- **Federation Admin Page** (`/admin/federation`)
-  - View all federated instances
-  - Refresh instance info
-  - Instance blocking/unblocking
-
-- **Global Timeline** (`/timeline` with type="global")
-  - Shows all public posts including remote notes
-
-#### Previous Features (Stable)
-- Notification system with SSE real-time updates
-- Account migration (Move activity)
-- Moderation system (reports, warnings, suspensions)
-- Role-based access control
-- Instance blocking
-- Custom emoji management
-- MFM support
 
 ### Test Status
-- All unit tests passing
+- All unit tests passing (686 pass, 1 skip)
 - TypeScript type checking passes
+- Linting passes (0 errors, 0 warnings)
+
+## Pending Tasks
+- Performance optimization
+- Add more repository tests
+- Plugin architecture implementation (design complete)
 
 ## Development Environment
 
@@ -88,12 +75,11 @@ bun run dev  # Runs on port 3001
 ```
 
 ## Known Issues / In Progress
-- **React Hydration Error #418**: May be related to old cached builds. Hard refresh may not help; try clearing cache completely or rebuilding.
-- **WebSocket 1006 errors**: Connection closing before established. Nginx config appears correct; may resolve after hydration error is fixed.
+- **React Hydration Error #418**: May be related to old cached builds
+- **WebSocket 1006 errors**: Connection closing before established
 
 ## Potential Next Steps
-1. Web Push notifications (service worker)
-2. Image optimization improvements
-3. Server onboarding wizard
-4. Performance optimizations
-5. Investigate remaining hydration error after deployment
+1. Performance optimizations (query caching, response optimization)
+2. Additional repository tests (SQLite tests added)
+3. Plugin architecture implementation
+4. Image optimization improvements

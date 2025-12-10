@@ -155,11 +155,41 @@ describe("AcceptHandler", () => {
 describe("RejectHandler", () => {
   let handler: RejectHandler;
   let mockContext: HandlerContext;
+  let mockRemoteActorService: any;
+  let mockUserRepository: any;
+  let mockFollowRepository: any;
 
   beforeEach(() => {
     handler = new RejectHandler();
 
+    mockRemoteActorService = {
+      resolveActor: mock(() =>
+        Promise.resolve({
+          id: "remote-user-456",
+          username: "remoteuser",
+          host: "remote.example.com",
+        }),
+      ),
+    };
+
+    mockUserRepository = {
+      findByUsername: mock(() =>
+        Promise.resolve({
+          id: "local-user-123",
+          username: "localuser",
+        }),
+      ),
+    };
+
+    mockFollowRepository = {
+      delete: mock(() => Promise.resolve()),
+    };
+
     const contextMap = new Map<string, any>();
+    contextMap.set("remoteActorService", mockRemoteActorService);
+    contextMap.set("userRepository", mockUserRepository);
+    contextMap.set("followRepository", mockFollowRepository);
+
     const honoContext = {
       get: (key: string) => contextMap.get(key),
     } as unknown as Context;
@@ -175,8 +205,7 @@ describe("RejectHandler", () => {
     expect(handler.activityType).toBe("Reject");
   });
 
-  test("should return success (stub implementation)", async () => {
-    // Note: RejectHandler is currently a stub implementation
+  test("should handle Reject Follow activity", async () => {
     const activity: Activity = {
       "@context": "https://www.w3.org/ns/activitystreams",
       type: "Reject",
@@ -193,6 +222,39 @@ describe("RejectHandler", () => {
     const result = await handler.handle(activity, mockContext);
 
     expect(result.success).toBe(true);
-    expect(result.message).toContain("not yet implemented");
+    expect(result.message).toContain("Follow rejected and removed");
+    expect(mockFollowRepository.delete).toHaveBeenCalledWith("local-user-123", "remote-user-456");
+  });
+
+  test("should return failure when object is missing", async () => {
+    const activity: Activity = {
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Reject",
+      id: "https://remote.example.com/activities/reject-1",
+      actor: "https://remote.example.com/users/remoteuser",
+    };
+
+    const result = await handler.handle(activity, mockContext);
+
+    expect(result.success).toBe(false);
+    expect(result.message).toContain("Invalid Reject activity");
+  });
+
+  test("should return success for unsupported object types", async () => {
+    const activity: Activity = {
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Reject",
+      id: "https://remote.example.com/activities/reject-1",
+      actor: "https://remote.example.com/users/remoteuser",
+      object: {
+        type: "Unknown",
+        id: "http://localhost:3000/activities/something-1",
+      },
+    };
+
+    const result = await handler.handle(activity, mockContext);
+
+    expect(result.success).toBe(true);
+    expect(result.message).toContain("Unsupported Reject object type");
   });
 });

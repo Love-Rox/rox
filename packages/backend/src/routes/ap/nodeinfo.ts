@@ -69,21 +69,22 @@ app.get("/nodeinfo/2.1", async (c) => {
     instanceSettingsService.getThemeSettings(),
   ]);
 
-  // Get statistics (with fallback to 0 if repositories don't have count methods)
+  // Get statistics
   let totalUsers = 0;
   let localPosts = 0;
+  let activeHalfyear: number | null = null;
+  let activeMonth: number | null = null;
 
   try {
-    // These methods may not exist yet, so we wrap in try-catch
-    if (typeof (userRepository as any).countLocal === "function") {
-      totalUsers = await (userRepository as any).countLocal();
-    }
-    if (typeof (noteRepository as any).countLocal === "function") {
-      localPosts = await (noteRepository as any).countLocal();
-    }
-  } catch {
-    // Gracefully handle missing count methods
-    logger.debug("NodeInfo: Count methods not available, using default values");
+    // Get user and post counts
+    totalUsers = await userRepository.count(true); // Local users only
+    localPosts = await noteRepository.count(true); // Local notes only
+
+    // Get active user counts
+    activeHalfyear = await userRepository.countActiveLocal(180);
+    activeMonth = await userRepository.countActiveLocal(30);
+  } catch (error) {
+    logger.debug({ error }, "NodeInfo: Error fetching statistics, using default values");
   }
 
   return c.json({
@@ -103,8 +104,8 @@ app.get("/nodeinfo/2.1", async (c) => {
     usage: {
       users: {
         total: totalUsers,
-        activeHalfyear: null, // TODO: Implement active user tracking
-        activeMonth: null, // TODO: Implement active user tracking
+        activeHalfyear,
+        activeMonth,
       },
       localPosts,
       localComments: 0, // Rox doesn't distinguish comments from posts
@@ -147,21 +148,15 @@ app.get("/nodeinfo/2.0", async (c) => {
     instanceSettingsService.getThemeSettings(),
   ]);
 
-  // Get statistics (with fallback to 0 if repositories don't have count methods)
+  // Get statistics
   let totalUsers = 0;
   let localPosts = 0;
 
   try {
-    // These methods may not exist yet, so we wrap in try-catch
-    if (typeof (userRepository as any).countLocal === "function") {
-      totalUsers = await (userRepository as any).countLocal();
-    }
-    if (typeof (noteRepository as any).countLocal === "function") {
-      localPosts = await (noteRepository as any).countLocal();
-    }
-  } catch {
-    // Gracefully handle missing count methods
-    logger.debug("NodeInfo: Count methods not available, using default values");
+    totalUsers = await userRepository.count(true); // Local users only
+    localPosts = await noteRepository.count(true); // Local notes only
+  } catch (error) {
+    logger.debug({ error }, "NodeInfo 2.0: Error fetching statistics, using default values");
   }
 
   return c.json({
