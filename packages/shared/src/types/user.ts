@@ -44,6 +44,11 @@ export interface User extends Timestamps {
   profileEmojis: ProfileEmoji[] | null;
   // Storage quota
   storageQuotaMb: number | null; // Storage quota in MB (null means use role default)
+  // Remote actor fetch status (for detecting 410 Gone errors)
+  goneDetectedAt: Date | null; // First detection of 410 Gone or fetch failure
+  fetchFailureCount: number; // Number of consecutive fetch failures
+  lastFetchAttemptAt: Date | null; // Last attempt to fetch remote actor
+  lastFetchError: string | null; // Last error message from fetch attempt
 }
 
 export interface UserProfile {

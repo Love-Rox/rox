@@ -22,15 +22,9 @@ export default function ServerErrorPage() {
           onClick={() => window.location.reload()}
           className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 underline text-sm"
         >
-          <Trans>Try refreshing the page</Trans>
+          <Trans>Refresh page</Trans>
         </button>
       </div>
     </ErrorPage>
   );
 }
-
-export const getConfig = async () => {
-  return {
-    render: "static",
-  };
-};

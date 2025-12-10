@@ -104,6 +104,11 @@ export const users = sqliteTable(
     uiSettings: text("ui_settings", { mode: "json" }).$type<UISettings>(),
     profileEmojis: text("profile_emojis", { mode: "json" }).$type<ProfileEmoji[]>().default([]),
     storageQuotaMb: integer("storage_quota_mb"),
+    // Remote actor fetch status (for detecting 410 Gone)
+    goneDetectedAt: integer("gone_detected_at", { mode: "timestamp" }),
+    fetchFailureCount: integer("fetch_failure_count").notNull().default(0),
+    lastFetchAttemptAt: integer("last_fetch_attempt_at", { mode: "timestamp" }),
+    lastFetchError: text("last_fetch_error"),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),
@@ -116,6 +121,7 @@ export const users = sqliteTable(
     emailIdx: uniqueIndex("email_idx").on(table.email),
     uriIdx: index("uri_idx").on(table.uri),
     isDeletedIdx: index("user_is_deleted_idx").on(table.isDeleted),
+    goneDetectedIdx: index("user_gone_detected_idx").on(table.goneDetectedAt),
   }),
 );
 

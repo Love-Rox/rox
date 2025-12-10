@@ -207,4 +207,59 @@ export class SqliteUserRepository implements IUserRepository {
 
     return results as User[];
   }
+
+  async findWithFetchErrors(options: { limit?: number; offset?: number } = {}): Promise<User[]> {
+    const { limit = 100, offset = 0 } = options;
+
+    const results = this.db
+      .select()
+      .from(users)
+      .where(isNotNull(users.goneDetectedAt))
+      .orderBy(desc(users.goneDetectedAt))
+      .limit(limit)
+      .offset(offset)
+      .all();
+
+    return results as User[];
+  }
+
+  async countWithFetchErrors(): Promise<number> {
+    const [result] = this.db
+      .select({ count: sql<number>`count(*)` })
+      .from(users)
+      .where(isNotNull(users.goneDetectedAt))
+      .all();
+
+    return result?.count ?? 0;
+  }
+
+  async recordFetchFailure(userId: string, errorMessage: string): Promise<void> {
+    const now = new Date();
+
+    // SQLite: Use COALESCE to conditionally set goneDetectedAt only if it's null
+    this.db.run(sql`
+      UPDATE users
+      SET
+        gone_detected_at = COALESCE(gone_detected_at, ${now.getTime()}),
+        fetch_failure_count = fetch_failure_count + 1,
+        last_fetch_attempt_at = ${now.getTime()},
+        last_fetch_error = ${errorMessage},
+        updated_at = ${now.getTime()}
+      WHERE id = ${userId}
+    `);
+  }
+
+  async clearFetchFailure(userId: string): Promise<void> {
+    this.db
+      .update(users)
+      .set({
+        goneDetectedAt: null,
+        fetchFailureCount: 0,
+        lastFetchAttemptAt: new Date(),
+        lastFetchError: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .run();
+  }
 }

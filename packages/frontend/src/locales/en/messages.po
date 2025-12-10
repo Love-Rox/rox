@@ -45,6 +45,11 @@ msgstr "{0} is not blocked"
 msgid "{0} reports against this user"
 msgstr "{0} reports against this user"
 
+#. placeholder {0}: selectedIds.size
+#: src/pages/admin/gone-users.tsx:230
+msgid "{0} selected"
+msgstr "{0} selected"
+
 #. placeholder {0}: selectedFiles.length
 #: src/components/drive/DrivePickerDialog.tsx:498
 msgid "{0} selected (up to {remainingSlots} remaining)"
@@ -73,6 +78,10 @@ msgstr "{assetType} removed"
 msgid "{assetType} uploaded successfully"
 msgstr "{assetType} uploaded successfully"
 
+#: src/pages/admin/gone-users.tsx:162
+msgid "{days} days ago"
+msgstr "{days} days ago"
+
 #: src/pages/legal/privacy.tsx:108
 msgid "<0>Account information:</0> Username, email address, and password (securely hashed)"
 msgstr "<0>Account information:</0> Username, email address, and password (securely hashed)"
@@ -92,6 +101,10 @@ msgstr "<0>Technical data:</0> IP address, browser type, and access logs for sec
 #: src/pages/admin/invitations.tsx:305
 msgid "1 Day"
 msgstr "1 Day"
+
+#: src/pages/admin/gone-users.tsx:161
+msgid "1 day ago"
+msgstr "1 day ago"
 
 #: src/pages/legal/terms.tsx:106
 msgid "1. Acceptance of Terms"
@@ -201,7 +214,7 @@ msgstr "About This Instance"
 msgid "accepted your follow request"
 msgstr "accepted your follow request"
 
-#: src/pages/403.tsx:14
+#: src/pages/403.tsx:12
 msgid "Access Denied"
 msgstr "Access Denied"
 
@@ -654,6 +667,19 @@ msgstr "Choose your preferred sign-in method"
 msgid "Clear all"
 msgstr "Clear all"
 
+#: src/pages/admin/gone-users.tsx:326
+msgid "Clear failure status"
+msgstr "Clear failure status"
+
+#: src/pages/admin/gone-users.tsx:240
+msgid "Clear Status"
+msgstr "Clear Status"
+
+#. placeholder {0}: idsToClear.length
+#: src/pages/admin/gone-users.tsx:139
+msgid "Cleared failure status for {0} users"
+msgstr "Cleared failure status for {0} users"
+
 #: src/pages/admin/emojis.tsx:1049
 msgid "Click to select a ZIP file or drag and drop"
 msgstr "Click to select a ZIP file or drag and drop"
@@ -913,6 +939,7 @@ msgstr "Delete warning"
 msgid "Delete your account and associated data"
 msgstr "Delete your account and associated data"
 
+#: src/pages/admin/gone-users.tsx:296
 #: src/pages/admin/users.tsx:482
 msgid "Deleted"
 msgstr "Deleted"
@@ -1240,6 +1267,10 @@ msgstr "Failed to check instance"
 msgid "Failed to check server status"
 msgstr "Failed to check server status"
 
+#: src/pages/admin/gone-users.tsx:147
+msgid "Failed to clear failure status"
+msgstr "Failed to clear failure status"
+
 #: src/pages/onboarding.tsx:186
 msgid "Failed to complete setup. Please try again."
 msgstr "Failed to complete setup. Please try again."
@@ -1346,6 +1377,10 @@ msgstr "Failed to load storage statistics"
 msgid "Failed to load user storage details"
 msgstr "Failed to load user storage details"
 
+#: src/pages/admin/gone-users.tsx:120
+msgid "Failed to mark users as deleted"
+msgstr "Failed to mark users as deleted"
+
 #: src/pages/admin/reports.tsx:185
 #: src/pages/mod/reports.tsx:173
 msgid "Failed to process report"
@@ -1450,6 +1485,10 @@ msgstr "Failed to upload banner"
 msgid "Failed to upload file"
 msgstr "Failed to upload file"
 
+#: src/pages/admin/gone-users.tsx:315
+msgid "Failures"
+msgstr "Failures"
+
 #: src/components/LandingPage.tsx:202
 msgid "Fast and efficient with minimal resource usage"
 msgstr "Fast and efficient with minimal resource usage"
@@ -1502,6 +1541,10 @@ msgstr "Filter notifications"
 #: src/pages/search.tsx:337
 msgid "Find users by username or display name"
 msgstr "Find users by username or display name"
+
+#: src/pages/admin/gone-users.tsx:312
+msgid "First detected"
+msgstr "First detected"
 
 #: src/components/drive/DrivePickerDialog.tsx:332
 msgid "Folder name"
@@ -1596,9 +1639,13 @@ msgstr "Go to login"
 msgid "Go to Timeline"
 msgstr "Go to Timeline"
 
-#: src/pages/410.tsx:15
+#: src/pages/410.tsx:13
 msgid "Gone"
 msgstr "Gone"
+
+#: src/pages/admin/gone-users.tsx:187
+msgid "Gone Users"
+msgstr "Gone Users"
 
 #: src/pages/legal/terms.tsx:139
 msgid "Harass, abuse, or threaten other users"
@@ -2015,9 +2062,22 @@ msgstr "Manage your account settings"
 msgid "Mark all as read"
 msgstr "Mark all as read"
 
+#: src/pages/admin/gone-users.tsx:335
+msgid "Mark as deleted"
+msgstr "Mark as deleted"
+
+#: src/pages/admin/gone-users.tsx:249
+msgid "Mark as Deleted"
+msgstr "Mark as Deleted"
+
 #: src/pages/admin/users.tsx:587
 msgid "Mark the account as deleted"
 msgstr "Mark the account as deleted"
+
+#. placeholder {0}: idsToDelete.length
+#: src/pages/admin/gone-users.tsx:112
+msgid "Marked {0} users as deleted"
+msgstr "Marked {0} users as deleted"
 
 #: src/pages/admin/invitations.tsx:276
 msgid "Max Uses"
@@ -2268,6 +2328,10 @@ msgstr "No text content"
 msgid "No users found"
 msgstr "No users found"
 
+#: src/pages/admin/gone-users.tsx:209
+msgid "No users with fetch errors found"
+msgstr "No users with fetch errors found"
+
 #: src/components/pages/NoteDetailPageClient.tsx:129
 msgid "Note"
 msgstr "Note"
@@ -2385,7 +2449,7 @@ msgstr "Override the default sound for specific notification types. Leave as def
 msgid "Overview"
 msgstr "Overview"
 
-#: src/pages/404.tsx:14
+#: src/pages/404.tsx:12
 msgid "Page Not Found"
 msgstr "Page Not Found"
 
@@ -2747,7 +2811,7 @@ msgstr "Refresh"
 msgid "Refresh List"
 msgstr "Refresh List"
 
-#: src/pages/503.tsx:28
+#: src/components/ui/RefreshButton.tsx:14
 msgid "Refresh page"
 msgstr "Refresh page"
 
@@ -3172,6 +3236,10 @@ msgstr "Security"
 msgid "Select"
 msgstr "Select"
 
+#: src/pages/admin/gone-users.tsx:227
+msgid "Select All"
+msgstr "Select All"
+
 #: src/components/note/NoteComposer.tsx:893
 #: src/components/note/NoteComposer.tsx:894
 msgid "Select from drive"
@@ -3214,7 +3282,7 @@ msgstr "Server"
 msgid "Server Assets"
 msgstr "Server Assets"
 
-#: src/pages/500.tsx:14
+#: src/pages/500.tsx:13
 msgid "Server Error"
 msgstr "Server Error"
 
@@ -3226,7 +3294,7 @@ msgstr "Server Metrics"
 msgid "Server Setup"
 msgstr "Server Setup"
 
-#: src/pages/503.tsx:14
+#: src/pages/503.tsx:13
 msgid "Service Unavailable"
 msgstr "Service Unavailable"
 
@@ -3318,7 +3386,7 @@ msgstr "Social"
 msgid "Software"
 msgstr "Software"
 
-#: src/pages/500.tsx:16
+#: src/pages/500.tsx:15
 msgid "Something went wrong on our end. Please try again later or contact support if the problem persists."
 msgstr "Something went wrong on our end. Please try again later or contact support if the problem persists."
 
@@ -3471,11 +3539,11 @@ msgstr "The export includes:"
 msgid "The job queue system is not currently configured or running."
 msgstr "The job queue system is not currently configured or running."
 
-#: src/pages/404.tsx:15
+#: src/pages/404.tsx:13
 msgid "The page you're looking for doesn't exist or has been moved."
 msgstr "The page you're looking for doesn't exist or has been moved."
 
-#: src/pages/503.tsx:16
+#: src/pages/503.tsx:15
 msgid "The server is temporarily unavailable due to maintenance or high load. Please try again in a few minutes."
 msgstr "The server is temporarily unavailable due to maintenance or high load. Please try again in a few minutes."
 
@@ -3492,6 +3560,10 @@ msgstr "Theme Settings"
 msgid "Theme settings saved"
 msgstr "Theme settings saved"
 
+#: src/pages/admin/gone-users.tsx:199
+msgid "These are remote users whose servers have returned errors (like 410 Gone) when trying to fetch their profiles. You can mark them as deleted or clear the failure status to retry fetching."
+msgstr "These are remote users whose servers have returned errors (like 410 Gone) when trying to fetch their profiles. You can mark them as deleted or clear the failure status to retry fetching."
+
 #: src/components/settings/AccountMigrationSection.tsx:220
 msgid "This account was migrated to:"
 msgstr "This account was migrated to:"
@@ -3504,7 +3576,7 @@ msgstr "This action cannot be undone. This will permanently delete your account 
 msgid "This color represents your server's brand identity. It will be used for buttons, links, and UI accents across the instance, and shared with other federated servers."
 msgstr "This color represents your server's brand identity. It will be used for buttons, links, and UI accents across the instance, and shared with other federated servers."
 
-#: src/pages/410.tsx:16
+#: src/pages/410.tsx:14
 msgid "This content has been permanently deleted and is no longer available."
 msgstr "This content has been permanently deleted and is no longer available."
 
@@ -3581,6 +3653,10 @@ msgstr "Tip: To find users on other servers, enter their full address like @user
 msgid "To exercise these rights, use the settings in your account or <0>contact us</0>."
 msgstr "To exercise these rights, use the settings in your account or <0>contact us</0>."
 
+#: src/pages/admin/gone-users.tsx:160
+msgid "Today"
+msgstr "Today"
+
 #: src/pages/admin/queue.tsx:335
 msgid "Top Servers by Delivery"
 msgstr "Top Servers by Delivery"
@@ -3643,8 +3719,8 @@ msgid "Try adjusting your filters"
 msgstr "Try adjusting your filters"
 
 #: src/pages/500.tsx:25
-msgid "Try refreshing the page"
-msgstr "Try refreshing the page"
+#~ msgid "Try refreshing the page"
+#~ msgstr "Try refreshing the page"
 
 #: src/pages/search.tsx:444
 msgid "Try searching \"All\" to include remote users"
@@ -4036,7 +4112,7 @@ msgstr "You can download a copy of your personal data at any time. This includes
 msgid "You can submit an inquiry without an account. To track your inquiry history, please log in."
 msgstr "You can submit an inquiry without an account. To track your inquiry history, please log in."
 
-#: src/pages/403.tsx:15
+#: src/pages/403.tsx:13
 msgid "You don't have permission to access this page or resource."
 msgstr "You don't have permission to access this page or resource."
 

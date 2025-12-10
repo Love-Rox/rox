@@ -126,6 +126,11 @@ export const users = pgTable(
     profileEmojis: jsonb("profile_emojis").$type<ProfileEmoji[]>().default([]),
     // Storage quota override (null = use role default, -1 = unlimited)
     storageQuotaMb: integer("storage_quota_mb"),
+    // Remote actor fetch status (for detecting 410 Gone)
+    goneDetectedAt: timestamp("gone_detected_at"), // First detection of 410 Gone
+    fetchFailureCount: integer("fetch_failure_count").notNull().default(0), // Consecutive fetch failures
+    lastFetchAttemptAt: timestamp("last_fetch_attempt_at"), // Last fetch attempt timestamp
+    lastFetchError: text("last_fetch_error"), // Last error message (e.g., "410 Gone", "404 Not Found")
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
@@ -134,6 +139,7 @@ export const users = pgTable(
     emailIdx: uniqueIndex("email_idx").on(table.email),
     uriIdx: index("uri_idx").on(table.uri),
     isDeletedIdx: index("user_is_deleted_idx").on(table.isDeleted),
+    goneDetectedIdx: index("user_gone_detected_idx").on(table.goneDetectedAt),
   }),
 );
 

@@ -31,9 +31,3 @@ export default function ServiceUnavailablePage() {
     </ErrorPage>
   );
 }
-
-export const getConfig = async () => {
-  return {
-    render: "static",
-  };
-};

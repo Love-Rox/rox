@@ -49,6 +49,10 @@ describe("UserDeletionService", () => {
     movedAt: null,
     profileEmojis: [],
     storageQuotaMb: null,
+    goneDetectedAt: null,
+    fetchFailureCount: 0,
+    lastFetchAttemptAt: null,
+    lastFetchError: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

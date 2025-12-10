@@ -134,6 +134,11 @@ export class AuthService {
       profileEmojis: [],
       // Storage quota (null means use role default)
       storageQuotaMb: null,
+      // Remote actor fetch status (not applicable to local users)
+      goneDetectedAt: null,
+      fetchFailureCount: 0,
+      lastFetchAttemptAt: null,
+      lastFetchError: null,
     });
 
     // セッション作成

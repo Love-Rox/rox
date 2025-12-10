@@ -110,6 +110,10 @@ function createTestUser(overrides: {
     movedAt: null,
     profileEmojis: null,
     storageQuotaMb: null,
+    goneDetectedAt: null,
+    fetchFailureCount: 0,
+    lastFetchAttemptAt: null,
+    lastFetchError: null,
   };
 }
 

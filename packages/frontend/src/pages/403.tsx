@@ -16,9 +16,3 @@ export default function ForbiddenPage() {
     />
   );
 }
-
-export const getConfig = async () => {
-  return {
-    render: "static",
-  };
-};
