@@ -432,6 +432,59 @@ export class ActivityBuilder {
       cc: [this.followersUri(actor.username)],
     };
   }
+
+  /**
+   * Build a Create activity for a direct message
+   *
+   * Direct messages use specific addressing:
+   * - to: list of recipient actor URIs (no public addressing)
+   * - cc: empty (no followers)
+   *
+   * @param note - The direct message note
+   * @param author - The note author
+   * @param recipients - List of remote recipient users
+   */
+  createDirectMessage(note: Note, author: User, recipients: User[]): Activity {
+    const actorUri = this.actorUri(author.username);
+    const published = note.createdAt.toISOString();
+
+    // Build recipient URIs - use their ActivityPub URIs
+    const recipientUris = recipients.map((r) => {
+      if (r.uri) return r.uri;
+      // Fallback: construct URI from host/username
+      return `https://${r.host}/users/${r.username}`;
+    });
+
+    const noteObject: NoteObject = {
+      id: note.uri || `${this.baseUrl}/notes/${note.id}`,
+      type: "Note",
+      attributedTo: actorUri,
+      content: note.text || "",
+      published,
+      to: recipientUris,
+      cc: [],
+    };
+
+    // Add optional fields
+    if (note.cw) {
+      noteObject.sensitive = true;
+      noteObject.summary = note.cw;
+    }
+    if (note.replyId) {
+      noteObject.inReplyTo = note.replyId;
+    }
+
+    return {
+      "@context": AS_CONTEXT,
+      type: "Create",
+      id: this.activityId("create", note.id),
+      actor: actorUri,
+      published,
+      to: recipientUris,
+      cc: [],
+      object: noteObject,
+    };
+  }
 }
 
 /**

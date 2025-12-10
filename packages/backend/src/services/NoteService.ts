@@ -234,21 +234,30 @@ export class NoteService {
     // Pure renotes get Announce activity, quote renotes get Create activity
     const isPureRenote = renoteTarget && !text && !cw && !replyId && fileIds.length === 0;
 
-    // Deliver ActivityPub activity to followers (async, non-blocking)
+    // Deliver ActivityPub activity (async, non-blocking)
     const author = await this.userRepository.findById(userId);
-    if (author && !author.host && !localOnly && visibility === "public") {
-      if (isPureRenote && renoteTarget) {
-        // Pure renote: send Announce activity to all followers
+    if (author && !author.host && !localOnly) {
+      if (visibility === "specified" && visibleUserIds.length > 0) {
+        // Direct message: deliver to specific recipients
         this.deliveryService
-          .deliverAnnounceActivity(note.id, renoteTarget, author)
+          .deliverDirectMessage(note, author, visibleUserIds)
           .catch((error) => {
-            logger.error({ err: error, noteId }, "Failed to deliver Announce activity for renote");
+            logger.error({ err: error, noteId }, "Failed to deliver Direct Message activity");
           });
-      } else {
-        // Regular note or quote renote: send Create activity
-        this.deliveryService.deliverCreateNote(note, author).catch((error) => {
-          logger.error({ err: error, noteId }, "Failed to deliver Create activity");
-        });
+      } else if (visibility === "public") {
+        if (isPureRenote && renoteTarget) {
+          // Pure renote: send Announce activity to all followers
+          this.deliveryService
+            .deliverAnnounceActivity(note.id, renoteTarget, author)
+            .catch((error) => {
+              logger.error({ err: error, noteId }, "Failed to deliver Announce activity for renote");
+            });
+        } else {
+          // Regular note or quote renote: send Create activity
+          this.deliveryService.deliverCreateNote(note, author).catch((error) => {
+            logger.error({ err: error, noteId }, "Failed to deliver Create activity");
+          });
+        }
       }
     }
 
