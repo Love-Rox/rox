@@ -23,12 +23,30 @@ export class FollowHandler extends BaseHandler {
   readonly activityType = "Follow";
 
   async handle(activity: Activity, context: HandlerContext): Promise<HandlerResult> {
-    const { c, recipientId, baseUrl } = context;
+    const { c, recipientId: contextRecipientId, baseUrl } = context;
 
     try {
       // Resolve remote actor
       const actorUri = this.getActorUri(activity);
       const remoteActor = await this.resolveActor(actorUri, c);
+
+      // For shared inbox, derive recipientId from the activity's object (the followee)
+      let recipientId = contextRecipientId;
+      if (!recipientId && activity.object) {
+        const objectUri = typeof activity.object === "string" ? activity.object : null;
+        if (objectUri) {
+          const userRepository = this.getUserRepository(c);
+          const followee = await userRepository.findByUri(objectUri);
+          if (followee) {
+            recipientId = followee.id;
+          }
+        }
+      }
+
+      if (!recipientId) {
+        this.error("Could not determine recipient for Follow activity");
+        return this.failure("Could not determine recipient for Follow activity");
+      }
 
       this.log(
         "📥",

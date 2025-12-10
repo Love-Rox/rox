@@ -91,13 +91,13 @@ export class InboxService {
    *
    * @param c - Hono context
    * @param activity - The ActivityPub activity
-   * @param recipientId - Local user ID receiving the activity
+   * @param recipientId - Local user ID receiving the activity (null for shared inbox)
    * @returns Handler result
    */
   async handleActivity(
     c: Context,
     activity: Activity,
-    recipientId: string,
+    recipientId: string | null,
   ): Promise<HandlerResult> {
     const handler = this.handlers.get(activity.type);
 

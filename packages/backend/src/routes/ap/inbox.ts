@@ -98,7 +98,7 @@ inbox.post(
       );
     }
 
-    logger.debug({ activityType: activity.type, actor: activity.actor, username }, "Inbox received activity");
+    logger.info({ activityType: activity.type, actor: activity.actor, username }, "Inbox received activity");
 
     // Check if actor's instance is blocked
     const actorUrl =
@@ -157,6 +157,123 @@ inbox.post(
     });
 
     // Return 202 Accepted immediately
+    return c.json({ status: "accepted" }, 202);
+  },
+);
+
+/**
+ * POST /inbox
+ *
+ * Shared inbox endpoint for receiving ActivityPub activities.
+ * Many servers prefer to use a shared inbox for efficiency.
+ * All requests must be signed with HTTP Signatures.
+ *
+ * @returns 202 Accepted (activity queued for processing)
+ */
+inbox.post(
+  "/inbox",
+  inboxRateLimit(RateLimitPresets.inbox),
+  verifySignatureMiddleware,
+  async (c: Context) => {
+    // Parse activity
+    let activity: Activity;
+    try {
+      // Body may have been pre-read by signature verification middleware
+      const preReadBody = c.get("requestBody");
+      if (preReadBody) {
+        activity = JSON.parse(preReadBody);
+      } else {
+        activity = await c.req.json();
+      }
+    } catch (error) {
+      logger.error({ err: error }, "Failed to parse activity JSON in shared inbox");
+      return c.json({ error: "Invalid JSON" }, 400);
+    }
+
+    // Enhanced activity validation
+    const signatureKeyId = c.get("signatureKeyId");
+    const validationResult = validateActivity(activity, signatureKeyId);
+
+    if (!validationResult.valid) {
+      logger.warn(
+        { activityType: activity.type, actor: activity.actor, errors: validationResult.errors },
+        "Shared inbox activity validation failed",
+      );
+
+      const hasAuthError = validationResult.errors.some(
+        (e) => e.type === ValidationErrorType.ACTOR_MISMATCH,
+      );
+      const statusCode = hasAuthError ? 401 : 422;
+
+      return c.json(
+        {
+          error: "Validation failed",
+          message: formatValidationErrors(validationResult.errors),
+          details: validationResult.errors,
+        },
+        statusCode,
+      );
+    }
+
+    logger.info(
+      { activityType: activity.type, actor: activity.actor, endpoint: "shared" },
+      "Shared inbox received activity",
+    );
+
+    // Check if actor's instance is blocked
+    const actorUrl =
+      typeof activity.actor === "string" ? activity.actor : (activity.actor as { id?: string })?.id;
+    if (actorUrl) {
+      try {
+        const actorHost = new URL(actorUrl).hostname;
+        const instanceBlockRepository = c.get("instanceBlockRepository");
+        const isBlocked = await instanceBlockRepository.isBlocked(actorHost);
+
+        if (isBlocked) {
+          logger.debug({ actorHost }, "Shared inbox: Activity from blocked instance, rejecting");
+          return c.json({ status: "accepted" }, 202);
+        }
+      } catch (error) {
+        logger.error({ err: error }, "Shared inbox: Instance block check failed");
+      }
+    }
+
+    // Check for duplicate activity (deduplication)
+    const activityId = activity.id;
+    if (activityId) {
+      try {
+        const db = getDatabase();
+
+        const existing = await db
+          .select()
+          .from(receivedActivities)
+          .where(eq(receivedActivities.activityId, activityId))
+          .limit(1);
+
+        if (existing.length > 0) {
+          logger.debug({ activityId }, "Shared inbox: Duplicate activity detected, skipping");
+          return c.json({ status: "accepted" }, 202);
+        }
+
+        await db.insert(receivedActivities).values({
+          activityId,
+          receivedAt: new Date(),
+        });
+      } catch (error) {
+        logger.error({ err: error }, "Shared inbox: Deduplication check failed");
+      }
+    }
+
+    // Handle activity using InboxService (async, don't wait)
+    // For shared inbox, we don't have a specific recipient - pass null
+    const inboxService = getInboxService();
+    inboxService.handleActivity(c, activity, null).catch((error) => {
+      logger.error(
+        { err: error, activityType: activity.type, actor: activity.actor },
+        "Shared inbox: Activity handling error",
+      );
+    });
+
     return c.json({ status: "accepted" }, 202);
   },
 );
