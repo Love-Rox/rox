@@ -705,4 +705,24 @@ export class InstanceSettingsService {
 
     return result;
   }
+
+
+  // ================================
+  // Onboarding Settings
+  // ================================
+
+  /**
+   * Check if onboarding has been completed
+   */
+  async isOnboardingCompleted(): Promise<boolean> {
+    return this.getCachedValue("onboarding.completed", false);
+  }
+
+  /**
+   * Mark onboarding as completed
+   */
+  async setOnboardingCompleted(completed: boolean, updatedById?: string): Promise<void> {
+    await this.settingsRepository.set("onboarding.completed", completed, updatedById);
+    await this.invalidateCache("onboarding.completed");
+  }
 }

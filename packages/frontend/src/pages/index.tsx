@@ -15,6 +15,24 @@ export default function HomePage() {
   const [token] = useAtom(tokenAtom);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Check if onboarding is needed (server not yet configured)
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      try {
+        const response = await apiClient.get<{ needsOnboarding: boolean }>(
+          "/api/onboarding/status"
+        );
+        if (response.needsOnboarding) {
+          window.location.href = "/onboarding";
+          return;
+        }
+      } catch (error) {
+        console.error("Failed to check onboarding status:", error);
+      }
+    };
+    checkOnboarding();
+  }, []);
+
   // Restore user session if token exists
   useEffect(() => {
     const restoreSession = async () => {
