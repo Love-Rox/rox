@@ -1,10 +1,25 @@
-# Session Status - 2025-12-10
+# Session Status - 2025-12-12
 
 ## Current Status
 
 ### Recently Completed Features
 
-#### Server Onboarding Wizard (Latest - 2025-12-10)
+#### Admin Layout & README Updates (Latest - 2025-12-12)
+- **Admin navigation mobile support**
+  - Added hamburger menu button visible only on mobile (`lg:hidden`)
+  - Extended `PageHeaderAction` interface with `className` prop
+  - Mobile menu triggers existing `MobileAdminNav` component
+  - Added Japanese translation for "Menu" → "メニュー"
+  
+- **Admin contact management fixes**
+  - Fixed 401 error by adding `apiClient.setToken(token)` in contacts page
+  - Fixed admin permission check in `requireContactManagement` middleware
+  
+- **README badge and icon updates**
+  - Updated test badge from `342+` to `800+`
+  - Replaced external SVG icons with emojis for better compatibility
+
+#### Server Onboarding Wizard (2025-12-10)
 - **Complete onboarding flow for new server setup**
   - Added `onboarding.completed` setting key to `IInstanceSettingsRepository`
   - Added `isOnboardingCompleted()` and `setOnboardingCompleted()` methods to `InstanceSettingsService`
@@ -47,7 +62,7 @@
 - **optionalAuth Middleware for Emojis Route**: Fixed 401/403 errors on `/api/emojis/remote`
 
 ### Test Status
-- All unit tests passing (686 pass, 1 skip)
+- All unit tests passing (800+ tests)
 - TypeScript type checking passes
 - Linting passes (0 errors, 0 warnings)
 
