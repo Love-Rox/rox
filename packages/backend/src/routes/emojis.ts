@@ -509,9 +509,9 @@ app.post("/bulk-delete", async (c: Context) => {
     return c.json({ error: "At least one emoji ID is required" }, 400);
   }
 
-  // Limit to 100 emojis per request
-  if (body.ids.length > 100) {
-    return c.json({ error: "Cannot delete more than 100 emojis at once" }, 400);
+  // Limit to 1000 emojis per request to prevent timeout
+  if (body.ids.length > 1000) {
+    return c.json({ error: "Cannot delete more than 1000 emojis at once" }, 400);
   }
 
   const results: {
@@ -573,9 +573,9 @@ app.post("/bulk-update", async (c: Context) => {
     return c.json({ error: "At least one emoji ID is required" }, 400);
   }
 
-  // Limit to 100 emojis per request
-  if (body.ids.length > 100) {
-    return c.json({ error: "Cannot update more than 100 emojis at once" }, 400);
+  // Limit to 1000 emojis per request to prevent timeout
+  if (body.ids.length > 1000) {
+    return c.json({ error: "Cannot update more than 1000 emojis at once" }, 400);
   }
 
   // Must have at least one field to update

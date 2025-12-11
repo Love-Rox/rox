@@ -589,21 +589,33 @@ export default function AdminEmojisPage() {
     setIsBulkDeleting(true);
     try {
       apiClient.setToken(token!);
-      const result = await apiClient.post<{
-        success: number;
-        notFound: number;
-        details: { deleted: string[]; notFound: string[] };
-      }>("/api/emojis/bulk-delete", {
-        ids: Array.from(selectedEmojis),
-      });
+      const idsToDelete = Array.from(selectedEmojis);
+      const BATCH_SIZE = 1000;
+      let totalDeleted = 0;
+      const allDeletedIds: string[] = [];
+
+      // Process in batches of 1000
+      for (let i = 0; i < idsToDelete.length; i += BATCH_SIZE) {
+        const batch = idsToDelete.slice(i, i + BATCH_SIZE);
+        const result = await apiClient.post<{
+          success: number;
+          notFound: number;
+          details: { deleted: string[]; notFound: string[] };
+        }>("/api/emojis/bulk-delete", {
+          ids: batch,
+        });
+        totalDeleted += result.success;
+        allDeletedIds.push(...result.details.deleted);
+      }
 
       addToast({
         type: "success",
-        message: t`Deleted ${result.success} emojis`,
+        message: t`Deleted ${totalDeleted} emojis`,
       });
 
-      // Remove deleted emojis from state
-      setEmojis((prev) => prev.filter((e) => !result.details.deleted.includes(e.id)));
+      // Remove deleted emojis from state and update total count
+      setEmojis((prev) => prev.filter((e) => !allDeletedIds.includes(e.id)));
+      setTotalEmojis((prev) => Math.max(0, prev - totalDeleted));
       setSelectedEmojis(new Set());
       setIsBulkMode(false);
     } catch (err) {
@@ -623,24 +635,35 @@ export default function AdminEmojisPage() {
     setIsBulkUpdating(true);
     try {
       apiClient.setToken(token!);
-      const result = await apiClient.post<{
-        success: number;
-        notFound: number;
-        details: { updated: string[]; notFound: string[] };
-      }>("/api/emojis/bulk-update", {
-        ids: Array.from(selectedEmojis),
-        category: bulkCategory || null,
-      });
+      const idsToUpdate = Array.from(selectedEmojis);
+      const BATCH_SIZE = 1000;
+      let totalUpdated = 0;
+      const allUpdatedIds: string[] = [];
+
+      // Process in batches of 1000
+      for (let i = 0; i < idsToUpdate.length; i += BATCH_SIZE) {
+        const batch = idsToUpdate.slice(i, i + BATCH_SIZE);
+        const result = await apiClient.post<{
+          success: number;
+          notFound: number;
+          details: { updated: string[]; notFound: string[] };
+        }>("/api/emojis/bulk-update", {
+          ids: batch,
+          category: bulkCategory || null,
+        });
+        totalUpdated += result.success;
+        allUpdatedIds.push(...result.details.updated);
+      }
 
       addToast({
         type: "success",
-        message: t`Updated ${result.success} emojis`,
+        message: t`Updated ${totalUpdated} emojis`,
       });
 
       // Update emojis in state
       setEmojis((prev) =>
         prev.map((e) =>
-          result.details.updated.includes(e.id) ? { ...e, category: bulkCategory || null } : e,
+          allUpdatedIds.includes(e.id) ? { ...e, category: bulkCategory || null } : e,
         ),
       );
       setShowBulkCategoryModal(false);
