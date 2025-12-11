@@ -11,6 +11,7 @@ import { Trans } from "@lingui/react/macro";
 import { useAtom, useAtomValue } from "jotai";
 import { AtSign, Loader2 } from "lucide-react";
 import { Layout } from "../components/layout/Layout";
+import { PageHeader } from "../components/ui/PageHeader";
 import { NoteCard } from "../components/note/NoteCard";
 import { useMentions } from "../hooks/useMentions";
 import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
@@ -88,18 +89,12 @@ export default function MentionsPage() {
   return (
     <Layout>
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-4 sm:mb-6">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <AtSign className="w-6 h-6 sm:w-8 sm:h-8 text-(--text-primary)" />
-            <h1 className="text-xl sm:text-2xl font-bold text-(--text-primary)">
-              <Trans>Mentions</Trans>
-            </h1>
-          </div>
-          <p className="mt-2 text-sm text-(--text-muted)">
-            <Trans>Notes that mention you or reply to your posts</Trans>
-          </p>
-        </div>
+        <PageHeader
+          title={<Trans>Mentions</Trans>}
+          subtitle={<Trans>Notes that mention you or reply to your posts</Trans>}
+          icon={<AtSign className="w-6 h-6" />}
+          className="mb-4 sm:mb-6 -mx-4 sm:mx-0"
+        />
 
         {/* Mentions List */}
         <div

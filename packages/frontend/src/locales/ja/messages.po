@@ -13,7 +13,7 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/pages/messages/index.tsx:80
+#: src/pages/messages/index.tsx:81
 msgid "(No message)"
 msgstr "(メッセージなし)"
 
@@ -236,7 +236,7 @@ msgstr "アクセスが拒否されました"
 msgid "Access your personal data"
 msgstr "個人データへのアクセス"
 
-#: src/pages/settings.tsx:158
+#: src/pages/settings.tsx:159
 msgid "Account"
 msgstr "アカウント"
 
@@ -367,7 +367,7 @@ msgstr "採用"
 msgid "Adopt as local emoji"
 msgstr "ローカル絵文字として採用"
 
-#: src/pages/settings.tsx:159
+#: src/pages/settings.tsx:160
 msgid "Advanced"
 msgstr "詳細設定"
 
@@ -388,7 +388,7 @@ msgstr "エイリアス"
 #: src/pages/admin/reports.tsx:304
 #: src/pages/admin/users.tsx:397
 #: src/pages/mod/reports.tsx:288
-#: src/pages/search.tsx:380
+#: src/pages/search.tsx:375
 msgid "All"
 msgstr "すべて"
 
@@ -512,6 +512,7 @@ msgstr "アバターを更新しました"
 msgid "Avg per Server"
 msgstr "サーバーあたりの平均"
 
+#: src/components/pages/NoteDetailPageClient.tsx:111
 #: src/pages/onboarding.tsx:463
 msgid "Back"
 msgstr "戻る"
@@ -529,7 +530,7 @@ msgstr "一覧に戻る"
 msgid "Back to messages"
 msgstr "メッセージに戻る"
 
-#: src/components/pages/NoteDetailPageClient.tsx:97
+#: src/components/pages/NoteDetailPageClient.tsx:98
 msgid "Back to timeline"
 msgstr "タイムラインに戻る"
 
@@ -557,7 +558,7 @@ msgstr "最初の投稿をしてみましょう！"
 msgid "Before migrating, make sure to add this account as an alias on your target account."
 msgstr "引っ越し前に、移行先アカウントでこのアカウントをエイリアスとして追加してください。"
 
-#: src/pages/settings.tsx:231
+#: src/pages/settings.tsx:212
 msgid "Bio"
 msgstr "自己紹介"
 
@@ -641,7 +642,7 @@ msgstr "{instanceName}にアクセスまたは使用することで、本利用�
 msgid "By File Type"
 msgstr "ファイルタイプ別"
 
-#: src/pages/notifications.tsx:228
+#: src/pages/notifications.tsx:216
 msgid "By type"
 msgstr "タイプ別"
 
@@ -679,7 +680,7 @@ msgstr "ユーザーを凍結可能"
 #: src/pages/contact/index.tsx:266
 #: src/pages/mod/instances.tsx:389
 #: src/pages/mod/users.tsx:568
-#: src/pages/settings.tsx:333
+#: src/pages/settings.tsx:314
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -705,7 +706,7 @@ msgstr "インスタンスを確認"
 msgid "Choose your preferred sign-in method"
 msgstr "サインイン方法を選択してください"
 
-#: src/pages/notifications.tsx:220
+#: src/pages/notifications.tsx:208
 msgid "Clear all"
 msgstr "すべてクリア"
 
@@ -736,7 +737,7 @@ msgstr "クリックしてアップロード（PNG、GIF、WebP、最大256KB）
 
 #: src/components/drive/DrivePickerDialog.tsx:276
 #: src/components/report/ReportDialog.tsx:108
-#: src/components/user/UserQRCodeModal.tsx:140
+#: src/components/user/UserQRCodeModal.tsx:142
 #: src/pages/admin/reports.tsx:388
 #: src/pages/mod/reports.tsx:365
 msgid "Close"
@@ -795,7 +796,7 @@ msgstr "お問い合わせ一覧"
 msgid "Contact Us"
 msgstr "お問い合わせ"
 
-#: src/components/note/NoteCard.tsx:391
+#: src/components/note/NoteCard.tsx:404
 msgid "Content Warning"
 msgstr "閲覧注意"
 
@@ -807,11 +808,11 @@ msgstr "コンテンツ幅"
 msgid "Control your data and choose who sees your posts"
 msgstr "データを管理し、誰が投稿を見るかを選択できます"
 
-#: src/components/pages/NoteDetailPageClient.tsx:138
+#: src/components/pages/NoteDetailPageClient.tsx:119
 msgid "Conversation thread"
 msgstr "会話スレッド"
 
-#: src/components/user/UserQRCodeModal.tsx:200
+#: src/components/user/UserQRCodeModal.tsx:212
 msgid "Copied!"
 msgstr "コピーしました！"
 
@@ -824,7 +825,7 @@ msgstr "アドレスをコピー"
 msgid "Copy code"
 msgstr "コードをコピー"
 
-#: src/components/user/UserQRCodeModal.tsx:205
+#: src/components/user/UserQRCodeModal.tsx:217
 msgid "Copy link"
 msgstr "リンクをコピー"
 
@@ -886,7 +887,7 @@ msgstr "カスタム"
 msgid "Custom Code (optional)"
 msgstr "カスタムコード（任意）"
 
-#: src/pages/settings.tsx:280
+#: src/pages/settings.tsx:261
 msgid "Custom CSS"
 msgstr "カスタムCSS"
 
@@ -898,7 +899,7 @@ msgstr "カスタムCSS（アプリ全体）"
 msgid "Custom CSS applied to the entire app (max 10KB)"
 msgstr "アプリ全体に適用されるカスタムCSS（最大10KB）"
 
-#: src/pages/settings.tsx:294
+#: src/pages/settings.tsx:275
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "プロフィールページ用のカスタムCSS（最大10KB）"
 
@@ -1049,12 +1050,12 @@ msgstr "説明"
 msgid "Deselect"
 msgstr "選択解除"
 
-#: src/components/note/NoteCard.tsx:320
+#: src/components/note/NoteCard.tsx:333
 #: src/components/note/NoteComposer.tsx:658
 msgid "Direct"
 msgstr "ダイレクト"
 
-#: src/components/note/NoteCard.tsx:317
+#: src/components/note/NoteCard.tsx:330
 msgid "Direct message - Only visible to specified recipients"
 msgstr "ダイレクトメッセージ - 指定した宛先のみに表示されます"
 
@@ -1075,7 +1076,7 @@ msgid "Discard"
 msgstr "破棄"
 
 #: src/pages/onboarding.tsx:290
-#: src/pages/settings.tsx:208
+#: src/pages/settings.tsx:189
 #: src/pages/signup.tsx:193
 msgid "Display Name"
 msgstr "表示名"
@@ -1250,7 +1251,7 @@ msgstr "プライバシーポリシーページのURLを入力するか、空欄
 msgid "Enter a URL to your Terms of Service page, or leave empty to use the default template at /legal/terms"
 msgstr "利用規約ページのURLを入力するか、空欄のままにして /legal/terms のデフォルトテンプレートを使用"
 
-#: src/pages/search.tsx:427
+#: src/pages/search.tsx:422
 msgid "Enter a username or display name to get started"
 msgstr "ユーザー名または表示名を入力して検索を開始"
 
@@ -1347,7 +1348,7 @@ msgstr "エイリアスの追加に失敗しました"
 msgid "Failed to add emoji"
 msgstr "絵文字の追加に失敗しました"
 
-#: src/components/note/NoteCard.tsx:220
+#: src/components/note/NoteCard.tsx:223
 msgid "Failed to add reaction"
 msgstr "リアクションの追加に失敗しました"
 
@@ -1457,7 +1458,7 @@ msgstr "ファイルの読み込みに失敗しました"
 msgid "Failed to load instance information"
 msgstr "インスタンス情報の読み込みに失敗しました"
 
-#: src/components/pages/NoteDetailPageClient.tsx:48
+#: src/components/pages/NoteDetailPageClient.tsx:49
 msgid "Failed to load note"
 msgstr "ノートの読み込みに失敗しました"
 
@@ -1527,7 +1528,7 @@ msgstr "インスタンスの削除に失敗しました"
 msgid "Failed to rename passkey"
 msgstr "パスキーの名前変更に失敗しました"
 
-#: src/components/note/NoteCard.tsx:238
+#: src/components/note/NoteCard.tsx:241
 msgid "Failed to renote"
 msgstr "リノートに失敗しました"
 
@@ -1647,15 +1648,15 @@ msgstr "ファイルが大きすぎます。最大サイズ: 50MB"
 msgid "File uploaded successfully"
 msgstr "ファイルをアップロードしました"
 
-#: src/pages/notifications.tsx:201
+#: src/pages/notifications.tsx:179
 msgid "Filter"
 msgstr "フィルター"
 
-#: src/pages/notifications.tsx:212
+#: src/pages/notifications.tsx:200
 msgid "Filter notifications"
 msgstr "通知をフィルター"
 
-#: src/pages/search.tsx:338
+#: src/pages/search.tsx:332
 msgid "Find users by username or display name"
 msgstr "ユーザー名または表示名でユーザーを検索"
 
@@ -1669,11 +1670,11 @@ msgstr "フォルダ名"
 
 #: src/components/user/UserProfile.tsx:452
 #: src/pages/interact.tsx:212
-#: src/pages/notifications.tsx:242
-#: src/pages/search.tsx:502
-#: src/pages/search.tsx:517
-#: src/pages/search.tsx:582
-#: src/pages/search.tsx:597
+#: src/pages/notifications.tsx:230
+#: src/pages/search.tsx:497
+#: src/pages/search.tsx:512
+#: src/pages/search.tsx:577
+#: src/pages/search.tsx:592
 msgid "Follow"
 msgstr "フォロー"
 
@@ -1693,8 +1694,8 @@ msgstr "フォロワー"
 
 #: src/components/user/UserProfile.tsx:450
 #: src/components/user/UserProfile.tsx:531
-#: src/pages/search.tsx:510
-#: src/pages/search.tsx:590
+#: src/pages/search.tsx:505
+#: src/pages/search.tsx:585
 msgid "Following"
 msgstr "フォロー中"
 
@@ -1730,7 +1731,7 @@ msgstr "本規約に関するご質問は、<0>お問い合わせフォーム</0
 #~ msgid "For questions about these terms, please contact the instance administrator{0}."
 #~ msgstr "本規約に関するご質問は、インスタンス管理者{0}にお問い合わせください。"
 
-#: src/pages/search.tsx:456
+#: src/pages/search.tsx:451
 msgid "Found on remote server"
 msgstr "リモートサーバーで見つかりました"
 
@@ -1742,7 +1743,7 @@ msgstr "送信者:"
 msgid "Get Started"
 msgstr "始める"
 
-#: src/pages/timeline.tsx:165
+#: src/pages/timeline.tsx:128
 msgid "Global"
 msgstr "グローバル"
 
@@ -1803,7 +1804,7 @@ msgstr "PWAスプラッシュ画面用の高解像度アイコン、512x512ピ�
 
 #: src/components/layout/Sidebar.tsx:91
 #: src/components/note/NoteComposer.tsx:656
-#: src/pages/timeline.tsx:179
+#: src/pages/timeline.tsx:129
 msgid "Home"
 msgstr "ホーム"
 
@@ -1866,7 +1867,7 @@ msgstr "インポートがタイムアウトしました。サーバーはまだ
 msgid "Importing emojis..."
 msgstr "絵文字をインポート中..."
 
-#: src/components/note/NoteCard.tsx:508
+#: src/components/note/NoteCard.tsx:521
 msgid "In reply to"
 msgstr "返信元"
 
@@ -2100,11 +2101,11 @@ msgstr "すべて読み込む（残り{0}件）"
 msgid "Load more"
 msgstr "もっと読み込む"
 
-#: src/pages/mentions.tsx:117
+#: src/pages/mentions.tsx:112
 msgid "Loading mentions..."
 msgstr "メンションを読み込み中..."
 
-#: src/pages/mentions.tsx:137
+#: src/pages/mentions.tsx:132
 msgid "Loading more mentions..."
 msgstr "さらにメンションを読み込み中..."
 
@@ -2127,7 +2128,7 @@ msgstr "読み込み中..."
 
 #: src/pages/admin/users.tsx:332
 #: src/pages/admin/users.tsx:408
-#: src/pages/timeline.tsx:137
+#: src/pages/timeline.tsx:126
 msgid "Local"
 msgstr "ローカル"
 
@@ -2135,7 +2136,7 @@ msgstr "ローカル"
 msgid "Local Emojis"
 msgstr "ローカル絵文字"
 
-#: src/pages/search.tsx:392
+#: src/pages/search.tsx:387
 msgid "Local only"
 msgstr "ローカルのみ"
 
@@ -2149,7 +2150,7 @@ msgstr "ログイン"
 
 #: src/components/layout/Sidebar.tsx:248
 #: src/components/layout/Sidebar.tsx:394
-#: src/pages/settings.tsx:378
+#: src/pages/settings.tsx:359
 msgid "Logging out..."
 msgstr "ログアウト中..."
 
@@ -2159,11 +2160,11 @@ msgstr "ログインに失敗しました。認証情報を確認してくださ
 
 #: src/components/layout/Sidebar.tsx:248
 #: src/components/layout/Sidebar.tsx:394
-#: src/pages/settings.tsx:382
+#: src/pages/settings.tsx:363
 msgid "Logout"
 msgstr "ログアウト"
 
-#: src/pages/search.tsx:533
+#: src/pages/search.tsx:528
 msgid "Looking up remote user..."
 msgstr "リモートユーザーを検索中..."
 
@@ -2208,7 +2209,7 @@ msgstr "ユーザーアカウントを管理"
 msgid "Manage user inquiries and support requests"
 msgstr "ユーザーからのお問い合わせとサポートリクエストを管理"
 
-#: src/pages/settings.tsx:169
+#: src/pages/settings.tsx:167
 msgid "Manage your account settings"
 msgstr "アカウント設定を管理"
 
@@ -2217,7 +2218,7 @@ msgstr "アカウント設定を管理"
 #~ msgstr "プロフィール情報を管理"
 
 #: src/components/notification/NotificationList.tsx:89
-#: src/pages/notifications.tsx:187
+#: src/pages/notifications.tsx:172
 msgid "Mark all as read"
 msgstr "すべて既読にする"
 
@@ -2254,7 +2255,7 @@ msgstr "ZIPファイルの最大サイズ: 50MB"
 msgid "MB (-1 for unlimited)"
 msgstr "MB（無制限の場合は-1）"
 
-#: src/pages/notifications.tsx:243
+#: src/pages/notifications.tsx:231
 msgid "Mention"
 msgstr "メンション"
 
@@ -2263,7 +2264,7 @@ msgid "mentioned you"
 msgstr "があなたにメンションしました"
 
 #: src/components/layout/Sidebar.tsx:109
-#: src/pages/mentions.tsx:96
+#: src/pages/mentions.tsx:93
 msgid "Mentions"
 msgstr "メンション"
 
@@ -2272,7 +2273,7 @@ msgid "Message"
 msgstr "メッセージ"
 
 #: src/components/layout/Sidebar.tsx:115
-#: src/pages/messages/index.tsx:146
+#: src/pages/messages/index.tsx:142
 msgid "Messages"
 msgstr "メッセージ"
 
@@ -2315,7 +2316,7 @@ msgstr "モデレーターロール"
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "ActivityPub配信キューの状態を監視"
 
-#: src/components/note/NoteCard.tsx:647
+#: src/components/note/NoteCard.tsx:660
 msgid "More options"
 msgstr "その他のオプション"
 
@@ -2355,7 +2356,7 @@ msgid "New Inquiry"
 msgstr "新規お問い合わせ"
 
 #: src/components/note/ComposeModal.tsx:84
-#: src/pages/messages/index.tsx:155
+#: src/pages/messages/index.tsx:148
 msgid "New Message"
 msgstr "新しいメッセージ"
 
@@ -2443,15 +2444,15 @@ msgstr "インスタンスが見つかりません"
 msgid "No invitation codes yet"
 msgstr "招待コードがまだありません"
 
-#: src/pages/notifications.tsx:277
+#: src/pages/notifications.tsx:265
 msgid "No matching notifications"
 msgstr "一致する通知がありません"
 
-#: src/pages/mentions.tsx:162
+#: src/pages/mentions.tsx:157
 msgid "No mentions yet"
 msgstr "まだメンションはありません"
 
-#: src/pages/messages/index.tsx:173
+#: src/pages/messages/index.tsx:167
 msgid "No messages yet"
 msgstr "まだメッセージはありません"
 
@@ -2468,7 +2469,7 @@ msgid "No notes yet"
 msgstr "まだ投稿がありません"
 
 #: src/components/notification/NotificationList.tsx:67
-#: src/pages/notifications.tsx:279
+#: src/pages/notifications.tsx:267
 msgid "No notifications"
 msgstr "通知はありません"
 
@@ -2488,7 +2489,7 @@ msgstr "まだ投稿がありません"
 msgid "No remote emojis collected yet"
 msgstr "リモート絵文字はまだ収集されていません"
 
-#: src/components/pages/NoteDetailPageClient.tsx:182
+#: src/components/pages/NoteDetailPageClient.tsx:162
 msgid "No replies yet"
 msgstr "まだ返信がありません"
 
@@ -2518,7 +2519,7 @@ msgstr "テキストコンテンツなし"
 #: src/components/note/NoteComposer.tsx:940
 #: src/pages/admin/storage.tsx:495
 #: src/pages/admin/users.tsx:432
-#: src/pages/search.tsx:438
+#: src/pages/search.tsx:433
 msgid "No users found"
 msgstr "ユーザーが見つかりませんでした"
 
@@ -2530,11 +2531,11 @@ msgstr "取得エラーのあるユーザーはいません"
 msgid "Not following anyone yet"
 msgstr "まだ誰もフォローしていません"
 
-#: src/components/pages/NoteDetailPageClient.tsx:129
+#: src/components/pages/NoteDetailPageClient.tsx:109
 msgid "Note"
 msgstr "ノート"
 
-#: src/components/pages/NoteDetailPageClient.tsx:65
+#: src/components/pages/NoteDetailPageClient.tsx:66
 msgid "Note deleted"
 msgstr "ノートを削除しました"
 
@@ -2542,7 +2543,7 @@ msgstr "ノートを削除しました"
 msgid "Note Moderation"
 msgstr "ノートのモデレーション"
 
-#: src/components/pages/NoteDetailPageClient.tsx:95
+#: src/components/pages/NoteDetailPageClient.tsx:96
 msgid "Note not found"
 msgstr "ノートが見つかりません"
 
@@ -2550,7 +2551,7 @@ msgstr "ノートが見つかりません"
 msgid "Note posted successfully"
 msgstr "投稿しました"
 
-#: src/components/note/NoteCard.tsx:232
+#: src/components/note/NoteCard.tsx:235
 msgid "Note renoted"
 msgstr "リノートしました"
 
@@ -2567,11 +2568,11 @@ msgstr "ノートを復元しました"
 msgid "Note scheduled successfully"
 msgstr "予約投稿を設定しました"
 
-#: src/pages/settings.tsx:301
+#: src/pages/settings.tsx:282
 msgid "Note: Custom CSS is sanitized and some properties may be restricted for security."
 msgstr "注意: カスタムCSSはセキュリティのため一部のプロパティが制限されます。"
 
-#: src/pages/search.tsx:618
+#: src/pages/search.tsx:613
 msgid "Note: Remote users can only be searched by username, not display name, unless they have been previously cached on this server."
 msgstr "注意: リモートユーザーは、このサーバーに以前キャッシュされていない限り、ユーザー名でのみ検索できます（表示名では検索できません）。"
 
@@ -2587,7 +2588,7 @@ msgstr "ノート"
 msgid "Notes deleted by moderators will appear here"
 msgstr "モデレーターが削除したノートがここに表示されます"
 
-#: src/pages/mentions.tsx:100
+#: src/pages/mentions.tsx:94
 msgid "Notes that mention you or reply to your posts"
 msgstr "あなたにメンションした投稿やあなたへの返信"
 
@@ -2601,8 +2602,8 @@ msgstr "通知音"
 
 #: src/components/layout/Sidebar.tsx:103
 #: src/components/notification/NotificationBell.tsx:85
-#: src/pages/notifications.tsx:175
-#: src/pages/settings.tsx:156
+#: src/pages/notifications.tsx:189
+#: src/pages/settings.tsx:157
 msgid "Notifications"
 msgstr "通知"
 
@@ -2774,7 +2775,7 @@ msgstr "テキストを入力するかファイルを添付してください"
 msgid "Please enter your password"
 msgstr "パスワードを入力してください"
 
-#: src/pages/settings.tsx:98
+#: src/pages/settings.tsx:99
 msgid "Please log in to update your profile"
 msgstr "プロフィールを更新するにはログインしてください"
 
@@ -2871,7 +2872,7 @@ msgid "Process your account registration and authentication"
 msgstr "アカウント登録と認証の処理"
 
 #: src/components/layout/Sidebar.tsx:121
-#: src/pages/settings.tsx:154
+#: src/pages/settings.tsx:155
 msgid "Profile"
 msgstr "プロフィール"
 
@@ -2883,7 +2884,7 @@ msgstr "プロフィール画像"
 msgid "Profile information (username, display name, bio)"
 msgstr "プロフィール情報（ユーザー名、表示名、自己紹介）"
 
-#: src/pages/settings.tsx:118
+#: src/pages/settings.tsx:119
 msgid "Profile updated successfully"
 msgstr "プロフィールを更新しました"
 
@@ -2955,7 +2956,7 @@ msgstr "クォータを更新しました"
 msgid "Quota: {0}"
 msgstr "クォータ: {0}"
 
-#: src/pages/notifications.tsx:247
+#: src/pages/notifications.tsx:235
 msgid "Quote"
 msgstr "引用"
 
@@ -2971,11 +2972,11 @@ msgstr "レート"
 msgid "reacted with"
 msgstr "がリアクションしました"
 
-#: src/pages/notifications.tsx:245
+#: src/pages/notifications.tsx:233
 msgid "Reaction"
 msgstr "リアクション"
 
-#: src/components/note/NoteCard.tsx:213
+#: src/components/note/NoteCard.tsx:216
 msgid "Reaction added"
 msgstr "リアクションを追加しました"
 
@@ -3016,7 +3017,7 @@ msgstr "理由: {0}"
 msgid "Recent Moderation History"
 msgstr "最近のモデレーション履歴"
 
-#: src/pages/timeline.tsx:114
+#: src/pages/timeline.tsx:124
 msgid "Recent posts from your community"
 msgstr "コミュニティの最新投稿"
 
@@ -3155,11 +3156,11 @@ msgstr "バナーを削除"
 msgid "Rename"
 msgstr "名前を変更"
 
-#: src/pages/notifications.tsx:246
+#: src/pages/notifications.tsx:234
 msgid "Renote"
 msgstr "リノート"
 
-#: src/components/note/NoteCard.tsx:382
+#: src/components/note/NoteCard.tsx:395
 msgid "Renoted"
 msgstr "リノート"
 
@@ -3172,12 +3173,12 @@ msgid "replied to your note"
 msgstr "があなたの投稿に返信しました"
 
 #. placeholder {0}: descendants.length
-#: src/components/pages/NoteDetailPageClient.tsx:162
+#: src/components/pages/NoteDetailPageClient.tsx:142
 msgid "Replies ({0})"
 msgstr "返信 ({0})"
 
 #: src/components/note/NoteComposer.tsx:1387
-#: src/pages/notifications.tsx:244
+#: src/pages/notifications.tsx:232
 msgid "Reply"
 msgstr "返信"
 
@@ -3185,7 +3186,7 @@ msgstr "返信"
 msgid "Replying to"
 msgstr "返信先:"
 
-#: src/components/note/NoteCard.tsx:662
+#: src/components/note/NoteCard.tsx:675
 msgid "Report"
 msgstr "報告"
 
@@ -3389,7 +3390,7 @@ msgstr "Roxライセンス"
 msgid "Save"
 msgstr "保存"
 
-#: src/pages/settings.tsx:321
+#: src/pages/settings.tsx:302
 msgid "Save Changes"
 msgstr "変更を保存"
 
@@ -3423,11 +3424,11 @@ msgid "Save Theme Settings"
 msgstr "テーマ設定を保存"
 
 #: src/components/settings/UISettingsSection.tsx:523
-#: src/pages/settings.tsx:317
+#: src/pages/settings.tsx:298
 msgid "Saving..."
 msgstr "保存中..."
 
-#: src/components/user/UserQRCodeModal.tsx:191
+#: src/components/user/UserQRCodeModal.tsx:203
 msgid "Scan to follow from another server"
 msgstr "他のサーバーからフォローするにはスキャン"
 
@@ -3452,8 +3453,8 @@ msgstr "スクロールして続きを表示..."
 
 #: src/components/layout/Sidebar.tsx:97
 #: src/pages/mod/users.tsx:298
-#: src/pages/search.tsx:334
-#: src/pages/search.tsx:360
+#: src/pages/search.tsx:331
+#: src/pages/search.tsx:355
 msgid "Search"
 msgstr "検索"
 
@@ -3465,7 +3466,7 @@ msgstr "絵文字を検索..."
 msgid "Search emojis..."
 msgstr "絵文字を検索..."
 
-#: src/pages/search.tsx:424
+#: src/pages/search.tsx:419
 msgid "Search for users"
 msgstr "ユーザーを検索"
 
@@ -3473,7 +3474,7 @@ msgstr "ユーザーを検索"
 msgid "Search for users and manage suspensions"
 msgstr "ユーザーを検索して停止を管理"
 
-#: src/pages/search.tsx:367
+#: src/pages/search.tsx:362
 msgid "Search in:"
 msgstr "検索対象:"
 
@@ -3487,7 +3488,7 @@ msgstr "ユーザーを検索"
 msgid "Search users..."
 msgstr "ユーザーを検索..."
 
-#: src/pages/search.tsx:351
+#: src/pages/search.tsx:346
 msgid "Search users... (e.g., alice or alice@mastodon.social)"
 msgstr "ユーザーを検索... (例: alice または alice@mastodon.social)"
 
@@ -3499,7 +3500,7 @@ msgstr "検索中..."
 msgid "Secondary"
 msgstr "セカンダリ"
 
-#: src/pages/settings.tsx:155
+#: src/pages/settings.tsx:156
 msgid "Security"
 msgstr "セキュリティ"
 
@@ -3579,7 +3580,7 @@ msgstr "サーバーセットアップ"
 msgid "Service Unavailable"
 msgstr "サービス利用不可"
 
-#: src/pages/settings.tsx:364
+#: src/pages/settings.tsx:345
 msgid "Session"
 msgstr "セッション"
 
@@ -3611,7 +3612,7 @@ msgstr "思いを共有し、友人とつながり、Fediverse全体での会話
 msgid "Show all {0} files"
 msgstr "すべて表示（{0}ファイル）"
 
-#: src/components/note/NoteCard.tsx:401
+#: src/components/note/NoteCard.tsx:414
 msgid "Show content"
 msgstr "内容を表示"
 
@@ -3619,7 +3620,7 @@ msgstr "内容を表示"
 msgid "Show less"
 msgstr "折りたたむ"
 
-#: src/pages/notifications.tsx:263
+#: src/pages/notifications.tsx:251
 msgid "Show unread only"
 msgstr "未読のみ表示"
 
@@ -3657,7 +3658,7 @@ msgstr "{0}でサインイン"
 msgid "Sign in with Passkey"
 msgstr "パスキーでサインイン"
 
-#: src/pages/settings.tsx:367
+#: src/pages/settings.tsx:348
 msgid "Sign out of your account on this device."
 msgstr "このデバイスからログアウトします。"
 
@@ -3674,7 +3675,7 @@ msgstr "サインイン中..."
 msgid "Skipped"
 msgstr "スキップ"
 
-#: src/pages/timeline.tsx:151
+#: src/pages/timeline.tsx:127
 msgid "Social"
 msgstr "ソーシャル"
 
@@ -3698,7 +3699,7 @@ msgstr "spam.example.com"
 msgid "Standard Emojis"
 msgstr "標準絵文字"
 
-#: src/pages/messages/index.tsx:176
+#: src/pages/messages/index.tsx:170
 msgid "Start a conversation by composing a direct message"
 msgstr "ダイレクトメッセージを送信して会話を始めましょう"
 
@@ -3714,7 +3715,7 @@ msgstr "ステップ {0} / {1}"
 
 #: src/components/settings/StorageSection.tsx:145
 #: src/components/settings/StorageSection.tsx:165
-#: src/pages/settings.tsx:157
+#: src/pages/settings.tsx:158
 msgid "Storage"
 msgstr "ストレージ"
 
@@ -3802,7 +3803,7 @@ msgstr "移行先アカウントURI"
 msgid "Target ID:"
 msgstr "対象ID:"
 
-#: src/pages/settings.tsx:237
+#: src/pages/settings.tsx:218
 msgid "Tell us about yourself..."
 msgstr "自己紹介を入力..."
 
@@ -3969,12 +3970,11 @@ msgstr "このスレッドは終了しました。"
 msgid "This user hasn't posted anything yet"
 msgstr "このユーザーはまだ何も投稿していません"
 
-#: src/components/pages/NoteDetailPageClient.tsx:115
-#: src/pages/timeline.tsx:111
+#: src/pages/timeline.tsx:123
 msgid "Timeline"
 msgstr "タイムライン"
 
-#: src/pages/search.tsx:401
+#: src/pages/search.tsx:396
 msgid "Tip: To find users on other servers, enter their full address like @user@example.com"
 msgstr "ヒント: 他のサーバーのユーザーを見つけるには、@user@example.com のようにフルアドレスを入力してください"
 
@@ -4042,7 +4042,7 @@ msgstr "合計: {1}サーバーから{0}件のリモート絵文字"
 msgid "Total: {totalEmojis} emojis"
 msgstr "合計: {totalEmojis}個の絵文字"
 
-#: src/pages/search.tsx:441
+#: src/pages/search.tsx:436
 msgid "Try a different search term or check the spelling"
 msgstr "別の検索語を試すか、スペルを確認してください"
 
@@ -4050,7 +4050,7 @@ msgstr "別の検索語を試すか、スペルを確認してください"
 msgid "Try adjusting your filter"
 msgstr "フィルターを調整してみてください"
 
-#: src/pages/notifications.tsx:284
+#: src/pages/notifications.tsx:272
 msgid "Try adjusting your filters"
 msgstr "フィルターを調整してみてください"
 
@@ -4058,7 +4058,7 @@ msgstr "フィルターを調整してみてください"
 #~ msgid "Try refreshing the page"
 #~ msgstr "ページを更新してみてください"
 
-#: src/pages/search.tsx:445
+#: src/pages/search.tsx:440
 msgid "Try searching \"All\" to include remote users"
 msgstr "「すべて」で検索するとリモートユーザーも含まれます"
 
@@ -4104,8 +4104,8 @@ msgstr "未分類の絵文字"
 msgid "Under the AGPL-3.0 license, you must provide access to the source code of this instance. If you have modified the code, enter the URL to your fork."
 msgstr "AGPL-3.0ライセンスに基づき、このインスタンスのソースコードへのアクセスを提供する必要があります。コードを改変している場合は、フォークのURLを入力してください。"
 
-#: src/pages/search.tsx:502
-#: src/pages/search.tsx:582
+#: src/pages/search.tsx:497
+#: src/pages/search.tsx:577
 msgid "Unfollow"
 msgstr "フォロー解除"
 
@@ -4270,12 +4270,12 @@ msgstr "ユーザーの停止を解除しました"
 
 #: src/pages/login.tsx:235
 #: src/pages/onboarding.tsx:274
-#: src/pages/settings.tsx:259
+#: src/pages/settings.tsx:240
 #: src/pages/signup.tsx:164
 msgid "Username"
 msgstr "ユーザー名"
 
-#: src/pages/settings.tsx:270
+#: src/pages/settings.tsx:251
 msgid "Username cannot be changed"
 msgstr "ユーザー名は変更できません"
 
@@ -4323,7 +4323,7 @@ msgstr "検証に失敗しました"
 msgid "Version"
 msgstr "バージョン"
 
-#: src/components/note/NoteCard.tsx:547
+#: src/components/note/NoteCard.tsx:560
 msgid "View"
 msgstr "表示"
 
@@ -4436,7 +4436,7 @@ msgstr "お問い合わせへの返信に使用します"
 msgid "Welcome to Rox! Let's configure your server."
 msgstr "Roxへようこそ！サーバーの初期設定を行いましょう。"
 
-#: src/pages/mentions.tsx:165
+#: src/pages/mentions.tsx:160
 msgid "When someone mentions you, it will appear here"
 msgstr "誰かがあなたにメンションすると、ここに表示されます"
 
@@ -4546,12 +4546,12 @@ msgid "You will receive notifications even when the browser is closed."
 msgstr "ブラウザを閉じていても通知を受け取ることができます。"
 
 #: src/components/notification/NotificationList.tsx:70
-#: src/pages/notifications.tsx:286
+#: src/pages/notifications.tsx:274
 msgid "You're all caught up!"
 msgstr "すべての通知を確認しました！"
 
 #: src/components/user/UserProfile.tsx:591
-#: src/pages/mentions.tsx:152
+#: src/pages/mentions.tsx:147
 msgid "You've reached the end"
 msgstr "最後まで到達しました"
 
@@ -4563,7 +4563,7 @@ msgstr "タイムラインの最後に到達しました"
 msgid "Your account will need to be approved by an administrator before you can use it."
 msgstr "アカウントは管理者の承認後に使用可能になります。"
 
-#: src/pages/settings.tsx:245
+#: src/pages/settings.tsx:226
 msgid "Your bio (max 500 characters)"
 msgstr "自己紹介（最大500文字）"
 
@@ -4575,7 +4575,7 @@ msgstr "お使いのブラウザはパスキーに対応していません。"
 msgid "Your browser does not support push notifications."
 msgstr "お使いのブラウザはプッシュ通知に対応していません。"
 
-#: src/pages/messages/index.tsx:159
+#: src/pages/messages/index.tsx:143
 msgid "Your direct message conversations"
 msgstr "あなたのダイレクトメッセージ"
 
@@ -4591,7 +4591,7 @@ msgstr "お問い合わせ履歴"
 msgid "Your inquiry has been submitted successfully!"
 msgstr "お問い合わせを送信しました！"
 
-#: src/pages/settings.tsx:221
+#: src/pages/settings.tsx:202
 msgid "Your public display name (max 50 characters)"
 msgstr "表示名（最大50文字）"
 

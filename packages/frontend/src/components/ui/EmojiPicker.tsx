@@ -19,7 +19,15 @@ import {
   Loader2,
 } from "lucide-react";
 import { Button } from "./Button";
-import { Dialog, DialogTrigger, Modal, ModalOverlay } from "react-aria-components";
+import {
+  Dialog,
+  DialogTrigger,
+  Modal,
+  ModalOverlay,
+  Tabs as AriaTabs,
+  TabList as AriaTabList,
+  Tab as AriaTab,
+} from "react-aria-components";
 import {
   emojiListAtom,
   emojiCategoriesAtom,
@@ -920,125 +928,165 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
 
                 {/* Category tabs */}
                 {!searchQuery && (
-                  <div className="shrink-0 flex gap-1 px-4 py-2 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
-                    {/* Custom emojis tab (if available) */}
-                    {customEmojis.length > 0 && (
-                      <button
-                        onClick={() => setSelectedCategory("custom")}
-                        className={`px-3 py-2 rounded-md text-lg transition-colors ${
-                          selectedCategory === "custom"
-                            ? "bg-primary-100 dark:bg-primary-900/30"
-                            : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                        }`}
-                        title="Custom Emojis"
-                        aria-label="Custom Emojis"
+                  <div className="shrink-0 border-b border-gray-200 dark:border-gray-700">
+                    <AriaTabs
+                      selectedKey={selectedCategory}
+                      onSelectionChange={(key) => setSelectedCategory(key as EmojiCategory | string)}
+                    >
+                      <AriaTabList
+                        aria-label="Emoji categories"
+                        className="flex gap-1 px-4 py-2 overflow-x-auto"
                       >
-                        <Sparkles className="w-5 h-5" />
-                      </button>
-                    )}
-                    {recentEmojis.length > 0 && (
-                      <button
-                        onClick={() => setSelectedCategory("recent")}
-                        className={`px-3 py-2 rounded-md text-lg transition-colors ${
-                          selectedCategory === "recent"
-                            ? "bg-primary-100 dark:bg-primary-900/30"
-                            : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                        }`}
-                        title={EMOJI_CATEGORIES.recent.name}
-                        aria-label={EMOJI_CATEGORIES.recent.name}
-                      >
-                        {EMOJI_CATEGORIES.recent.icon}
-                      </button>
-                    )}
-                    {(Object.keys(EMOJI_CATEGORIES) as EmojiCategory[])
-                      .filter((cat) => cat !== "recent")
-                      .map((category) => (
-                        <button
-                          key={category}
-                          onClick={() => setSelectedCategory(category)}
-                          className={`px-3 py-2 rounded-md text-lg transition-colors ${
-                            selectedCategory === category
-                              ? "bg-primary-100 dark:bg-primary-900/30"
-                              : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                          }`}
-                          title={EMOJI_CATEGORIES[category].name}
-                          aria-label={EMOJI_CATEGORIES[category].name}
-                        >
-                          {EMOJI_CATEGORIES[category].icon}
-                        </button>
-                      ))}
+                        {/* Custom emojis tab (if available) */}
+                        {customEmojis.length > 0 && (
+                          <AriaTab
+                            id="custom"
+                            className={({ isSelected, isFocusVisible }) =>
+                              `px-3 py-2 rounded-md text-lg transition-colors cursor-pointer outline-none ${
+                                isSelected
+                                  ? "bg-primary-100 dark:bg-primary-900/30"
+                                  : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                              } ${isFocusVisible ? "ring-2 ring-primary-500" : ""}`
+                            }
+                            aria-label="Custom Emojis"
+                          >
+                            <Sparkles className="w-5 h-5" />
+                          </AriaTab>
+                        )}
+                        {recentEmojis.length > 0 && (
+                          <AriaTab
+                            id="recent"
+                            className={({ isSelected, isFocusVisible }) =>
+                              `px-3 py-2 rounded-md text-lg transition-colors cursor-pointer outline-none ${
+                                isSelected
+                                  ? "bg-primary-100 dark:bg-primary-900/30"
+                                  : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                              } ${isFocusVisible ? "ring-2 ring-primary-500" : ""}`
+                            }
+                            aria-label={EMOJI_CATEGORIES.recent.name}
+                          >
+                            {EMOJI_CATEGORIES.recent.icon}
+                          </AriaTab>
+                        )}
+                        {(Object.keys(EMOJI_CATEGORIES) as EmojiCategory[])
+                          .filter((cat) => cat !== "recent")
+                          .map((category) => (
+                            <AriaTab
+                              key={category}
+                              id={category}
+                              className={({ isSelected, isFocusVisible }) =>
+                                `px-3 py-2 rounded-md text-lg transition-colors cursor-pointer outline-none ${
+                                  isSelected
+                                    ? "bg-primary-100 dark:bg-primary-900/30"
+                                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                                } ${isFocusVisible ? "ring-2 ring-primary-500" : ""}`
+                              }
+                              aria-label={EMOJI_CATEGORIES[category].name}
+                            >
+                              {EMOJI_CATEGORIES[category].icon}
+                            </AriaTab>
+                          ))}
+                      </AriaTabList>
+                    </AriaTabs>
                   </div>
                 )}
 
                 {/* Custom emoji category tabs (when custom category is selected) */}
                 {!searchQuery && isCustomCategory && customCategories.length > 0 && (
-                  <div className="shrink-0 flex gap-1 px-4 py-2 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
-                    <button
-                      onClick={() => setSelectedCustomCategory(null)}
-                      className={`px-3 py-2 rounded-md transition-colors ${
+                  <div className="shrink-0 border-b border-gray-200 dark:border-gray-700">
+                    <AriaTabs
+                      selectedKey={
                         selectedCustomCategory === null
-                          ? "bg-primary-100 dark:bg-primary-900/30"
-                          : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                      }`}
-                      title={t`All`}
-                      aria-label={t`All custom emojis`}
+                          ? "__all__"
+                          : selectedCustomCategory === ""
+                            ? "__uncategorized__"
+                            : selectedCustomCategory
+                      }
+                      onSelectionChange={(key) => {
+                        if (key === "__all__") {
+                          setSelectedCustomCategory(null);
+                        } else if (key === "__uncategorized__") {
+                          setSelectedCustomCategory("");
+                        } else {
+                          setSelectedCustomCategory(key as string);
+                        }
+                      }}
                     >
-                      <Sparkles className="w-5 h-5" />
-                    </button>
-                    {customCategories.map((category) => {
-                      const categoryEmojis = emojisByCategory.get(category);
-                      const firstEmoji = categoryEmojis?.[0];
-                      return (
-                        <button
-                          key={category}
-                          onClick={() => setSelectedCustomCategory(category)}
-                          className={`px-3 py-2 rounded-md transition-colors ${
-                            selectedCustomCategory === category
-                              ? "bg-primary-100 dark:bg-primary-900/30"
-                              : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                          }`}
-                          title={category}
-                          aria-label={category}
-                        >
-                          {firstEmoji ? (
-                            <img
-                              src={getProxiedImageUrl(firstEmoji.url) || ""}
-                              alt={category}
-                              className="w-5 h-5 object-contain"
-                            />
-                          ) : (
-                            <span className="text-xs">{category.slice(0, 2)}</span>
-                          )}
-                        </button>
-                      );
-                    })}
-                    {/* Show uncategorized if exists */}
-                    {emojisByCategory.has("") && (
-                      <button
-                        onClick={() => setSelectedCustomCategory("")}
-                        className={`px-3 py-2 rounded-md transition-colors ${
-                          selectedCustomCategory === ""
-                            ? "bg-primary-100 dark:bg-primary-900/30"
-                            : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                        }`}
-                        title={t`Uncategorized`}
-                        aria-label={t`Uncategorized emojis`}
+                      <AriaTabList
+                        aria-label="Custom emoji categories"
+                        className="flex gap-1 px-4 py-2 overflow-x-auto"
                       >
-                        {(() => {
-                          const uncategorized = emojisByCategory.get("");
-                          const firstEmoji = uncategorized?.[0];
-                          return firstEmoji ? (
-                            <img
-                              src={getProxiedImageUrl(firstEmoji.url) || ""}
-                              alt={t`Uncategorized`}
-                              className="w-5 h-5 object-contain"
-                            />
-                          ) : (
-                            <span className="text-lg">📦</span>
+                        <AriaTab
+                          id="__all__"
+                          className={({ isSelected, isFocusVisible }) =>
+                            `px-3 py-2 rounded-md transition-colors cursor-pointer outline-none ${
+                              isSelected
+                                ? "bg-primary-100 dark:bg-primary-900/30"
+                                : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                            } ${isFocusVisible ? "ring-2 ring-primary-500" : ""}`
+                          }
+                          aria-label={t`All custom emojis`}
+                        >
+                          <Sparkles className="w-5 h-5" />
+                        </AriaTab>
+                        {customCategories.map((category) => {
+                          const categoryEmojis = emojisByCategory.get(category);
+                          const firstEmoji = categoryEmojis?.[0];
+                          return (
+                            <AriaTab
+                              key={category}
+                              id={category}
+                              className={({ isSelected, isFocusVisible }) =>
+                                `px-3 py-2 rounded-md transition-colors cursor-pointer outline-none ${
+                                  isSelected
+                                    ? "bg-primary-100 dark:bg-primary-900/30"
+                                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                                } ${isFocusVisible ? "ring-2 ring-primary-500" : ""}`
+                              }
+                              aria-label={category}
+                            >
+                              {firstEmoji ? (
+                                <img
+                                  src={getProxiedImageUrl(firstEmoji.url) || ""}
+                                  alt={category}
+                                  className="w-5 h-5 object-contain"
+                                />
+                              ) : (
+                                <span className="text-xs">{category.slice(0, 2)}</span>
+                              )}
+                            </AriaTab>
                           );
-                        })()}
-                      </button>
-                    )}
+                        })}
+                        {/* Show uncategorized if exists */}
+                        {emojisByCategory.has("") && (
+                          <AriaTab
+                            id="__uncategorized__"
+                            className={({ isSelected, isFocusVisible }) =>
+                              `px-3 py-2 rounded-md transition-colors cursor-pointer outline-none ${
+                                isSelected
+                                  ? "bg-primary-100 dark:bg-primary-900/30"
+                                  : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                              } ${isFocusVisible ? "ring-2 ring-primary-500" : ""}`
+                            }
+                            aria-label={t`Uncategorized emojis`}
+                          >
+                            {(() => {
+                              const uncategorized = emojisByCategory.get("");
+                              const firstEmoji = uncategorized?.[0];
+                              return firstEmoji ? (
+                                <img
+                                  src={getProxiedImageUrl(firstEmoji.url) || ""}
+                                  alt={t`Uncategorized`}
+                                  className="w-5 h-5 object-contain"
+                                />
+                              ) : (
+                                <span className="text-lg">📦</span>
+                              );
+                            })()}
+                          </AriaTab>
+                        )}
+                      </AriaTabList>
+                    </AriaTabs>
                   </div>
                 )}
 

@@ -11,6 +11,7 @@ import { Trans } from "@lingui/react/macro";
 import { useAtom, useAtomValue } from "jotai";
 import { Bell, CheckCheck, Filter, Loader2 } from "lucide-react";
 import { Layout } from "../components/layout/Layout";
+import { PageHeader } from "../components/ui/PageHeader";
 import { NotificationItem } from "../components/notification/NotificationItem";
 import { useNotifications } from "../hooks/useNotifications";
 import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
@@ -163,46 +164,33 @@ export default function NotificationsPage() {
     );
   }
 
+  // Build actions for PageHeader
+  const headerActions = [];
+  if (hasUnread) {
+    headerActions.push({
+      key: "mark-all-read",
+      label: <Trans>Mark all as read</Trans>,
+      icon: <CheckCheck className="w-4 h-4" />,
+      onPress: markAllAsRead,
+    });
+  }
+  headerActions.push({
+    key: "filter",
+    label: <Trans>Filter</Trans>,
+    icon: <Filter className="w-4 h-4" />,
+    onPress: () => setShowFilters(!showFilters),
+    variant: hasActiveFilters ? "primary" : "secondary",
+  });
+
   return (
     <Layout>
       <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-4 sm:mb-6">
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <Bell className="w-6 h-6 sm:w-8 sm:h-8 text-(--text-primary)" />
-              <h1 className="text-xl sm:text-2xl font-bold text-(--text-primary)">
-                <Trans>Notifications</Trans>
-              </h1>
-            </div>
-            <div className="flex items-center gap-1 sm:gap-2">
-              {hasUnread && (
-                <button
-                  type="button"
-                  onClick={markAllAsRead}
-                  className="flex items-center gap-1 px-2 sm:px-3 py-1.5 text-sm text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-secondary) rounded-lg transition-colors"
-                  title="Mark all as read"
-                >
-                  <CheckCheck className="w-4 h-4" />
-                  <span className="hidden sm:inline"><Trans>Mark all as read</Trans></span>
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center gap-1 px-2 sm:px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                  hasActiveFilters
-                    ? "bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300"
-                    : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-secondary)"
-                }`}
-                title="Filter"
-              >
-                <Filter className="w-4 h-4" />
-                <span className="hidden sm:inline"><Trans>Filter</Trans></span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <PageHeader
+          title={<Trans>Notifications</Trans>}
+          icon={<Bell className="w-6 h-6" />}
+          actions={headerActions as any}
+          className="mb-4 sm:mb-6 -mx-4 sm:mx-0"
+        />
 
         {/* Filters Panel */}
         {showFilters && (

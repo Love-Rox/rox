@@ -4,11 +4,19 @@
  * Follow List Modal Component
  *
  * Modal to display followers or following list for a user
+ * Built with React Aria Components for accessibility
  */
 
 import { useState, useEffect, useCallback } from "react";
 import { Trans } from "@lingui/react/macro";
 import { X, Loader2 } from "lucide-react";
+import {
+  Dialog,
+  Modal,
+  ModalOverlay,
+  Heading,
+  Button as AriaButton,
+} from "react-aria-components";
 import { usersApi, type User, type Follow } from "../../lib/api/users";
 import { Avatar } from "../ui/Avatar";
 import { SpaLink } from "../ui/SpaLink";
@@ -74,6 +82,7 @@ function FollowUserCard({
 
 /**
  * Modal to display followers or following list
+ * Built with React Aria Components for accessibility
  */
 export function FollowListModal({
   isOpen,
@@ -139,102 +148,88 @@ export function FollowListModal({
     }
   }, [isOpen, fetchUsers]);
 
-  // Handle escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
-      document.body.style.overflow = "hidden";
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "";
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50"
-        onClick={onClose}
-        aria-hidden="true"
-      />
+    <ModalOverlay
+      isOpen={isOpen}
+      onOpenChange={(open) => !open && onClose()}
+      isDismissable
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+    >
+      <Modal className="w-full max-w-md max-h-[80vh] bg-(--card-bg) rounded-xl shadow-xl overflow-hidden flex flex-col outline-none">
+        <Dialog className="flex flex-col h-full outline-none">
+          {({ close }) => (
+            <>
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-(--border-color)">
+                <Heading
+                  slot="title"
+                  className="text-lg font-semibold text-(--text-primary)"
+                >
+                  {type === "followers" ? (
+                    <Trans>{username}'s Followers</Trans>
+                  ) : (
+                    <Trans>{username}'s Following</Trans>
+                  )}
+                </Heading>
+                <AriaButton
+                  onPress={close}
+                  className="p-2 hover:bg-(--bg-secondary) rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                  aria-label="Close"
+                >
+                  <X className="w-5 h-5 text-(--text-muted)" />
+                </AriaButton>
+              </div>
 
-      {/* Modal */}
-      <div className="relative w-full max-w-md max-h-[80vh] bg-(--card-bg) rounded-xl shadow-xl overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-(--border-color)">
-          <h2 className="text-lg font-semibold text-(--text-primary)">
-            {type === "followers" ? (
-              <Trans>{username}'s Followers</Trans>
-            ) : (
-              <Trans>{username}'s Following</Trans>
-            )}
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-2 hover:bg-(--bg-secondary) rounded-full transition-colors"
-            aria-label="Close"
-          >
-            <X className="w-5 h-5 text-(--text-muted)" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-2">
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-6 h-6 animate-spin text-(--text-muted)" />
-            </div>
-          ) : error ? (
-            <div className="text-center py-12 text-red-500">
-              {error}
-            </div>
-          ) : users.length === 0 ? (
-            <div className="text-center py-12 text-(--text-muted)">
-              {type === "followers" ? (
-                <Trans>No followers yet</Trans>
-              ) : (
-                <Trans>Not following anyone yet</Trans>
-              )}
-            </div>
-          ) : (
-            <div className="space-y-1">
-              {users.map((user) => (
-                <FollowUserCard key={user.id} user={user} onClose={onClose} />
-              ))}
-
-              {/* Load more */}
-              {hasMore && (
-                <div className="flex justify-center py-4">
-                  <Button
-                    variant="secondary"
-                    onPress={() => fetchUsers(offset)}
-                    isDisabled={loadingMore}
-                  >
-                    {loadingMore ? (
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <Trans>Loading...</Trans>
-                      </div>
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-2">
+                {loading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-6 h-6 animate-spin text-(--text-muted)" />
+                  </div>
+                ) : error ? (
+                  <div className="text-center py-12 text-red-500">
+                    {error}
+                  </div>
+                ) : users.length === 0 ? (
+                  <div className="text-center py-12 text-(--text-muted)">
+                    {type === "followers" ? (
+                      <Trans>No followers yet</Trans>
                     ) : (
-                      <Trans>Load more</Trans>
+                      <Trans>Not following anyone yet</Trans>
                     )}
-                  </Button>
-                </div>
-              )}
-            </div>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    {users.map((user) => (
+                      <FollowUserCard key={user.id} user={user} onClose={close} />
+                    ))}
+
+                    {/* Load more */}
+                    {hasMore && (
+                      <div className="flex justify-center py-4">
+                        <Button
+                          variant="secondary"
+                          onPress={() => fetchUsers(offset)}
+                          isDisabled={loadingMore}
+                        >
+                          {loadingMore ? (
+                            <div className="flex items-center gap-2">
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <Trans>Loading...</Trans>
+                            </div>
+                          ) : (
+                            <Trans>Load more</Trans>
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </>
           )}
-        </div>
-      </div>
-    </div>
+        </Dialog>
+      </Modal>
+    </ModalOverlay>
   );
 }

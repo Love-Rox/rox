@@ -6,6 +6,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { Timeline } from "../components/timeline/Timeline";
 import { NoteComposer } from "../components/note/NoteComposer";
 import { Layout } from "../components/layout/Layout";
+import { PageHeader } from "../components/ui/PageHeader";
 import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
 import { timelineNotesAtom } from "../lib/atoms/timeline";
 import { apiClient } from "../lib/api/client";
@@ -26,11 +27,12 @@ export default function TimelinePage() {
   // localStorage value is loaded in useEffect after hydration
   const [timelineType, setTimelineType] = useState<TimelineType>("local");
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const hasRestoredTimelineType = useRef(false);
 
   // Save timeline type to localStorage when it changes
-  const handleTimelineTypeChange = useCallback((type: TimelineType) => {
-    setTimelineType(type);
+  const handleTimelineTypeChange = useCallback((type: string) => {
+    setTimelineType(type as TimelineType);
     localStorage.setItem(TIMELINE_TYPE_STORAGE_KEY, type);
   }, []);
 
@@ -75,8 +77,7 @@ export default function TimelinePage() {
     restoreSession();
   }, [token, currentUser, setCurrentUser]);
 
-  const handleNoteCreated = useCallback(async () => {
-    // Refresh timeline by fetching latest notes based on current timeline type
+  const refreshTimeline = useCallback(async () => {
     const endpoint =
       timelineType === "home"
         ? "/api/notes/timeline"
@@ -91,9 +92,21 @@ export default function TimelinePage() {
       setTimelineNotes(newNotes);
     } catch (error) {
       console.error("Failed to refresh timeline:", error);
-      // Don't reload the page - WebSocket will still push new notes
     }
   }, [timelineType, setTimelineNotes]);
+
+  const handleNoteCreated = useCallback(async () => {
+    await refreshTimeline();
+  }, [refreshTimeline]);
+
+  const handleReload = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      await refreshTimeline();
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [refreshTimeline]);
 
   // Show loading while checking auth
   if (isLoading || !currentUser) {
@@ -106,80 +119,22 @@ export default function TimelinePage() {
 
   return (
     <Layout>
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100">
-          <Trans>Timeline</Trans>
-        </h1>
-        <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">
-          <Trans>Recent posts from your community</Trans>
-        </p>
-      </div>
-
-      {/* Timeline Type Tabs */}
-      <div
-        className="mb-4 sm:mb-6 border-b border-gray-200 dark:border-gray-700"
-        role="tablist"
-        aria-label="Timeline types"
-      >
-        <div className="flex gap-3 sm:gap-6">
-          <button
-            onClick={() => handleTimelineTypeChange("local")}
-            className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              timelineType === "local"
-                ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500"
-            }`}
-            role="tab"
-            aria-selected={timelineType === "local"}
-            aria-controls="timeline-content"
-            id="tab-local"
-          >
-            <Trans>Local</Trans>
-          </button>
-          <button
-            onClick={() => handleTimelineTypeChange("social")}
-            className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              timelineType === "social"
-                ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500"
-            }`}
-            role="tab"
-            aria-selected={timelineType === "social"}
-            aria-controls="timeline-content"
-            id="tab-social"
-          >
-            <Trans>Social</Trans>
-          </button>
-          <button
-            onClick={() => handleTimelineTypeChange("global")}
-            className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              timelineType === "global"
-                ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500"
-            }`}
-            role="tab"
-            aria-selected={timelineType === "global"}
-            aria-controls="timeline-content"
-            id="tab-global"
-          >
-            <Trans>Global</Trans>
-          </button>
-          <button
-            onClick={() => handleTimelineTypeChange("home")}
-            className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              timelineType === "home"
-                ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500"
-            }`}
-            role="tab"
-            aria-selected={timelineType === "home"}
-            aria-controls="timeline-content"
-            id="tab-home"
-          >
-            <Trans>Home</Trans>
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title={<Trans>Timeline</Trans>}
+        subtitle={<Trans>Recent posts from your community</Trans>}
+        tabs={[
+          { key: "local", label: <Trans>Local</Trans> },
+          { key: "social", label: <Trans>Social</Trans> },
+          { key: "global", label: <Trans>Global</Trans> },
+          { key: "home", label: <Trans>Home</Trans> },
+        ]}
+        activeTab={timelineType}
+        onTabChange={handleTimelineTypeChange}
+        showReload
+        onReload={handleReload}
+        isReloading={isRefreshing}
+        className="mb-4 sm:mb-6 -mx-4 sm:-mx-6 -mt-4 sm:-mt-6"
+      />
 
       {/* Note Composer */}
       <NoteComposer onNoteCreated={handleNoteCreated} />
