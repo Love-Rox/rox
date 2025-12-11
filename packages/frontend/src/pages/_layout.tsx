@@ -82,6 +82,45 @@ const splashScreenStyles = `
     display: none;
   }
 }
+/* Hide splash if already shown this session */
+#rox-splash-screen.session-shown {
+  display: none;
+}
+`;
+
+/**
+ * Blocking script to check if splash screen should be shown.
+ * Uses sessionStorage to track if splash was already shown this session.
+ * This ensures splash only appears on PWA cold start, not on page navigation.
+ */
+const splashCheckScript = `
+(function() {
+  try {
+    var splash = document.getElementById('rox-splash-screen');
+    if (!splash) return;
+
+    // Check if we're in standalone mode
+    var isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                       window.navigator.standalone === true;
+
+    if (!isStandalone) {
+      // Not in PWA mode, splash is already hidden by CSS
+      return;
+    }
+
+    // Check if splash was already shown this session
+    var wasShown = sessionStorage.getItem('rox-splash-shown');
+    if (wasShown) {
+      // Already shown this session, hide immediately
+      splash.classList.add('session-shown');
+    } else {
+      // First load this session, mark as shown
+      sessionStorage.setItem('rox-splash-shown', '1');
+    }
+  } catch (e) {
+    // Silently fail - splash will be shown
+  }
+})();
 `;
 
 /**
@@ -237,6 +276,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <div className="splash-subtitle">Loading...</div>
         <div className="splash-loader" />
       </div>
+      {/* Check if splash should be shown (only on PWA cold start) */}
+      <script dangerouslySetInnerHTML={{ __html: splashCheckScript }} />
 
       <AppProviders>
         {children}
