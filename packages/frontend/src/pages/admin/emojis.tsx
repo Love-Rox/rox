@@ -230,17 +230,31 @@ export default function AdminEmojisPage() {
       const formData = new FormData();
       formData.append("file", file);
 
+      // Use AbortController for timeout (5 minutes for large imports)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5 * 60 * 1000);
+
       const response = await fetch("/api/emojis/import", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
         body: formData,
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Import failed");
+        let errorMessage = "Import failed";
+        try {
+          const error = await response.json();
+          errorMessage = error.error || errorMessage;
+        } catch {
+          // Response might not be JSON
+          errorMessage = `Import failed with status ${response.status}`;
+        }
+        throw new Error(errorMessage);
       }
 
       const result: ImportResult = await response.json();
@@ -255,9 +269,17 @@ export default function AdminEmojisPage() {
       await Promise.all([loadEmojis(), loadCategories()]);
     } catch (err) {
       console.error("Failed to import emojis:", err);
+      let errorMessage = t`Failed to import emojis`;
+      if (err instanceof Error) {
+        if (err.name === "AbortError") {
+          errorMessage = t`Import timed out. The server may still be processing. Please check back later.`;
+        } else {
+          errorMessage = err.message;
+        }
+      }
       addToast({
         type: "error",
-        message: err instanceof Error ? err.message : t`Failed to import emojis`,
+        message: errorMessage,
       });
     } finally {
       setIsImporting(false);
