@@ -45,7 +45,8 @@ describe("WebPushService", () => {
     },
   };
 
-  const mockUserWithAllDisabled = {
+  // For future use in tests that verify all-disabled behavior
+  const _mockUserWithAllDisabled = {
     id: "user3",
     uiSettings: {
       disabledPushNotificationTypes: [
@@ -61,6 +62,7 @@ describe("WebPushService", () => {
       ] as NotificationType[],
     },
   };
+  void _mockUserWithAllDisabled;
 
   beforeEach(() => {
     // Reset env vars (VAPID not configured for most tests)
