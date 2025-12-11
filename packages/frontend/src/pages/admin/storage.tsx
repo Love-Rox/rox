@@ -34,9 +34,7 @@ import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
 import { addToastAtom } from "../../lib/atoms/toast";
-import { Layout } from "../../components/layout/Layout";
-import { PageHeader } from "../../components/ui/PageHeader";
-import { AdminNav } from "../../components/admin/AdminNav";
+import { AdminLayout } from "../../components/admin/AdminLayout";
 import type { DriveFile } from "shared";
 
 interface InstanceStorageStats {
@@ -250,21 +248,29 @@ export default function AdminStoragePage() {
 
   if (isLoading || !currentUser) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/storage"
+        title={<Trans>Storage Management</Trans>}
+        subtitle={<Trans>Manage instance storage and user quotas</Trans>}
+      >
         <div className="flex items-center justify-center py-20">
           <Spinner size="lg" />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
   if (!currentUser.isAdmin) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/storage"
+        title={<Trans>Storage Management</Trans>}
+        subtitle={<Trans>Manage instance storage and user quotas</Trans>}
+      >
         <div className="flex items-center justify-center py-20">
           <Spinner size="lg" />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
@@ -274,18 +280,12 @@ export default function AdminStoragePage() {
       u.userId.includes(searchQuery)
   );
 
-  const pageHeader = (
-    <PageHeader
+  return (
+    <AdminLayout
+      currentPath="/admin/storage"
       title={<Trans>Storage Management</Trans>}
       subtitle={<Trans>Manage instance storage and user quotas</Trans>}
-      icon={<HardDrive className="w-6 h-6" />}
-    />
-  );
-
-  return (
-    <Layout header={pageHeader}>
-      {/* Admin Navigation */}
-      <AdminNav currentPath="/admin/storage" />
+    >
 
       {/* Instance Overview */}
       {stats && (
@@ -631,6 +631,6 @@ export default function AdminStoragePage() {
           )}
         </CardContent>
       </Card>
-    </Layout>
+    </AdminLayout>
   );
 }

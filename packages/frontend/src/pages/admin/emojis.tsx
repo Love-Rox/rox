@@ -20,9 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Ca
 import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
-import { Layout } from "../../components/layout/Layout";
-import { PageHeader } from "../../components/ui/PageHeader";
-import { AdminNav } from "../../components/admin/AdminNav";
+import { AdminLayout } from "../../components/admin/AdminLayout";
 
 interface CustomEmoji {
   id: string;
@@ -731,19 +729,27 @@ export default function AdminEmojisPage() {
 
   if (isLoading) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/emojis"
+        title={<Trans>Custom Emojis</Trans>}
+        subtitle={<Trans>Manage custom emojis for your instance</Trans>}
+      >
         <div className="flex items-center justify-center py-12">
           <Spinner size="lg" />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
   if (error) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/emojis"
+        title={<Trans>Custom Emojis</Trans>}
+        subtitle={<Trans>Manage custom emojis for your instance</Trans>}
+      >
         <InlineError message={error} />
-      </Layout>
+      </AdminLayout>
     );
   }
 
@@ -786,11 +792,11 @@ export default function AdminEmojisPage() {
     });
   }
 
-  const pageHeader = (
-    <PageHeader
+  return (
+    <AdminLayout
+      currentPath="/admin/emojis"
       title={<Trans>Custom Emojis</Trans>}
       subtitle={<Trans>Manage custom emojis for your instance</Trans>}
-      icon={<Smile className="w-6 h-6" />}
       tabs={[
         { key: "local", label: <Trans>Local Emojis</Trans>, icon: <Smile className="w-4 h-4" /> },
         { key: "remote", label: <Trans>Remote Emojis</Trans>, icon: <Globe className="w-4 h-4" /> },
@@ -799,13 +805,8 @@ export default function AdminEmojisPage() {
       activeTab={activeTab}
       onTabChange={(key) => setActiveTab(key as TabType)}
       actions={headerActions as any}
-    />
-  );
-
-  return (
-    <Layout header={pageHeader}>
+    >
       <div className="max-w-6xl mx-auto">
-        <AdminNav currentPath="/admin/emojis" />
 
         <Card>
           <CardHeader className="sr-only">
@@ -1575,6 +1576,6 @@ export default function AdminEmojisPage() {
           </div>
         </div>
       )}
-    </Layout>
+    </AdminLayout>
   );
 }

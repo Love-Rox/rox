@@ -18,9 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Ca
 import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
-import { Layout } from "../../components/layout/Layout";
-import { PageHeader } from "../../components/ui/PageHeader";
-import { AdminNav } from "../../components/admin/AdminNav";
+import { AdminLayout } from "../../components/admin/AdminLayout";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 
 interface GoneUser {
@@ -165,32 +163,28 @@ export default function AdminGoneUsersPage() {
 
   if (isLoading) {
     return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8 max-w-6xl">
-          <AdminNav currentPath="/admin/gone-users" />
-          <div className="flex justify-center items-center py-16">
-            <Spinner size="lg" />
-          </div>
+      <AdminLayout
+        currentPath="/admin/gone-users"
+        title={<Trans>Gone Users</Trans>}
+        subtitle={<Trans>Manage remote users with fetch errors</Trans>}
+      >
+        <div className="flex justify-center items-center py-16">
+          <Spinner size="lg" />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
-  const pageHeader = (
-    <PageHeader
+  return (
+    <AdminLayout
+      currentPath="/admin/gone-users"
       title={<Trans>Gone Users</Trans>}
       subtitle={<Trans>Manage remote users with fetch errors</Trans>}
-      icon={<Ghost className="w-6 h-6" />}
       showReload
       onReload={() => loadUsers()}
       isReloading={isLoading}
-    />
-  );
-
-  return (
-    <Layout header={pageHeader}>
+    >
       <div className="container mx-auto max-w-6xl">
-        <AdminNav currentPath="/admin/gone-users" />
 
         <Card className="mt-6">
           <CardHeader>
@@ -353,6 +347,6 @@ export default function AdminGoneUsersPage() {
           </CardContent>
         </Card>
       </div>
-    </Layout>
+    </AdminLayout>
   );
 }

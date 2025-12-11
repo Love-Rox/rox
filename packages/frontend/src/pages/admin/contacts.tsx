@@ -28,9 +28,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Ca
 import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
-import { Layout } from "../../components/layout/Layout";
-import { PageHeader } from "../../components/ui/PageHeader";
-import { AdminNav } from "../../components/admin/AdminNav";
+import { AdminLayout } from "../../components/admin/AdminLayout";
 import {
   listContactThreadsAdmin,
   getContactThreadAdmin,
@@ -237,33 +235,38 @@ export default function AdminContactsPage() {
 
   if (!currentUser) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/contacts"
+        title={<Trans>Contact Inquiries</Trans>}
+        subtitle={<Trans>Manage user inquiries and support requests</Trans>}
+      >
         <div className="flex items-center justify-center py-20">
           <Spinner size="lg" />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
   // Permission denied view
   if (permissionDenied) {
     return (
-      <Layout>
-        <div className="max-w-6xl mx-auto">
-          <AdminNav currentPath="/admin/contacts" />
-          <Card>
-            <CardContent className="p-8 text-center">
-              <Shield className="w-16 h-16 mx-auto mb-4 text-(--text-muted) opacity-50" />
-              <h2 className="text-xl font-bold text-(--text-primary) mb-2">
-                <Trans>Permission Denied</Trans>
-              </h2>
-              <p className="text-(--text-muted)">
-                <Trans>You don't have permission to manage contact inquiries.</Trans>
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
+      <AdminLayout
+        currentPath="/admin/contacts"
+        title={<Trans>Contact Inquiries</Trans>}
+        subtitle={<Trans>Manage user inquiries and support requests</Trans>}
+      >
+        <Card>
+          <CardContent className="p-8 text-center">
+            <Shield className="w-16 h-16 mx-auto mb-4 text-(--text-muted) opacity-50" />
+            <h2 className="text-xl font-bold text-(--text-primary) mb-2">
+              <Trans>Permission Denied</Trans>
+            </h2>
+            <p className="text-(--text-muted)">
+              <Trans>You don't have permission to manage contact inquiries.</Trans>
+            </p>
+          </CardContent>
+        </Card>
+      </AdminLayout>
     );
   }
 
@@ -272,9 +275,12 @@ export default function AdminContactsPage() {
     const isClosed = selectedThread.status === "closed";
 
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/contacts"
+        title={selectedThread.subject}
+        subtitle={<Trans>Contact thread details</Trans>}
+      >
         <div className="max-w-6xl mx-auto">
-          <AdminNav currentPath="/admin/contacts" />
 
           <div className="mb-4">
             <button
@@ -468,13 +474,14 @@ export default function AdminContactsPage() {
             </div>
           </div>
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
   // List view
-  const pageHeader = (
-    <PageHeader
+  return (
+    <AdminLayout
+      currentPath="/admin/contacts"
       title={
         <>
           <Trans>Contact Inquiries</Trans>
@@ -486,16 +493,10 @@ export default function AdminContactsPage() {
         </>
       }
       subtitle={<Trans>Manage user inquiries and support requests</Trans>}
-      icon={<MessageCircle className="w-6 h-6" />}
       showReload
       onReload={loadThreads}
-    />
-  );
-
-  return (
-    <Layout header={pageHeader}>
+    >
       <div className="max-w-6xl mx-auto">
-        <AdminNav currentPath="/admin/contacts" />
 
         <div className="mb-6 flex items-center justify-end">
           <select
@@ -607,6 +608,6 @@ export default function AdminContactsPage() {
           </div>
         )}
       </div>
-    </Layout>
+    </AdminLayout>
   );
 }

@@ -21,11 +21,10 @@ import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { Layout } from "../../components/layout/Layout";
-import { PageHeader } from "../../components/ui/PageHeader";
 import { clearInstanceInfoCache } from "../../hooks/useInstanceInfo";
-import { AdminNav } from "../../components/admin/AdminNav";
+import { AdminLayout } from "../../components/admin/AdminLayout";
 import { AssetUploadCard } from "../../components/admin/AssetUploadCard";
-import { Settings, Building, UserPlus, Palette, ImageIcon, Scale } from "lucide-react";
+import { Building, UserPlus, Palette, ImageIcon, Scale } from "lucide-react";
 
 interface AdminSettings {
   registration: {
@@ -276,11 +275,11 @@ export default function AdminSettingsPage() {
     );
   }
 
-  const pageHeader = (
-    <PageHeader
-      title={<Trans>Admin Settings</Trans>}
+  return (
+    <AdminLayout
+      currentPath="/admin/settings"
+      title={<Trans>Settings</Trans>}
       subtitle={<Trans>Configure your instance settings</Trans>}
-      icon={<Settings className="w-6 h-6" />}
       tabs={[
         { key: "instance", label: <Trans>Instance</Trans>, icon: <Building className="w-4 h-4" /> },
         { key: "registration", label: <Trans>Registration</Trans>, icon: <UserPlus className="w-4 h-4" /> },
@@ -290,14 +289,7 @@ export default function AdminSettingsPage() {
       ]}
       activeTab={activeTab}
       onTabChange={(key) => setActiveTab(key as "instance" | "registration" | "theme" | "assets" | "legal")}
-    />
-  );
-
-  return (
-    <Layout header={pageHeader}>
-      {/* Admin Navigation */}
-      <AdminNav currentPath="/admin/settings" />
-
+    >
       {error && <InlineError message={error} className="mb-4" />}
 
       {/* Instance Settings */}
@@ -1026,6 +1018,6 @@ export default function AdminSettingsPage() {
           </CardContent>
         </Card>
       )}
-    </Layout>
+    </AdminLayout>
   );
 }

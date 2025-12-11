@@ -13,7 +13,6 @@ import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import {
   RefreshCw,
-  Globe,
   AlertTriangle,
   CheckCircle,
   XCircle,
@@ -29,9 +28,7 @@ import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
-import { Layout } from "../../components/layout/Layout";
-import { PageHeader } from "../../components/ui/PageHeader";
-import { AdminNav } from "../../components/admin/AdminNav";
+import { AdminLayout } from "../../components/admin/AdminLayout";
 
 interface RemoteInstance {
   host: string;
@@ -207,29 +204,37 @@ export default function AdminFederationPage() {
 
   if (isLoading) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/federation"
+        title={<Trans>Federation</Trans>}
+        subtitle={<Trans>Manage remote instances and federation status</Trans>}
+      >
         <div className="flex items-center justify-center min-h-64">
           <Spinner size="lg" />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
   if (error) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/federation"
+        title={<Trans>Federation</Trans>}
+        subtitle={<Trans>Manage remote instances and federation status</Trans>}
+      >
         <InlineError message={error} />
-      </Layout>
+      </AdminLayout>
     );
   }
 
   const errorCount = instances.filter((i) => i.fetchErrorCount > 0).length;
 
-  const pageHeader = (
-    <PageHeader
+  return (
+    <AdminLayout
+      currentPath="/admin/federation"
       title={<Trans>Federation</Trans>}
       subtitle={<Trans>Manage remote instances and federation status</Trans>}
-      icon={<Globe className="w-6 h-6" />}
       actions={[
         {
           key: "refresh",
@@ -239,12 +244,7 @@ export default function AdminFederationPage() {
           variant: "secondary",
         },
       ]}
-    />
-  );
-
-  return (
-    <Layout header={pageHeader}>
-      <AdminNav currentPath="/admin/federation" />
+    >
 
       <div className="space-y-6">
 
@@ -487,6 +487,6 @@ export default function AdminFederationPage() {
           </CardContent>
         </Card>
       </div>
-    </Layout>
+    </AdminLayout>
   );
 }

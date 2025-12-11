@@ -1,0 +1,341 @@
+"use client";
+
+/**
+ * Admin Layout Component
+ *
+ * Two-column layout for admin pages:
+ * - Desktop (lg+): Sidebar navigation + Content area
+ * - Mobile/Tablet: Collapsible menu + Content area
+ */
+
+import { useState } from "react";
+import { Trans } from "@lingui/react/macro";
+import {
+  Settings,
+  Users,
+  UserCog,
+  Ticket,
+  Shield,
+  AlertTriangle,
+  Smile,
+  HardDrive,
+  Globe,
+  Activity,
+  MessageCircle,
+  Ghost,
+  ChevronDown,
+  ChevronRight,
+  X,
+  LayoutDashboard,
+} from "lucide-react";
+import { Layout } from "../layout/Layout";
+import { PageHeader } from "../ui/PageHeader";
+
+/**
+ * Navigation item structure
+ */
+interface NavItem {
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+}
+
+/**
+ * Navigation category structure
+ */
+interface NavCategory {
+  key: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  items: NavItem[];
+}
+
+/**
+ * Categorized admin navigation items
+ */
+const ADMIN_NAV_CATEGORIES: NavCategory[] = [
+  {
+    key: "general",
+    label: "General",
+    icon: Settings,
+    items: [{ href: "/admin/settings", icon: Settings, label: "Settings" }],
+  },
+  {
+    key: "users",
+    label: "Users",
+    icon: Users,
+    items: [
+      { href: "/admin/users", icon: UserCog, label: "Users" },
+      { href: "/admin/roles", icon: Users, label: "Roles" },
+      { href: "/admin/invitations", icon: Ticket, label: "Invitations" },
+      { href: "/admin/gone-users", icon: Ghost, label: "Gone Users" },
+    ],
+  },
+  {
+    key: "content",
+    label: "Content",
+    icon: Smile,
+    items: [
+      { href: "/admin/emojis", icon: Smile, label: "Emojis" },
+      { href: "/admin/reports", icon: AlertTriangle, label: "Reports" },
+    ],
+  },
+  {
+    key: "system",
+    label: "System",
+    icon: HardDrive,
+    items: [
+      { href: "/admin/storage", icon: HardDrive, label: "Storage" },
+      { href: "/admin/federation", icon: Globe, label: "Federation" },
+      { href: "/admin/queue", icon: Activity, label: "Queue" },
+      { href: "/admin/blocks", icon: Shield, label: "Blocks" },
+      { href: "/admin/contacts", icon: MessageCircle, label: "Contacts" },
+    ],
+  },
+];
+
+/**
+ * Find current page info
+ */
+function findCurrentPage(path: string): { category: NavCategory; item: NavItem } | null {
+  for (const category of ADMIN_NAV_CATEGORIES) {
+    const item = category.items.find((i) => i.href === path);
+    if (item) {
+      return { category, item };
+    }
+  }
+  return null;
+}
+
+interface AdminLayoutProps {
+  children: React.ReactNode;
+  currentPath: string;
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
+  actions?: React.ComponentProps<typeof PageHeader>["actions"];
+  showReload?: boolean;
+  onReload?: () => void;
+  isReloading?: boolean;
+  /** Optional tabs for the page header */
+  tabs?: React.ComponentProps<typeof PageHeader>["tabs"];
+  activeTab?: string;
+  onTabChange?: (key: string) => void;
+}
+
+/**
+ * Sidebar navigation component
+ */
+function AdminSidebar({
+  currentPath,
+  expandedCategories,
+  onToggleCategory,
+}: {
+  currentPath: string;
+  expandedCategories: Set<string>;
+  onToggleCategory: (key: string) => void;
+}) {
+  return (
+    <nav className="space-y-1">
+      {ADMIN_NAV_CATEGORIES.map((category) => {
+        const CategoryIcon = category.icon;
+        const isExpanded = expandedCategories.has(category.key);
+        const hasActiveItem = category.items.some((item) => item.href === currentPath);
+
+        return (
+          <div key={category.key}>
+            {/* Category header */}
+            <button
+              onClick={() => onToggleCategory(category.key)}
+              className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                hasActiveItem
+                  ? "text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20"
+                  : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-tertiary)"
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <CategoryIcon className="w-4 h-4" />
+                {category.label}
+              </span>
+              {isExpanded ? (
+                <ChevronDown className="w-4 h-4" />
+              ) : (
+                <ChevronRight className="w-4 h-4" />
+              )}
+            </button>
+
+            {/* Category items */}
+            {isExpanded && (
+              <div className="ml-4 mt-1 space-y-1">
+                {category.items.map((item) => {
+                  const ItemIcon = item.icon;
+                  const isActive = item.href === currentPath;
+
+                  return (
+                    <a
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                        isActive
+                          ? "bg-primary-600 text-white"
+                          : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-tertiary)"
+                      }`}
+                    >
+                      <ItemIcon className="w-4 h-4" />
+                      {item.label}
+                    </a>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </nav>
+  );
+}
+
+/**
+ * Mobile navigation menu
+ */
+function MobileAdminNav({ currentPath, isOpen, onClose }: { currentPath: string; isOpen: boolean; onClose: () => void }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 lg:hidden">
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+
+      {/* Sidebar */}
+      <div className="fixed inset-y-0 left-0 w-64 bg-(--card-bg) shadow-xl overflow-y-auto">
+        <div className="flex items-center justify-between p-4 border-b border-(--border-color)">
+          <span className="font-semibold text-(--text-primary)">
+            <Trans>Admin Menu</Trans>
+          </span>
+          <button
+            onClick={onClose}
+            className="p-2 text-(--text-muted) hover:text-(--text-primary) rounded-lg"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-4">
+          <nav className="space-y-1">
+            {ADMIN_NAV_CATEGORIES.map((category) => (
+              <div key={category.key} className="mb-4">
+                <div className="px-3 py-1 text-xs font-semibold text-(--text-muted) uppercase tracking-wider">
+                  {category.label}
+                </div>
+                <div className="mt-1 space-y-1">
+                  {category.items.map((item) => {
+                    const ItemIcon = item.icon;
+                    const isActive = item.href === currentPath;
+
+                    return (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        onClick={onClose}
+                        className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                          isActive
+                            ? "bg-primary-600 text-white"
+                            : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-tertiary)"
+                        }`}
+                      >
+                        <ItemIcon className="w-4 h-4" />
+                        {item.label}
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </nav>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function AdminLayout({
+  children,
+  currentPath,
+  title,
+  subtitle,
+  actions,
+  showReload,
+  onReload,
+  isReloading,
+  tabs,
+  activeTab,
+  onTabChange,
+}: AdminLayoutProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Expand categories that contain the current page by default
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(() => {
+    const current = findCurrentPage(currentPath);
+    const initialExpanded = new Set<string>();
+    if (current) {
+      initialExpanded.add(current.category.key);
+    }
+    return initialExpanded;
+  });
+
+  const toggleCategory = (key: string) => {
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  };
+
+  const currentPage = findCurrentPage(currentPath);
+  const CurrentIcon = currentPage?.item.icon || LayoutDashboard;
+
+  const pageHeader = (
+    <PageHeader
+      title={title}
+      subtitle={subtitle}
+      icon={<CurrentIcon className="w-6 h-6" />}
+      tabs={tabs}
+      activeTab={activeTab}
+      onTabChange={onTabChange}
+      actions={actions}
+      showReload={showReload}
+      onReload={onReload}
+      isReloading={isReloading}
+    />
+  );
+
+  return (
+    <Layout header={pageHeader} maxWidth="full">
+      <div className="flex gap-6">
+        {/* Desktop Sidebar */}
+        <aside className="hidden lg:block w-56 shrink-0">
+          <div className="sticky top-24 bg-(--card-bg) rounded-lg border border-(--border-color) p-4">
+            <AdminSidebar
+              currentPath={currentPath}
+              expandedCategories={expandedCategories}
+              onToggleCategory={toggleCategory}
+            />
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <div className="flex-1 min-w-0">{children}</div>
+      </div>
+
+      {/* Mobile Navigation */}
+      <MobileAdminNav
+        currentPath={currentPath}
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
+    </Layout>
+  );
+}

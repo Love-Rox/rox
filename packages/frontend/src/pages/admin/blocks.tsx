@@ -19,10 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Ca
 import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
-import { Layout } from "../../components/layout/Layout";
-import { PageHeader } from "../../components/ui/PageHeader";
-import { AdminNav } from "../../components/admin/AdminNav";
-import { ShieldBan } from "lucide-react";
+import { AdminLayout } from "../../components/admin/AdminLayout";
 
 interface InstanceBlock {
   id: string;
@@ -168,37 +165,39 @@ export default function AdminBlocksPage() {
 
   if (isLoading) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/blocks"
+        title={<Trans>Instance Blocks</Trans>}
+        subtitle={<Trans>Block instances from federating with this server</Trans>}
+      >
         <div className="flex justify-center items-center min-h-[400px]">
           <Spinner size="lg" />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
   if (error) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/blocks"
+        title={<Trans>Instance Blocks</Trans>}
+        subtitle={<Trans>Block instances from federating with this server</Trans>}
+      >
         <div className="max-w-4xl mx-auto p-6">
           <InlineError message={error} />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
-  const pageHeader = (
-    <PageHeader
+  return (
+    <AdminLayout
+      currentPath="/admin/blocks"
       title={<Trans>Instance Blocks</Trans>}
       subtitle={<Trans>Block instances from federating with this server</Trans>}
-      icon={<ShieldBan className="w-6 h-6" />}
-    />
-  );
-
-  return (
-    <Layout header={pageHeader}>
+    >
       <div className="max-w-4xl mx-auto">
-        {/* Admin Navigation */}
-        <AdminNav currentPath="/admin/blocks" />
 
         {/* Stats */}
         <div className="grid grid-cols-1 gap-4 mb-8">
@@ -347,6 +346,6 @@ export default function AdminBlocksPage() {
           </CardContent>
         </Card>
       </div>
-    </Layout>
+    </AdminLayout>
   );
 }
