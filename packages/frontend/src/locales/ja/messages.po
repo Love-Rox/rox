@@ -711,6 +711,10 @@ msgstr "確認"
 msgid "Check Instance"
 msgstr "インスタンスを確認"
 
+#: src/components/settings/PushNotificationSection.tsx:389
+msgid "Choose which types of notifications you want to receive."
+msgstr "受け取りたい通知の種類を選択してください。"
+
 #: src/pages/login.tsx:181
 msgid "Choose your preferred sign-in method"
 msgstr "サインイン方法を選択してください"
@@ -1094,7 +1098,11 @@ msgstr "ダイレクトメッセージ - 指定した宛先のみに表示され
 msgid "Direct Message Recipients"
 msgstr "ダイレクトメッセージの宛先"
 
-#: src/components/settings/PushNotificationSection.tsx:183
+#: src/components/settings/PushNotificationSection.tsx:99
+msgid "Direct messages"
+msgstr "ダイレクトメッセージ"
+
+#: src/components/settings/PushNotificationSection.tsx:326
 msgid "Disable"
 msgstr "無効にする"
 
@@ -1254,7 +1262,7 @@ msgstr "空の下書き"
 msgid "Empty folder"
 msgstr "空のフォルダ"
 
-#: src/components/settings/PushNotificationSection.tsx:185
+#: src/components/settings/PushNotificationSection.tsx:328
 msgid "Enable"
 msgstr "有効にする"
 
@@ -1262,7 +1270,7 @@ msgstr "有効にする"
 msgid "Enable Registration"
 msgstr "登録を有効化"
 
-#: src/components/settings/PushNotificationSection.tsx:168
+#: src/components/settings/PushNotificationSection.tsx:311
 msgid "Enable to receive notifications in the background."
 msgstr "バックグラウンドで通知を受け取るには有効にしてください。"
 
@@ -1612,6 +1620,10 @@ msgstr "絵文字の更新に失敗しました"
 #~ msgid "Failed to update follow status"
 #~ msgstr "フォロー状態の更新に失敗しました"
 
+#: src/components/settings/PushNotificationSection.tsx:196
+msgid "Failed to update notification settings"
+msgstr "通知設定の更新に失敗しました"
+
 #: src/pages/admin/storage.tsx:244
 msgid "Failed to update quota"
 msgstr "クォータの更新に失敗しました"
@@ -1720,6 +1732,10 @@ msgstr "フォロー"
 #: src/pages/interact.tsx:142
 msgid "Follow @{0}"
 msgstr "@{0}をフォロー"
+
+#: src/components/settings/PushNotificationSection.tsx:93
+msgid "Follow requests accepted"
+msgstr "フォローリクエスト承認"
 
 #: src/components/notification/NotificationItem.tsx:95
 msgid "followed you"
@@ -2353,6 +2369,7 @@ msgid "mentioned you"
 msgstr "があなたにメンションしました"
 
 #: src/components/layout/Sidebar.tsx:109
+#: src/components/settings/PushNotificationSection.tsx:63
 #: src/pages/mentions.tsx:91
 msgid "Mentions"
 msgstr "メンション"
@@ -2444,6 +2461,10 @@ msgstr "新規アカウントは管理者の承認が必要"
 #: src/components/drive/DrivePickerDialog.tsx:320
 msgid "New folder"
 msgstr "新しいフォルダ"
+
+#: src/components/settings/PushNotificationSection.tsx:57
+msgid "New followers"
+msgstr "新しいフォロワー"
 
 #: src/pages/contact/index.tsx:150
 #: src/pages/contact/index.tsx:179
@@ -2695,6 +2716,10 @@ msgstr "通知履歴の統計"
 msgid "Notification Sound"
 msgstr "通知音"
 
+#: src/components/settings/PushNotificationSection.tsx:386
+msgid "Notification types"
+msgstr "通知の種類"
+
 #: src/components/layout/Sidebar.tsx:103
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:187
@@ -2702,7 +2727,7 @@ msgstr "通知音"
 msgid "Notifications"
 msgstr "通知"
 
-#: src/components/settings/PushNotificationSection.tsx:129
+#: src/components/settings/PushNotificationSection.tsx:272
 msgid "Notifications are blocked"
 msgstr "通知がブロックされています"
 
@@ -2854,7 +2879,7 @@ msgstr "権限"
 msgid "Please describe your inquiry in detail..."
 msgstr "お問い合わせ内容を詳しくご記入ください..."
 
-#: src/components/settings/PushNotificationSection.tsx:132
+#: src/components/settings/PushNotificationSection.tsx:275
 msgid "Please enable notifications in your browser settings to receive push notifications."
 msgstr "プッシュ通知を受け取るには、ブラウザの設定で通知を許可してください。"
 
@@ -3008,21 +3033,21 @@ msgstr "公開されたフォロー/フォロワー関係"
 msgid "Public posts and media"
 msgstr "公開投稿とメディア"
 
-#: src/components/settings/PushNotificationSection.tsx:69
-#: src/components/settings/PushNotificationSection.tsx:91
-#: src/components/settings/PushNotificationSection.tsx:111
+#: src/components/settings/PushNotificationSection.tsx:212
+#: src/components/settings/PushNotificationSection.tsx:234
+#: src/components/settings/PushNotificationSection.tsx:254
 msgid "Push Notifications"
 msgstr "プッシュ通知"
 
-#: src/components/settings/PushNotificationSection.tsx:98
+#: src/components/settings/PushNotificationSection.tsx:241
 msgid "Push notifications are not configured on this server."
 msgstr "このサーバーではプッシュ通知が設定されていません。"
 
-#: src/components/settings/PushNotificationSection.tsx:165
+#: src/components/settings/PushNotificationSection.tsx:308
 msgid "Push notifications disabled"
 msgstr "プッシュ通知が無効"
 
-#: src/components/settings/PushNotificationSection.tsx:151
+#: src/components/settings/PushNotificationSection.tsx:294
 msgid "Push notifications enabled"
 msgstr "プッシュ通知が有効"
 
@@ -3075,6 +3100,10 @@ msgstr "引用"
 msgid "quoted your note"
 msgstr "があなたの投稿を引用しました"
 
+#: src/components/settings/PushNotificationSection.tsx:87
+msgid "Quotes"
+msgstr "引用"
+
 #: src/pages/admin/queue.tsx:428
 msgid "Rate"
 msgstr "レート"
@@ -3090,6 +3119,10 @@ msgstr "リアクション"
 #: src/components/note/NoteCard.tsx:216
 msgid "Reaction added"
 msgstr "リアクションを追加しました"
+
+#: src/components/settings/PushNotificationSection.tsx:75
+msgid "Reactions"
+msgstr "リアクション"
 
 #: src/pages/mod/users.tsx:409
 msgid "Read"
@@ -3165,7 +3198,7 @@ msgstr "ページを更新"
 msgid "Refresh user information"
 msgstr "ユーザー情報を更新"
 
-#: src/components/settings/PushNotificationSection.tsx:216
+#: src/components/settings/PushNotificationSection.tsx:359
 msgid "Registered devices"
 msgstr "登録済みデバイス"
 
@@ -3277,9 +3310,17 @@ msgstr "リノート"
 msgid "renoted your note"
 msgstr "があなたの投稿をリノートしました"
 
+#: src/components/settings/PushNotificationSection.tsx:81
+msgid "Renotes"
+msgstr "リノート"
+
 #: src/components/notification/NotificationItem.tsx:107
 msgid "replied to your note"
 msgstr "があなたの投稿に返信しました"
+
+#: src/components/settings/PushNotificationSection.tsx:69
+msgid "Replies"
+msgstr "返信"
 
 #. placeholder {0}: descendants.length
 #: src/components/pages/NoteDetailPageClient.tsx:143
@@ -3653,7 +3694,7 @@ msgstr "表示中を選択（{0}件）"
 msgid "Send"
 msgstr "送信"
 
-#: src/components/settings/PushNotificationSection.tsx:199
+#: src/components/settings/PushNotificationSection.tsx:342
 msgid "Send a test notification to verify your setup."
 msgstr "テスト通知を送信して、設定を確認します。"
 
@@ -3665,7 +3706,7 @@ msgstr "リモートフォロワーにDelete Activityを送信"
 msgid "Send service-related notifications"
 msgstr "サービス関連の通知を送信"
 
-#: src/components/settings/PushNotificationSection.tsx:205
+#: src/components/settings/PushNotificationSection.tsx:348
 msgid "Send test"
 msgstr "テスト送信"
 
@@ -3951,7 +3992,7 @@ msgstr "利用規約URL"
 msgid "Test"
 msgstr "テスト"
 
-#: src/components/settings/PushNotificationSection.tsx:196
+#: src/components/settings/PushNotificationSection.tsx:339
 msgid "Test notification"
 msgstr "テスト通知"
 
@@ -4511,6 +4552,10 @@ msgstr "警告を発行しました"
 msgid "Warning Reason (required)"
 msgstr "警告理由（必須）"
 
+#: src/components/settings/PushNotificationSection.tsx:105
+msgid "Warnings"
+msgstr "警告"
+
 #. placeholder {0}: selectedUser.warnings.total
 #: src/pages/mod/users.tsx:380
 msgid "Warnings ({0})"
@@ -4560,13 +4605,49 @@ msgstr "お問い合わせへの返信に使用します"
 msgid "Welcome to Rox! Let's configure your server."
 msgstr "Roxへようこそ！サーバーの初期設定を行いましょう。"
 
+#: src/components/settings/PushNotificationSection.tsx:58
+msgid "When someone follows you"
+msgstr "誰かがあなたをフォローしたとき"
+
+#: src/components/settings/PushNotificationSection.tsx:64
+msgid "When someone mentions you"
+msgstr "誰かがあなたにメンションしたとき"
+
 #: src/pages/mentions.tsx:161
 msgid "When someone mentions you, it will appear here"
 msgstr "誰かがあなたにメンションすると、ここに表示されます"
 
+#: src/components/settings/PushNotificationSection.tsx:88
+msgid "When someone quotes your post"
+msgstr "誰かがあなたの投稿を引用したとき"
+
+#: src/components/settings/PushNotificationSection.tsx:76
+msgid "When someone reacts to your post"
+msgstr "誰かがあなたの投稿にリアクションしたとき"
+
+#: src/components/settings/PushNotificationSection.tsx:82
+msgid "When someone renotes your post"
+msgstr "誰かがあなたの投稿をリノートしたとき"
+
+#: src/components/settings/PushNotificationSection.tsx:70
+msgid "When someone replies to your post"
+msgstr "誰かがあなたの投稿に返信したとき"
+
+#: src/components/settings/PushNotificationSection.tsx:100
+msgid "When you receive a direct message"
+msgstr "ダイレクトメッセージを受信したとき"
+
+#: src/components/settings/PushNotificationSection.tsx:106
+msgid "When you receive a moderation warning"
+msgstr "モデレーション警告を受け取ったとき"
+
 #: src/pages/legal/privacy.tsx:102
 msgid "When you use {instanceName}, we collect the following types of information:"
 msgstr "{instanceName}を利用する際、以下の種類の情報を収集します："
+
+#: src/components/settings/PushNotificationSection.tsx:94
+msgid "When your follow request is accepted"
+msgstr "フォローリクエストが承認されたとき"
 
 #: src/pages/admin/blocks.tsx:267
 msgid "Why is this instance being blocked?"
@@ -4665,7 +4746,7 @@ msgstr "モデレーターから警告を受けました"
 msgid "You retain ownership of content you create and post. By posting content, you grant this instance a license to store, display, and distribute your content as part of the service's normal operation, including federation with other ActivityPub servers."
 msgstr "作成・投稿したコンテンツの所有権はお客様に帰属します。コンテンツを投稿することで、他のActivityPubサーバーとの連合を含むサービスの通常運用の一環として、このインスタンスがコンテンツを保存、表示、配布することを許可するものとします。"
 
-#: src/components/settings/PushNotificationSection.tsx:154
+#: src/components/settings/PushNotificationSection.tsx:297
 msgid "You will receive notifications even when the browser is closed."
 msgstr "ブラウザを閉じていても通知を受け取ることができます。"
 
@@ -4695,7 +4776,7 @@ msgstr "自己紹介（最大500文字）"
 msgid "Your browser does not support passkeys."
 msgstr "お使いのブラウザはパスキーに対応していません。"
 
-#: src/components/settings/PushNotificationSection.tsx:76
+#: src/components/settings/PushNotificationSection.tsx:219
 msgid "Your browser does not support push notifications."
 msgstr "お使いのブラウザはプッシュ通知に対応していません。"
 

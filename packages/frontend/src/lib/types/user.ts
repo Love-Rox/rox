@@ -48,6 +48,16 @@ export interface User extends Omit<UserProfile, "createdAt" | "displayName" | "h
 
   // Profile emojis (custom emojis used in name/bio for remote users)
   profileEmojis?: ProfileEmoji[];
+
+  // UI settings
+  uiSettings?: {
+    fontSize?: "small" | "medium" | "large" | "xlarge";
+    lineHeight?: "compact" | "normal" | "relaxed";
+    contentWidth?: "narrow" | "normal" | "wide";
+    theme?: "light" | "dark" | "system";
+    appCustomCss?: string;
+    disabledPushNotificationTypes?: string[];
+  };
 }
 
 /**

@@ -711,6 +711,10 @@ msgstr "Check"
 msgid "Check Instance"
 msgstr "Check Instance"
 
+#: src/components/settings/PushNotificationSection.tsx:389
+msgid "Choose which types of notifications you want to receive."
+msgstr "Choose which types of notifications you want to receive."
+
 #: src/pages/login.tsx:181
 msgid "Choose your preferred sign-in method"
 msgstr "Choose your preferred sign-in method"
@@ -1094,7 +1098,11 @@ msgstr "Direct message - Only visible to specified recipients"
 msgid "Direct Message Recipients"
 msgstr "Direct Message Recipients"
 
-#: src/components/settings/PushNotificationSection.tsx:183
+#: src/components/settings/PushNotificationSection.tsx:99
+msgid "Direct messages"
+msgstr "Direct messages"
+
+#: src/components/settings/PushNotificationSection.tsx:326
 msgid "Disable"
 msgstr "Disable"
 
@@ -1254,7 +1262,7 @@ msgstr "Empty draft"
 msgid "Empty folder"
 msgstr "Empty folder"
 
-#: src/components/settings/PushNotificationSection.tsx:185
+#: src/components/settings/PushNotificationSection.tsx:328
 msgid "Enable"
 msgstr "Enable"
 
@@ -1262,7 +1270,7 @@ msgstr "Enable"
 msgid "Enable Registration"
 msgstr "Enable Registration"
 
-#: src/components/settings/PushNotificationSection.tsx:168
+#: src/components/settings/PushNotificationSection.tsx:311
 msgid "Enable to receive notifications in the background."
 msgstr "Enable to receive notifications in the background."
 
@@ -1612,6 +1620,10 @@ msgstr "Failed to update emojis"
 #~ msgid "Failed to update follow status"
 #~ msgstr "Failed to update follow status"
 
+#: src/components/settings/PushNotificationSection.tsx:196
+msgid "Failed to update notification settings"
+msgstr "Failed to update notification settings"
+
 #: src/pages/admin/storage.tsx:244
 msgid "Failed to update quota"
 msgstr "Failed to update quota"
@@ -1720,6 +1732,10 @@ msgstr "Follow"
 #: src/pages/interact.tsx:142
 msgid "Follow @{0}"
 msgstr "Follow @{0}"
+
+#: src/components/settings/PushNotificationSection.tsx:93
+msgid "Follow requests accepted"
+msgstr "Follow requests accepted"
 
 #: src/components/notification/NotificationItem.tsx:95
 msgid "followed you"
@@ -2353,6 +2369,7 @@ msgid "mentioned you"
 msgstr "mentioned you"
 
 #: src/components/layout/Sidebar.tsx:109
+#: src/components/settings/PushNotificationSection.tsx:63
 #: src/pages/mentions.tsx:91
 msgid "Mentions"
 msgstr "Mentions"
@@ -2444,6 +2461,10 @@ msgstr "New accounts require admin approval"
 #: src/components/drive/DrivePickerDialog.tsx:320
 msgid "New folder"
 msgstr "New folder"
+
+#: src/components/settings/PushNotificationSection.tsx:57
+msgid "New followers"
+msgstr "New followers"
 
 #: src/pages/contact/index.tsx:150
 #: src/pages/contact/index.tsx:179
@@ -2695,6 +2716,10 @@ msgstr "Notification history statistics"
 msgid "Notification Sound"
 msgstr "Notification Sound"
 
+#: src/components/settings/PushNotificationSection.tsx:386
+msgid "Notification types"
+msgstr "Notification types"
+
 #: src/components/layout/Sidebar.tsx:103
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:187
@@ -2702,7 +2727,7 @@ msgstr "Notification Sound"
 msgid "Notifications"
 msgstr "Notifications"
 
-#: src/components/settings/PushNotificationSection.tsx:129
+#: src/components/settings/PushNotificationSection.tsx:272
 msgid "Notifications are blocked"
 msgstr "Notifications are blocked"
 
@@ -2854,7 +2879,7 @@ msgstr "Permissions"
 msgid "Please describe your inquiry in detail..."
 msgstr "Please describe your inquiry in detail..."
 
-#: src/components/settings/PushNotificationSection.tsx:132
+#: src/components/settings/PushNotificationSection.tsx:275
 msgid "Please enable notifications in your browser settings to receive push notifications."
 msgstr "Please enable notifications in your browser settings to receive push notifications."
 
@@ -3008,21 +3033,21 @@ msgstr "Public follow/follower relationships"
 msgid "Public posts and media"
 msgstr "Public posts and media"
 
-#: src/components/settings/PushNotificationSection.tsx:69
-#: src/components/settings/PushNotificationSection.tsx:91
-#: src/components/settings/PushNotificationSection.tsx:111
+#: src/components/settings/PushNotificationSection.tsx:212
+#: src/components/settings/PushNotificationSection.tsx:234
+#: src/components/settings/PushNotificationSection.tsx:254
 msgid "Push Notifications"
 msgstr "Push Notifications"
 
-#: src/components/settings/PushNotificationSection.tsx:98
+#: src/components/settings/PushNotificationSection.tsx:241
 msgid "Push notifications are not configured on this server."
 msgstr "Push notifications are not configured on this server."
 
-#: src/components/settings/PushNotificationSection.tsx:165
+#: src/components/settings/PushNotificationSection.tsx:308
 msgid "Push notifications disabled"
 msgstr "Push notifications disabled"
 
-#: src/components/settings/PushNotificationSection.tsx:151
+#: src/components/settings/PushNotificationSection.tsx:294
 msgid "Push notifications enabled"
 msgstr "Push notifications enabled"
 
@@ -3075,6 +3100,10 @@ msgstr "Quote"
 msgid "quoted your note"
 msgstr "quoted your note"
 
+#: src/components/settings/PushNotificationSection.tsx:87
+msgid "Quotes"
+msgstr "Quotes"
+
 #: src/pages/admin/queue.tsx:428
 msgid "Rate"
 msgstr "Rate"
@@ -3090,6 +3119,10 @@ msgstr "Reaction"
 #: src/components/note/NoteCard.tsx:216
 msgid "Reaction added"
 msgstr "Reaction added"
+
+#: src/components/settings/PushNotificationSection.tsx:75
+msgid "Reactions"
+msgstr "Reactions"
 
 #: src/pages/mod/users.tsx:409
 msgid "Read"
@@ -3165,7 +3198,7 @@ msgstr "Refresh page"
 msgid "Refresh user information"
 msgstr "Refresh user information"
 
-#: src/components/settings/PushNotificationSection.tsx:216
+#: src/components/settings/PushNotificationSection.tsx:359
 msgid "Registered devices"
 msgstr "Registered devices"
 
@@ -3277,9 +3310,17 @@ msgstr "Renoted"
 msgid "renoted your note"
 msgstr "renoted your note"
 
+#: src/components/settings/PushNotificationSection.tsx:81
+msgid "Renotes"
+msgstr "Renotes"
+
 #: src/components/notification/NotificationItem.tsx:107
 msgid "replied to your note"
 msgstr "replied to your note"
+
+#: src/components/settings/PushNotificationSection.tsx:69
+msgid "Replies"
+msgstr "Replies"
 
 #. placeholder {0}: descendants.length
 #: src/components/pages/NoteDetailPageClient.tsx:143
@@ -3653,7 +3694,7 @@ msgstr "Select Visible ({0})"
 msgid "Send"
 msgstr "Send"
 
-#: src/components/settings/PushNotificationSection.tsx:199
+#: src/components/settings/PushNotificationSection.tsx:342
 msgid "Send a test notification to verify your setup."
 msgstr "Send a test notification to verify your setup."
 
@@ -3665,7 +3706,7 @@ msgstr "Send Delete activity to remote followers"
 msgid "Send service-related notifications"
 msgstr "Send service-related notifications"
 
-#: src/components/settings/PushNotificationSection.tsx:205
+#: src/components/settings/PushNotificationSection.tsx:348
 msgid "Send test"
 msgstr "Send test"
 
@@ -3951,7 +3992,7 @@ msgstr "Terms of Service URL"
 msgid "Test"
 msgstr "Test"
 
-#: src/components/settings/PushNotificationSection.tsx:196
+#: src/components/settings/PushNotificationSection.tsx:339
 msgid "Test notification"
 msgstr "Test notification"
 
@@ -4511,6 +4552,10 @@ msgstr "Warning issued successfully"
 msgid "Warning Reason (required)"
 msgstr "Warning Reason (required)"
 
+#: src/components/settings/PushNotificationSection.tsx:105
+msgid "Warnings"
+msgstr "Warnings"
+
 #. placeholder {0}: selectedUser.warnings.total
 #: src/pages/mod/users.tsx:380
 msgid "Warnings ({0})"
@@ -4560,13 +4605,49 @@ msgstr "We'll use this to respond to your inquiry"
 msgid "Welcome to Rox! Let's configure your server."
 msgstr "Welcome to Rox! Let's configure your server."
 
+#: src/components/settings/PushNotificationSection.tsx:58
+msgid "When someone follows you"
+msgstr "When someone follows you"
+
+#: src/components/settings/PushNotificationSection.tsx:64
+msgid "When someone mentions you"
+msgstr "When someone mentions you"
+
 #: src/pages/mentions.tsx:161
 msgid "When someone mentions you, it will appear here"
 msgstr "When someone mentions you, it will appear here"
 
+#: src/components/settings/PushNotificationSection.tsx:88
+msgid "When someone quotes your post"
+msgstr "When someone quotes your post"
+
+#: src/components/settings/PushNotificationSection.tsx:76
+msgid "When someone reacts to your post"
+msgstr "When someone reacts to your post"
+
+#: src/components/settings/PushNotificationSection.tsx:82
+msgid "When someone renotes your post"
+msgstr "When someone renotes your post"
+
+#: src/components/settings/PushNotificationSection.tsx:70
+msgid "When someone replies to your post"
+msgstr "When someone replies to your post"
+
+#: src/components/settings/PushNotificationSection.tsx:100
+msgid "When you receive a direct message"
+msgstr "When you receive a direct message"
+
+#: src/components/settings/PushNotificationSection.tsx:106
+msgid "When you receive a moderation warning"
+msgstr "When you receive a moderation warning"
+
 #: src/pages/legal/privacy.tsx:102
 msgid "When you use {instanceName}, we collect the following types of information:"
 msgstr "When you use {instanceName}, we collect the following types of information:"
+
+#: src/components/settings/PushNotificationSection.tsx:94
+msgid "When your follow request is accepted"
+msgstr "When your follow request is accepted"
 
 #: src/pages/admin/blocks.tsx:267
 msgid "Why is this instance being blocked?"
@@ -4665,7 +4746,7 @@ msgstr "You received a warning from the moderators"
 msgid "You retain ownership of content you create and post. By posting content, you grant this instance a license to store, display, and distribute your content as part of the service's normal operation, including federation with other ActivityPub servers."
 msgstr "You retain ownership of content you create and post. By posting content, you grant this instance a license to store, display, and distribute your content as part of the service's normal operation, including federation with other ActivityPub servers."
 
-#: src/components/settings/PushNotificationSection.tsx:154
+#: src/components/settings/PushNotificationSection.tsx:297
 msgid "You will receive notifications even when the browser is closed."
 msgstr "You will receive notifications even when the browser is closed."
 
@@ -4695,7 +4776,7 @@ msgstr "Your bio (max 500 characters)"
 msgid "Your browser does not support passkeys."
 msgstr "Your browser does not support passkeys."
 
-#: src/components/settings/PushNotificationSection.tsx:76
+#: src/components/settings/PushNotificationSection.tsx:219
 msgid "Your browser does not support push notifications."
 msgstr "Your browser does not support push notifications."
 

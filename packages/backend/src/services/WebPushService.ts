@@ -304,8 +304,28 @@ export class WebPushService {
   }
 
   /**
+   * Get user's disabled push notification types from settings
+   */
+  private async getDisabledNotificationTypes(userId: string): Promise<NotificationType[]> {
+    const { users } = await import("../db/schema/pg.js");
+
+    const [user] = await this.db
+      .select({ uiSettings: users.uiSettings })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    if (!user?.uiSettings) {
+      return [];
+    }
+
+    return user.uiSettings.disabledPushNotificationTypes || [];
+  }
+
+  /**
    * Send push notification to all subscriptions of a user
    * Each subscription may have a different language preference
+   * Respects user's disabled notification type preferences
    */
   async sendToUserWithLocalization(
     userId: string,
@@ -315,6 +335,13 @@ export class WebPushService {
     noteId?: string | null,
   ): Promise<number> {
     if (!this.vapidConfigured) {
+      return 0;
+    }
+
+    // Check if this notification type is disabled by the user
+    const disabledTypes = await this.getDisabledNotificationTypes(userId);
+    if (disabledTypes.includes(type)) {
+      logger.debug({ userId, type }, "Push notification skipped - type disabled by user");
       return 0;
     }
 

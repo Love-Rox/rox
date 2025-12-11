@@ -574,6 +574,25 @@ app.patch("/@me", requireAuth(), async (c) => {
       uiSettings.appCustomCss = body.uiSettings.appCustomCss;
     }
 
+    // Disabled push notification types
+    const validNotificationTypes = [
+      "follow",
+      "mention",
+      "reply",
+      "reaction",
+      "renote",
+      "quote",
+      "warning",
+      "follow_request_accepted",
+      "dm",
+    ];
+    if (Array.isArray(body.uiSettings.disabledPushNotificationTypes)) {
+      const validDisabledTypes = body.uiSettings.disabledPushNotificationTypes.filter(
+        (t: unknown) => typeof t === "string" && validNotificationTypes.includes(t),
+      );
+      uiSettings.disabledPushNotificationTypes = validDisabledTypes;
+    }
+
     updateData.uiSettings = uiSettings;
   }
 

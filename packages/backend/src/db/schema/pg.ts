@@ -38,6 +38,8 @@ export interface UISettings {
   appCustomCss?: string;
   /** Preferred language for notifications and emails */
   language?: "en" | "ja";
+  /** Disabled push notification types (empty = all enabled) */
+  disabledPushNotificationTypes?: NotificationType[];
 }
 
 /**
