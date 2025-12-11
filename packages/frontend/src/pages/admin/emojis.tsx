@@ -11,7 +11,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { Trash2, Plus, RefreshCw, Smile, Edit2, X, Upload, Download, Globe, Archive } from "lucide-react";
+import { Trash2, Plus, RefreshCw, Smile, Edit2, X, Upload, Download, Globe, Archive, CheckSquare, Square, FolderInput } from "lucide-react";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { apiClient } from "../../lib/api/client";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
@@ -36,6 +36,9 @@ interface CustomEmoji {
 
 interface EmojisResponse {
   emojis: CustomEmoji[];
+  total: number;
+  limit: number;
+  offset: number;
 }
 
 interface CategoriesResponse {
@@ -67,10 +70,12 @@ export default function AdminEmojisPage() {
   const [, addToast] = useAtom(addToastAtom);
 
   const [emojis, setEmojis] = useState<CustomEmoji[]>([]);
+  const [totalEmojis, setTotalEmojis] = useState(0);
   const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Tab state
   const [activeTab, setActiveTab] = useState<TabType>("local");
@@ -85,6 +90,7 @@ export default function AdminEmojisPage() {
   // ZIP import state
   const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Form state
   const [showAddForm, setShowAddForm] = useState(false);
@@ -102,16 +108,36 @@ export default function AdminEmojisPage() {
   const [filterCategory, setFilterCategory] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const loadEmojis = useCallback(async () => {
+  // Bulk selection state
+  const [selectedEmojis, setSelectedEmojis] = useState<Set<string>>(new Set());
+  const [isBulkMode, setIsBulkMode] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [isBulkUpdating, setIsBulkUpdating] = useState(false);
+  const [showBulkCategoryModal, setShowBulkCategoryModal] = useState(false);
+  const [bulkCategory, setBulkCategory] = useState("");
+
+  const loadEmojis = useCallback(async (loadAll = false) => {
     if (!token) return;
 
     try {
       apiClient.setToken(token);
-      const response = await apiClient.get<EmojisResponse>("/api/emojis");
-      setEmojis(response.emojis);
+      // First, get initial batch and total count
+      const response = await apiClient.get<EmojisResponse>("/api/emojis?limit=100");
+      setTotalEmojis(response.total);
+
+      if (loadAll && response.total > response.emojis.length) {
+        // Load all emojis if requested and there are more
+        setIsLoadingMore(true);
+        const allResponse = await apiClient.get<EmojisResponse>(`/api/emojis?limit=${response.total}`);
+        setEmojis(allResponse.emojis);
+        setIsLoadingMore(false);
+      } else {
+        setEmojis(response.emojis);
+      }
     } catch (err) {
       console.error("Failed to load emojis:", err);
       setError("Failed to load custom emojis");
+      setIsLoadingMore(false);
     }
   }, [token]);
 
@@ -176,9 +202,8 @@ export default function AdminEmojisPage() {
     }
   };
 
-  const handleZipImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !token) return;
+  const processZipFile = async (file: File) => {
+    if (!token) return;
 
     // Validate file type
     if (!file.name.endsWith(".zip")) {
@@ -205,17 +230,31 @@ export default function AdminEmojisPage() {
       const formData = new FormData();
       formData.append("file", file);
 
+      // Use AbortController for timeout (5 minutes for large imports)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5 * 60 * 1000);
+
       const response = await fetch("/api/emojis/import", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
         body: formData,
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Import failed");
+        let errorMessage = "Import failed";
+        try {
+          const error = await response.json();
+          errorMessage = error.error || errorMessage;
+        } catch {
+          // Response might not be JSON
+          errorMessage = `Import failed with status ${response.status}`;
+        }
+        throw new Error(errorMessage);
       }
 
       const result: ImportResult = await response.json();
@@ -230,15 +269,52 @@ export default function AdminEmojisPage() {
       await Promise.all([loadEmojis(), loadCategories()]);
     } catch (err) {
       console.error("Failed to import emojis:", err);
+      let errorMessage = t`Failed to import emojis`;
+      if (err instanceof Error) {
+        if (err.name === "AbortError") {
+          errorMessage = t`Import timed out. The server may still be processing. Please check back later.`;
+        } else {
+          errorMessage = err.message;
+        }
+      }
       addToast({
         type: "error",
-        message: err instanceof Error ? err.message : t`Failed to import emojis`,
+        message: errorMessage,
       });
     } finally {
       setIsImporting(false);
-      // Reset file input
-      e.target.value = "";
+      setIsDragging(false);
     }
+  };
+
+  const handleZipImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await processZipFile(file);
+    // Reset file input
+    e.target.value = "";
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    await processZipFile(file);
   };
 
   // Check admin access and load emojis
@@ -459,6 +535,175 @@ export default function AdminEmojisPage() {
     setShowAddForm(true);
   };
 
+  // Bulk selection handlers
+  const toggleBulkMode = () => {
+    setIsBulkMode(!isBulkMode);
+    if (isBulkMode) {
+      setSelectedEmojis(new Set());
+    }
+  };
+
+  const toggleEmojiSelection = (emojiId: string) => {
+    setSelectedEmojis((prev) => {
+      const next = new Set(prev);
+      if (next.has(emojiId)) {
+        next.delete(emojiId);
+      } else {
+        next.add(emojiId);
+      }
+      return next;
+    });
+  };
+
+  const selectAllFiltered = () => {
+    setSelectedEmojis(new Set(filteredEmojis.map((e) => e.id)));
+  };
+
+  const loadAndSelectAll = async () => {
+    // Load all emojis first, then select them
+    if (emojis.length < totalEmojis) {
+      setIsLoadingMore(true);
+      try {
+        apiClient.setToken(token!);
+        const allResponse = await apiClient.get<EmojisResponse>(`/api/emojis?limit=${totalEmojis}`);
+        const allEmojis = allResponse.emojis;
+        setEmojis(allEmojis);
+        // Apply filters and select all matching
+        const filtered = allEmojis.filter((emoji) => {
+          if (filterCategory && emoji.category !== filterCategory) return false;
+          if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            return (
+              emoji.name.toLowerCase().includes(query) ||
+              emoji.aliases.some((a) => a.toLowerCase().includes(query))
+            );
+          }
+          return true;
+        });
+        setSelectedEmojis(new Set(filtered.map((e) => e.id)));
+      } catch (err) {
+        console.error("Failed to load all emojis:", err);
+        addToast({
+          type: "error",
+          message: t`Failed to load all emojis`,
+        });
+      } finally {
+        setIsLoadingMore(false);
+      }
+    } else {
+      // All emojis already loaded, just select filtered
+      setSelectedEmojis(new Set(filteredEmojis.map((e) => e.id)));
+    }
+  };
+
+  const deselectAll = () => {
+    setSelectedEmojis(new Set());
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedEmojis.size === 0) return;
+
+    const confirmed = window.confirm(
+      t`Are you sure you want to delete ${selectedEmojis.size} emojis? This action cannot be undone.`,
+    );
+    if (!confirmed) return;
+
+    setIsBulkDeleting(true);
+    try {
+      apiClient.setToken(token!);
+      const idsToDelete = Array.from(selectedEmojis);
+      const BATCH_SIZE = 1000;
+      let totalDeleted = 0;
+      const allDeletedIds: string[] = [];
+
+      // Process in batches of 1000
+      for (let i = 0; i < idsToDelete.length; i += BATCH_SIZE) {
+        const batch = idsToDelete.slice(i, i + BATCH_SIZE);
+        const result = await apiClient.post<{
+          success: number;
+          notFound: number;
+          details: { deleted: string[]; notFound: string[] };
+        }>("/api/emojis/bulk-delete", {
+          ids: batch,
+        });
+        totalDeleted += result.success;
+        allDeletedIds.push(...result.details.deleted);
+      }
+
+      addToast({
+        type: "success",
+        message: t`Deleted ${totalDeleted} emojis`,
+      });
+
+      // Remove deleted emojis from state and update total count
+      setEmojis((prev) => prev.filter((e) => !allDeletedIds.includes(e.id)));
+      setTotalEmojis((prev) => Math.max(0, prev - totalDeleted));
+      setSelectedEmojis(new Set());
+      setIsBulkMode(false);
+    } catch (err) {
+      console.error("Failed to bulk delete emojis:", err);
+      addToast({
+        type: "error",
+        message: err instanceof Error ? err.message : t`Failed to delete emojis`,
+      });
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
+
+  const handleBulkCategoryUpdate = async () => {
+    if (selectedEmojis.size === 0) return;
+
+    setIsBulkUpdating(true);
+    try {
+      apiClient.setToken(token!);
+      const idsToUpdate = Array.from(selectedEmojis);
+      const BATCH_SIZE = 1000;
+      let totalUpdated = 0;
+      const allUpdatedIds: string[] = [];
+
+      // Process in batches of 1000
+      for (let i = 0; i < idsToUpdate.length; i += BATCH_SIZE) {
+        const batch = idsToUpdate.slice(i, i + BATCH_SIZE);
+        const result = await apiClient.post<{
+          success: number;
+          notFound: number;
+          details: { updated: string[]; notFound: string[] };
+        }>("/api/emojis/bulk-update", {
+          ids: batch,
+          category: bulkCategory || null,
+        });
+        totalUpdated += result.success;
+        allUpdatedIds.push(...result.details.updated);
+      }
+
+      addToast({
+        type: "success",
+        message: t`Updated ${totalUpdated} emojis`,
+      });
+
+      // Update emojis in state
+      setEmojis((prev) =>
+        prev.map((e) =>
+          allUpdatedIds.includes(e.id) ? { ...e, category: bulkCategory || null } : e,
+        ),
+      );
+      setShowBulkCategoryModal(false);
+      setBulkCategory("");
+      setSelectedEmojis(new Set());
+      setIsBulkMode(false);
+      loadCategories();
+    } catch (err) {
+      console.error("Failed to bulk update emojis:", err);
+      addToast({
+        type: "error",
+        message: err instanceof Error ? err.message : t`Failed to update emojis`,
+      });
+    } finally {
+      setIsBulkUpdating(false);
+    }
+  };
+
   // Filter emojis
   const filteredEmojis = emojis.filter((emoji) => {
     if (filterCategory && emoji.category !== filterCategory) return false;
@@ -516,21 +761,40 @@ export default function AdminEmojisPage() {
               <div className="flex gap-2">
                 {activeTab === "local" && (
                   <>
+                    <Button
+                      variant={isBulkMode ? "primary" : "secondary"}
+                      size="sm"
+                      onPress={toggleBulkMode}
+                    >
+                      {isBulkMode ? (
+                        <>
+                          <X className="w-4 h-4 mr-1" />
+                          <Trans>Exit Bulk Mode</Trans>
+                        </>
+                      ) : (
+                        <>
+                          <CheckSquare className="w-4 h-4 mr-1" />
+                          <Trans>Bulk Edit</Trans>
+                        </>
+                      )}
+                    </Button>
                     <Button variant="secondary" size="sm" onPress={() => loadEmojis()}>
                       <RefreshCw className="w-4 h-4 mr-1" />
                       <Trans>Refresh</Trans>
                     </Button>
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onPress={() => {
-                        resetForm();
-                        setShowAddForm(true);
-                      }}
-                    >
-                      <Plus className="w-4 h-4 mr-1" />
-                      <Trans>Add Emoji</Trans>
-                    </Button>
+                    {!isBulkMode && (
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onPress={() => {
+                          resetForm();
+                          setShowAddForm(true);
+                        }}
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        <Trans>Add Emoji</Trans>
+                      </Button>
+                    )}
                   </>
                 )}
                 {activeTab === "remote" && (
@@ -605,14 +869,14 @@ export default function AdminEmojisPage() {
                       type="text"
                       value={name}
                       onChange={(e) =>
-                        setName(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))
+                        setName(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))
                       }
                       placeholder={t`emoji_name`}
                       className="w-full px-3 py-2 border rounded-md"
-                      pattern="[a-z0-9_]+"
+                      pattern="[a-z0-9_-]+"
                     />
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <Trans>Lowercase letters, numbers, and underscores only</Trans>
+                      <Trans>Lowercase letters, numbers, underscores, and hyphens only</Trans>
                     </p>
                   </div>
 
@@ -776,6 +1040,82 @@ export default function AdminEmojisPage() {
             {/* LOCAL EMOJIS TAB */}
             {activeTab === "local" && (
               <>
+                {/* Bulk Actions Bar */}
+                {isBulkMode && (
+                  <div className="mb-4 p-3 bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-800 rounded-lg">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
+                        {selectedEmojis.size > 0 ? (
+                          <Trans>{selectedEmojis.size} selected</Trans>
+                        ) : (
+                          <Trans>Click emojis to select</Trans>
+                        )}
+                      </span>
+                      <div className="flex gap-2 ml-auto">
+                        {emojis.length < totalEmojis ? (
+                          <>
+                            <Button variant="secondary" size="sm" onPress={selectAllFiltered}>
+                              <CheckSquare className="w-4 h-4 mr-1" />
+                              <Trans>Select Visible ({filteredEmojis.length})</Trans>
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onPress={loadAndSelectAll}
+                              isDisabled={isLoadingMore}
+                            >
+                              {isLoadingMore ? (
+                                <Spinner size="xs" />
+                              ) : (
+                                <>
+                                  <CheckSquare className="w-4 h-4 mr-1" />
+                                  <Trans>Select All ({totalEmojis})</Trans>
+                                </>
+                              )}
+                            </Button>
+                          </>
+                        ) : (
+                          <Button variant="secondary" size="sm" onPress={selectAllFiltered}>
+                            <CheckSquare className="w-4 h-4 mr-1" />
+                            <Trans>Select All</Trans>
+                          </Button>
+                        )}
+                        {selectedEmojis.size > 0 && (
+                          <>
+                            <Button variant="secondary" size="sm" onPress={deselectAll}>
+                              <Square className="w-4 h-4 mr-1" />
+                              <Trans>Deselect</Trans>
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onPress={() => setShowBulkCategoryModal(true)}
+                            >
+                              <FolderInput className="w-4 h-4 mr-1" />
+                              <Trans>Set Category</Trans>
+                            </Button>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onPress={handleBulkDelete}
+                              isDisabled={isBulkDeleting}
+                            >
+                              {isBulkDeleting ? (
+                                <Spinner size="xs" />
+                              ) : (
+                                <>
+                                  <Trash2 className="w-4 h-4 mr-1" />
+                                  <Trans>Delete</Trans>
+                                </>
+                              )}
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Filters */}
                 <div className="mb-4 flex flex-wrap gap-4">
                   <div className="flex-1 min-w-[200px]">
@@ -828,57 +1168,104 @@ export default function AdminEmojisPage() {
                             {categoryName}
                           </h3>
                           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                            {categoryEmojis.map((emoji) => (
-                              <div
-                                key={emoji.id}
-                                className="flex flex-col items-center p-3 bg-(--bg-tertiary) rounded-lg group relative"
-                              >
-                                <img
-                                  src={getProxiedImageUrl(emoji.url) || ""}
-                                  alt={`:${emoji.name}:`}
-                                  className="w-10 h-10 object-contain mb-2"
-                                />
-                                <span
-                                  className="text-xs text-center truncate w-full"
-                                  title={`:${emoji.name}:`}
+                            {categoryEmojis.map((emoji) => {
+                              const isSelected = selectedEmojis.has(emoji.id);
+                              return (
+                                <div
+                                  key={emoji.id}
+                                  onClick={isBulkMode ? () => toggleEmojiSelection(emoji.id) : undefined}
+                                  className={`flex flex-col items-center p-3 bg-(--bg-tertiary) rounded-lg group relative transition-all ${
+                                    isBulkMode
+                                      ? `cursor-pointer ${
+                                          isSelected
+                                            ? "ring-2 ring-primary-500 bg-primary-50 dark:bg-primary-900/30"
+                                            : "hover:ring-2 hover:ring-primary-300"
+                                        }`
+                                      : ""
+                                  }`}
                                 >
-                                  :{emoji.name}:
-                                </span>
-                                {emoji.isSensitive && (
-                                  <span className="text-xs text-orange-500 mt-1">NSFW</span>
-                                )}
-                                {/* Action buttons */}
-                                <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <button
-                                    onClick={() => handleEditEmoji(emoji)}
-                                    className="p-1 bg-white dark:bg-gray-700 rounded shadow hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    title={t`Edit`}
+                                  {/* Selection checkbox in bulk mode */}
+                                  {isBulkMode && (
+                                    <div className="absolute top-1 left-1">
+                                      {isSelected ? (
+                                        <CheckSquare className="w-5 h-5 text-primary-500" />
+                                      ) : (
+                                        <Square className="w-5 h-5 text-gray-400" />
+                                      )}
+                                    </div>
+                                  )}
+                                  <img
+                                    src={getProxiedImageUrl(emoji.url) || ""}
+                                    alt={`:${emoji.name}:`}
+                                    className="w-10 h-10 object-contain mb-2"
+                                  />
+                                  <span
+                                    className="text-xs text-center truncate w-full"
+                                    title={`:${emoji.name}:`}
                                   >
-                                    <Edit2 className="w-3 h-3" />
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeleteEmoji(emoji)}
-                                    className="p-1 bg-white dark:bg-gray-700 rounded shadow hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500"
-                                    title={t`Delete`}
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                  </button>
+                                    :{emoji.name}:
+                                  </span>
+                                  {emoji.isSensitive && (
+                                    <span className="text-xs text-orange-500 mt-1">NSFW</span>
+                                  )}
+                                  {/* Action buttons (hidden in bulk mode) */}
+                                  {!isBulkMode && (
+                                    <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <button
+                                        onClick={() => handleEditEmoji(emoji)}
+                                        className="p-1 bg-white dark:bg-gray-700 rounded shadow hover:bg-gray-100 dark:hover:bg-gray-600"
+                                        title={t`Edit`}
+                                      >
+                                        <Edit2 className="w-3 h-3" />
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteEmoji(emoji)}
+                                        className="p-1 bg-white dark:bg-gray-700 rounded shadow hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500"
+                                        title={t`Delete`}
+                                      >
+                                        <Trash2 className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         </div>
                       ))}
                   </div>
                 )}
 
-                {/* Stats */}
-                <div className="mt-6 pt-4 border-t dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
-                  <Trans>Total: {emojis.length} emojis</Trans>
-                  {categories.length > 0 && (
-                    <span className="ml-4">
-                      <Trans>{categories.length} categories</Trans>
-                    </span>
+                {/* Stats and Load More */}
+                <div className="mt-6 pt-4 border-t dark:border-gray-700 flex flex-wrap items-center justify-between gap-4">
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {emojis.length < totalEmojis ? (
+                      <Trans>Showing {emojis.length} of {totalEmojis} emojis</Trans>
+                    ) : (
+                      <Trans>Total: {totalEmojis} emojis</Trans>
+                    )}
+                    {categories.length > 0 && (
+                      <span className="ml-4">
+                        <Trans>{categories.length} categories</Trans>
+                      </span>
+                    )}
+                  </div>
+                  {emojis.length < totalEmojis && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onPress={() => loadEmojis(true)}
+                      isDisabled={isLoadingMore}
+                    >
+                      {isLoadingMore ? (
+                        <>
+                          <Spinner size="xs" />
+                          <span className="ml-1"><Trans>Loading...</Trans></span>
+                        </>
+                      ) : (
+                        <Trans>Load All ({totalEmojis - emojis.length} more)</Trans>
+                      )}
+                    </Button>
                   )}
                 </div>
               </>
@@ -1027,7 +1414,16 @@ export default function AdminEmojisPage() {
                   </div>
 
                   {/* Upload area */}
-                  <label className="flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-lg cursor-pointer hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors">
+                  <label
+                    className={`flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                      isDragging
+                        ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30"
+                        : "hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/30"
+                    }`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  >
                     <input
                       type="file"
                       accept=".zip"
@@ -1040,6 +1436,13 @@ export default function AdminEmojisPage() {
                         <Spinner size="lg" />
                         <span className="text-sm text-gray-500 dark:text-gray-400">
                           <Trans>Importing emojis...</Trans>
+                        </span>
+                      </>
+                    ) : isDragging ? (
+                      <>
+                        <Archive className="w-12 h-12 text-primary-500" />
+                        <span className="text-sm text-primary-500 font-medium">
+                          <Trans>Drop ZIP file here</Trans>
                         </span>
                       </>
                     ) : (
@@ -1130,6 +1533,78 @@ export default function AdminEmojisPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Bulk Category Modal */}
+      {showBulkCategoryModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4 shadow-xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">
+                <Trans>Set Category</Trans>
+              </h3>
+              <button
+                onClick={() => {
+                  setShowBulkCategoryModal(false);
+                  setBulkCategory("");
+                }}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              <Trans>Set category for {selectedEmojis.size} selected emojis</Trans>
+            </p>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">
+                <Trans>Category</Trans>
+              </label>
+              <div className="flex gap-2">
+                <select
+                  value={bulkCategory}
+                  onChange={(e) => setBulkCategory(e.target.value)}
+                  className="flex-1 px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
+                >
+                  <option value="">{t`Uncategorized`}</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  value={bulkCategory}
+                  onChange={(e) => setBulkCategory(e.target.value)}
+                  placeholder={t`Or enter new category`}
+                  className="flex-1 px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="secondary"
+                onPress={() => {
+                  setShowBulkCategoryModal(false);
+                  setBulkCategory("");
+                }}
+              >
+                <Trans>Cancel</Trans>
+              </Button>
+              <Button
+                variant="primary"
+                onPress={handleBulkCategoryUpdate}
+                isDisabled={isBulkUpdating}
+              >
+                {isBulkUpdating ? <Spinner size="xs" /> : <Trans>Apply</Trans>}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }
