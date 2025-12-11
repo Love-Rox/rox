@@ -27,6 +27,7 @@ import {
   ChevronDown,
   ChevronRight,
   X,
+  Menu,
   LayoutDashboard,
   Building,
   UserPlus,
@@ -380,12 +381,25 @@ export function AdminLayout({
   const currentPage = findCurrentPage(currentPath);
   const CurrentIcon = currentPage?.item.icon || LayoutDashboard;
 
+  // Add mobile menu button as the first action (hidden on desktop lg+)
+  const combinedActions = [
+    {
+      key: "mobile-menu",
+      icon: <Menu className="w-4 h-4" />,
+      label: <Trans>Menu</Trans>,
+      onPress: () => setMobileMenuOpen(true),
+      variant: "secondary" as const,
+      className: "lg:hidden",
+    },
+    ...(actions || []),
+  ];
+
   const pageHeader = (
     <PageHeader
       title={title}
       subtitle={subtitle}
       icon={<CurrentIcon className="w-6 h-6" />}
-      actions={actions}
+      actions={combinedActions}
       showReload={showReload}
       onReload={onReload}
       isReloading={isReloading}

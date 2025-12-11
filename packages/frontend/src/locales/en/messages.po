@@ -292,7 +292,7 @@ msgstr "Add New Emoji"
 msgid "Add notes about the action taken..."
 msgstr "Add notes about the action taken..."
 
-#: src/pages/admin/contacts.tsx:463
+#: src/pages/admin/contacts.tsx:471
 msgid "Add notes about this inquiry..."
 msgstr "Add notes about this inquiry..."
 
@@ -335,7 +335,7 @@ msgstr "Admin"
 msgid "Admin Account"
 msgstr "Admin Account"
 
-#: src/components/admin/AdminLayout.tsx:298
+#: src/components/admin/AdminLayout.tsx:299
 msgid "Admin Menu"
 msgstr "Admin Menu"
 
@@ -474,7 +474,7 @@ msgstr "Are you sure you want to migrate your account? This action cannot be und
 msgid "Are you sure you want to remove this instance from the cache?"
 msgstr "Are you sure you want to remove this instance from the cache?"
 
-#: src/components/admin/AdminLayout.tsx:78
+#: src/components/admin/AdminLayout.tsx:79
 msgid "Assets"
 msgstr "Assets"
 
@@ -525,7 +525,7 @@ msgstr "Back"
 msgid "Back to Contact"
 msgstr "Back to Contact"
 
-#: src/pages/admin/contacts.tsx:291
+#: src/pages/admin/contacts.tsx:299
 msgid "Back to list"
 msgstr "Back to list"
 
@@ -610,7 +610,7 @@ msgstr "Blocked:"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 
-#: src/components/admin/AdminLayout.tsx:115
+#: src/components/admin/AdminLayout.tsx:116
 msgid "Blocks"
 msgstr "Blocks"
 
@@ -634,7 +634,7 @@ msgstr "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
 msgid "Bulk Edit"
 msgstr "Bulk Edit"
 
-#: src/components/admin/AdminLayout.tsx:101
+#: src/components/admin/AdminLayout.tsx:102
 msgid "Bulk Import"
 msgstr "Bulk Import"
 
@@ -797,13 +797,13 @@ msgstr "Connected Servers"
 msgid "Contact"
 msgstr "Contact"
 
-#: src/pages/admin/contacts.tsx:240
-#: src/pages/admin/contacts.tsx:255
-#: src/pages/admin/contacts.tsx:487
+#: src/pages/admin/contacts.tsx:248
+#: src/pages/admin/contacts.tsx:263
+#: src/pages/admin/contacts.tsx:495
 msgid "Contact Inquiries"
 msgstr "Contact Inquiries"
 
-#: src/pages/admin/contacts.tsx:281
+#: src/pages/admin/contacts.tsx:289
 msgid "Contact thread details"
 msgstr "Contact thread details"
 
@@ -811,11 +811,11 @@ msgstr "Contact thread details"
 msgid "Contact Us"
 msgstr "Contact Us"
 
-#: src/components/admin/AdminLayout.tsx:116
+#: src/components/admin/AdminLayout.tsx:117
 msgid "Contacts"
 msgstr "Contacts"
 
-#: src/components/admin/AdminLayout.tsx:95
+#: src/components/admin/AdminLayout.tsx:96
 msgid "Content"
 msgstr "Content"
 
@@ -1200,7 +1200,7 @@ msgstr "Email"
 msgid "Email is required"
 msgstr "Email is required"
 
-#: src/pages/admin/contacts.tsx:307
+#: src/pages/admin/contacts.tsx:315
 msgid "Email:"
 msgstr "Email:"
 
@@ -1658,7 +1658,7 @@ msgstr "Favicon URL"
 msgid "Federated"
 msgstr "Federated"
 
-#: src/components/admin/AdminLayout.tsx:111
+#: src/components/admin/AdminLayout.tsx:112
 #: src/pages/admin/federation.tsx:209
 #: src/pages/admin/federation.tsx:223
 #: src/pages/admin/federation.tsx:236
@@ -1773,11 +1773,11 @@ msgstr "For questions about these terms, please <0>contact us through our inquir
 msgid "Found on remote server"
 msgstr "Found on remote server"
 
-#: src/pages/admin/contacts.tsx:302
+#: src/pages/admin/contacts.tsx:310
 msgid "From:"
 msgstr "From:"
 
-#: src/components/admin/AdminLayout.tsx:71
+#: src/components/admin/AdminLayout.tsx:72
 msgid "General"
 msgstr "General"
 
@@ -1815,7 +1815,7 @@ msgstr "Go to Timeline"
 msgid "Gone"
 msgstr "Gone"
 
-#: src/components/admin/AdminLayout.tsx:90
+#: src/components/admin/AdminLayout.tsx:91
 #: src/pages/admin/gone-users.tsx:168
 #: src/pages/admin/gone-users.tsx:181
 msgid "Gone Users"
@@ -1923,7 +1923,7 @@ msgstr "In reply to"
 msgid "Initiate Migration"
 msgstr "Initiate Migration"
 
-#: src/components/admin/AdminLayout.tsx:75
+#: src/components/admin/AdminLayout.tsx:76
 #: src/pages/onboarding.tsx:418
 msgid "Instance"
 msgstr "Instance"
@@ -2004,7 +2004,7 @@ msgstr "Instance unblocked"
 msgid "Instance unblocked successfully"
 msgstr "Instance unblocked successfully"
 
-#: src/pages/admin/contacts.tsx:450
+#: src/pages/admin/contacts.tsx:458
 msgid "Internal Notes"
 msgstr "Internal Notes"
 
@@ -2042,7 +2042,7 @@ msgstr "Invitation code is required"
 msgid "Invitation Codes"
 msgstr "Invitation Codes"
 
-#: src/components/admin/AdminLayout.tsx:89
+#: src/components/admin/AdminLayout.tsx:90
 msgid "Invitations"
 msgstr "Invitations"
 
@@ -2117,7 +2117,7 @@ msgstr "Leave empty for a permanent warning"
 msgid "Leave empty for auto-generated code"
 msgstr "Leave empty for auto-generated code"
 
-#: src/components/admin/AdminLayout.tsx:79
+#: src/components/admin/AdminLayout.tsx:80
 msgid "Legal"
 msgstr "Legal"
 
@@ -2190,7 +2190,7 @@ msgstr "Loading..."
 msgid "Local"
 msgstr "Local"
 
-#: src/components/admin/AdminLayout.tsx:99
+#: src/components/admin/AdminLayout.tsx:100
 msgid "Local Emojis"
 msgstr "Local Emojis"
 
@@ -2280,9 +2280,9 @@ msgstr "Manage remote users with fetch errors"
 msgid "Manage user accounts"
 msgstr "Manage user accounts"
 
-#: src/pages/admin/contacts.tsx:241
-#: src/pages/admin/contacts.tsx:256
-#: src/pages/admin/contacts.tsx:495
+#: src/pages/admin/contacts.tsx:249
+#: src/pages/admin/contacts.tsx:264
+#: src/pages/admin/contacts.tsx:503
 msgid "Manage user inquiries and support requests"
 msgstr "Manage user inquiries and support requests"
 
@@ -2356,6 +2356,10 @@ msgstr "mentioned you"
 #: src/pages/mentions.tsx:91
 msgid "Mentions"
 msgstr "Mentions"
+
+#: src/components/admin/AdminLayout.tsx:389
+msgid "Menu"
+msgstr "Menu"
 
 #: src/pages/contact/index.tsx:243
 msgid "Message"
@@ -2459,7 +2463,7 @@ msgstr "New Note"
 msgid "New notification"
 msgstr "New notification"
 
-#: src/pages/admin/contacts.tsx:606
+#: src/pages/admin/contacts.tsx:614
 #: src/pages/admin/federation.tsx:483
 #: src/pages/onboarding.tsx:475
 msgid "Next"
@@ -2518,7 +2522,7 @@ msgstr "No files uploaded yet"
 msgid "No followers yet"
 msgstr "No followers yet"
 
-#: src/pages/admin/contacts.tsx:532
+#: src/pages/admin/contacts.tsx:540
 msgid "No inquiries found"
 msgstr "No inquiries found"
 
@@ -2714,7 +2718,7 @@ msgstr "Once data is federated, other servers have their own copies and we canno
 msgid "Once you delete your account, there is no going back. This action is permanent and will delete all your data, including notes, followers, and profile information."
 msgstr "Once you delete your account, there is no going back. This action is permanent and will delete all your data, including notes, followers, and profile information."
 
-#: src/pages/admin/contacts.tsx:455
+#: src/pages/admin/contacts.tsx:463
 msgid "Only visible to staff"
 msgstr "Only visible to staff"
 
@@ -2838,7 +2842,7 @@ msgstr "Pending Reports"
 msgid "Permanently Delete Account"
 msgstr "Permanently Delete Account"
 
-#: src/pages/admin/contacts.tsx:262
+#: src/pages/admin/contacts.tsx:270
 msgid "Permission Denied"
 msgstr "Permission Denied"
 
@@ -2926,7 +2930,7 @@ msgstr "Powered by Rox - Lightweight ActivityPub Server"
 msgid "Preview"
 msgstr "Preview"
 
-#: src/pages/admin/contacts.tsx:596
+#: src/pages/admin/contacts.tsx:604
 #: src/pages/admin/federation.tsx:472
 msgid "Previous"
 msgstr "Previous"
@@ -3046,11 +3050,11 @@ msgstr "Queue Health"
 msgid "Queue Not Available"
 msgstr "Queue Not Available"
 
-#: src/components/admin/AdminLayout.tsx:113
+#: src/components/admin/AdminLayout.tsx:114
 msgid "Queue Overview"
 msgstr "Queue Overview"
 
-#: src/components/admin/AdminLayout.tsx:114
+#: src/components/admin/AdminLayout.tsx:115
 msgid "Queue Servers"
 msgstr "Queue Servers"
 
@@ -3169,7 +3173,7 @@ msgstr "Registered devices"
 msgid "Registering..."
 msgstr "Registering..."
 
-#: src/components/admin/AdminLayout.tsx:76
+#: src/components/admin/AdminLayout.tsx:77
 #: src/pages/onboarding.tsx:427
 msgid "Registration"
 msgstr "Registration"
@@ -3211,7 +3215,7 @@ msgstr "Rejected"
 msgid "Remote"
 msgstr "Remote"
 
-#: src/components/admin/AdminLayout.tsx:100
+#: src/components/admin/AdminLayout.tsx:101
 msgid "Remote Emojis"
 msgstr "Remote Emojis"
 
@@ -3351,7 +3355,7 @@ msgstr "Reporter"
 msgid "Reporting"
 msgstr "Reporting"
 
-#: src/components/admin/AdminLayout.tsx:102
+#: src/components/admin/AdminLayout.tsx:103
 #: src/pages/admin/reports.tsx:225
 #: src/pages/admin/reports.tsx:239
 #: src/pages/admin/reports.tsx:252
@@ -3477,7 +3481,7 @@ msgstr "Role name"
 msgid "Role updated"
 msgstr "Role updated"
 
-#: src/components/admin/AdminLayout.tsx:88
+#: src/components/admin/AdminLayout.tsx:89
 #: src/pages/admin/roles.tsx:578
 msgid "Roles"
 msgstr "Roles"
@@ -3520,7 +3524,7 @@ msgstr "Save Instance Settings"
 msgid "Save Legal Settings"
 msgstr "Save Legal Settings"
 
-#: src/pages/admin/contacts.tsx:470
+#: src/pages/admin/contacts.tsx:478
 msgid "Save Notes"
 msgstr "Save Notes"
 
@@ -3645,7 +3649,7 @@ msgid "Select Visible ({0})"
 msgstr "Select Visible ({0})"
 
 #: src/components/pages/ContactThreadPageClient.tsx:287
-#: src/pages/admin/contacts.tsx:426
+#: src/pages/admin/contacts.tsx:434
 msgid "Send"
 msgstr "Send"
 
@@ -3827,7 +3831,7 @@ msgstr "Status"
 msgid "Step {0} of {1}"
 msgstr "Step {0} of {1}"
 
-#: src/components/admin/AdminLayout.tsx:110
+#: src/components/admin/AdminLayout.tsx:111
 #: src/components/settings/StorageSection.tsx:145
 #: src/components/settings/StorageSection.tsx:165
 #: src/pages/settings.tsx:158
@@ -3899,7 +3903,7 @@ msgstr "Suspended"
 msgid "Synced"
 msgstr "Synced"
 
-#: src/components/admin/AdminLayout.tsx:107
+#: src/components/admin/AdminLayout.tsx:108
 #: src/pages/admin/settings.tsx:620
 msgid "System"
 msgstr "System"
@@ -3983,7 +3987,7 @@ msgstr "The server is temporarily unavailable due to maintenance or high load. P
 msgid "The user @{username} doesn't exist or may have been deleted."
 msgstr "The user @{username} doesn't exist or may have been deleted."
 
-#: src/components/admin/AdminLayout.tsx:77
+#: src/components/admin/AdminLayout.tsx:78
 #: src/components/settings/UISettingsSection.tsx:300
 msgid "Theme"
 msgstr "Theme"
@@ -4080,7 +4084,7 @@ msgstr "This service is provided \"as is\" without warranties of any kind. We ar
 msgid "This software is licensed under the GNU Affero General Public License version 3.0. This means you are free to use, modify, and distribute this software, but any modifications must also be released under the same license, and if you run a modified version as a network service, you must make the source code available to users."
 msgstr "This software is licensed under the GNU Affero General Public License version 3.0. This means you are free to use, modify, and distribute this software, but any modifications must also be released under the same license, and if you run a modified version as a network service, you must make the source code available to users."
 
-#: src/pages/admin/contacts.tsx:438
+#: src/pages/admin/contacts.tsx:446
 msgid "This thread is closed."
 msgstr "This thread is closed."
 
@@ -4188,7 +4192,7 @@ msgstr "Type \"{CONFIRM_TEXT}\" to confirm"
 msgid "Type your message..."
 msgstr "Type your message..."
 
-#: src/pages/admin/contacts.tsx:410
+#: src/pages/admin/contacts.tsx:418
 msgid "Type your reply..."
 msgstr "Type your reply..."
 
@@ -4406,8 +4410,8 @@ msgstr "Username is required"
 msgid "Username must be at least 3 characters"
 msgstr "Username must be at least 3 characters"
 
-#: src/components/admin/AdminLayout.tsx:84
-#: src/components/admin/AdminLayout.tsx:87
+#: src/components/admin/AdminLayout.tsx:85
+#: src/components/admin/AdminLayout.tsx:88
 #: src/pages/admin/federation.tsx:400
 #: src/pages/admin/users.tsx:293
 #: src/pages/mod/audit-logs.tsx:261
@@ -4625,7 +4629,7 @@ msgstr "You can submit an inquiry without an account. To track your inquiry hist
 msgid "You don't have permission to access this page or resource."
 msgstr "You don't have permission to access this page or resource."
 
-#: src/pages/admin/contacts.tsx:265
+#: src/pages/admin/contacts.tsx:273
 msgid "You don't have permission to manage contact inquiries."
 msgstr "You don't have permission to manage contact inquiries."
 

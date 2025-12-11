@@ -35,6 +35,8 @@ export interface PageHeaderAction {
   onPress: () => void;
   /** Button variant */
   variant?: "primary" | "secondary" | "danger";
+  /** Additional CSS classes for the button */
+  className?: string;
 }
 
 /**
@@ -205,7 +207,7 @@ export function PageHeader({
                     : action.variant === "danger"
                       ? "bg-red-600 hover:bg-red-700 text-white focus-visible:ring-red-500"
                       : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 focus-visible:ring-gray-500"
-                }`}
+                } ${action.className || ""}`}
               >
                 {action.icon}
                 <span className="hidden sm:inline">{action.label}</span>
