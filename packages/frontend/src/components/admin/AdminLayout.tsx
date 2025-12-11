@@ -9,7 +9,9 @@
  */
 
 import { useState } from "react";
-import { Trans } from "@lingui/react/macro";
+import { Trans, useLingui } from "@lingui/react/macro";
+import { msg } from "@lingui/core/macro";
+import type { MessageDescriptor } from "@lingui/core";
 import {
   Settings,
   Users,
@@ -44,7 +46,7 @@ import { PageHeader } from "../ui/PageHeader";
 interface NavItem {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
-  label: string;
+  label: MessageDescriptor;
 }
 
 /**
@@ -52,7 +54,7 @@ interface NavItem {
  */
 interface NavCategory {
   key: string;
-  label: string;
+  label: MessageDescriptor;
   icon: React.ComponentType<{ className?: string }>;
   items: NavItem[];
 }
@@ -66,52 +68,52 @@ interface NavCategory {
 const ADMIN_NAV_CATEGORIES: NavCategory[] = [
   {
     key: "general",
-    label: "General",
+    label: msg`General`,
     icon: Settings,
     items: [
       // Settings sub-tabs as direct items
-      { href: "/admin/settings?tab=instance", icon: Building, label: "Instance" },
-      { href: "/admin/settings?tab=registration", icon: UserPlus, label: "Registration" },
-      { href: "/admin/settings?tab=theme", icon: Palette, label: "Theme" },
-      { href: "/admin/settings?tab=assets", icon: ImageIcon, label: "Assets" },
-      { href: "/admin/settings?tab=legal", icon: Scale, label: "Legal" },
+      { href: "/admin/settings?tab=instance", icon: Building, label: msg`Instance` },
+      { href: "/admin/settings?tab=registration", icon: UserPlus, label: msg`Registration` },
+      { href: "/admin/settings?tab=theme", icon: Palette, label: msg`Theme` },
+      { href: "/admin/settings?tab=assets", icon: ImageIcon, label: msg`Assets` },
+      { href: "/admin/settings?tab=legal", icon: Scale, label: msg`Legal` },
     ],
   },
   {
     key: "users",
-    label: "Users",
+    label: msg`Users`,
     icon: Users,
     items: [
-      { href: "/admin/users", icon: UserCog, label: "Users" },
-      { href: "/admin/roles", icon: Users, label: "Roles" },
-      { href: "/admin/invitations", icon: Ticket, label: "Invitations" },
-      { href: "/admin/gone-users", icon: Ghost, label: "Gone Users" },
+      { href: "/admin/users", icon: UserCog, label: msg`Users` },
+      { href: "/admin/roles", icon: Users, label: msg`Roles` },
+      { href: "/admin/invitations", icon: Ticket, label: msg`Invitations` },
+      { href: "/admin/gone-users", icon: Ghost, label: msg`Gone Users` },
     ],
   },
   {
     key: "content",
-    label: "Content",
+    label: msg`Content`,
     icon: Smile,
     items: [
       // Emojis sub-tabs as direct items
-      { href: "/admin/emojis?tab=local", icon: Smile, label: "Local Emojis" },
-      { href: "/admin/emojis?tab=remote", icon: Globe, label: "Remote Emojis" },
-      { href: "/admin/emojis?tab=import", icon: Archive, label: "Bulk Import" },
-      { href: "/admin/reports", icon: AlertTriangle, label: "Reports" },
+      { href: "/admin/emojis?tab=local", icon: Smile, label: msg`Local Emojis` },
+      { href: "/admin/emojis?tab=remote", icon: Globe, label: msg`Remote Emojis` },
+      { href: "/admin/emojis?tab=import", icon: Archive, label: msg`Bulk Import` },
+      { href: "/admin/reports", icon: AlertTriangle, label: msg`Reports` },
     ],
   },
   {
     key: "system",
-    label: "System",
+    label: msg`System`,
     icon: HardDrive,
     items: [
-      { href: "/admin/storage", icon: HardDrive, label: "Storage" },
-      { href: "/admin/federation", icon: Globe, label: "Federation" },
+      { href: "/admin/storage", icon: HardDrive, label: msg`Storage` },
+      { href: "/admin/federation", icon: Globe, label: msg`Federation` },
       // Queue sub-tabs as direct items
-      { href: "/admin/queue?tab=overview", icon: BarChart3, label: "Queue Overview" },
-      { href: "/admin/queue?tab=servers", icon: Server, label: "Queue Servers" },
-      { href: "/admin/blocks", icon: Shield, label: "Blocks" },
-      { href: "/admin/contacts", icon: MessageCircle, label: "Contacts" },
+      { href: "/admin/queue?tab=overview", icon: BarChart3, label: msg`Queue Overview` },
+      { href: "/admin/queue?tab=servers", icon: Server, label: msg`Queue Servers` },
+      { href: "/admin/blocks", icon: Shield, label: msg`Blocks` },
+      { href: "/admin/contacts", icon: MessageCircle, label: msg`Contacts` },
     ],
   },
 ];
@@ -206,6 +208,8 @@ function AdminSidebar({
   expandedCategories: Set<string>;
   onToggleCategory: (key: string) => void;
 }) {
+  const { t } = useLingui();
+
   return (
     <nav className="space-y-1">
       {ADMIN_NAV_CATEGORIES.map((category) => {
@@ -226,7 +230,7 @@ function AdminSidebar({
             >
               <span className="flex items-center gap-2">
                 <CategoryIcon className="w-4 h-4" />
-                {category.label}
+                {t(category.label)}
               </span>
               {isExpanded ? (
                 <ChevronDown className="w-4 h-4" />
@@ -253,7 +257,7 @@ function AdminSidebar({
                       }`}
                     >
                       <ItemIcon className="w-4 h-4" />
-                      {item.label}
+                      {t(item.label)}
                     </a>
                   );
                 })}
@@ -278,6 +282,8 @@ function MobileAdminNav({
   isOpen: boolean;
   onClose: () => void;
 }) {
+  const { t } = useLingui();
+
   if (!isOpen) return null;
 
   return (
@@ -304,7 +310,7 @@ function MobileAdminNav({
             {ADMIN_NAV_CATEGORIES.map((category) => (
               <div key={category.key} className="mb-4">
                 <div className="px-3 py-1 text-xs font-semibold text-(--text-muted) uppercase tracking-wider">
-                  {category.label}
+                  {t(category.label)}
                 </div>
                 <div className="mt-1 space-y-1">
                   {category.items.map((item) => {
@@ -323,7 +329,7 @@ function MobileAdminNav({
                         }`}
                       >
                         <ItemIcon className="w-4 h-4" />
-                        {item.label}
+                        {t(item.label)}
                       </a>
                     );
                   })}
