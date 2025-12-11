@@ -320,6 +320,10 @@ app.get("/unread", requireAuth(), async (c) => {
 
 /**
  * Middleware to require contact management permission
+ *
+ * Allows access if:
+ * - User is an admin (isAdmin flag)
+ * - User has canManageContacts permission via roles
  */
 const requireContactManagement = () => async (c: any, next: any) => {
   const user = c.get("user");
@@ -329,6 +333,13 @@ const requireContactManagement = () => async (c: any, next: any) => {
     return c.json({ error: "Authentication required" }, 401);
   }
 
+  // Admins always have access
+  if (user.isAdmin) {
+    await next();
+    return;
+  }
+
+  // Check role-based permission
   const canManage = await roleService.canManageContacts(user.id);
   if (!canManage) {
     return c.json({ error: "Permission denied" }, 403);
