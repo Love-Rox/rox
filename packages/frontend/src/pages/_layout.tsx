@@ -88,6 +88,14 @@ const uiSettingsScript = `
       document.head.appendChild(style);
     }
 
+    // Update theme-color meta tag for PWA
+    if (primaryColor && /^#[0-9A-Fa-f]{6}$/.test(primaryColor)) {
+      var themeColorMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeColorMeta) {
+        themeColorMeta.setAttribute('content', primaryColor);
+      }
+    }
+
     // Apply custom CSS if present
     if (settings.appCustomCss) {
       var style = document.createElement('style');
