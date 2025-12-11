@@ -17,6 +17,7 @@ import type { User } from "../../lib/api/users";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { Button } from "../ui/Button";
 import { UserDisplayName } from "./UserDisplayName";
+import { useInstanceInfo } from "../../hooks/useInstanceInfo";
 
 /**
  * Props for the UserQRCodeModal component
@@ -35,6 +36,7 @@ export interface UserQRCodeModalProps {
  */
 export function UserQRCodeModal({ isOpen, onClose, user }: UserQRCodeModalProps) {
   const { _ } = useLingui();
+  const { instanceInfo } = useInstanceInfo();
   const [copied, setCopied] = useState(false);
   const qrRef = useRef<HTMLDivElement>(null);
 
@@ -179,10 +181,20 @@ export function UserQRCodeModal({ isOpen, onClose, user }: UserQRCodeModalProps)
             <QRCodeSVG
               value={interactUrl}
               size={200}
-              level="M"
+              level="H"
               includeMargin={false}
               bgColor="#ffffff"
               fgColor="#000000"
+              imageSettings={
+                instanceInfo?.iconUrl
+                  ? {
+                      src: instanceInfo.iconUrl,
+                      height: 40,
+                      width: 40,
+                      excavate: true,
+                    }
+                  : undefined
+              }
             />
           </div>
 
