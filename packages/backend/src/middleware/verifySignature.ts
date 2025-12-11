@@ -3,6 +3,7 @@
  *
  * Verifies ActivityPub HTTP Signatures on incoming requests.
  * Fetches and caches remote actor public keys using Redis (with in-memory fallback).
+ * Supports Authorized Fetch servers by signing outgoing key fetch requests.
  *
  * @module middleware/verifySignature
  */
@@ -16,7 +17,9 @@ import {
   verifyDateHeader,
 } from "../utils/httpSignature.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
+import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
 import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.js";
+import { RemoteFetchService, type SignatureConfig } from "../services/ap/RemoteFetchService.js";
 import { logger } from "../lib/logger.js";
 
 /**
@@ -25,17 +28,61 @@ import { logger } from "../lib/logger.js";
 const publicKeyMemoryCache = new Map<string, { key: string; expires: number }>();
 
 /**
+ * Get signature configuration for authenticated fetches
+ *
+ * Uses a local admin user's credentials for signing requests to
+ * Authorized Fetch servers.
+ *
+ * @param userRepository - User repository for finding admin user
+ * @param baseUrl - Base URL of this instance
+ * @returns Signature configuration or null if not available
+ */
+async function getSignatureConfig(
+  userRepository: IUserRepository,
+  baseUrl: string,
+): Promise<SignatureConfig | null> {
+  try {
+    const adminUser = await userRepository.findFirstLocalAdmin();
+
+    if (!adminUser || !adminUser.privateKey) {
+      logger.debug("No admin user with private key found for signed fetch");
+      return null;
+    }
+
+    const keyId = `${baseUrl}/users/${adminUser.username}#main-key`;
+
+    return {
+      keyId,
+      privateKey: adminUser.privateKey,
+    };
+  } catch (error) {
+    logger.error({ err: error }, "Failed to get signature config for public key fetch");
+    return null;
+  }
+}
+
+/**
  * Fetch remote actor's public key
  *
  * Retrieves the public key from the remote actor's document.
  * Results are cached in Redis (1 hour) with in-memory fallback.
  *
+ * For Authorized Fetch servers (which return 401/403 on unsigned requests),
+ * automatically retries with a signed request using local admin credentials.
+ *
  * @param keyId - Public key identifier URL
  * @param cacheService - Optional cache service for Redis caching
+ * @param userRepository - Optional user repository for signed fetch retry
+ * @param baseUrl - Optional base URL of this instance for signed fetch
  * @returns PEM-formatted public key
  * @throws Error if key cannot be fetched
  */
-async function fetchPublicKey(keyId: string, cacheService?: ICacheService): Promise<string> {
+async function fetchPublicKey(
+  keyId: string,
+  cacheService?: ICacheService,
+  userRepository?: IUserRepository,
+  baseUrl?: string,
+): Promise<string> {
   const cacheKey = `${CachePrefix.PUBLIC_KEY}:${keyId}`;
 
   // Check Redis cache first
@@ -61,47 +108,68 @@ async function fetchPublicKey(keyId: string, cacheService?: ICacheService): Prom
     throw new Error("Invalid keyId format");
   }
 
-  try {
-    const response = await fetch(actorUrl, {
-      headers: new Headers({
-        Accept: "application/activity+json, application/ld+json",
-      }),
-    });
+  const fetchService = new RemoteFetchService();
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch actor: ${response.statusText}`);
-    }
+  logger.debug({ keyId, actorUrl }, "Fetching public key for signature verification");
 
-    const actor = (await response.json()) as {
-      publicKey?: {
-        publicKeyPem?: string;
-      };
-    };
+  // First, try unsigned fetch (works for most servers)
+  let result = await fetchService.fetchActivityPubObject<{
+    publicKey?: { publicKeyPem?: string };
+  }>(actorUrl, { maxRetries: 1 });
 
-    // Extract public key
-    let publicKey: string;
-    if (actor.publicKey && actor.publicKey.publicKeyPem) {
-      publicKey = actor.publicKey.publicKeyPem;
-    } else {
-      throw new Error("Public key not found in actor document");
-    }
+  // If unsigned fetch failed with 401/403, retry with signed request
+  // This is required for Authorized Fetch servers (e.g., some Mastodon instances)
+  if (
+    !result.success &&
+    result.error?.statusCode &&
+    (result.error.statusCode === 401 || result.error.statusCode === 403) &&
+    userRepository &&
+    baseUrl
+  ) {
+    logger.debug(
+      { actorUrl, statusCode: result.error.statusCode },
+      "Unsigned fetch failed, retrying with HTTP Signature for Authorized Fetch server",
+    );
 
-    // Cache in Redis (1 hour)
-    if (cacheService?.isAvailable()) {
-      await cacheService.set(cacheKey, publicKey, { ttl: CacheTTL.LONG });
-    } else {
-      // Fallback to in-memory cache
-      publicKeyMemoryCache.set(keyId, {
-        key: publicKey,
-        expires: Date.now() + CacheTTL.LONG * 1000,
+    const signatureConfig = await getSignatureConfig(userRepository, baseUrl);
+
+    if (signatureConfig) {
+      result = await fetchService.fetchActivityPubObject<{
+        publicKey?: { publicKeyPem?: string };
+      }>(actorUrl, {
+        signature: signatureConfig,
+        maxRetries: 2,
       });
     }
-
-    return publicKey;
-  } catch (error) {
-    logger.error({ err: error, actorUrl }, "Failed to fetch public key");
-    throw error;
   }
+
+  if (!result.success) {
+    logger.error({ err: result.error, actorUrl }, "Failed to fetch public key");
+    throw new Error(`Failed to fetch actor: ${result.error?.message}`);
+  }
+
+  const actor = result.data!;
+
+  // Extract public key
+  let publicKey: string;
+  if (actor.publicKey && actor.publicKey.publicKeyPem) {
+    publicKey = actor.publicKey.publicKeyPem;
+  } else {
+    throw new Error("Public key not found in actor document");
+  }
+
+  // Cache in Redis (1 hour)
+  if (cacheService?.isAvailable()) {
+    await cacheService.set(cacheKey, publicKey, { ttl: CacheTTL.LONG });
+  } else {
+    // Fallback to in-memory cache
+    publicKeyMemoryCache.set(keyId, {
+      key: publicKey,
+      expires: Date.now() + CacheTTL.LONG * 1000,
+    });
+  }
+
+  return publicKey;
 }
 
 /**
@@ -123,21 +191,32 @@ async function fetchPublicKey(keyId: string, cacheService?: ICacheService): Prom
  */
 export async function verifySignatureMiddleware(c: Context, next: Next): Promise<Response | void> {
   const signatureHeader = c.req.header("Signature");
+  const requestPath = c.req.path;
+  const requestHost = c.req.header("Host");
+
+  logger.debug({ path: requestPath, host: requestHost, hasSignature: !!signatureHeader }, "Inbox request received");
 
   if (!signatureHeader) {
-    logger.debug("Missing Signature header");
+    logger.warn({ path: requestPath }, "Missing Signature header");
     return c.json({ error: "Missing signature" }, 401);
   }
 
   try {
     // Parse signature header
     const params = parseSignatureHeader(signatureHeader);
+    logger.debug({ keyId: params.keyId, algorithm: params.algorithm, headers: params.headers }, "Parsed signature header");
 
-    // Get cache service from context (if available)
+    // Get services from context (if available)
     const cacheService = c.get("cacheService") as ICacheService | undefined;
+    const userRepository = c.get("userRepository") as IUserRepository | undefined;
 
-    // Fetch public key (with Redis caching)
-    const publicKey = await fetchPublicKey(params.keyId, cacheService);
+    // Get base URL for signed fetch retry (for Authorized Fetch servers)
+    const baseUrl = process.env.URL || `https://${c.req.header("Host") || "localhost"}`;
+
+    // Fetch public key (with Redis caching and signed fetch retry)
+    logger.debug({ keyId: params.keyId }, "Fetching public key");
+    const publicKey = await fetchPublicKey(params.keyId, cacheService, userRepository, baseUrl);
+    logger.debug({ keyId: params.keyId, keyLength: publicKey.length }, "Public key fetched successfully");
 
     // Get request details
     const method = c.req.method;
@@ -158,14 +237,16 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
     const isValid = verifySignature(publicKey, signatureString, params.signature, params.algorithm);
 
     if (!isValid) {
-      logger.warn({ keyId: params.keyId }, "Invalid signature");
+      logger.warn({ keyId: params.keyId, algorithm: params.algorithm }, "Invalid signature");
       return c.json({ error: "Invalid signature" }, 401);
     }
+
+    logger.debug({ keyId: params.keyId }, "Signature cryptographically valid");
 
     // Verify Date header (prevent replay attacks)
     const dateHeader = c.req.header("Date");
     if (dateHeader && !verifyDateHeader(dateHeader, 30)) {
-      logger.warn({ date: dateHeader }, "Date header too old or invalid");
+      logger.warn({ date: dateHeader, keyId: params.keyId }, "Date header too old or invalid");
       return c.json({ error: "Request too old" }, 401);
     }
 
@@ -174,7 +255,7 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
     if (digestHeader) {
       const body = await c.req.text();
       if (!verifyDigest(body, digestHeader)) {
-        logger.warn("Invalid digest");
+        logger.warn({ keyId: params.keyId }, "Invalid digest");
         return c.json({ error: "Invalid digest" }, 401);
       }
       // Store body for later use (since we've already read it)
