@@ -186,15 +186,17 @@ export default function AdminBlocksPage() {
     );
   }
 
-  return (
-    <Layout>
-      <div className="max-w-4xl mx-auto">
-        <PageHeader
-          title={<Trans>Instance Blocks</Trans>}
-          subtitle={<Trans>Block instances from federating with this server</Trans>}
-          icon={<ShieldBan className="w-6 h-6" />}
-        />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Instance Blocks</Trans>}
+      subtitle={<Trans>Block instances from federating with this server</Trans>}
+      icon={<ShieldBan className="w-6 h-6" />}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
+      <div className="max-w-4xl mx-auto">
         {/* Admin Navigation */}
         <AdminNav currentPath="/admin/blocks" />
 

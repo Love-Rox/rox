@@ -176,18 +176,20 @@ export default function AdminGoneUsersPage() {
     );
   }
 
-  return (
-    <Layout>
-      <div className="container mx-auto max-w-6xl">
-        <PageHeader
-          title={<Trans>Gone Users</Trans>}
-          subtitle={<Trans>Manage remote users with fetch errors</Trans>}
-          icon={<Ghost className="w-6 h-6" />}
-          showReload
-          onReload={() => loadUsers()}
-          isReloading={isLoading}
-        />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Gone Users</Trans>}
+      subtitle={<Trans>Manage remote users with fetch errors</Trans>}
+      icon={<Ghost className="w-6 h-6" />}
+      showReload
+      onReload={() => loadUsers()}
+      isReloading={isLoading}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
+      <div className="container mx-auto max-w-6xl">
         <AdminNav currentPath="/admin/gone-users" />
 
         <Card className="mt-6">

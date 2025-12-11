@@ -270,23 +270,25 @@ export default function AdminSettingsPage() {
     );
   }
 
-  return (
-    <Layout>
-      <PageHeader
-        title={<Trans>Admin Settings</Trans>}
-        subtitle={<Trans>Configure your instance settings</Trans>}
-        icon={<Settings className="w-6 h-6" />}
-        tabs={[
-          { key: "instance", label: <Trans>Instance</Trans>, icon: <Building className="w-4 h-4" /> },
-          { key: "registration", label: <Trans>Registration</Trans>, icon: <UserPlus className="w-4 h-4" /> },
-          { key: "theme", label: <Trans>Theme</Trans>, icon: <Palette className="w-4 h-4" /> },
-          { key: "assets", label: <Trans>Assets</Trans>, icon: <ImageIcon className="w-4 h-4" /> },
-          { key: "legal", label: <Trans>Legal</Trans>, icon: <Scale className="w-4 h-4" /> },
-        ]}
-        activeTab={activeTab}
-        onTabChange={(key) => setActiveTab(key as "instance" | "registration" | "theme" | "assets" | "legal")}
-      />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Admin Settings</Trans>}
+      subtitle={<Trans>Configure your instance settings</Trans>}
+      icon={<Settings className="w-6 h-6" />}
+      tabs={[
+        { key: "instance", label: <Trans>Instance</Trans>, icon: <Building className="w-4 h-4" /> },
+        { key: "registration", label: <Trans>Registration</Trans>, icon: <UserPlus className="w-4 h-4" /> },
+        { key: "theme", label: <Trans>Theme</Trans>, icon: <Palette className="w-4 h-4" /> },
+        { key: "assets", label: <Trans>Assets</Trans>, icon: <ImageIcon className="w-4 h-4" /> },
+        { key: "legal", label: <Trans>Legal</Trans>, icon: <Scale className="w-4 h-4" /> },
+      ]}
+      activeTab={activeTab}
+      onTabChange={(key) => setActiveTab(key as "instance" | "registration" | "theme" | "assets" | "legal")}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
       {/* Admin Navigation */}
       <AdminNav currentPath="/admin/settings" />
 

@@ -324,15 +324,17 @@ export default function SearchPage() {
     );
   }
 
-  return (
-    <Layout>
-      <div className="max-w-2xl mx-auto">
-        <PageHeader
-          title={<Trans>Search</Trans>}
-          subtitle={<Trans>Find users by username or display name</Trans>}
-          icon={<Search className="w-6 h-6" />}
-        />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Search</Trans>}
+      subtitle={<Trans>Find users by username or display name</Trans>}
+      icon={<Search className="w-6 h-6" />}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
+      <div className="max-w-2xl mx-auto">
         {/* Search Form */}
         <form onSubmit={handleSubmit} className="mb-6">
           <div className="flex gap-2">

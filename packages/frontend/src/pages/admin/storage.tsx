@@ -274,14 +274,16 @@ export default function AdminStoragePage() {
       u.userId.includes(searchQuery)
   );
 
-  return (
-    <Layout>
-      <PageHeader
-        title={<Trans>Storage Management</Trans>}
-        subtitle={<Trans>Manage instance storage and user quotas</Trans>}
-        icon={<HardDrive className="w-6 h-6" />}
-      />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Storage Management</Trans>}
+      subtitle={<Trans>Manage instance storage and user quotas</Trans>}
+      icon={<HardDrive className="w-6 h-6" />}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
       {/* Admin Navigation */}
       <AdminNav currentPath="/admin/storage" />
 

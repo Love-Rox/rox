@@ -786,23 +786,25 @@ export default function AdminEmojisPage() {
     });
   }
 
-  return (
-    <Layout>
-      <div className="max-w-6xl mx-auto">
-        <PageHeader
-          title={<Trans>Custom Emojis</Trans>}
-          subtitle={<Trans>Manage custom emojis for your instance</Trans>}
-          icon={<Smile className="w-6 h-6" />}
-          tabs={[
-            { key: "local", label: <Trans>Local Emojis</Trans>, icon: <Smile className="w-4 h-4" /> },
-            { key: "remote", label: <Trans>Remote Emojis</Trans>, icon: <Globe className="w-4 h-4" /> },
-            { key: "import", label: <Trans>Bulk Import</Trans>, icon: <Archive className="w-4 h-4" /> },
-          ]}
-          activeTab={activeTab}
-          onTabChange={(key) => setActiveTab(key as TabType)}
-          actions={headerActions as any}
-        />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Custom Emojis</Trans>}
+      subtitle={<Trans>Manage custom emojis for your instance</Trans>}
+      icon={<Smile className="w-6 h-6" />}
+      tabs={[
+        { key: "local", label: <Trans>Local Emojis</Trans>, icon: <Smile className="w-4 h-4" /> },
+        { key: "remote", label: <Trans>Remote Emojis</Trans>, icon: <Globe className="w-4 h-4" /> },
+        { key: "import", label: <Trans>Bulk Import</Trans>, icon: <Archive className="w-4 h-4" /> },
+      ]}
+      activeTab={activeTab}
+      onTabChange={(key) => setActiveTab(key as TabType)}
+      actions={headerActions as any}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
+      <div className="max-w-6xl mx-auto">
         <AdminNav currentPath="/admin/emojis" />
 
         <Card>

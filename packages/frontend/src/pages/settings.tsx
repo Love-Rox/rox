@@ -160,16 +160,18 @@ export default function SettingsPage() {
     { key: "advanced", label: <Trans>Advanced</Trans>, icon: <Settings className="w-4 h-4" /> },
   ];
 
-  return (
-    <Layout>
-      <PageHeader
-        title={<Trans>Settings</Trans>}
-        subtitle={<Trans>Manage your account settings</Trans>}
-        tabs={TABS}
-        activeTab={activeTab}
-        onTabChange={(key) => setActiveTab(key as SettingsTab)}
-      />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Settings</Trans>}
+      subtitle={<Trans>Manage your account settings</Trans>}
+      tabs={TABS}
+      activeTab={activeTab}
+      onTabChange={(key) => setActiveTab(key as SettingsTab)}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
       {/* Profile Tab */}
       {activeTab === "profile" && (
         <>

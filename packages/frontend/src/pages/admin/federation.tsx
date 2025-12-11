@@ -225,23 +225,25 @@ export default function AdminFederationPage() {
 
   const errorCount = instances.filter((i) => i.fetchErrorCount > 0).length;
 
-  return (
-    <Layout>
-      <PageHeader
-        title={<Trans>Federation</Trans>}
-        subtitle={<Trans>Manage remote instances and federation status</Trans>}
-        icon={<Globe className="w-6 h-6" />}
-        actions={[
-          {
-            key: "refresh",
-            label: <Trans>Refresh List</Trans>,
-            icon: <RefreshCw className="w-4 h-4" />,
-            onPress: () => loadInstances(),
-            variant: "secondary",
-          },
-        ]}
-      />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Federation</Trans>}
+      subtitle={<Trans>Manage remote instances and federation status</Trans>}
+      icon={<Globe className="w-6 h-6" />}
+      actions={[
+        {
+          key: "refresh",
+          label: <Trans>Refresh List</Trans>,
+          icon: <RefreshCw className="w-4 h-4" />,
+          onPress: () => loadInstances(),
+          variant: "secondary",
+        },
+      ]}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
       <AdminNav currentPath="/admin/federation" />
 
       <div className="space-y-6">

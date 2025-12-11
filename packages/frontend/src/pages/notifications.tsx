@@ -182,15 +182,17 @@ export default function NotificationsPage() {
     variant: hasActiveFilters ? "primary" : "secondary",
   });
 
-  return (
-    <Layout>
-      <div className="max-w-2xl mx-auto">
-        <PageHeader
-          title={<Trans>Notifications</Trans>}
-          icon={<Bell className="w-6 h-6" />}
-          actions={headerActions as any}
-        />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Notifications</Trans>}
+      icon={<Bell className="w-6 h-6" />}
+      actions={headerActions as any}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
+      <div className="max-w-2xl mx-auto">
         {/* Filters Panel */}
         {showFilters && (
           <div className="mb-6 p-4 bg-(--card-bg) rounded-lg border border-(--border-color)">

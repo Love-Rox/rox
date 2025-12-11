@@ -21,6 +21,12 @@ export interface LayoutProps {
   showSidebar?: boolean;
   /** Maximum width for the content area */
   maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "full" | "auto";
+  /**
+   * Optional header component (e.g., PageHeader) to render full-width
+   * above the content container. This allows the header to span the
+   * entire width of the main area without being constrained by maxWidth.
+   */
+  header?: React.ReactNode;
 }
 
 /**
@@ -28,7 +34,7 @@ export interface LayoutProps {
  * Provides consistent layout structure across authenticated pages
  * Applies user UI settings (font size, line height, content width, theme)
  */
-export function Layout({ children, showSidebar = true, maxWidth = "2xl" }: LayoutProps) {
+export function Layout({ children, showSidebar = true, maxWidth = "2xl", header }: LayoutProps) {
   const currentUser = useAtomValue(currentUserAtom);
   const isCollapsed = useAtomValue(sidebarCollapsedAtom);
   const { instanceInfo } = useInstanceInfo();
@@ -64,6 +70,13 @@ export function Layout({ children, showSidebar = true, maxWidth = "2xl" }: Layou
 
       {/* Main Content Area */}
       <main className={`min-h-screen transition-all duration-300 ${sidebarMarginClass}`}>
+        {/* Full-width header (e.g., PageHeader) */}
+        {header && (
+          <div className="w-full">
+            {header}
+          </div>
+        )}
+
         {/* Page Content */}
         <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
           <div className={`${maxWidthClass} mx-auto rox-content`}>{children}</div>

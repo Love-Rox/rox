@@ -204,17 +204,19 @@ export default function AdminQueuePage() {
     );
   }
 
-  return (
-    <Layout>
-      <PageHeader
-        title={<Trans>Job Queue</Trans>}
-        subtitle={<Trans>Monitor ActivityPub delivery queue status</Trans>}
-        icon={<Activity className="w-6 h-6" />}
-        showReload
-        onReload={handleRefresh}
-        isReloading={isRefreshing}
-      />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Job Queue</Trans>}
+      subtitle={<Trans>Monitor ActivityPub delivery queue status</Trans>}
+      icon={<Activity className="w-6 h-6" />}
+      showReload
+      onReload={handleRefresh}
+      isReloading={isRefreshing}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
       <AdminNav currentPath="/admin/queue" />
 
       <div className="space-y-6">

@@ -288,15 +288,17 @@ export default function AdminUsersPage() {
     );
   }
 
-  return (
-    <Layout>
-      <div className="max-w-4xl mx-auto">
-        <PageHeader
-          title={<Trans>Users</Trans>}
-          subtitle={<Trans>Manage user accounts</Trans>}
-          icon={<Users className="w-6 h-6" />}
-        />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Users</Trans>}
+      subtitle={<Trans>Manage user accounts</Trans>}
+      icon={<Users className="w-6 h-6" />}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
+      <div className="max-w-4xl mx-auto">
         {/* Admin Navigation */}
         <AdminNav currentPath="/admin/users" />
 

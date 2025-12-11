@@ -473,26 +473,28 @@ export default function AdminContactsPage() {
   }
 
   // List view
-  return (
-    <Layout>
-      <div className="max-w-6xl mx-auto">
-        <PageHeader
-          title={
-            <>
-              <Trans>Contact Inquiries</Trans>
-              {unreadCount > 0 && (
-                <span className="ml-2 px-2 py-0.5 text-sm bg-primary-500 text-white rounded-full">
-                  {unreadCount}
-                </span>
-              )}
-            </>
-          }
-          subtitle={<Trans>Manage user inquiries and support requests</Trans>}
-          icon={<MessageCircle className="w-6 h-6" />}
-          showReload
-          onReload={loadThreads}
-        />
+  const pageHeader = (
+    <PageHeader
+      title={
+        <>
+          <Trans>Contact Inquiries</Trans>
+          {unreadCount > 0 && (
+            <span className="ml-2 px-2 py-0.5 text-sm bg-primary-500 text-white rounded-full">
+              {unreadCount}
+            </span>
+          )}
+        </>
+      }
+      subtitle={<Trans>Manage user inquiries and support requests</Trans>}
+      icon={<MessageCircle className="w-6 h-6" />}
+      showReload
+      onReload={loadThreads}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
+      <div className="max-w-6xl mx-auto">
         <AdminNav currentPath="/admin/contacts" />
 
         <div className="mb-6 flex items-center justify-end">

@@ -71,10 +71,9 @@ export interface PageHeaderProps {
   isReloading?: boolean;
 
   /**
-   * When true, extends header to full width of parent container
-   * with negative margins and applies padding internally.
-   * Use this for top-of-page headers in Layout.
-   * @default true
+   * @deprecated Use Layout's header prop instead for full-width headers.
+   * This prop is kept for backwards compatibility but will be ignored
+   * when PageHeader is passed to Layout's header prop.
    */
   fullWidth?: boolean;
 
@@ -131,21 +130,15 @@ export function PageHeader({
   showReload,
   onReload,
   isReloading,
-  fullWidth = true,
   className = "",
 }: PageHeaderProps) {
   const handleSelectionChange = (key: Key) => {
     onTabChange?.(String(key));
   };
 
-  // Full width styling: extends to edges and removes top margin from Layout padding
-  const fullWidthClasses = fullWidth
-    ? "-mx-3 sm:-mx-4 -mt-4 sm:-mt-6 lg:-mt-8 mb-4 sm:mb-6"
-    : "";
-
   return (
     <div
-      className={`bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 ${fullWidthClasses} ${className}`}
+      className={`bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 ${className}`}
     >
       {/* Main header row */}
       <div className="px-4 py-3">

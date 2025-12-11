@@ -241,15 +241,17 @@ export default function AdminReportsPage() {
     );
   }
 
-  return (
-    <Layout>
-      <div className="max-w-4xl mx-auto">
-        <PageHeader
-          title={<Trans>Reports</Trans>}
-          subtitle={<Trans>Review and manage user reports</Trans>}
-          icon={<Flag className="w-6 h-6" />}
-        />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Reports</Trans>}
+      subtitle={<Trans>Review and manage user reports</Trans>}
+      icon={<Flag className="w-6 h-6" />}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
+      <div className="max-w-4xl mx-auto">
         {/* Admin Navigation */}
         <AdminNav currentPath="/admin/reports" />
 

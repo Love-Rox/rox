@@ -117,24 +117,26 @@ export default function TimelinePage() {
     );
   }
 
-  return (
-    <Layout>
-      <PageHeader
-        title={<Trans>Timeline</Trans>}
-        subtitle={<Trans>Recent posts from your community</Trans>}
-        tabs={[
-          { key: "local", label: <Trans>Local</Trans> },
-          { key: "social", label: <Trans>Social</Trans> },
-          { key: "global", label: <Trans>Global</Trans> },
-          { key: "home", label: <Trans>Home</Trans> },
-        ]}
-        activeTab={timelineType}
-        onTabChange={handleTimelineTypeChange}
-        showReload
-        onReload={handleReload}
-        isReloading={isRefreshing}
-      />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Timeline</Trans>}
+      subtitle={<Trans>Recent posts from your community</Trans>}
+      tabs={[
+        { key: "local", label: <Trans>Local</Trans> },
+        { key: "social", label: <Trans>Social</Trans> },
+        { key: "global", label: <Trans>Global</Trans> },
+        { key: "home", label: <Trans>Home</Trans> },
+      ]}
+      activeTab={timelineType}
+      onTabChange={handleTimelineTypeChange}
+      showReload
+      onReload={handleReload}
+      isReloading={isRefreshing}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
       {/* Note Composer */}
       <NoteComposer onNoteCreated={handleNoteCreated} />
 

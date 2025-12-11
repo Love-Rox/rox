@@ -86,15 +86,17 @@ export default function MentionsPage() {
     );
   }
 
-  return (
-    <Layout>
-      <div className="max-w-2xl mx-auto">
-        <PageHeader
-          title={<Trans>Mentions</Trans>}
-          subtitle={<Trans>Notes that mention you or reply to your posts</Trans>}
-          icon={<AtSign className="w-6 h-6" />}
-        />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Mentions</Trans>}
+      subtitle={<Trans>Notes that mention you or reply to your posts</Trans>}
+      icon={<AtSign className="w-6 h-6" />}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
+      <div className="max-w-2xl mx-auto">
         {/* Mentions List */}
         <div
           ref={timelineContainerRef}

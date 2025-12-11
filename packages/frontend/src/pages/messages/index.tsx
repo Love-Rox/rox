@@ -135,24 +135,26 @@ export default function MessagesPage() {
     );
   }
 
-  return (
-    <Layout>
-      <div className="max-w-2xl mx-auto">
-        <PageHeader
-          title={<Trans>Messages</Trans>}
-          subtitle={<Trans>Your direct message conversations</Trans>}
-          icon={<Mail className="w-6 h-6" />}
-          actions={[
-            {
-              key: "new-message",
-              label: <Trans>New Message</Trans>,
-              icon: <PenSquare className="w-4 h-4" />,
-              onPress: () => openComposeModal({ initialVisibility: "specified" }),
-              variant: "primary",
-            },
-          ]}
-        />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Messages</Trans>}
+      subtitle={<Trans>Your direct message conversations</Trans>}
+      icon={<Mail className="w-6 h-6" />}
+      actions={[
+        {
+          key: "new-message",
+          label: <Trans>New Message</Trans>,
+          icon: <PenSquare className="w-4 h-4" />,
+          onPress: () => openComposeModal({ initialVisibility: "specified" }),
+          variant: "primary",
+        },
+      ]}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
+      <div className="max-w-2xl mx-auto">
         {/* Conversations List */}
         <div className="bg-(--card-bg) rounded-lg border border-(--border-color) overflow-hidden">
           {loading && conversations.length === 0 ? (

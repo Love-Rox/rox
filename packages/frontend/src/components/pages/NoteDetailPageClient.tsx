@@ -102,15 +102,17 @@ export function NoteDetailPageClient({ noteId }: { noteId: string }) {
     );
   }
 
-  return (
-    <Layout>
-      <div className="max-w-2xl mx-auto">
-        <PageHeader
-          title={<Trans>Note</Trans>}
-          backHref="/timeline"
-          backLabel={<Trans>Back</Trans>}
-        />
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Note</Trans>}
+      backHref="/timeline"
+      backLabel={<Trans>Back</Trans>}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
+      <div className="max-w-2xl mx-auto">
         {/* Ancestor notes (conversation context) */}
         {ancestors.length > 0 && (
           <div className="border-b border-gray-200 dark:border-gray-700">
