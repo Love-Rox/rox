@@ -357,4 +357,76 @@ export class ActivityPubDeliveryService {
 
     return inboxUrls.size;
   }
+
+  /**
+   * Deliver Direct Message to specific recipients
+   *
+   * Sends a Create activity with direct message visibility to specified users.
+   * Only delivers to remote users (local users receive the message via database).
+   *
+   * @param note - The direct message note
+   * @param author - The note author
+   * @param recipientIds - User IDs of the DM recipients
+   */
+  async deliverDirectMessage(note: Note, author: User, recipientIds: string[]): Promise<void> {
+    logger.debug(
+      { noteId: note.id, recipientIds, authorHost: author.host, localOnly: note.localOnly },
+      "deliverDirectMessage called",
+    );
+
+    if (author.host || note.localOnly) {
+      logger.debug({ noteId: note.id }, "Skipping DM delivery: author is remote or note is local-only");
+      return;
+    }
+    if (recipientIds.length === 0) {
+      logger.debug({ noteId: note.id }, "Skipping DM delivery: no recipient IDs");
+      return;
+    }
+
+    // Fetch all recipients
+    const recipients = await Promise.all(
+      recipientIds.map((id) => this.userRepository.findById(id)),
+    );
+
+    // Log recipient details for debugging
+    logger.debug(
+      {
+        noteId: note.id,
+        recipients: recipients.map((r) =>
+          r ? { id: r.id, username: r.username, host: r.host, inbox: r.inbox, uri: r.uri } : null,
+        ),
+      },
+      "Fetched DM recipients",
+    );
+
+    // Filter to remote users only
+    const remoteRecipients = recipients.filter(
+      (r): r is User => r !== null && r.host !== null && r.inbox !== null,
+    );
+
+    if (remoteRecipients.length === 0) {
+      logger.debug({ noteId: note.id }, "No remote recipients for direct message");
+      return;
+    }
+
+    // Build activity with direct message addressing
+    const activity = this.builder.createDirectMessage(note, author, remoteRecipients);
+    const inboxUrls = this.getUniqueInboxUrls(remoteRecipients);
+
+    logger.info(
+      {
+        noteId: note.id,
+        inboxUrls: Array.from(inboxUrls),
+        recipientUris: remoteRecipients.map((r) => r.uri),
+        activityTo: (activity.object as { to?: string[] })?.to,
+      },
+      "Delivering Direct Message activity",
+    );
+
+    await this.deliverToInboxes(activity, inboxUrls, author);
+    logger.debug(
+      { noteId: note.id, inboxCount: inboxUrls.size, recipientCount: remoteRecipients.length },
+      "Enqueued Direct Message activity",
+    );
+  }
 }

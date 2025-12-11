@@ -104,7 +104,12 @@ export class RemoteNoteService {
     const visibility = this.determineVisibility(noteObject.to, noteObject.cc);
 
     // Extract mentions (user IDs) - resolve mentioned user URIs to local user IDs
-    const mentions = await this.extractMentions(noteObject.tag, actorService);
+    // For DMs (specified visibility), also include recipients from 'to' array
+    const mentions = await this.extractMentions(
+      noteObject.tag,
+      actorService,
+      visibility === "specified" ? noteObject.to : undefined,
+    );
 
     // Extract hashtags
     const tags = this.extractHashtags(noteObject.tag);
@@ -164,7 +169,18 @@ export class RemoteNoteService {
       await this.noteRepository.incrementRepliesCount(replyId);
     }
 
-    logger.debug({ noteUri: noteObject.id, author: `${author.username}@${author.host}` }, "Remote note created");
+    logger.info(
+      {
+        noteUri: noteObject.id,
+        noteId: note.id,
+        author: `${author.username}@${author.host}`,
+        visibility,
+        mentionCount: mentions.length,
+        mentions,
+        toField: noteObject.to,
+      },
+      "Remote note created",
+    );
 
     return note;
   }
@@ -241,22 +257,68 @@ export class RemoteNoteService {
   private async extractMentions(
     tags: Array<{ type: string; name?: string; href?: string }> | undefined,
     actorService: RemoteActorService,
+    dmRecipients?: string | string[],
   ): Promise<string[]> {
-    if (!tags) return [];
-
     const mentions: string[] = [];
+    const seen = new Set<string>();
 
-    for (const tag of tags) {
-      if (tag.type === "Mention" && tag.href) {
+    // Extract mentions from tags
+    if (tags) {
+      for (const tag of tags) {
+        if (tag.type === "Mention" && tag.href) {
+          try {
+            // Resolve mentioned user URI to local user record
+            const mentionedUser = await actorService.resolveActor(tag.href);
+            if (mentionedUser && !seen.has(mentionedUser.id)) {
+              mentions.push(mentionedUser.id);
+              seen.add(mentionedUser.id);
+            }
+          } catch (error) {
+            // Don't fail note processing if mention resolution fails
+            logger.debug({ err: error, href: tag.href }, "Failed to resolve mentioned user");
+          }
+        }
+      }
+    }
+
+    // For DMs, also extract recipients from 'to' array
+    // This ensures the local user is in mentions even if not in tag array
+    if (dmRecipients) {
+      const recipientArray = Array.isArray(dmRecipients) ? dmRecipients : [dmRecipients];
+
+      logger.info({ dmRecipients: recipientArray }, "Processing DM recipients from 'to' array");
+
+      for (const recipientUri of recipientArray) {
+        // Skip ActivityStreams public/followers URIs
+        if (
+          recipientUri.includes("#Public") ||
+          recipientUri.includes("as:Public") ||
+          recipientUri.endsWith("/followers")
+        ) {
+          logger.debug({ recipientUri }, "Skipping special URI");
+          continue;
+        }
+
         try {
-          // Resolve mentioned user URI to local user record
-          const mentionedUser = await actorService.resolveActor(tag.href);
-          if (mentionedUser) {
-            mentions.push(mentionedUser.id);
+          logger.info({ recipientUri }, "Resolving DM recipient");
+          const recipientUser = await actorService.resolveActor(recipientUri);
+          logger.info(
+            { recipientUri, resolvedUserId: recipientUser?.id, resolvedUsername: recipientUser?.username, resolvedHost: recipientUser?.host },
+            "Resolved DM recipient",
+          );
+          if (recipientUser && !seen.has(recipientUser.id)) {
+            mentions.push(recipientUser.id);
+            seen.add(recipientUser.id);
+            logger.info(
+              { recipientUri, userId: recipientUser.id },
+              "Added DM recipient to mentions from 'to' array",
+            );
+          } else if (recipientUser && seen.has(recipientUser.id)) {
+            logger.debug({ recipientUri, userId: recipientUser.id }, "DM recipient already in mentions");
           }
         } catch (error) {
-          // Don't fail note processing if mention resolution fails
-          logger.debug({ err: error, href: tag.href }, "Failed to resolve mentioned user");
+          // Don't fail note processing if recipient resolution fails
+          logger.warn({ err: error, recipientUri }, "Failed to resolve DM recipient");
         }
       }
     }

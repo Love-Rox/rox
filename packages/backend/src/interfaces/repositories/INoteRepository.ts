@@ -139,4 +139,54 @@ export interface INoteRepository {
    * @param noteId 対象のノートID
    */
   decrementRenoteCount(noteId: string): Promise<void>;
+
+  /**
+   * メンションとリプライを取得
+   * ユーザーへのメンションまたはユーザーのノートへのリプライを取得
+   * @param userId 対象ユーザーID
+   * @param options ページネーションオプション
+   */
+  findMentionsAndReplies(userId: string, options: TimelineOptions): Promise<Note[]>;
+
+  /**
+   * ダイレクトメッセージを取得
+   * visibility: "specified" のノートを取得
+   * @param userId 対象ユーザーID
+   * @param options ページネーションオプション
+   */
+  findDirectMessages(userId: string, options: TimelineOptions): Promise<Note[]>;
+
+  /**
+   * 特定ユーザーとのダイレクトメッセージスレッドを取得
+   * @param userId 現在のユーザーID
+   * @param partnerId 会話相手のユーザーID
+   * @param options ページネーションオプション
+   */
+  findDirectMessageThread(
+    userId: string,
+    partnerId: string,
+    options: TimelineOptions
+  ): Promise<Note[]>;
+
+  /**
+   * DM会話相手のリストを取得
+   * @param userId 現在のユーザーID
+   * @param limit 取得件数
+   */
+  getConversationPartners(
+    userId: string,
+    limit: number
+  ): Promise<
+    Array<{
+      partnerId: string;
+      partnerUsername: string;
+      partnerDisplayName: string | null;
+      partnerAvatarUrl: string | null;
+      partnerHost: string | null;
+      partnerProfileEmojis: Array<{ name: string; url: string }> | null;
+      lastNoteId: string;
+      lastNoteText: string | null;
+      lastNoteCreatedAt: Date;
+    }>
+  >;
 }

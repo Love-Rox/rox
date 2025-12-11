@@ -22,7 +22,7 @@ export class UndoHandler extends BaseHandler {
   readonly activityType = "Undo";
 
   async handle(activity: Activity, context: HandlerContext): Promise<HandlerResult> {
-    const { c, recipientId } = context;
+    const { c, recipientId: contextRecipientId } = context;
 
     try {
       const object = activity.object;
@@ -38,6 +38,25 @@ export class UndoHandler extends BaseHandler {
 
       // Handle Undo Follow (unfollow)
       if (objectType === "Follow") {
+        // For shared inbox, derive recipientId from the nested Follow activity's object
+        let recipientId = contextRecipientId;
+        if (!recipientId) {
+          const followObject = (object as { object?: string | { id: string } }).object;
+          const objectUri = typeof followObject === "string" ? followObject : followObject?.id;
+          if (objectUri) {
+            const userRepository = this.getUserRepository(c);
+            const followee = await userRepository.findByUri(objectUri);
+            if (followee) {
+              recipientId = followee.id;
+            }
+          }
+        }
+
+        if (!recipientId) {
+          this.error("Could not determine recipient for Undo Follow activity");
+          return this.failure("Could not determine recipient for Undo Follow activity");
+        }
+
         return this.handleUndoFollow(remoteActor, recipientId, c);
       }
 

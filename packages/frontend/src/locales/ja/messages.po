@@ -13,6 +13,10 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/pages/messages/index.tsx:85
+msgid "(No message)"
+msgstr "(メッセージなし)"
+
 #. placeholder {0}: formatBytes(usage.usage)
 #. placeholder {1}: usage.quotaMB
 #. placeholder {2}: usage.usagePercent
@@ -81,6 +85,14 @@ msgstr "{assetType}をアップロードしました"
 #: src/pages/admin/gone-users.tsx:162
 msgid "{days} days ago"
 msgstr "{days}日前"
+
+#: src/components/user/FollowListModal.tsx:181
+msgid "{username}'s Followers"
+msgstr "{username}のフォロワー"
+
+#: src/components/user/FollowListModal.tsx:183
+msgid "{username}'s Following"
+msgstr "{username}のフォロー中"
 
 #: src/pages/legal/privacy.tsx:108
 msgid "<0>Account information:</0> Username, email address, and password (securely hashed)"
@@ -264,8 +276,8 @@ msgstr "他のサーバーのアカウントとリンクするためにエイリ
 msgid "Add Emoji"
 msgstr "絵文字を追加"
 
-#: src/components/note/NoteComposer.tsx:873
-#: src/components/note/NoteComposer.tsx:874
+#: src/components/note/NoteComposer.tsx:1080
+#: src/components/note/NoteComposer.tsx:1081
 msgid "Add images"
 msgstr "画像を追加"
 
@@ -285,6 +297,10 @@ msgstr "このお問い合わせに関するメモを追加..."
 #: src/components/settings/PasskeySection.tsx:394
 msgid "Add Passkey"
 msgstr "パスキーを追加"
+
+#: src/components/note/NoteComposer.tsx:823
+msgid "Add recipient"
+msgstr "宛先を追加"
 
 #: src/pages/admin/emojis.tsx:814
 msgid "Add your first custom emoji to get started"
@@ -308,7 +324,7 @@ msgstr "追加コメント"
 msgid "Additional Details (optional)"
 msgstr "詳細（任意）"
 
-#: src/components/layout/Sidebar.tsx:123
+#: src/components/layout/Sidebar.tsx:137
 #: src/pages/admin/users.tsx:472
 msgid "Admin"
 msgstr "管理"
@@ -451,7 +467,7 @@ msgstr "システムへの不正アクセスの試み"
 msgid "Audit Logs"
 msgstr "監査ログ"
 
-#: src/components/note/NoteComposer.tsx:419
+#: src/components/note/NoteComposer.tsx:500
 msgid "Authentication required"
 msgstr "認証が必要です"
 
@@ -492,6 +508,10 @@ msgstr "お問い合わせに戻る"
 #: src/pages/admin/contacts.tsx:285
 msgid "Back to list"
 msgstr "一覧に戻る"
+
+#: src/components/pages/MessageThreadPageClient.tsx:336
+msgid "Back to messages"
+msgstr "メッセージに戻る"
 
 #: src/components/pages/NoteDetailPageClient.tsx:97
 msgid "Back to timeline"
@@ -568,7 +588,7 @@ msgstr "ブロック:"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "インスタンスをブロックすると、そのサーバーとの連携がすべて停止されます。ブロックされたインスタンスのユーザーはこのサーバーとやり取りできなくなります。"
 
-#: src/components/user/UserProfile.tsx:474
+#: src/components/user/UserProfile.tsx:476
 msgid "Bot"
 msgstr "Bot"
 
@@ -627,7 +647,7 @@ msgstr "ユーザーを凍結可能"
 
 #: src/components/drive/DrivePickerDialog.tsx:359
 #: src/components/drive/DrivePickerDialog.tsx:504
-#: src/components/note/NoteComposer.tsx:1110
+#: src/components/note/NoteComposer.tsx:1317
 #: src/components/report/ReportDialog.tsx:170
 #: src/components/settings/AccountDeletionSection.tsx:177
 #: src/components/settings/PasskeySection.tsx:333
@@ -642,7 +662,7 @@ msgstr "ユーザーを凍結可能"
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: src/components/note/NoteComposer.tsx:184
+#: src/components/note/NoteComposer.tsx:265
 msgid "Cannot save empty draft"
 msgstr "空の下書きは保存できません"
 
@@ -748,7 +768,7 @@ msgstr "お問い合わせ一覧"
 msgid "Contact Us"
 msgstr "お問い合わせ"
 
-#: src/components/note/NoteCard.tsx:410
+#: src/components/note/NoteCard.tsx:425
 msgid "Content Warning"
 msgstr "閲覧注意"
 
@@ -911,7 +931,7 @@ msgstr "アカウントを削除"
 msgid "Delete code"
 msgstr "コードを削除"
 
-#: src/components/note/NoteComposer.tsx:1017
+#: src/components/note/NoteComposer.tsx:1224
 msgid "Delete draft"
 msgstr "下書きを削除"
 
@@ -977,9 +997,18 @@ msgstr "この警告の理由を説明してください..."
 msgid "Description"
 msgstr "説明"
 
-#: src/components/note/NoteComposer.tsx:540
+#: src/components/note/NoteCard.tsx:354
+#: src/components/note/NoteComposer.tsx:634
 msgid "Direct"
 msgstr "ダイレクト"
+
+#: src/components/note/NoteCard.tsx:351
+msgid "Direct message - Only visible to specified recipients"
+msgstr "ダイレクトメッセージ - 指定した宛先のみに表示されます"
+
+#: src/components/note/NoteComposer.tsx:721
+msgid "Direct Message Recipients"
+msgstr "ダイレクトメッセージの宛先"
 
 #: src/components/settings/PushNotificationSection.tsx:183
 msgid "Disable"
@@ -989,7 +1018,7 @@ msgstr "無効にする"
 msgid "Disabled"
 msgstr "無効"
 
-#: src/components/note/NoteComposer.tsx:596
+#: src/components/note/NoteComposer.tsx:690
 msgid "Discard"
 msgstr "破棄"
 
@@ -1019,29 +1048,29 @@ msgstr "アカウントをお持ちでないですか？"
 msgid "Download My Data"
 msgstr "データをダウンロード"
 
-#: src/components/note/NoteComposer.tsx:223
+#: src/components/note/NoteComposer.tsx:304
 msgid "Draft deleted"
 msgstr "下書きを削除しました"
 
-#: src/components/note/NoteComposer.tsx:176
+#: src/components/note/NoteComposer.tsx:257
 msgid "Draft discarded"
 msgstr "下書きを破棄しました"
 
-#: src/components/note/NoteComposer.tsx:213
+#: src/components/note/NoteComposer.tsx:294
 msgid "Draft loaded"
 msgstr "下書きを読み込みました"
 
-#: src/components/note/NoteComposer.tsx:166
+#: src/components/note/NoteComposer.tsx:247
 msgid "Draft restored"
 msgstr "下書きを復元しました"
 
-#: src/components/note/NoteComposer.tsx:192
+#: src/components/note/NoteComposer.tsx:273
 msgid "Draft saved"
 msgstr "下書きを保存しました"
 
-#: src/components/note/NoteComposer.tsx:959
-#: src/components/note/NoteComposer.tsx:960
-#: src/components/note/NoteComposer.tsx:976
+#: src/components/note/NoteComposer.tsx:1166
+#: src/components/note/NoteComposer.tsx:1167
+#: src/components/note/NoteComposer.tsx:1183
 msgid "Drafts"
 msgstr "下書き"
 
@@ -1061,7 +1090,7 @@ msgstr "編集"
 msgid "Edit Emoji"
 msgstr "絵文字を編集"
 
-#: src/components/user/UserProfile.tsx:423
+#: src/components/user/UserProfile.tsx:425
 msgid "Edit Profile"
 msgstr "プロフィールを編集"
 
@@ -1125,7 +1154,7 @@ msgstr "絵文字名"
 msgid "Emojis"
 msgstr "絵文字"
 
-#: src/components/note/NoteComposer.tsx:1007
+#: src/components/note/NoteComposer.tsx:1214
 msgid "Empty draft"
 msgstr "空の下書き"
 
@@ -1197,7 +1226,7 @@ msgstr "パスワードを入力してください"
 msgid "Error loading timeline"
 msgstr "タイムラインの読み込みに失敗しました"
 
-#: src/components/user/UserProfile.tsx:356
+#: src/components/user/UserProfile.tsx:358
 msgid "Error loading user profile"
 msgstr "ユーザープロフィールの読み込みに失敗しました"
 
@@ -1438,6 +1467,10 @@ msgstr "ロールの保存に失敗しました"
 msgid "Failed to save UI settings"
 msgstr "表示設定の保存に失敗しました"
 
+#: src/components/pages/MessageThreadPageClient.tsx:157
+msgid "Failed to send message"
+msgstr "メッセージの送信に失敗しました"
+
 #: src/components/report/ReportDialog.tsx:86
 msgid "Failed to submit report"
 msgstr "報告の送信に失敗しました"
@@ -1473,7 +1506,7 @@ msgid "Failed to update user"
 msgstr "ユーザーの更新に失敗しました"
 
 #. placeholder {0}: file.name
-#: src/components/note/NoteComposer.tsx:456
+#: src/components/note/NoteComposer.tsx:543
 msgid "Failed to upload {0}"
 msgstr "{0}のアップロードに失敗しました"
 
@@ -1554,7 +1587,7 @@ msgstr "初回検知"
 msgid "Folder name"
 msgstr "フォルダ名"
 
-#: src/components/user/UserProfile.tsx:446
+#: src/components/user/UserProfile.tsx:448
 #: src/pages/notifications.tsx:242
 #: src/pages/search.tsx:505
 #: src/pages/search.tsx:520
@@ -1567,13 +1600,13 @@ msgstr "フォロー"
 msgid "followed you"
 msgstr "があなたをフォローしました"
 
-#: src/components/note/NoteComposer.tsx:539
-#: src/components/user/UserProfile.tsx:509
+#: src/components/note/NoteComposer.tsx:633
+#: src/components/user/UserProfile.tsx:515
 msgid "Followers"
 msgstr "フォロワー"
 
-#: src/components/user/UserProfile.tsx:444
-#: src/components/user/UserProfile.tsx:517
+#: src/components/user/UserProfile.tsx:446
+#: src/components/user/UserProfile.tsx:527
 #: src/pages/search.tsx:513
 #: src/pages/search.tsx:597
 msgid "Following"
@@ -1587,7 +1620,7 @@ msgstr "フォローとフォロワーの関係"
 #~ msgid "Following successfully"
 #~ msgstr "フォローしました"
 
-#: src/components/user/UserProfile.tsx:439
+#: src/components/user/UserProfile.tsx:441
 msgid "Following..."
 msgstr "フォロー中..."
 
@@ -1628,12 +1661,12 @@ msgid "Global"
 msgstr "グローバル"
 
 #: src/components/ErrorPage.tsx:88
-#: src/components/user/UserProfile.tsx:340
+#: src/components/user/UserProfile.tsx:342
 msgid "Go Back"
 msgstr "戻る"
 
 #: src/components/ErrorPage.tsx:106
-#: src/components/user/UserProfile.tsx:343
+#: src/components/user/UserProfile.tsx:345
 msgid "Go Home"
 msgstr "ホームへ"
 
@@ -1678,8 +1711,8 @@ msgstr "タイプ別設定を非表示"
 msgid "High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls back to instance icon if not set."
 msgstr "PWAスプラッシュ画面用の高解像度アイコン、512x512ピクセル（最大2MB）。未設定の場合はインスタンスアイコンを使用します。"
 
-#: src/components/layout/Sidebar.tsx:89
-#: src/components/note/NoteComposer.tsx:538
+#: src/components/layout/Sidebar.tsx:91
+#: src/components/note/NoteComposer.tsx:632
 #: src/pages/timeline.tsx:171
 msgid "Home"
 msgstr "ホーム"
@@ -1739,7 +1772,7 @@ msgstr "インポート結果"
 msgid "Importing emojis..."
 msgstr "絵文字をインポート中..."
 
-#: src/components/note/NoteCard.tsx:527
+#: src/components/note/NoteCard.tsx:542
 msgid "In reply to"
 msgstr "返信元"
 
@@ -1963,9 +1996,18 @@ msgstr "行の高さ"
 
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/timeline/Timeline.tsx:258
-#: src/components/user/UserProfile.tsx:568
+#: src/components/user/FollowListModal.tsx:234
+#: src/components/user/UserProfile.tsx:578
 msgid "Load more"
 msgstr "もっと読み込む"
+
+#: src/pages/mentions.tsx:117
+msgid "Loading mentions..."
+msgstr "メンションを読み込み中..."
+
+#: src/pages/mentions.tsx:137
+msgid "Loading more mentions..."
+msgstr "さらにメンションを読み込み中..."
 
 #: src/components/timeline/Timeline.tsx:217
 msgid "Loading more posts..."
@@ -1976,9 +2018,10 @@ msgid "Loading posts..."
 msgstr "投稿を読み込み中..."
 
 #: src/components/drive/DrivePickerDialog.tsx:483
-#: src/components/note/NoteComposer.tsx:705
-#: src/components/note/NoteComposer.tsx:752
-#: src/components/user/UserProfile.tsx:564
+#: src/components/note/NoteComposer.tsx:912
+#: src/components/note/NoteComposer.tsx:959
+#: src/components/user/FollowListModal.tsx:231
+#: src/components/user/UserProfile.tsx:574
 msgid "Loading..."
 msgstr "読み込み中..."
 
@@ -2004,8 +2047,8 @@ msgstr "ログイン"
 msgid "Log In"
 msgstr "ログイン"
 
-#: src/components/layout/Sidebar.tsx:234
-#: src/components/layout/Sidebar.tsx:380
+#: src/components/layout/Sidebar.tsx:248
+#: src/components/layout/Sidebar.tsx:394
 #: src/pages/settings.tsx:378
 msgid "Logging out..."
 msgstr "ログアウト中..."
@@ -2014,8 +2057,8 @@ msgstr "ログアウト中..."
 msgid "Login failed. Please check your credentials."
 msgstr "ログインに失敗しました。認証情報を確認してください。"
 
-#: src/components/layout/Sidebar.tsx:234
-#: src/components/layout/Sidebar.tsx:380
+#: src/components/layout/Sidebar.tsx:248
+#: src/components/layout/Sidebar.tsx:394
 #: src/pages/settings.tsx:382
 msgid "Logout"
 msgstr "ログアウト"
@@ -2115,8 +2158,18 @@ msgstr "メンション"
 msgid "mentioned you"
 msgstr "があなたにメンションしました"
 
+#: src/components/layout/Sidebar.tsx:109
+#: src/pages/mentions.tsx:96
+msgid "Mentions"
+msgstr "メンション"
+
 #: src/pages/contact/index.tsx:243
 msgid "Message"
+msgstr "メッセージ"
+
+#: src/components/layout/Sidebar.tsx:115
+#: src/pages/messages/index.tsx:151
+msgid "Messages"
 msgstr "メッセージ"
 
 #: src/components/settings/AccountMigrationSection.tsx:307
@@ -2158,7 +2211,7 @@ msgstr "モデレーターロール"
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "ActivityPub配信キューの状態を監視"
 
-#: src/components/note/NoteCard.tsx:666
+#: src/components/note/NoteCard.tsx:681
 msgid "More options"
 msgstr "その他のオプション"
 
@@ -2180,7 +2233,7 @@ msgstr "名前"
 msgid "Never"
 msgstr "無期限"
 
-#: src/components/note/NoteComposer.tsx:983
+#: src/components/note/NoteComposer.tsx:1190
 msgid "New"
 msgstr "新規"
 
@@ -2197,7 +2250,12 @@ msgstr "新しいフォルダ"
 msgid "New Inquiry"
 msgstr "新規お問い合わせ"
 
-#: src/components/note/ComposeModal.tsx:83
+#: src/components/note/ComposeModal.tsx:84
+#: src/pages/messages/index.tsx:160
+msgid "New Message"
+msgstr "新しいメッセージ"
+
+#: src/components/note/ComposeModal.tsx:86
 msgid "New Note"
 msgstr "新規投稿"
 
@@ -2235,11 +2293,11 @@ msgstr "削除されたノートはありません"
 msgid "No deliveries recorded yet"
 msgstr "配信記録がありません"
 
-#: src/components/note/NoteComposer.tsx:989
+#: src/components/note/NoteComposer.tsx:1196
 msgid "No drafts saved"
 msgstr "保存された下書きはありません"
 
-#: src/components/note/NoteComposer.tsx:756
+#: src/components/note/NoteComposer.tsx:963
 #: src/components/ui/EmojiPicker.tsx:973
 msgid "No emojis found"
 msgstr "絵文字が見つかりません"
@@ -2255,6 +2313,10 @@ msgstr "ドライブにファイルがありません"
 #: src/components/settings/StorageSection.tsx:270
 msgid "No files uploaded yet"
 msgstr "まだファイルがアップロードされていません"
+
+#: src/components/user/FollowListModal.tsx:209
+msgid "No followers yet"
+msgstr "まだフォロワーがいません"
 
 #: src/pages/admin/contacts.tsx:534
 msgid "No inquiries found"
@@ -2277,6 +2339,18 @@ msgstr "招待コードがまだありません"
 msgid "No matching notifications"
 msgstr "一致する通知がありません"
 
+#: src/pages/mentions.tsx:162
+msgid "No mentions yet"
+msgstr "まだメンションはありません"
+
+#: src/pages/messages/index.tsx:178
+msgid "No messages yet"
+msgstr "まだメッセージはありません"
+
+#: src/components/pages/MessageThreadPageClient.tsx:425
+msgid "No messages yet. Start the conversation!"
+msgstr "まだメッセージはありません。会話を始めましょう！"
+
 #: src/pages/admin/queue.tsx:436
 msgid "No metrics available"
 msgstr "メトリクスがありません"
@@ -2298,7 +2372,7 @@ msgstr "パスキーはまだ登録されていません"
 msgid "No pending reports to review"
 msgstr "確認待ちの報告はありません"
 
-#: src/components/user/UserProfile.tsx:544
+#: src/components/user/UserProfile.tsx:554
 msgid "No posts yet"
 msgstr "まだ投稿がありません"
 
@@ -2333,7 +2407,7 @@ msgstr "システムファイルはありません"
 msgid "No text content"
 msgstr "テキストコンテンツなし"
 
-#: src/components/note/NoteComposer.tsx:709
+#: src/components/note/NoteComposer.tsx:916
 #: src/pages/admin/storage.tsx:495
 #: src/pages/admin/users.tsx:432
 #: src/pages/search.tsx:437
@@ -2343,6 +2417,10 @@ msgstr "ユーザーが見つかりませんでした"
 #: src/pages/admin/gone-users.tsx:209
 msgid "No users with fetch errors found"
 msgstr "取得エラーのあるユーザーはいません"
+
+#: src/components/user/FollowListModal.tsx:211
+msgid "Not following anyone yet"
+msgstr "まだ誰もフォローしていません"
 
 #: src/components/pages/NoteDetailPageClient.tsx:129
 msgid "Note"
@@ -2360,7 +2438,7 @@ msgstr "ノートのモデレーション"
 msgid "Note not found"
 msgstr "ノートが見つかりません"
 
-#: src/components/note/NoteComposer.tsx:494
+#: src/components/note/NoteComposer.tsx:586
 msgid "Note posted successfully"
 msgstr "投稿しました"
 
@@ -2377,7 +2455,7 @@ msgstr "ノートの報告"
 msgid "Note restored successfully"
 msgstr "ノートを復元しました"
 
-#: src/components/note/NoteComposer.tsx:477
+#: src/components/note/NoteComposer.tsx:568
 msgid "Note scheduled successfully"
 msgstr "予約投稿を設定しました"
 
@@ -2401,6 +2479,10 @@ msgstr "ノート"
 msgid "Notes deleted by moderators will appear here"
 msgstr "モデレーターが削除したノートがここに表示されます"
 
+#: src/pages/mentions.tsx:100
+msgid "Notes that mention you or reply to your posts"
+msgstr "あなたにメンションした投稿やあなたへの返信"
+
 #: src/components/settings/DataExportSection.tsx:117
 msgid "Notification history statistics"
 msgstr "通知履歴の統計"
@@ -2409,7 +2491,7 @@ msgstr "通知履歴の統計"
 msgid "Notification Sound"
 msgstr "通知音"
 
-#: src/components/layout/Sidebar.tsx:101
+#: src/components/layout/Sidebar.tsx:103
 #: src/components/notification/NotificationBell.tsx:85
 #: src/pages/notifications.tsx:175
 #: src/pages/settings.tsx:156
@@ -2564,7 +2646,7 @@ msgstr "プッシュ通知を受け取るには、ブラウザの設定で通知
 msgid "Please enter a valid email address"
 msgstr "有効なメールアドレスを入力してください"
 
-#: src/components/note/NoteComposer.tsx:409
+#: src/components/note/NoteComposer.tsx:490
 msgid "Please enter text or attach files"
 msgstr "テキストを入力するかファイルを添付してください"
 
@@ -2589,13 +2671,17 @@ msgstr "ZIPファイルを選択してください"
 msgid "Please select an image file"
 msgstr "画像ファイルを選択してください"
 
+#: src/components/note/NoteComposer.tsx:506
+msgid "Please select at least one recipient for direct message"
+msgstr "ダイレクトメッセージには宛先を1人以上選択してください"
+
 #: src/components/settings/AccountDeletionSection.tsx:40
 msgid "Please type \"{CONFIRM_TEXT}\" to confirm"
 msgstr "確認のため「{CONFIRM_TEXT}」と入力してください"
 
-#: src/components/layout/Sidebar.tsx:174
-#: src/components/layout/Sidebar.tsx:301
-#: src/components/note/NoteComposer.tsx:1157
+#: src/components/layout/Sidebar.tsx:188
+#: src/components/layout/Sidebar.tsx:315
+#: src/components/note/NoteComposer.tsx:1364
 msgid "Post"
 msgstr "投稿"
 
@@ -2603,12 +2689,12 @@ msgstr "投稿"
 msgid "Post illegal content or engage in illegal activities"
 msgstr "違法なコンテンツの投稿や違法行為への関与"
 
-#: src/components/note/NoteComposer.tsx:1153
+#: src/components/note/NoteComposer.tsx:1360
 msgid "Posting..."
 msgstr "投稿中..."
 
-#: src/components/user/UserProfile.tsx:501
-#: src/components/user/UserProfile.tsx:527
+#: src/components/user/UserProfile.tsx:503
+#: src/components/user/UserProfile.tsx:537
 #: src/pages/admin/federation.tsx:403
 msgid "Posts"
 msgstr "投稿"
@@ -2621,7 +2707,7 @@ msgstr "Powered by"
 msgid "Powered by Rox - Lightweight ActivityPub Server"
 msgstr "Powered by Rox - 軽量ActivityPubサーバー"
 
-#: src/components/note/NoteComposer.tsx:797
+#: src/components/note/NoteComposer.tsx:1004
 #: src/components/settings/UISettingsSection.tsx:488
 #: src/pages/admin/emojis.tsx:737
 #: src/pages/admin/settings.tsx:716
@@ -2664,7 +2750,7 @@ msgstr "プライバシーポリシーURL"
 msgid "Process your account registration and authentication"
 msgstr "アカウント登録と認証の処理"
 
-#: src/components/layout/Sidebar.tsx:107
+#: src/components/layout/Sidebar.tsx:121
 #: src/pages/settings.tsx:154
 msgid "Profile"
 msgstr "プロフィール"
@@ -2689,7 +2775,7 @@ msgstr "サービスの提供と維持"
 msgid "Provide more context about your report..."
 msgstr "報告についての詳細を入力してください..."
 
-#: src/components/note/NoteComposer.tsx:537
+#: src/components/note/NoteComposer.tsx:631
 #: src/pages/admin/roles.tsx:616
 msgid "Public"
 msgstr "公開"
@@ -2916,6 +3002,11 @@ msgstr "リモートインスタンス"
 msgid "Remove"
 msgstr "削除"
 
+#. placeholder {0}: recipient.username
+#: src/components/note/NoteComposer.tsx:746
+msgid "Remove {0}"
+msgstr "{0}を削除"
+
 #: src/pages/admin/users.tsx:506
 msgid "Remove admin"
 msgstr "管理者を解除"
@@ -2944,7 +3035,7 @@ msgstr "名前を変更"
 msgid "Renote"
 msgstr "リノート"
 
-#: src/components/note/NoteCard.tsx:401
+#: src/components/note/NoteCard.tsx:416
 msgid "Renoted"
 msgstr "リノート"
 
@@ -2961,16 +3052,16 @@ msgstr "があなたの投稿に返信しました"
 msgid "Replies ({0})"
 msgstr "返信 ({0})"
 
-#: src/components/note/NoteComposer.tsx:1155
+#: src/components/note/NoteComposer.tsx:1362
 #: src/pages/notifications.tsx:244
 msgid "Reply"
 msgstr "返信"
 
-#: src/components/note/NoteComposer.tsx:615
+#: src/components/note/NoteComposer.tsx:709
 msgid "Replying to"
 msgstr "返信先:"
 
-#: src/components/note/NoteCard.tsx:681
+#: src/components/note/NoteCard.tsx:696
 msgid "Report"
 msgstr "報告"
 
@@ -3099,7 +3190,7 @@ msgstr "解決済み"
 msgid "Resolved: {0}"
 msgstr "解決: {0}"
 
-#: src/components/note/NoteComposer.tsx:588
+#: src/components/note/NoteComposer.tsx:682
 #: src/pages/mod/notes.tsx:275
 msgid "Restore"
 msgstr "復元"
@@ -3178,8 +3269,8 @@ msgstr "保存"
 msgid "Save Changes"
 msgstr "変更を保存"
 
-#: src/components/note/NoteComposer.tsx:942
-#: src/components/note/NoteComposer.tsx:943
+#: src/components/note/NoteComposer.tsx:1149
+#: src/components/note/NoteComposer.tsx:1150
 msgid "Save draft"
 msgstr "下書きを保存"
 
@@ -3212,21 +3303,21 @@ msgstr "テーマ設定を保存"
 msgid "Saving..."
 msgstr "保存中..."
 
-#: src/components/note/NoteComposer.tsx:1125
+#: src/components/note/NoteComposer.tsx:1332
 msgid "Schedule"
 msgstr "予約する"
 
-#: src/components/note/NoteComposer.tsx:1070
-#: src/components/note/NoteComposer.tsx:1071
-#: src/components/note/NoteComposer.tsx:1082
+#: src/components/note/NoteComposer.tsx:1277
+#: src/components/note/NoteComposer.tsx:1278
+#: src/components/note/NoteComposer.tsx:1289
 msgid "Schedule post"
 msgstr "予約投稿"
 
-#: src/components/note/NoteComposer.tsx:427
+#: src/components/note/NoteComposer.tsx:514
 msgid "Scheduled time must be in the future"
 msgstr "予約時刻は現在時刻より後に設定してください"
 
-#: src/components/layout/Sidebar.tsx:95
+#: src/components/layout/Sidebar.tsx:97
 #: src/pages/mod/users.tsx:298
 #: src/pages/search.tsx:333
 #: src/pages/search.tsx:359
@@ -3257,6 +3348,7 @@ msgstr "検索対象:"
 msgid "Search User"
 msgstr "ユーザーを検索"
 
+#: src/components/note/NoteComposer.tsx:765
 #: src/pages/admin/storage.tsx:461
 #: src/pages/admin/users.tsx:381
 msgid "Search users..."
@@ -3265,6 +3357,10 @@ msgstr "ユーザーを検索..."
 #: src/pages/search.tsx:350
 msgid "Search users... (e.g., alice or alice@mastodon.social)"
 msgstr "ユーザーを検索... (例: alice または alice@mastodon.social)"
+
+#: src/components/note/NoteComposer.tsx:776
+msgid "Searching..."
+msgstr "検索中..."
 
 #: src/pages/admin/settings.tsx:732
 msgid "Secondary"
@@ -3282,8 +3378,8 @@ msgstr "選択する"
 msgid "Select All"
 msgstr "すべて選択"
 
-#: src/components/note/NoteComposer.tsx:893
-#: src/components/note/NoteComposer.tsx:894
+#: src/components/note/NoteComposer.tsx:1100
+#: src/components/note/NoteComposer.tsx:1101
 msgid "Select from drive"
 msgstr "ドライブから選択"
 
@@ -3344,7 +3440,7 @@ msgstr "サービス利用不可"
 msgid "Session"
 msgstr "セッション"
 
-#: src/components/layout/Sidebar.tsx:113
+#: src/components/layout/Sidebar.tsx:127
 #: src/pages/settings.tsx:166
 msgid "Settings"
 msgstr "設定"
@@ -3362,7 +3458,7 @@ msgstr "思いを共有し、友人とつながり、Fediverse全体での会話
 msgid "Show all {0} files"
 msgstr "すべて表示（{0}ファイル）"
 
-#: src/components/note/NoteCard.tsx:420
+#: src/components/note/NoteCard.tsx:435
 msgid "Show content"
 msgstr "内容を表示"
 
@@ -3443,6 +3539,10 @@ msgstr "spam.example.com"
 #: src/components/ui/EmojiPicker.tsx:949
 msgid "Standard Emojis"
 msgstr "標準絵文字"
+
+#: src/pages/messages/index.tsx:181
+msgid "Start a conversation by composing a direct message"
+msgstr "ダイレクトメッセージを送信して会話を始めましょう"
 
 #: src/pages/admin/emojis.tsx:1096
 msgid "Status"
@@ -3574,7 +3674,7 @@ msgstr "テスト"
 msgid "Test notification"
 msgstr "テスト通知"
 
-#: src/components/note/NoteComposer.tsx:414
+#: src/components/note/NoteComposer.tsx:495
 msgid "Text exceeds {maxLength} characters"
 msgstr "テキストが{maxLength}文字を超えています"
 
@@ -3598,7 +3698,7 @@ msgstr "お探しのページは存在しないか、移動されました。"
 msgid "The server is temporarily unavailable due to maintenance or high load. Please try again in a few minutes."
 msgstr "メンテナンスまたは高負荷のため、サーバーは一時的に利用できません。数分後に再度お試しください。"
 
-#: src/components/user/UserProfile.tsx:325
+#: src/components/user/UserProfile.tsx:327
 msgid "The user @{username} doesn't exist or may have been deleted."
 msgstr "@{username} というユーザーは存在しないか、削除された可能性があります。"
 
@@ -3699,7 +3799,7 @@ msgstr "このソフトウェアはGNU Affero General Public License version 3.0
 msgid "This thread is closed."
 msgstr "このスレッドは終了しました。"
 
-#: src/components/user/UserProfile.tsx:550
+#: src/components/user/UserProfile.tsx:560
 msgid "This user hasn't posted anything yet"
 msgstr "このユーザーはまだ何も投稿していません"
 
@@ -3834,7 +3934,7 @@ msgstr "フォロー解除"
 #~ msgid "Unfollowed successfully"
 #~ msgstr "フォロー解除しました"
 
-#: src/components/user/UserProfile.tsx:437
+#: src/components/user/UserProfile.tsx:439
 msgid "Unfollowing..."
 msgstr "フォロー解除中..."
 
@@ -3891,11 +3991,11 @@ msgstr "インスタンスのブランディング用画像をアップロード
 msgid "Uploaded media files metadata"
 msgstr "アップロードしたメディアファイルのメタデータ"
 
-#: src/components/note/NoteComposer.tsx:856
+#: src/components/note/NoteComposer.tsx:1063
 msgid "Uploading files..."
 msgstr "ファイルをアップロード中..."
 
-#: src/components/note/NoteComposer.tsx:1151
+#: src/components/note/NoteComposer.tsx:1358
 #: src/components/settings/ProfileImageSection.tsx:253
 #: src/components/settings/ProfileImageSection.tsx:329
 #: src/pages/admin/emojis.tsx:644
@@ -3940,12 +4040,13 @@ msgstr "ユーザー一覧"
 msgid "User Moderation"
 msgstr "ユーザーのモデレーション"
 
-#: src/components/user/UserProfile.tsx:357
+#: src/components/pages/MessageThreadPageClient.tsx:270
+#: src/components/user/UserProfile.tsx:359
 #: src/pages/mod/users.tsx:115
 msgid "User not found"
 msgstr "ユーザーが見つかりません"
 
-#: src/components/user/UserProfile.tsx:320
+#: src/components/user/UserProfile.tsx:322
 msgid "User Not Found"
 msgstr "ユーザーが見つかりません"
 
@@ -4029,7 +4130,7 @@ msgstr "検証に失敗しました"
 msgid "Version"
 msgstr "バージョン"
 
-#: src/components/note/NoteCard.tsx:566
+#: src/components/note/NoteCard.tsx:581
 msgid "View"
 msgstr "表示"
 
@@ -4142,6 +4243,10 @@ msgstr "お問い合わせへの返信に使用します"
 msgid "Welcome to Rox! Let's configure your server."
 msgstr "Roxへようこそ！サーバーの初期設定を行いましょう。"
 
+#: src/pages/mentions.tsx:165
+msgid "When someone mentions you, it will appear here"
+msgstr "誰かがあなたにメンションすると、ここに表示されます"
+
 #: src/pages/legal/privacy.tsx:102
 msgid "When you use {instanceName}, we collect the following types of information:"
 msgstr "{instanceName}を利用する際、以下の種類の情報を収集します："
@@ -4155,7 +4260,7 @@ msgid "Why Join?"
 msgstr "なぜ参加するの？"
 
 #. placeholder {0}: new Date(scheduledAt).toLocaleString()
-#: src/components/note/NoteComposer.tsx:1095
+#: src/components/note/NoteComposer.tsx:1302
 msgid "Will be posted at {0}"
 msgstr "{0}に投稿予定"
 
@@ -4163,6 +4268,10 @@ msgstr "{0}に投稿予定"
 #: src/pages/admin/federation.tsx:326
 msgid "With Errors"
 msgstr "エラーあり"
+
+#: src/components/pages/MessageThreadPageClient.tsx:192
+msgid "Write a message..."
+msgstr "メッセージを入力..."
 
 #: src/pages/legal/terms.tsx:135
 msgid "You agree not to use this service to:"
@@ -4211,7 +4320,7 @@ msgstr "お問い合わせを管理する権限がありません。"
 msgid "You have already reported this"
 msgstr "既に報告済みです"
 
-#: src/components/note/NoteComposer.tsx:578
+#: src/components/note/NoteComposer.tsx:672
 msgid "You have an unsaved draft"
 msgstr "未保存の下書きがあります"
 
@@ -4223,7 +4332,7 @@ msgstr "招待コードの作成上限に達しました"
 msgid "You have the right to:"
 msgstr "以下の権利があります："
 
-#: src/components/user/UserProfile.tsx:548
+#: src/components/user/UserProfile.tsx:558
 msgid "You haven't posted anything yet"
 msgstr "まだ何も投稿していません"
 
@@ -4248,7 +4357,8 @@ msgstr "ブラウザを閉じていても通知を受け取ることができま
 msgid "You're all caught up!"
 msgstr "すべての通知を確認しました！"
 
-#: src/components/user/UserProfile.tsx:577
+#: src/components/user/UserProfile.tsx:587
+#: src/pages/mentions.tsx:152
 msgid "You've reached the end"
 msgstr "最後まで到達しました"
 
@@ -4271,6 +4381,10 @@ msgstr "お使いのブラウザはパスキーに対応していません。"
 #: src/components/settings/PushNotificationSection.tsx:76
 msgid "Your browser does not support push notifications."
 msgstr "お使いのブラウザはプッシュ通知に対応していません。"
+
+#: src/pages/messages/index.tsx:164
+msgid "Your direct message conversations"
+msgstr "あなたのダイレクトメッセージ"
 
 #: src/components/settings/StorageSection.tsx:254
 msgid "Your Files"

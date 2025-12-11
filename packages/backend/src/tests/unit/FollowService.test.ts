@@ -298,7 +298,7 @@ describe("FollowService", () => {
       const result = await service.getFollowers("user2");
 
       expect(result).toHaveLength(1);
-      expect(mockFollowRepo.findByFolloweeId).toHaveBeenCalledWith("user2", undefined);
+      expect(mockFollowRepo.findByFolloweeId).toHaveBeenCalledWith("user2", undefined, undefined);
     });
 
     test("should respect limit parameter", async () => {
@@ -310,7 +310,19 @@ describe("FollowService", () => {
 
       await service.getFollowers("user2", 50);
 
-      expect(mockFollowRepo.findByFolloweeId).toHaveBeenCalledWith("user2", 50);
+      expect(mockFollowRepo.findByFolloweeId).toHaveBeenCalledWith("user2", 50, undefined);
+    });
+
+    test("should respect offset parameter", async () => {
+      const service = new FollowService(
+        mockFollowRepo as IFollowRepository,
+        mockUserRepo as IUserRepository,
+        mockDeliveryService as ActivityPubDeliveryService,
+      );
+
+      await service.getFollowers("user2", 50, 20);
+
+      expect(mockFollowRepo.findByFolloweeId).toHaveBeenCalledWith("user2", 50, 20);
     });
   });
 
@@ -325,7 +337,7 @@ describe("FollowService", () => {
       const result = await service.getFollowing("user1");
 
       expect(result).toHaveLength(1);
-      expect(mockFollowRepo.findByFollowerId).toHaveBeenCalledWith("user1", undefined);
+      expect(mockFollowRepo.findByFollowerId).toHaveBeenCalledWith("user1", undefined, undefined);
     });
 
     test("should respect limit parameter", async () => {
@@ -337,7 +349,19 @@ describe("FollowService", () => {
 
       await service.getFollowing("user1", 25);
 
-      expect(mockFollowRepo.findByFollowerId).toHaveBeenCalledWith("user1", 25);
+      expect(mockFollowRepo.findByFollowerId).toHaveBeenCalledWith("user1", 25, undefined);
+    });
+
+    test("should respect offset parameter", async () => {
+      const service = new FollowService(
+        mockFollowRepo as IFollowRepository,
+        mockUserRepo as IUserRepository,
+        mockDeliveryService as ActivityPubDeliveryService,
+      );
+
+      await service.getFollowing("user1", 25, 10);
+
+      expect(mockFollowRepo.findByFollowerId).toHaveBeenCalledWith("user1", 25, 10);
     });
   });
 

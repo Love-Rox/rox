@@ -129,6 +129,7 @@ following.get("/exists", requireAuth(), async (c: Context) => {
  *
  * @query {string} userId - User ID
  * @query {number} [limit=100] - Maximum number of followers to retrieve
+ * @query {number} [offset=0] - Number of records to skip
  * @returns {Follow[]} List of followers
  */
 following.get("/users/followers", async (c: Context) => {
@@ -139,13 +140,14 @@ following.get("/users/followers", async (c: Context) => {
 
   const userId = c.req.query("userId");
   const limit = c.req.query("limit") ? Number.parseInt(c.req.query("limit")!, 10) : undefined;
+  const offset = c.req.query("offset") ? Number.parseInt(c.req.query("offset")!, 10) : undefined;
 
   if (!userId) {
     return c.json({ error: "userId is required" }, 400);
   }
 
   try {
-    const followers = await followService.getFollowers(userId, limit);
+    const followers = await followService.getFollowers(userId, limit, offset);
     return c.json(followers);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to get followers";
@@ -160,6 +162,7 @@ following.get("/users/followers", async (c: Context) => {
  *
  * @query {string} userId - User ID
  * @query {number} [limit=100] - Maximum number of following to retrieve
+ * @query {number} [offset=0] - Number of records to skip
  * @returns {Follow[]} List of following
  */
 following.get("/users/following", async (c: Context) => {
@@ -170,13 +173,14 @@ following.get("/users/following", async (c: Context) => {
 
   const userId = c.req.query("userId");
   const limit = c.req.query("limit") ? Number.parseInt(c.req.query("limit")!, 10) : undefined;
+  const offset = c.req.query("offset") ? Number.parseInt(c.req.query("offset")!, 10) : undefined;
 
   if (!userId) {
     return c.json({ error: "userId is required" }, 400);
   }
 
   try {
-    const following = await followService.getFollowing(userId, limit);
+    const following = await followService.getFollowing(userId, limit, offset);
     return c.json(following);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to get following";

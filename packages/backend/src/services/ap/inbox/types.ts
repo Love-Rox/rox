@@ -35,8 +35,8 @@ export interface Activity {
 export interface HandlerContext {
   /** Hono request context */
   c: Context;
-  /** Local recipient user ID */
-  recipientId: string;
+  /** Local recipient user ID (null for shared inbox) */
+  recipientId: string | null;
   /** Base URL of this instance */
   baseUrl: string;
 }

@@ -42,6 +42,8 @@ export interface NoteCreateInput {
   renoteId?: string | null;
   /** File IDs to attach */
   fileIds?: string[];
+  /** Visible user IDs for DM (visibility: specified) */
+  visibleUserIds?: string[];
 }
 
 /**
@@ -138,6 +140,7 @@ export class NoteService {
       replyId = null,
       renoteId = null,
       fileIds = [],
+      visibleUserIds = [],
     } = input;
 
     // バリデーション: テキストまたはファイルが必須（Renoteの場合は除く）
@@ -148,6 +151,11 @@ export class NoteService {
     // バリデーション: ファイル数制限
     if (fileIds.length > this.maxFilesPerNote) {
       throw new Error(`Maximum ${this.maxFilesPerNote} files allowed per note`);
+    }
+
+    // バリデーション: DM (visibility: specified) には受信者が必要
+    if (visibility === "specified" && visibleUserIds.length === 0) {
+      throw new Error("Direct message must have at least one recipient");
     }
 
     // ファイル所有権の確認
@@ -173,7 +181,17 @@ export class NoteService {
     }
 
     // メンション抽出（簡易実装、Phase 1.1で拡張予定）
-    const mentions = this.extractMentions(text || "");
+    // For DMs, use visibleUserIds as mentions (recipient user IDs)
+    const extractedMentions = this.extractMentions(text || "");
+    const mentions = visibility === "specified" ? visibleUserIds : extractedMentions;
+
+    // Debug log for DM mentions
+    if (visibility === "specified") {
+      logger.info(
+        { visibleUserIds, mentions, mentionsLength: mentions.length },
+        "DM mentions array being saved",
+      );
+    }
 
     // ハッシュタグ抽出（簡易実装、Phase 1.1で拡張予定）
     const tags = this.extractHashtags(text || "");
@@ -224,21 +242,48 @@ export class NoteService {
     // Pure renotes get Announce activity, quote renotes get Create activity
     const isPureRenote = renoteTarget && !text && !cw && !replyId && fileIds.length === 0;
 
-    // Deliver ActivityPub activity to followers (async, non-blocking)
+    // Deliver ActivityPub activity (async, non-blocking)
     const author = await this.userRepository.findById(userId);
-    if (author && !author.host && !localOnly && visibility === "public") {
-      if (isPureRenote && renoteTarget) {
-        // Pure renote: send Announce activity to all followers
+
+    // Log DM delivery decision for debugging
+    if (visibility === "specified") {
+      logger.info(
+        {
+          noteId,
+          visibility,
+          visibleUserIds,
+          visibleUserIdsLength: visibleUserIds.length,
+          authorExists: !!author,
+          authorHost: author?.host,
+          localOnly,
+        },
+        "DM note created - checking delivery conditions",
+      );
+    }
+
+    if (author && !author.host && !localOnly) {
+      if (visibility === "specified" && visibleUserIds.length > 0) {
+        // Direct message: deliver to specific recipients
+        logger.info({ noteId, visibleUserIds }, "Starting DM delivery");
         this.deliveryService
-          .deliverAnnounceActivity(note.id, renoteTarget, author)
+          .deliverDirectMessage(note, author, visibleUserIds)
           .catch((error) => {
-            logger.error({ err: error, noteId }, "Failed to deliver Announce activity for renote");
+            logger.error({ err: error, noteId }, "Failed to deliver Direct Message activity");
           });
-      } else {
-        // Regular note or quote renote: send Create activity
-        this.deliveryService.deliverCreateNote(note, author).catch((error) => {
-          logger.error({ err: error, noteId }, "Failed to deliver Create activity");
-        });
+      } else if (visibility === "public") {
+        if (isPureRenote && renoteTarget) {
+          // Pure renote: send Announce activity to all followers
+          this.deliveryService
+            .deliverAnnounceActivity(note.id, renoteTarget, author)
+            .catch((error) => {
+              logger.error({ err: error, noteId }, "Failed to deliver Announce activity for renote");
+            });
+        } else {
+          // Regular note or quote renote: send Create activity
+          this.deliveryService.deliverCreateNote(note, author).catch((error) => {
+            logger.error({ err: error, noteId }, "Failed to deliver Create activity");
+          });
+        }
       }
     }
 

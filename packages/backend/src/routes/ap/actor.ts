@@ -98,6 +98,9 @@ actor.get("/:username", async (c: Context) => {
       owner: `${baseUrl}/users/${user.username}`,
       publicKeyPem: user.publicKey,
     },
+    endpoints: {
+      sharedInbox: `${baseUrl}/inbox`,
+    },
   };
 
   // Add migration-related fields if present

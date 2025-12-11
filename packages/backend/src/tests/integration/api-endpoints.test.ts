@@ -504,4 +504,210 @@ describe("API Endpoints Integration", () => {
       expect(notes.length).toBeGreaterThan(0);
     });
   });
+
+  describe("Mentions", () => {
+    let mentionNoteId: string;
+
+    beforeAll(async () => {
+      if (!serverAvailable) return;
+
+      // User2 creates a note mentioning user1
+      const mentionRes = await fetch(`${BASE_URL}/api/notes/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user2.token}`,
+        },
+        body: JSON.stringify({
+          text: `@${user1.user.username} hello there!`,
+          visibility: "public",
+        }),
+      });
+      const mentionNote = (await mentionRes.json()) as any;
+      mentionNoteId = mentionNote.id;
+
+      // User1 creates a note
+      const user1NoteRes = await fetch(`${BASE_URL}/api/notes/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user1.token}`,
+        },
+        body: JSON.stringify({
+          text: "Original note from user1",
+          visibility: "public",
+        }),
+      });
+      const user1Note = (await user1NoteRes.json()) as any;
+
+      // User2 replies to user1's note
+      await fetch(`${BASE_URL}/api/notes/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user2.token}`,
+        },
+        body: JSON.stringify({
+          text: "This is a reply to your note!",
+          visibility: "public",
+          replyId: user1Note.id,
+        }),
+      });
+    });
+
+    test("should get mentions and replies for authenticated user", async () => {
+      if (!serverAvailable) {
+        console.log("⏭️  Skipping: server not available");
+        return;
+      }
+      const res = await fetch(`${BASE_URL}/api/mentions?limit=20`, {
+        headers: {
+          Authorization: `Bearer ${user1.token}`,
+        },
+      });
+
+      expect(res.status).toBe(200);
+      const notes = (await res.json()) as any;
+      expect(notes).toBeArray();
+    });
+
+    test("should return 401 for unauthenticated mentions request", async () => {
+      if (!serverAvailable) {
+        console.log("⏭️  Skipping: server not available");
+        return;
+      }
+      const res = await fetch(`${BASE_URL}/api/mentions`);
+      expect(res.status).toBe(401);
+    });
+
+    test("should support pagination with untilId", async () => {
+      if (!serverAvailable) {
+        console.log("⏭️  Skipping: server not available");
+        return;
+      }
+      const res = await fetch(`${BASE_URL}/api/mentions?limit=10&untilId=${mentionNoteId}`, {
+        headers: {
+          Authorization: `Bearer ${user1.token}`,
+        },
+      });
+
+      expect(res.status).toBe(200);
+      const notes = (await res.json()) as any;
+      expect(notes).toBeArray();
+    });
+  });
+
+  describe("Direct Messages", () => {
+    beforeAll(async () => {
+      if (!serverAvailable) return;
+
+      // User1 sends a DM to user2
+      await fetch(`${BASE_URL}/api/notes/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user1.token}`,
+        },
+        body: JSON.stringify({
+          text: "This is a private message!",
+          visibility: "specified",
+          visibleUserIds: [user2.user.id],
+        }),
+      });
+
+      // User2 replies to the DM
+      await fetch(`${BASE_URL}/api/notes/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user2.token}`,
+        },
+        body: JSON.stringify({
+          text: "Got your message!",
+          visibility: "specified",
+          visibleUserIds: [user1.user.id],
+        }),
+      });
+    });
+
+    test("should get direct messages for authenticated user", async () => {
+      if (!serverAvailable) {
+        console.log("⏭️  Skipping: server not available");
+        return;
+      }
+      const res = await fetch(`${BASE_URL}/api/direct?limit=20`, {
+        headers: {
+          Authorization: `Bearer ${user1.token}`,
+        },
+      });
+
+      expect(res.status).toBe(200);
+      const notes = (await res.json()) as any;
+      expect(notes).toBeArray();
+    });
+
+    test("should return 401 for unauthenticated direct messages request", async () => {
+      if (!serverAvailable) {
+        console.log("⏭️  Skipping: server not available");
+        return;
+      }
+      const res = await fetch(`${BASE_URL}/api/direct`);
+      expect(res.status).toBe(401);
+    });
+
+    test("should get DM thread between two users", async () => {
+      if (!serverAvailable) {
+        console.log("⏭️  Skipping: server not available");
+        return;
+      }
+      const res = await fetch(`${BASE_URL}/api/direct/thread?partnerId=${user2.user.id}&limit=50`, {
+        headers: {
+          Authorization: `Bearer ${user1.token}`,
+        },
+      });
+
+      expect(res.status).toBe(200);
+      const notes = (await res.json()) as any;
+      expect(notes).toBeArray();
+    });
+
+    test("should return 400 for thread request without partnerId", async () => {
+      if (!serverAvailable) {
+        console.log("⏭️  Skipping: server not available");
+        return;
+      }
+      const res = await fetch(`${BASE_URL}/api/direct/thread`, {
+        headers: {
+          Authorization: `Bearer ${user1.token}`,
+        },
+      });
+
+      expect(res.status).toBe(400);
+    });
+
+    test("should get conversation partners", async () => {
+      if (!serverAvailable) {
+        console.log("⏭️  Skipping: server not available");
+        return;
+      }
+      const res = await fetch(`${BASE_URL}/api/direct/conversations?limit=20`, {
+        headers: {
+          Authorization: `Bearer ${user1.token}`,
+        },
+      });
+
+      expect(res.status).toBe(200);
+      const partners = (await res.json()) as any;
+      expect(partners).toBeArray();
+    });
+
+    test("should return 401 for unauthenticated conversations request", async () => {
+      if (!serverAvailable) {
+        console.log("⏭️  Skipping: server not available");
+        return;
+      }
+      const res = await fetch(`${BASE_URL}/api/direct/conversations`);
+      expect(res.status).toBe(401);
+    });
+  });
 });

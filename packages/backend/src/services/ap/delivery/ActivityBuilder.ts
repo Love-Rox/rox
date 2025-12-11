@@ -432,6 +432,94 @@ export class ActivityBuilder {
       cc: [this.followersUri(actor.username)],
     };
   }
+
+  /**
+   * Build a Create activity for a direct message
+   *
+   * Direct messages use specific addressing:
+   * - to: list of recipient actor URIs (no public addressing)
+   * - cc: empty (no followers)
+   * - tag: Mention tags for each recipient (required for proper DM delivery)
+   *
+   * @param note - The direct message note
+   * @param author - The note author
+   * @param recipients - List of remote recipient users
+   */
+  createDirectMessage(note: Note, author: User, recipients: User[]): Activity {
+    const actorUri = this.actorUri(author.username);
+    const published = note.createdAt.toISOString();
+
+    // Build recipient URIs and mention tags
+    const recipientUris: string[] = [];
+    const mentionTags: Array<{ type: "Mention"; href: string; name: string }> = [];
+
+    for (const r of recipients) {
+      const uri = r.uri || `https://${r.host}/users/${r.username}`;
+      recipientUris.push(uri);
+
+      // Add Mention tag for each recipient (required for DM delivery)
+      mentionTags.push({
+        type: "Mention",
+        href: uri,
+        name: `@${r.username}@${r.host}`,
+      });
+    }
+
+    // Convert plain text to simple HTML (escape special characters and wrap in <p>)
+    const htmlContent = this.textToHtml(note.text || "");
+
+    const noteObject: NoteObject = {
+      id: note.uri || `${this.baseUrl}/notes/${note.id}`,
+      type: "Note",
+      attributedTo: actorUri,
+      content: htmlContent,
+      published,
+      to: recipientUris,
+      cc: [],
+      tag: mentionTags,
+    };
+
+    // Add optional fields
+    if (note.cw) {
+      noteObject.sensitive = true;
+      noteObject.summary = note.cw;
+    }
+    if (note.replyId) {
+      noteObject.inReplyTo = note.replyId;
+    }
+
+    return {
+      "@context": AS_CONTEXT,
+      type: "Create",
+      id: this.activityId("create", note.id),
+      actor: actorUri,
+      published,
+      to: recipientUris,
+      cc: [],
+      object: noteObject,
+    };
+  }
+
+  /**
+   * Convert plain text to simple HTML for ActivityPub content
+   *
+   * Escapes HTML special characters and wraps in <p> tags.
+   * Converts newlines to <br> tags.
+   */
+  private textToHtml(text: string): string {
+    if (!text) return "<p></p>";
+
+    // Escape HTML special characters
+    const escaped = text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+    // Convert newlines to <br> and wrap in <p>
+    return `<p>${escaped.replace(/\n/g, "<br>")}</p>`;
+  }
 }
 
 /**
