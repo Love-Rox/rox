@@ -55,7 +55,7 @@ export class RejectHandler extends BaseHandler {
         const followRepository = c.get("followRepository");
 
         // Extract username from follower URI (our local user)
-        const localUser = await this.findLocalUserFromUri(followerUri, userRepository);
+        const localUser = await this.findLocalUserFromUri(followerUri, userRepository, context.baseUrl);
 
         if (localUser) {
           // Delete the follow relationship since it was rejected
@@ -83,13 +83,17 @@ export class RejectHandler extends BaseHandler {
 
   /**
    * Find local user from their ActivityPub URI
+   *
+   * @param uri - The user's ActivityPub URI
+   * @param userRepository - User repository instance
+   * @param baseUrl - The instance base URL
    */
   private async findLocalUserFromUri(
     uri: string,
     userRepository: any,
+    baseUrl: string,
   ): Promise<{ id: string; username: string } | null> {
     // Local user URIs are typically: https://domain/users/username
-    const baseUrl = process.env.URL || "";
     if (!uri.startsWith(baseUrl)) {
       return null;
     }
