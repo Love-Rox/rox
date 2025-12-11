@@ -42,6 +42,8 @@ export interface NoteCardProps {
   onReplyCreated?: () => void | Promise<void>;
   /** Show detailed timestamp (full date/time) */
   showDetailedTimestamp?: boolean;
+  /** Highlight this note (e.g., main note in thread view) */
+  isHighlighted?: boolean;
 }
 
 /**
@@ -57,6 +59,7 @@ function NoteCardComponent({
   onNoteDeleted: _onNoteDeleted,
   onReplyCreated: _onReplyCreated,
   showDetailedTimestamp: _showDetailedTimestamp,
+  isHighlighted = false,
 }: NoteCardProps) {
   const [showCw, setShowCw] = useState(false);
   const [isReacting, setIsReacting] = useState(false);
@@ -253,13 +256,23 @@ function NoteCardComponent({
   // Check if this is a direct message
   const isDirectMessage = note.visibility === "specified";
 
+  // Determine card styling based on state
+  const cardClassName = (() => {
+    const base = "transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2";
+    if (isDirectMessage) {
+      return `${base} border-l-4 border-l-purple-500 bg-purple-50/30 dark:bg-purple-900/10`;
+    }
+    if (isHighlighted) {
+      return `${base} border-l-4 border-l-primary-500 bg-primary-50/30 dark:bg-primary-900/20`;
+    }
+    return base;
+  })();
+
   return (
     <Card
       ref={cardRef}
       hover
-      className={`transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
-        isDirectMessage ? "border-l-4 border-l-purple-500 bg-purple-50/30 dark:bg-purple-900/10" : ""
-      }`}
+      className={cardClassName}
       role="article"
       aria-label={`${isDirectMessage ? "Direct message" : "Post"} by ${note.user.name || note.user.username}`}
       tabIndex={0}

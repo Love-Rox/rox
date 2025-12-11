@@ -146,14 +146,13 @@ export function NoteDetailPageClient({ noteId }: { noteId: string }) {
         )}
 
         {/* Main note (highlighted) */}
-        <div className="border-l-4 border-primary-500 bg-primary-50/30 dark:bg-primary-900/20">
-          <NoteCard
-            note={note}
-            onNoteDeleted={handleNoteDeleted}
-            onReplyCreated={handleReplyCreated}
-            showDetailedTimestamp
-          />
-        </div>
+        <NoteCard
+          note={note}
+          onNoteDeleted={handleNoteDeleted}
+          onReplyCreated={handleReplyCreated}
+          showDetailedTimestamp
+          isHighlighted
+        />
 
         {/* Descendant notes (replies) */}
         {descendants.length > 0 && (
