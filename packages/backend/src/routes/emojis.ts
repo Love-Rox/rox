@@ -470,6 +470,138 @@ app.delete("/:id", async (c: Context) => {
   return c.json({ success: true });
 });
 
+/**
+ * Bulk Delete Emojis (Admin)
+ *
+ * POST /api/emojis/bulk-delete
+ *
+ * Body:
+ * - ids: Array of emoji IDs to delete
+ */
+app.post("/bulk-delete", async (c: Context) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  // Check role-based permission with fallback to legacy isAdmin flag
+  const roleService = c.get("roleService");
+  const policies = await roleService.getEffectivePolicies(user.id);
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
+    return c.json({ error: "Forbidden: Admin permission required" }, 403);
+  }
+
+  const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
+
+  const body = await c.req.json<{
+    ids: string[];
+  }>();
+
+  if (!body.ids || !Array.isArray(body.ids) || body.ids.length === 0) {
+    return c.json({ error: "At least one emoji ID is required" }, 400);
+  }
+
+  // Limit to 100 emojis per request
+  if (body.ids.length > 100) {
+    return c.json({ error: "Cannot delete more than 100 emojis at once" }, 400);
+  }
+
+  const results: {
+    deleted: string[];
+    notFound: string[];
+  } = {
+    deleted: [],
+    notFound: [],
+  };
+
+  for (const id of body.ids) {
+    const deleted = await customEmojiRepository.delete(id);
+    if (deleted) {
+      results.deleted.push(id);
+    } else {
+      results.notFound.push(id);
+    }
+  }
+
+  return c.json({
+    success: results.deleted.length,
+    notFound: results.notFound.length,
+    details: results,
+  });
+});
+
+/**
+ * Bulk Update Emojis (Admin)
+ *
+ * POST /api/emojis/bulk-update
+ *
+ * Body:
+ * - ids: Array of emoji IDs to update
+ * - category: Category to set (optional)
+ * - isSensitive: Sensitive flag to set (optional)
+ */
+app.post("/bulk-update", async (c: Context) => {
+  const user = c.get("user");
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  // Check role-based permission with fallback to legacy isAdmin flag
+  const roleService = c.get("roleService");
+  const policies = await roleService.getEffectivePolicies(user.id);
+  if (!policies.canManageCustomEmojis && !user.isAdmin) {
+    return c.json({ error: "Forbidden: Admin permission required" }, 403);
+  }
+
+  const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
+
+  const body = await c.req.json<{
+    ids: string[];
+    category?: string;
+    isSensitive?: boolean;
+  }>();
+
+  if (!body.ids || !Array.isArray(body.ids) || body.ids.length === 0) {
+    return c.json({ error: "At least one emoji ID is required" }, 400);
+  }
+
+  // Limit to 100 emojis per request
+  if (body.ids.length > 100) {
+    return c.json({ error: "Cannot update more than 100 emojis at once" }, 400);
+  }
+
+  // Must have at least one field to update
+  if (body.category === undefined && body.isSensitive === undefined) {
+    return c.json({ error: "At least one field to update is required (category or isSensitive)" }, 400);
+  }
+
+  const results: {
+    updated: string[];
+    notFound: string[];
+  } = {
+    updated: [],
+    notFound: [],
+  };
+
+  for (const id of body.ids) {
+    const emoji = await customEmojiRepository.update(id, {
+      category: body.category,
+      isSensitive: body.isSensitive,
+    });
+    if (emoji) {
+      results.updated.push(id);
+    } else {
+      results.notFound.push(id);
+    }
+  }
+
+  return c.json({
+    success: results.updated.length,
+    notFound: results.notFound.length,
+    details: results,
+  });
+});
+
 // === Remote Emoji Management (Admin) ===
 
 /**
