@@ -16,6 +16,7 @@ describe("UndoHandler", () => {
   let handler: UndoHandler;
   let mockContext: HandlerContext;
   let mockFollowRepository: any;
+  let mockUserRepository: any;
   let mockNoteRepository: any;
   let mockReactionRepository: any;
   let mockRemoteActorService: any;
@@ -24,7 +25,13 @@ describe("UndoHandler", () => {
     const contextMap = new Map<string, any>();
 
     mockFollowRepository = {
+      exists: mock(() => Promise.resolve(true)),
       delete: mock(() => Promise.resolve()),
+    };
+
+    mockUserRepository = {
+      decrementFollowersCount: mock(() => Promise.resolve()),
+      decrementFollowingCount: mock(() => Promise.resolve()),
     };
 
     mockNoteRepository = {
@@ -53,6 +60,7 @@ describe("UndoHandler", () => {
     };
 
     contextMap.set("followRepository", mockFollowRepository);
+    contextMap.set("userRepository", mockUserRepository);
     contextMap.set("noteRepository", mockNoteRepository);
     contextMap.set("reactionRepository", mockReactionRepository);
     contextMap.set("remoteActorService", mockRemoteActorService);
@@ -97,6 +105,48 @@ describe("UndoHandler", () => {
       expect(result.success).toBe(true);
       expect(result.message).toBe("Follow deleted");
       expect(mockFollowRepository.delete).toHaveBeenCalledWith("remote-user-456", "local-user-123");
+    });
+
+    test("should decrement follower count when follow is deleted", async () => {
+      const activity: Activity = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        type: "Undo",
+        id: "https://remote.example.com/activities/undo-1",
+        actor: "https://remote.example.com/users/remoteuser",
+        object: {
+          type: "Follow",
+          id: "https://remote.example.com/activities/follow-1",
+          actor: "https://remote.example.com/users/remoteuser",
+          object: "http://localhost:3000/users/localuser",
+        },
+      };
+
+      await handler.handle(activity, mockContext);
+
+      // Local user (followee) should have followers count decremented
+      expect(mockUserRepository.decrementFollowersCount).toHaveBeenCalledWith("local-user-123");
+    });
+
+    test("should not decrement follower count when follow did not exist", async () => {
+      mockFollowRepository.exists = mock(() => Promise.resolve(false));
+
+      const activity: Activity = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        type: "Undo",
+        id: "https://remote.example.com/activities/undo-1",
+        actor: "https://remote.example.com/users/remoteuser",
+        object: {
+          type: "Follow",
+          id: "https://remote.example.com/activities/follow-1",
+          actor: "https://remote.example.com/users/remoteuser",
+          object: "http://localhost:3000/users/localuser",
+        },
+      };
+
+      await handler.handle(activity, mockContext);
+
+      // Should not decrement since follow didn't exist
+      expect(mockUserRepository.decrementFollowersCount).not.toHaveBeenCalled();
     });
   });
 

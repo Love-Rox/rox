@@ -50,6 +50,13 @@
       "when": 1765473763966,
       "tag": "0006_sweet_switch",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1765476984157,
+      "tag": "0007_cooing_silver_surfer",
+      "breakpoints": true
     }
   ]
 }

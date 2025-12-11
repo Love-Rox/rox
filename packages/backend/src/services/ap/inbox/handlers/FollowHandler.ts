@@ -70,6 +70,15 @@ export class FollowHandler extends BaseHandler {
         followeeId: recipientId,
       });
 
+      // Get userRepository for count updates and Accept activity
+      const userRepository = this.getUserRepository(c);
+
+      // Update cached follower/following counts
+      await Promise.all([
+        userRepository.incrementFollowingCount(remoteActor.id),
+        userRepository.incrementFollowersCount(recipientId),
+      ]);
+
       this.log("✅", `Follow created: ${remoteActor.username}@${remoteActor.host} → recipient`);
 
       // Create notification for the followee (fire-and-forget)
@@ -83,7 +92,6 @@ export class FollowHandler extends BaseHandler {
       }
 
       // Send Accept activity back to remote server
-      const userRepository = this.getUserRepository(c);
       const recipient = await userRepository.findById(recipientId);
 
       if (!recipient || !recipient.privateKey) {

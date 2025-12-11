@@ -12,7 +12,6 @@ import type { Context } from "hono";
 import type { INoteRepository } from "../interfaces/repositories/INoteRepository.js";
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
 import type { ISessionRepository } from "../interfaces/repositories/ISessionRepository.js";
-import type { IFollowRepository } from "../interfaces/repositories/IFollowRepository.js";
 
 const app = new Hono();
 
@@ -123,7 +122,6 @@ interface MastodonAccount {
 app.get("/directory", async (c: Context) => {
   const userRepository = c.get("userRepository") as IUserRepository;
   const noteRepository = c.get("noteRepository") as INoteRepository;
-  const followRepository = c.get("followRepository") as IFollowRepository;
 
   // Parse query parameters
   const offset = Math.max(0, parseInt(c.req.query("offset") || "0", 10) || 0);
@@ -144,12 +142,8 @@ app.get("/directory", async (c: Context) => {
 
   const accounts: MastodonAccount[] = await Promise.all(
     users.map(async (user) => {
-      // Get counts in parallel
-      const [notesCount, followersCount, followingCount] = await Promise.all([
-        noteRepository.countByUserId(user.id),
-        followRepository.countFollowers(user.id),
-        followRepository.countFollowing(user.id),
-      ]);
+      // Get note count (follower/following counts are now cached on user)
+      const notesCount = await noteRepository.countByUserId(user.id);
 
       return {
         id: user.id,
@@ -165,8 +159,8 @@ app.get("/directory", async (c: Context) => {
         avatar_static: user.avatarUrl || `${instanceUrl}/default-avatar.png`,
         header: user.bannerUrl || "",
         header_static: user.bannerUrl || "",
-        followers_count: followersCount,
-        following_count: followingCount,
+        followers_count: user.followersCount ?? 0,
+        following_count: user.followingCount ?? 0,
         statuses_count: notesCount,
         last_status_at: null, // Not tracked yet
         emojis: [],

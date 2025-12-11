@@ -130,6 +130,9 @@ export const users = pgTable(
     profileEmojis: jsonb("profile_emojis").$type<ProfileEmoji[]>().default([]),
     // Storage quota override (null = use role default, -1 = unlimited)
     storageQuotaMb: integer("storage_quota_mb"),
+    // Follower/following counts (cached for performance)
+    followersCount: integer("followers_count").notNull().default(0),
+    followingCount: integer("following_count").notNull().default(0),
     // Remote actor fetch status (for detecting 410 Gone)
     goneDetectedAt: timestamp("gone_detected_at"), // First detection of 410 Gone
     fetchFailureCount: integer("fetch_failure_count").notNull().default(0), // Consecutive fetch failures

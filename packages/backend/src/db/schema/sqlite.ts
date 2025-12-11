@@ -113,6 +113,9 @@ export const users = sqliteTable(
     fetchFailureCount: integer("fetch_failure_count").notNull().default(0),
     lastFetchAttemptAt: integer("last_fetch_attempt_at", { mode: "timestamp" }),
     lastFetchError: text("last_fetch_error"),
+    // Cached follower/following counts (for performance)
+    followersCount: integer("followers_count").notNull().default(0),
+    followingCount: integer("following_count").notNull().default(0),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),

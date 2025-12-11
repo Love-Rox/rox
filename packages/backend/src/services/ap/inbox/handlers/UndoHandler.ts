@@ -92,7 +92,20 @@ export class UndoHandler extends BaseHandler {
     );
 
     const followRepository = this.getFollowRepository(c);
+
+    // Check if follow exists before deleting
+    const exists = await followRepository.exists(remoteActor.id, recipientId);
+
     await followRepository.delete(remoteActor.id, recipientId);
+
+    // Update cached follower/following counts if the relationship existed
+    if (exists) {
+      const userRepository = this.getUserRepository(c);
+      await Promise.all([
+        userRepository.decrementFollowingCount(remoteActor.id),
+        userRepository.decrementFollowersCount(recipientId),
+      ]);
+    }
 
     this.log(
       "✅",

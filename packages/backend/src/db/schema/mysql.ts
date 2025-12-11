@@ -123,6 +123,9 @@ export const users = mysqlTable(
     fetchFailureCount: int("fetch_failure_count").notNull().default(0),
     lastFetchAttemptAt: datetime("last_fetch_attempt_at"),
     lastFetchError: text("last_fetch_error"),
+    // Cached follower/following counts (for performance)
+    followersCount: int("followers_count").notNull().default(0),
+    followingCount: int("following_count").notNull().default(0),
     createdAt: datetime("created_at")
       .notNull()
       .$defaultFn(() => new Date()),

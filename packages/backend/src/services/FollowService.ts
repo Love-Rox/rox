@@ -95,6 +95,12 @@ export class FollowService {
       followeeId,
     });
 
+    // Update cached follower/following counts
+    await Promise.all([
+      this.userRepository.incrementFollowingCount(followerId),
+      this.userRepository.incrementFollowersCount(followeeId),
+    ]);
+
     // If federation is enabled and followee is remote, send Follow activity
     if (this.deliveryService && followee.host) {
       // Fire-and-forget delivery (don't await to avoid blocking)
@@ -133,12 +139,23 @@ export class FollowService {
    * - ActivityPub delivery is fire-and-forget (non-blocking)
    */
   async unfollow(followerId: string, followeeId: string): Promise<void> {
+    // Check if follow relationship exists before deleting
+    const exists = await this.followRepository.exists(followerId, followeeId);
+
     // Get follower and followee info for ActivityPub delivery
     const follower = await this.userRepository.findById(followerId);
     const followee = await this.userRepository.findById(followeeId);
 
     // Delete the follow relationship from local database
     await this.followRepository.delete(followerId, followeeId);
+
+    // Update cached follower/following counts only if the relationship existed
+    if (exists) {
+      await Promise.all([
+        this.userRepository.decrementFollowingCount(followerId),
+        this.userRepository.decrementFollowersCount(followeeId),
+      ]);
+    }
 
     // If federation is enabled and followee is remote, send Undo Follow activity
     if (this.deliveryService && follower && followee && followee.host) {

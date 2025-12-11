@@ -645,6 +645,9 @@ export class OAuthService {
         fetchFailureCount: 0,
         lastFetchAttemptAt: null,
         lastFetchError: null,
+        // Follower/following counts start at 0
+        followersCount: 0,
+        followingCount: 0,
       });
 
       isNew = true;

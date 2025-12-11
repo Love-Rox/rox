@@ -80,6 +80,8 @@ describe("PasskeyService", () => {
     fetchFailureCount: 0,
     lastFetchAttemptAt: null,
     lastFetchError: null,
+    followersCount: 0,
+    followingCount: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
