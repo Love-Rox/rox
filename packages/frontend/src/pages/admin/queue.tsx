@@ -18,6 +18,7 @@ import {
   TrendingUp,
   AlertTriangle,
   Zap,
+  BarChart3,
 } from "lucide-react";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { apiClient } from "../../lib/api/client";
@@ -207,6 +208,12 @@ export default function AdminQueuePage() {
       showReload
       onReload={handleRefresh}
       isReloading={isRefreshing}
+      tabs={[
+        { key: "overview", label: <Trans>Overview</Trans>, icon: <BarChart3 className="w-4 h-4" /> },
+        { key: "servers", label: <Trans>Per Server</Trans>, icon: <Server className="w-4 h-4" /> },
+      ]}
+      activeTab={activeTab}
+      onTabChange={(key) => setActiveTab(key as "overview" | "servers")}
     >
 
       <div className="space-y-6">
@@ -279,30 +286,6 @@ export default function AdminQueuePage() {
             </Card>
           </div>
         )}
-
-        {/* Tabs */}
-        <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
-          <button
-            onClick={() => setActiveTab("overview")}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === "overview"
-                ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400"
-            }`}
-          >
-            <Trans>Overview</Trans>
-          </button>
-          <button
-            onClick={() => setActiveTab("servers")}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === "servers"
-                ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400"
-            }`}
-          >
-            <Trans>Per Server</Trans> ({stats?.serverCount || 0})
-          </button>
-        </div>
 
         {/* Overview Tab */}
         {activeTab === "overview" && stats && (

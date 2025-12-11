@@ -265,7 +265,7 @@ msgstr "アクションログ"
 msgid "Actions"
 msgstr "アクション"
 
-#: src/pages/admin/queue.tsx:194
+#: src/pages/admin/queue.tsx:195
 msgid "ActivityPub delivery is running in synchronous mode."
 msgstr "ActivityPub配信は同期モードで実行されています。"
 
@@ -335,7 +335,7 @@ msgstr "管理"
 msgid "Admin Account"
 msgstr "管理者アカウント"
 
-#: src/components/admin/AdminLayout.tsx:212
+#: src/components/admin/AdminLayout.tsx:260
 msgid "Admin Menu"
 msgstr "管理メニュー"
 
@@ -511,7 +511,7 @@ msgstr "アバターを削除しました"
 msgid "Avatar updated successfully"
 msgstr "アバターを更新しました"
 
-#: src/pages/admin/queue.tsx:390
+#: src/pages/admin/queue.tsx:373
 msgid "Avg per Server"
 msgstr "サーバーあたりの平均"
 
@@ -785,7 +785,7 @@ msgstr "パスワード（確認）"
 msgid "Connect with users across the fediverse using ActivityPub protocol"
 msgstr "ActivityPubプロトコルを使用してFediverse全体のユーザーと繋がる"
 
-#: src/pages/admin/queue.tsx:382
+#: src/pages/admin/queue.tsx:365
 msgid "Connected Servers"
 msgstr "接続サーバー"
 
@@ -1358,8 +1358,8 @@ msgid "External Theme Color"
 msgstr "外部表示用テーマカラー"
 
 #: src/pages/admin/emojis.tsx:1458
-#: src/pages/admin/queue.tsx:258
-#: src/pages/admin/queue.tsx:434
+#: src/pages/admin/queue.tsx:265
+#: src/pages/admin/queue.tsx:417
 msgid "Failed"
 msgstr "失敗"
 
@@ -2047,10 +2047,10 @@ msgstr "招待制"
 msgid "Issue Warning"
 msgstr "警告を発行"
 
-#: src/pages/admin/queue.tsx:154
-#: src/pages/admin/queue.tsx:168
-#: src/pages/admin/queue.tsx:181
-#: src/pages/admin/queue.tsx:205
+#: src/pages/admin/queue.tsx:155
+#: src/pages/admin/queue.tsx:169
+#: src/pages/admin/queue.tsx:182
+#: src/pages/admin/queue.tsx:206
 msgid "Job Queue"
 msgstr "ジョブキュー"
 
@@ -2378,10 +2378,10 @@ msgstr "モデレーター権限が必要です"
 msgid "Moderator Role"
 msgstr "モデレーターロール"
 
-#: src/pages/admin/queue.tsx:155
-#: src/pages/admin/queue.tsx:169
-#: src/pages/admin/queue.tsx:182
-#: src/pages/admin/queue.tsx:206
+#: src/pages/admin/queue.tsx:156
+#: src/pages/admin/queue.tsx:170
+#: src/pages/admin/queue.tsx:183
+#: src/pages/admin/queue.tsx:207
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "ActivityPub配信キューの状態を監視"
 
@@ -2467,7 +2467,7 @@ msgstr "カスタム絵文字がまだありません"
 msgid "No deleted notes"
 msgstr "削除されたノートはありません"
 
-#: src/pages/admin/queue.tsx:321
+#: src/pages/admin/queue.tsx:304
 msgid "No deliveries recorded yet"
 msgstr "配信記録がありません"
 
@@ -2529,7 +2529,7 @@ msgstr "まだメッセージはありません"
 msgid "No messages yet. Start the conversation!"
 msgstr "まだメッセージはありません。会話を始めましょう！"
 
-#: src/pages/admin/queue.tsx:416
+#: src/pages/admin/queue.tsx:399
 msgid "No metrics available"
 msgstr "メトリクスがありません"
 
@@ -2571,7 +2571,7 @@ msgstr "報告が見つかりません"
 msgid "No roles yet"
 msgstr "ロールがまだありません"
 
-#: src/pages/admin/queue.tsx:420
+#: src/pages/admin/queue.tsx:403
 msgid "No server metrics recorded yet"
 msgstr "サーバーメトリクスの記録がありません"
 
@@ -2721,7 +2721,7 @@ msgstr "またはアドレスをコピー"
 msgid "Or enter new category"
 msgstr "または新しいカテゴリを入力"
 
-#: src/pages/admin/queue.tsx:364
+#: src/pages/admin/queue.tsx:347
 msgid "Overall Success Rate"
 msgstr "全体の成功率"
 
@@ -2729,7 +2729,7 @@ msgstr "全体の成功率"
 msgid "Override the default sound for specific notification types. Leave as default to use the settings above."
 msgstr "特定の通知タイプのデフォルトサウンドを上書きします。デフォルトのままにすると、上記の設定が使用されます。"
 
-#: src/pages/admin/queue.tsx:293
+#: src/pages/admin/queue.tsx:212
 msgid "Overview"
 msgstr "概要"
 
@@ -2808,7 +2808,7 @@ msgstr "保留中"
 msgid "Pending Reports"
 msgstr "保留中の報告"
 
-#: src/pages/admin/queue.tsx:303
+#: src/pages/admin/queue.tsx:213
 msgid "Per Server"
 msgstr "サーバー別"
 
@@ -3016,11 +3016,11 @@ msgstr "PWAマスカブルアイコン (192x192)"
 msgid "PWA Maskable Icon (512x512)"
 msgstr "PWAマスカブルアイコン (512x512)"
 
-#: src/pages/admin/queue.tsx:355
+#: src/pages/admin/queue.tsx:338
 msgid "Queue Health"
 msgstr "キューの状態"
 
-#: src/pages/admin/queue.tsx:188
+#: src/pages/admin/queue.tsx:189
 msgid "Queue Not Available"
 msgstr "キューは利用できません"
 
@@ -3041,7 +3041,7 @@ msgstr "引用"
 msgid "quoted your note"
 msgstr "があなたの投稿を引用しました"
 
-#: src/pages/admin/queue.tsx:440
+#: src/pages/admin/queue.tsx:423
 msgid "Rate"
 msgstr "レート"
 
@@ -3637,7 +3637,7 @@ msgstr "テスト送信"
 msgid "Sensitive content (NSFW)"
 msgstr "センシティブなコンテンツ（NSFW）"
 
-#: src/pages/admin/queue.tsx:428
+#: src/pages/admin/queue.tsx:411
 msgid "Server"
 msgstr "サーバー"
 
@@ -3649,7 +3649,7 @@ msgstr "サーバー素材"
 msgid "Server Error"
 msgstr "サーバーエラー"
 
-#: src/pages/admin/queue.tsx:410
+#: src/pages/admin/queue.tsx:393
 msgid "Server Metrics"
 msgstr "サーバーメトリクス"
 
@@ -3827,15 +3827,15 @@ msgstr "お問い合わせを送信"
 msgid "Submit Report"
 msgstr "報告を送信"
 
-#: src/pages/admin/queue.tsx:431
+#: src/pages/admin/queue.tsx:414
 msgid "Success"
 msgstr "成功"
 
-#: src/pages/admin/queue.tsx:274
+#: src/pages/admin/queue.tsx:281
 msgid "Success Rate"
 msgstr "成功率"
 
-#: src/pages/admin/queue.tsx:242
+#: src/pages/admin/queue.tsx:249
 msgid "Successful"
 msgstr "成功"
 
@@ -3929,7 +3929,7 @@ msgstr "このようなプロジェクトを可能にしてくれるすべての
 msgid "The export includes:"
 msgstr "エクスポート内容："
 
-#: src/pages/admin/queue.tsx:191
+#: src/pages/admin/queue.tsx:192
 msgid "The job queue system is not currently configured or running."
 msgstr "ジョブキューシステムは現在設定されていないか、実行されていません。"
 
@@ -4074,11 +4074,11 @@ msgstr "これらの権利を行使するには、アカウント設定をご利
 msgid "Today"
 msgstr "今日"
 
-#: src/pages/admin/queue.tsx:315
+#: src/pages/admin/queue.tsx:298
 msgid "Top Servers by Delivery"
 msgstr "配信数上位サーバー"
 
-#: src/pages/admin/queue.tsx:437
+#: src/pages/admin/queue.tsx:420
 #: src/pages/admin/users.tsx:309
 msgid "Total"
 msgstr "合計"
@@ -4091,7 +4091,7 @@ msgstr "合計アクション数"
 msgid "Total Codes"
 msgstr "コード総数"
 
-#: src/pages/admin/queue.tsx:226
+#: src/pages/admin/queue.tsx:233
 msgid "Total Deliveries"
 msgstr "総配信数"
 

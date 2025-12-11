@@ -122,6 +122,13 @@ interface AdminLayoutProps {
   onTabChange?: (key: string) => void;
 }
 
+/** Tab item structure from PageHeader */
+interface TabItem {
+  key: string;
+  label: React.ReactNode;
+  icon?: React.ReactNode;
+}
+
 /**
  * Sidebar navigation component
  */
@@ -129,10 +136,16 @@ function AdminSidebar({
   currentPath,
   expandedCategories,
   onToggleCategory,
+  tabs,
+  activeTab,
+  onTabChange,
 }: {
   currentPath: string;
   expandedCategories: Set<string>;
   onToggleCategory: (key: string) => void;
+  tabs?: TabItem[];
+  activeTab?: string;
+  onTabChange?: (key: string) => void;
 }) {
   return (
     <nav className="space-y-1">
@@ -169,20 +182,41 @@ function AdminSidebar({
                 {category.items.map((item) => {
                   const ItemIcon = item.icon;
                   const isActive = item.href === currentPath;
+                  const hasTabs = isActive && tabs && tabs.length > 0;
 
                   return (
-                    <a
-                      key={item.href}
-                      href={item.href}
-                      className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
-                        isActive
-                          ? "bg-primary-600 text-white"
-                          : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-tertiary)"
-                      }`}
-                    >
-                      <ItemIcon className="w-4 h-4" />
-                      {item.label}
-                    </a>
+                    <div key={item.href}>
+                      <a
+                        href={item.href}
+                        className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                          isActive
+                            ? "bg-primary-600 text-white"
+                            : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-tertiary)"
+                        }`}
+                      >
+                        <ItemIcon className="w-4 h-4" />
+                        {item.label}
+                      </a>
+                      {/* Sub-tabs for active page */}
+                      {hasTabs && (
+                        <div className="ml-4 mt-1 space-y-0.5">
+                          {tabs.map((tab) => (
+                            <button
+                              key={tab.key}
+                              onClick={() => onTabChange?.(tab.key)}
+                              className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs rounded transition-colors ${
+                                activeTab === tab.key
+                                  ? "bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 font-medium"
+                                  : "text-(--text-muted) hover:text-(--text-secondary) hover:bg-(--bg-tertiary)"
+                              }`}
+                            >
+                              {tab.icon}
+                              {tab.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </div>
@@ -197,7 +231,21 @@ function AdminSidebar({
 /**
  * Mobile navigation menu
  */
-function MobileAdminNav({ currentPath, isOpen, onClose }: { currentPath: string; isOpen: boolean; onClose: () => void }) {
+function MobileAdminNav({
+  currentPath,
+  isOpen,
+  onClose,
+  tabs,
+  activeTab,
+  onTabChange,
+}: {
+  currentPath: string;
+  isOpen: boolean;
+  onClose: () => void;
+  tabs?: TabItem[];
+  activeTab?: string;
+  onTabChange?: (key: string) => void;
+}) {
   if (!isOpen) return null;
 
   return (
@@ -230,21 +278,45 @@ function MobileAdminNav({ currentPath, isOpen, onClose }: { currentPath: string;
                   {category.items.map((item) => {
                     const ItemIcon = item.icon;
                     const isActive = item.href === currentPath;
+                    const hasTabs = isActive && tabs && tabs.length > 0;
 
                     return (
-                      <a
-                        key={item.href}
-                        href={item.href}
-                        onClick={onClose}
-                        className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
-                          isActive
-                            ? "bg-primary-600 text-white"
-                            : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-tertiary)"
-                        }`}
-                      >
-                        <ItemIcon className="w-4 h-4" />
-                        {item.label}
-                      </a>
+                      <div key={item.href}>
+                        <a
+                          href={item.href}
+                          onClick={onClose}
+                          className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                            isActive
+                              ? "bg-primary-600 text-white"
+                              : "text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-tertiary)"
+                          }`}
+                        >
+                          <ItemIcon className="w-4 h-4" />
+                          {item.label}
+                        </a>
+                        {/* Sub-tabs for active page */}
+                        {hasTabs && (
+                          <div className="ml-4 mt-1 space-y-0.5">
+                            {tabs.map((tab) => (
+                              <button
+                                key={tab.key}
+                                onClick={() => {
+                                  onTabChange?.(tab.key);
+                                  onClose();
+                                }}
+                                className={`w-full flex items-center gap-2 px-3 py-1.5 text-xs rounded transition-colors ${
+                                  activeTab === tab.key
+                                    ? "bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 font-medium"
+                                    : "text-(--text-muted) hover:text-(--text-secondary) hover:bg-(--bg-tertiary)"
+                                }`}
+                              >
+                                {tab.icon}
+                                {tab.label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
@@ -297,14 +369,12 @@ export function AdminLayout({
   const currentPage = findCurrentPage(currentPath);
   const CurrentIcon = currentPage?.item.icon || LayoutDashboard;
 
+  // Note: tabs are now shown in the sidebar, not in the page header
   const pageHeader = (
     <PageHeader
       title={title}
       subtitle={subtitle}
       icon={<CurrentIcon className="w-6 h-6" />}
-      tabs={tabs}
-      activeTab={activeTab}
-      onTabChange={onTabChange}
       actions={actions}
       showReload={showReload}
       onReload={onReload}
@@ -322,6 +392,9 @@ export function AdminLayout({
               currentPath={currentPath}
               expandedCategories={expandedCategories}
               onToggleCategory={toggleCategory}
+              tabs={tabs}
+              activeTab={activeTab}
+              onTabChange={onTabChange}
             />
           </div>
         </aside>
@@ -335,6 +408,9 @@ export function AdminLayout({
         currentPath={currentPath}
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={onTabChange}
       />
     </Layout>
   );

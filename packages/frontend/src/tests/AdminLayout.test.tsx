@@ -90,7 +90,7 @@ describe("AdminLayout Navigation Structure", () => {
       const general = ADMIN_NAV_CATEGORIES.find((c) => c.key === "general");
       expect(general).toBeDefined();
       expect(general!.items).toHaveLength(1);
-      expect(general!.items[0].href).toBe("/admin/settings");
+      expect(general!.items[0]!.href).toBe("/admin/settings");
     });
 
     test("Users category has 4 items", () => {

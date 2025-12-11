@@ -265,7 +265,7 @@ msgstr "Action Log"
 msgid "Actions"
 msgstr "Actions"
 
-#: src/pages/admin/queue.tsx:194
+#: src/pages/admin/queue.tsx:195
 msgid "ActivityPub delivery is running in synchronous mode."
 msgstr "ActivityPub delivery is running in synchronous mode."
 
@@ -335,7 +335,7 @@ msgstr "Admin"
 msgid "Admin Account"
 msgstr "Admin Account"
 
-#: src/components/admin/AdminLayout.tsx:212
+#: src/components/admin/AdminLayout.tsx:260
 msgid "Admin Menu"
 msgstr "Admin Menu"
 
@@ -511,7 +511,7 @@ msgstr "Avatar removed"
 msgid "Avatar updated successfully"
 msgstr "Avatar updated successfully"
 
-#: src/pages/admin/queue.tsx:390
+#: src/pages/admin/queue.tsx:373
 msgid "Avg per Server"
 msgstr "Avg per Server"
 
@@ -785,7 +785,7 @@ msgstr "Confirm Password"
 msgid "Connect with users across the fediverse using ActivityPub protocol"
 msgstr "Connect with users across the fediverse using ActivityPub protocol"
 
-#: src/pages/admin/queue.tsx:382
+#: src/pages/admin/queue.tsx:365
 msgid "Connected Servers"
 msgstr "Connected Servers"
 
@@ -1358,8 +1358,8 @@ msgid "External Theme Color"
 msgstr "External Theme Color"
 
 #: src/pages/admin/emojis.tsx:1458
-#: src/pages/admin/queue.tsx:258
-#: src/pages/admin/queue.tsx:434
+#: src/pages/admin/queue.tsx:265
+#: src/pages/admin/queue.tsx:417
 msgid "Failed"
 msgstr "Failed"
 
@@ -2047,10 +2047,10 @@ msgstr "Invite Only"
 msgid "Issue Warning"
 msgstr "Issue Warning"
 
-#: src/pages/admin/queue.tsx:154
-#: src/pages/admin/queue.tsx:168
-#: src/pages/admin/queue.tsx:181
-#: src/pages/admin/queue.tsx:205
+#: src/pages/admin/queue.tsx:155
+#: src/pages/admin/queue.tsx:169
+#: src/pages/admin/queue.tsx:182
+#: src/pages/admin/queue.tsx:206
 msgid "Job Queue"
 msgstr "Job Queue"
 
@@ -2378,10 +2378,10 @@ msgstr "Moderator access required"
 msgid "Moderator Role"
 msgstr "Moderator Role"
 
-#: src/pages/admin/queue.tsx:155
-#: src/pages/admin/queue.tsx:169
-#: src/pages/admin/queue.tsx:182
-#: src/pages/admin/queue.tsx:206
+#: src/pages/admin/queue.tsx:156
+#: src/pages/admin/queue.tsx:170
+#: src/pages/admin/queue.tsx:183
+#: src/pages/admin/queue.tsx:207
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "Monitor ActivityPub delivery queue status"
 
@@ -2467,7 +2467,7 @@ msgstr "No custom emojis yet"
 msgid "No deleted notes"
 msgstr "No deleted notes"
 
-#: src/pages/admin/queue.tsx:321
+#: src/pages/admin/queue.tsx:304
 msgid "No deliveries recorded yet"
 msgstr "No deliveries recorded yet"
 
@@ -2529,7 +2529,7 @@ msgstr "No messages yet"
 msgid "No messages yet. Start the conversation!"
 msgstr "No messages yet. Start the conversation!"
 
-#: src/pages/admin/queue.tsx:416
+#: src/pages/admin/queue.tsx:399
 msgid "No metrics available"
 msgstr "No metrics available"
 
@@ -2571,7 +2571,7 @@ msgstr "No reports found"
 msgid "No roles yet"
 msgstr "No roles yet"
 
-#: src/pages/admin/queue.tsx:420
+#: src/pages/admin/queue.tsx:403
 msgid "No server metrics recorded yet"
 msgstr "No server metrics recorded yet"
 
@@ -2721,7 +2721,7 @@ msgstr "Or copy the address"
 msgid "Or enter new category"
 msgstr "Or enter new category"
 
-#: src/pages/admin/queue.tsx:364
+#: src/pages/admin/queue.tsx:347
 msgid "Overall Success Rate"
 msgstr "Overall Success Rate"
 
@@ -2729,7 +2729,7 @@ msgstr "Overall Success Rate"
 msgid "Override the default sound for specific notification types. Leave as default to use the settings above."
 msgstr "Override the default sound for specific notification types. Leave as default to use the settings above."
 
-#: src/pages/admin/queue.tsx:293
+#: src/pages/admin/queue.tsx:212
 msgid "Overview"
 msgstr "Overview"
 
@@ -2808,7 +2808,7 @@ msgstr "Pending"
 msgid "Pending Reports"
 msgstr "Pending Reports"
 
-#: src/pages/admin/queue.tsx:303
+#: src/pages/admin/queue.tsx:213
 msgid "Per Server"
 msgstr "Per Server"
 
@@ -3016,11 +3016,11 @@ msgstr "PWA Maskable Icon (192x192)"
 msgid "PWA Maskable Icon (512x512)"
 msgstr "PWA Maskable Icon (512x512)"
 
-#: src/pages/admin/queue.tsx:355
+#: src/pages/admin/queue.tsx:338
 msgid "Queue Health"
 msgstr "Queue Health"
 
-#: src/pages/admin/queue.tsx:188
+#: src/pages/admin/queue.tsx:189
 msgid "Queue Not Available"
 msgstr "Queue Not Available"
 
@@ -3041,7 +3041,7 @@ msgstr "Quote"
 msgid "quoted your note"
 msgstr "quoted your note"
 
-#: src/pages/admin/queue.tsx:440
+#: src/pages/admin/queue.tsx:423
 msgid "Rate"
 msgstr "Rate"
 
@@ -3637,7 +3637,7 @@ msgstr "Send test"
 msgid "Sensitive content (NSFW)"
 msgstr "Sensitive content (NSFW)"
 
-#: src/pages/admin/queue.tsx:428
+#: src/pages/admin/queue.tsx:411
 msgid "Server"
 msgstr "Server"
 
@@ -3649,7 +3649,7 @@ msgstr "Server Assets"
 msgid "Server Error"
 msgstr "Server Error"
 
-#: src/pages/admin/queue.tsx:410
+#: src/pages/admin/queue.tsx:393
 msgid "Server Metrics"
 msgstr "Server Metrics"
 
@@ -3827,15 +3827,15 @@ msgstr "Submit an Inquiry"
 msgid "Submit Report"
 msgstr "Submit Report"
 
-#: src/pages/admin/queue.tsx:431
+#: src/pages/admin/queue.tsx:414
 msgid "Success"
 msgstr "Success"
 
-#: src/pages/admin/queue.tsx:274
+#: src/pages/admin/queue.tsx:281
 msgid "Success Rate"
 msgstr "Success Rate"
 
-#: src/pages/admin/queue.tsx:242
+#: src/pages/admin/queue.tsx:249
 msgid "Successful"
 msgstr "Successful"
 
@@ -3929,7 +3929,7 @@ msgstr "Thank you to all the open source maintainers who make projects like this
 msgid "The export includes:"
 msgstr "The export includes:"
 
-#: src/pages/admin/queue.tsx:191
+#: src/pages/admin/queue.tsx:192
 msgid "The job queue system is not currently configured or running."
 msgstr "The job queue system is not currently configured or running."
 
@@ -4074,11 +4074,11 @@ msgstr "To exercise these rights, use the settings in your account or <0>contact
 msgid "Today"
 msgstr "Today"
 
-#: src/pages/admin/queue.tsx:315
+#: src/pages/admin/queue.tsx:298
 msgid "Top Servers by Delivery"
 msgstr "Top Servers by Delivery"
 
-#: src/pages/admin/queue.tsx:437
+#: src/pages/admin/queue.tsx:420
 #: src/pages/admin/users.tsx:309
 msgid "Total"
 msgstr "Total"
@@ -4091,7 +4091,7 @@ msgstr "Total Actions"
 msgid "Total Codes"
 msgstr "Total Codes"
 
-#: src/pages/admin/queue.tsx:226
+#: src/pages/admin/queue.tsx:233
 msgid "Total Deliveries"
 msgstr "Total Deliveries"
 
