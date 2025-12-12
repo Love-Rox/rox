@@ -12,6 +12,7 @@ import { Spinner } from "../components/ui/Spinner";
 import { InlineError } from "../components/ui/ErrorMessage";
 import { addToastAtom } from "../lib/atoms/toast";
 import { Layout } from "../components/layout/Layout";
+import { PageHeader } from "../components/ui/PageHeader";
 import { InvitationCodeSection } from "../components/settings/InvitationCodeSection";
 import { UISettingsSection } from "../components/settings/UISettingsSection";
 import { AccountMigrationSection } from "../components/settings/AccountMigrationSection";
@@ -150,46 +151,27 @@ export default function SettingsPage() {
     );
   }
 
-  const TABS: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [
-    { id: "profile", label: t`Profile`, icon: <User className="w-4 h-4" /> },
-    { id: "security", label: t`Security`, icon: <Shield className="w-4 h-4" /> },
-    { id: "notifications", label: t`Notifications`, icon: <Bell className="w-4 h-4" /> },
-    { id: "storage", label: t`Storage`, icon: <HardDrive className="w-4 h-4" /> },
-    { id: "account", label: t`Account`, icon: <UserCog className="w-4 h-4" /> },
-    { id: "advanced", label: t`Advanced`, icon: <Settings className="w-4 h-4" /> },
+  const TABS = [
+    { key: "profile", label: <Trans>Profile</Trans>, icon: <User className="w-4 h-4" /> },
+    { key: "security", label: <Trans>Security</Trans>, icon: <Shield className="w-4 h-4" /> },
+    { key: "notifications", label: <Trans>Notifications</Trans>, icon: <Bell className="w-4 h-4" /> },
+    { key: "storage", label: <Trans>Storage</Trans>, icon: <HardDrive className="w-4 h-4" /> },
+    { key: "account", label: <Trans>Account</Trans>, icon: <UserCog className="w-4 h-4" /> },
+    { key: "advanced", label: <Trans>Advanced</Trans>, icon: <Settings className="w-4 h-4" /> },
   ];
 
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Settings</Trans>}
+      subtitle={<Trans>Manage your account settings</Trans>}
+      tabs={TABS}
+      activeTab={activeTab}
+      onTabChange={(key) => setActiveTab(key as SettingsTab)}
+    />
+  );
+
   return (
-    <Layout>
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
-          <Trans>Settings</Trans>
-        </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          <Trans>Manage your account settings</Trans>
-        </p>
-      </div>
-
-      {/* Tab Navigation */}
-      <div className="border-b border-(--border-color) mb-6 overflow-x-auto">
-        <nav className="flex gap-1 min-w-max">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
-                activeTab === tab.id
-                  ? "border-primary-600 text-primary-600"
-                  : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
-              }`}
-            >
-              {tab.icon}
-              {tab.label}
-            </button>
-          ))}
-        </nav>
-      </div>
-
+    <Layout header={pageHeader}>
       {/* Profile Tab */}
       {activeTab === "profile" && (
         <>

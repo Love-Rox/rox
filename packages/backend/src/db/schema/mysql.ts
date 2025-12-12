@@ -51,6 +51,10 @@ export interface UISettings {
   theme?: "light" | "dark" | "system";
   /** Custom CSS applied to the entire app (for this user only) */
   appCustomCss?: string;
+  /** Preferred language for notifications and emails */
+  language?: "en" | "ja";
+  /** Disabled push notification types (empty = all enabled) */
+  disabledPushNotificationTypes?: NotificationType[];
 }
 
 /**
@@ -119,6 +123,9 @@ export const users = mysqlTable(
     fetchFailureCount: int("fetch_failure_count").notNull().default(0),
     lastFetchAttemptAt: datetime("last_fetch_attempt_at"),
     lastFetchError: text("last_fetch_error"),
+    // Cached follower/following counts (for performance)
+    followersCount: int("followers_count").notNull().default(0),
+    followingCount: int("following_count").notNull().default(0),
     createdAt: datetime("created_at")
       .notNull()
       .$defaultFn(() => new Date()),
@@ -661,7 +668,8 @@ export type NotificationType =
   | "renote"
   | "warning"
   | "follow_request_accepted"
-  | "quote";
+  | "quote"
+  | "dm";
 
 // Notifications table
 export const notifications = mysqlTable(
@@ -708,6 +716,7 @@ export const pushSubscriptions = mysqlTable(
     p256dh: text("p256dh").notNull(),
     auth: varchar("auth", { length: 64 }).notNull(),
     userAgent: text("user_agent"),
+    language: varchar("language", { length: 8 }), // User's preferred language for notifications (en, ja)
     createdAt: datetime("created_at")
       .notNull()
       .$defaultFn(() => new Date()),

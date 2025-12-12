@@ -193,6 +193,12 @@ export function ThemeProvider({ children, theme }: ThemeProviderProps) {
         ${generateColorPalette(themeSettings.primaryColor)}
       }
     `;
+
+    // Update theme-color meta tag for PWA title bar
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeColorMeta && /^#[0-9A-Fa-f]{6}$/.test(themeSettings.primaryColor)) {
+      themeColorMeta.setAttribute("content", themeSettings.primaryColor);
+    }
   }, [themeSettings.primaryColor]);
 
   const toggleColorMode = () => {

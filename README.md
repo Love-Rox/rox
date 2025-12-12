@@ -20,7 +20,7 @@
   </a>
   <img src="https://img.shields.io/badge/runtime-Bun-f9f1e1?logo=bun&logoColor=black" alt="Bun" />
   <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/tests-342%2B-brightgreen" alt="Tests" />
+  <img src="https://img.shields.io/badge/tests-800%2B-brightgreen" alt="Tests" />
 </p>
 
 <p align="center">
@@ -40,30 +40,11 @@
 
 ## Highlights
 
-<table>
-  <tr>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/zap.svg" width="48" height="48" alt="Fast" /><br />
-      <b>Lightning Fast</b><br />
-      <sub>Built with Bun runtime<br />for maximum performance</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/server.svg" width="48" height="48" alt="Flexible" /><br />
-      <b>Infrastructure Agnostic</b><br />
-      <sub>Run on VPS, Docker,<br />or edge environments</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/globe.svg" width="48" height="48" alt="Federated" /><br />
-      <b>Fully Federated</b><br />
-      <sub>Connect with Mastodon,<br />Misskey, and more</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/shield-check.svg" width="48" height="48" alt="Secure" /><br />
-      <b>Secure by Design</b><br />
-      <sub>Passkey, OAuth,<br />role-based permissions</sub>
-    </td>
-  </tr>
-</table>
+| | | | |
+|:---:|:---:|:---:|:---:|
+| ⚡ | 🖥️ | 🌐 | 🔒 |
+| **Lightning Fast** | **Infrastructure Agnostic** | **Fully Federated** | **Secure by Design** |
+| Built with Bun runtime for maximum performance | Run on VPS, Docker, or edge environments | Connect with Mastodon, Misskey, and more | Passkey, OAuth, role-based permissions |
 
 ## Features
 
@@ -108,8 +89,8 @@ bun install
 cp .env.example .env
 # Edit .env with your configuration
 
-# Start development services (PostgreSQL + Dragonfly)
-docker compose up -d
+# Start development services (PostgreSQL + MariaDB + Dragonfly)
+docker compose -f docker/compose.dev.yml up -d
 
 # Run database migrations
 bun run db:generate
@@ -185,11 +166,11 @@ DATABASE_URL=postgresql://rox:rox_dev_password@localhost:5432/rox
 </details>
 
 <details>
-<summary><b>MySQL</b></summary>
+<summary><b>MySQL/MariaDB</b></summary>
 
 ```bash
-# Start MySQL service
-docker compose --profile mysql up -d
+# MariaDB is included in the dev compose
+docker compose -f docker/compose.dev.yml up -d
 
 DB_TYPE=mysql
 DATABASE_URL=mysql://rox:rox_dev_password@localhost:3306/rox
@@ -356,6 +337,7 @@ Contributions are welcome! Please read our [Contributing Guidelines](./CONTRIBUT
 | Resource | Description |
 |----------|-------------|
 | [Contributing Guidelines](./CONTRIBUTING.md) | How to contribute |
+| [DevContainer Guide](./docs/development/devcontainer.md) | VS Code/Cursor DevContainer setup |
 | [Project Specification](./docs/project/v1.md) | Original spec (Japanese) |
 | [Implementation Guide](./docs/implementation/README.md) | Architecture details |
 | [Testing Guide](./docs/development/testing.md) | Testing documentation |

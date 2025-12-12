@@ -5,8 +5,10 @@
  *
  * A button that toggles between light and dark mode.
  * Uses the theme context to manage the color mode state.
+ * Built with React Aria Components for accessibility.
  */
 
+import { Button } from "react-aria-components";
 import { useTheme } from "../ThemeProvider.js";
 
 interface DarkModeToggleProps {
@@ -20,12 +22,10 @@ export function DarkModeToggle({ className = "" }: DarkModeToggleProps) {
   const { colorMode, toggleColorMode } = useTheme();
 
   return (
-    <button
-      type="button"
-      onClick={toggleColorMode}
-      className={`p-2 rounded-lg hover:bg-(--bg-tertiary) transition-colors cursor-pointer ${className}`}
+    <Button
+      onPress={toggleColorMode}
+      className={`p-2 rounded-lg hover:bg-(--bg-tertiary) transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${className}`}
       aria-label={colorMode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-      title={colorMode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
     >
       {colorMode === "dark" ? (
         // Sun icon for dark mode (click to switch to light)
@@ -60,6 +60,6 @@ export function DarkModeToggle({ className = "" }: DarkModeToggleProps) {
           />
         </svg>
       )}
-    </button>
+    </Button>
   );
 }

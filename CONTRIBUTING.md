@@ -147,6 +147,45 @@ chore: update dependencies
 - `test`: Adding or updating tests
 - `chore`: Maintenance tasks
 
+### Release Notes Generation
+
+Commit messages are automatically categorized in release notes based on their type prefix. The release notes are generated when a new version is tagged.
+
+**Category Mapping**:
+
+| Prefix | Release Notes Section |
+|--------|----------------------|
+| `feat` | 🚀 New Features |
+| `fix` | 🐛 Bug Fixes |
+| `perf` | ⚡ Performance |
+| `docs` | 📚 Documentation |
+| `chore` | 🧰 Maintenance |
+| `refactor` | ♻️ Refactoring |
+| Other | 📝 Other Changes |
+
+**Best Practices for Release Notes**:
+
+1. **Start with the type prefix**: Your commit message MUST start with the type prefix (e.g., `feat:`, `fix:`) to be categorized correctly
+2. **Write clear subjects**: The subject line appears directly in release notes, so make it descriptive
+3. **Use scope for context**: Optional scope helps identify the affected area (e.g., `feat(auth):`, `fix(api):`)
+4. **Your name is included**: The git author name is automatically added to each entry
+
+**Examples**:
+
+```bash
+# Good - will appear in "🚀 New Features"
+feat(auth): add OAuth2 login support
+
+# Good - will appear in "🐛 Bug Fixes"
+fix(timeline): resolve infinite scroll issue on mobile
+
+# Good - will appear in "⚡ Performance"
+perf(db): optimize user lookup queries
+
+# Bad - will appear in "📝 Other Changes" (missing type prefix)
+added new feature for user profiles
+```
+
 ## Pull Request Process
 
 1. **Create a feature branch**: `git checkout -b feat/your-feature`
@@ -158,28 +197,14 @@ chore: update dependencies
 
 ### PR Description Template
 
-```markdown
-## Description
-Brief description of the changes
+See [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md) for the full template. Key sections include:
 
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
-
-## Testing
-- [ ] Tests pass locally
-- [ ] Added new tests
-- [ ] Manual testing completed
-
-## Checklist
-- [ ] Code follows project style guidelines
-- [ ] TSDoc comments are in English
-- [ ] All functions have proper documentation
-- [ ] No TypeScript errors
-- [ ] Tests added/updated
-```
+- **Summary**: Brief description of changes
+- **Type of Change**: Bug fix, new feature, breaking change, documentation, refactoring, performance, test, or CI/CD
+- **Related Issues**: Link using "Fixes #123" or "Closes #123"
+- **Changes**: List main changes
+- **Test Plan**: Unit tests, integration tests, manual testing
+- **Checklist**: Style guidelines, self-review, comments, documentation, warnings, tests
 
 ## Testing
 
@@ -285,4 +310,4 @@ bun run db:migrate
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+By contributing, you agree that your contributions will be licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).

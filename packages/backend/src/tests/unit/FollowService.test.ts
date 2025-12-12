@@ -26,7 +26,14 @@ type MockFollowRepo = Pick<
   | "countFollowers"
   | "countFollowing"
 >;
-type MockUserRepo = Pick<IUserRepository, "findById">;
+type MockUserRepo = Pick<
+  IUserRepository,
+  | "findById"
+  | "incrementFollowersCount"
+  | "decrementFollowersCount"
+  | "incrementFollowingCount"
+  | "decrementFollowingCount"
+>;
 type MockDeliveryService = Pick<ActivityPubDeliveryService, "deliverFollow" | "deliverUndoFollow">;
 
 describe("FollowService", () => {
@@ -79,6 +86,10 @@ describe("FollowService", () => {
         if (id === "user2") return Promise.resolve(mockRemoteUser as User);
         return Promise.resolve(null);
       }),
+      incrementFollowersCount: mock(() => Promise.resolve()),
+      decrementFollowersCount: mock(() => Promise.resolve()),
+      incrementFollowingCount: mock(() => Promise.resolve()),
+      decrementFollowingCount: mock(() => Promise.resolve()),
     };
 
     mockDeliveryService = {
@@ -101,6 +112,19 @@ describe("FollowService", () => {
       expect(mockFollowRepo.create).toHaveBeenCalled();
     });
 
+    test("should increment follower/following counts on follow", async () => {
+      const service = new FollowService(
+        mockFollowRepo as IFollowRepository,
+        mockUserRepo as IUserRepository,
+        mockDeliveryService as ActivityPubDeliveryService,
+      );
+
+      await service.follow("user1", "user2");
+
+      expect(mockUserRepo.incrementFollowingCount).toHaveBeenCalledWith("user1");
+      expect(mockUserRepo.incrementFollowersCount).toHaveBeenCalledWith("user2");
+    });
+
     test("should reject following oneself", async () => {
       const service = new FollowService(
         mockFollowRepo as IFollowRepository,
@@ -117,6 +141,10 @@ describe("FollowService", () => {
           if (id === "nonexistent") return Promise.resolve(null);
           return Promise.resolve(mockRemoteUser as User);
         }),
+        incrementFollowersCount: mock(() => Promise.resolve()),
+        decrementFollowersCount: mock(() => Promise.resolve()),
+        incrementFollowingCount: mock(() => Promise.resolve()),
+        decrementFollowingCount: mock(() => Promise.resolve()),
       };
 
       const service = new FollowService(
@@ -134,6 +162,10 @@ describe("FollowService", () => {
           if (id === "user1") return Promise.resolve(mockLocalUser as User);
           return Promise.resolve(null);
         }),
+        incrementFollowersCount: mock(() => Promise.resolve()),
+        decrementFollowersCount: mock(() => Promise.resolve()),
+        incrementFollowingCount: mock(() => Promise.resolve()),
+        decrementFollowingCount: mock(() => Promise.resolve()),
       };
 
       const service = new FollowService(
@@ -183,6 +215,10 @@ describe("FollowService", () => {
           if (id === "user3") return Promise.resolve(mockLocalFollowee as User);
           return Promise.resolve(null);
         }),
+        incrementFollowersCount: mock(() => Promise.resolve()),
+        decrementFollowersCount: mock(() => Promise.resolve()),
+        incrementFollowingCount: mock(() => Promise.resolve()),
+        decrementFollowingCount: mock(() => Promise.resolve()),
       };
 
       const service = new FollowService(
@@ -226,6 +262,38 @@ describe("FollowService", () => {
       expect(mockFollowRepo.delete).toHaveBeenCalledWith("user1", "user2");
     });
 
+    test("should decrement follower/following counts on unfollow when relationship existed", async () => {
+      // Mock exists to return true (relationship exists)
+      mockFollowRepo.exists = mock(() => Promise.resolve(true));
+
+      const service = new FollowService(
+        mockFollowRepo as IFollowRepository,
+        mockUserRepo as IUserRepository,
+        mockDeliveryService as ActivityPubDeliveryService,
+      );
+
+      await service.unfollow("user1", "user2");
+
+      expect(mockUserRepo.decrementFollowingCount).toHaveBeenCalledWith("user1");
+      expect(mockUserRepo.decrementFollowersCount).toHaveBeenCalledWith("user2");
+    });
+
+    test("should not decrement counts if follow relationship did not exist", async () => {
+      // Mock exists to return false (relationship does not exist)
+      mockFollowRepo.exists = mock(() => Promise.resolve(false));
+
+      const service = new FollowService(
+        mockFollowRepo as IFollowRepository,
+        mockUserRepo as IUserRepository,
+        mockDeliveryService as ActivityPubDeliveryService,
+      );
+
+      await service.unfollow("user1", "user2");
+
+      expect(mockUserRepo.decrementFollowingCount).not.toHaveBeenCalled();
+      expect(mockUserRepo.decrementFollowersCount).not.toHaveBeenCalled();
+    });
+
     test("should deliver Undo Follow activity to remote users", async () => {
       const service = new FollowService(
         mockFollowRepo as IFollowRepository,
@@ -252,6 +320,10 @@ describe("FollowService", () => {
           if (id === "user3") return Promise.resolve(mockLocalFollowee as User);
           return Promise.resolve(null);
         }),
+        incrementFollowersCount: mock(() => Promise.resolve()),
+        decrementFollowersCount: mock(() => Promise.resolve()),
+        incrementFollowingCount: mock(() => Promise.resolve()),
+        decrementFollowingCount: mock(() => Promise.resolve()),
       };
 
       const service = new FollowService(
@@ -271,6 +343,10 @@ describe("FollowService", () => {
     test("should handle missing users gracefully", async () => {
       const mockUserRepoNull: MockUserRepo = {
         findById: mock(() => Promise.resolve(null)),
+        incrementFollowersCount: mock(() => Promise.resolve()),
+        decrementFollowersCount: mock(() => Promise.resolve()),
+        incrementFollowingCount: mock(() => Promise.resolve()),
+        decrementFollowingCount: mock(() => Promise.resolve()),
       };
 
       const service = new FollowService(

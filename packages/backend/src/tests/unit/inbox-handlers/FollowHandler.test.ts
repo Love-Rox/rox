@@ -50,6 +50,8 @@ describe("FollowHandler", () => {
           privateKey: "mock-private-key",
         }),
       ),
+      incrementFollowersCount: mock(() => Promise.resolve()),
+      incrementFollowingCount: mock(() => Promise.resolve()),
     };
 
     mockRemoteActorService = {
@@ -102,6 +104,38 @@ describe("FollowHandler", () => {
     expect(mockRemoteActorService.resolveActor).toHaveBeenCalled();
     expect(mockFollowRepository.exists).toHaveBeenCalledWith("remote-user-456", "local-user-123");
     expect(mockFollowRepository.create).toHaveBeenCalled();
+  });
+
+  test("should increment follower count for local user when followed by remote user", async () => {
+    const activity: Activity = {
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Follow",
+      id: "https://remote.example.com/activities/follow-1",
+      actor: "https://remote.example.com/users/remoteuser",
+      object: "http://localhost:3000/users/localuser",
+    };
+
+    await handler.handle(activity, mockContext);
+
+    // Local user (followee) should have followers count incremented
+    expect(mockUserRepository.incrementFollowersCount).toHaveBeenCalledWith("local-user-123");
+  });
+
+  test("should not increment follower count when follow already exists", async () => {
+    mockFollowRepository.exists = mock(() => Promise.resolve(true));
+
+    const activity: Activity = {
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Follow",
+      id: "https://remote.example.com/activities/follow-1",
+      actor: "https://remote.example.com/users/remoteuser",
+      object: "http://localhost:3000/users/localuser",
+    };
+
+    await handler.handle(activity, mockContext);
+
+    // Should not increment since follow already exists
+    expect(mockUserRepository.incrementFollowersCount).not.toHaveBeenCalled();
   });
 
   test("should skip if follow already exists", async () => {

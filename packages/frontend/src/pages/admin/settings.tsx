@@ -22,7 +22,7 @@ import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { Layout } from "../../components/layout/Layout";
 import { clearInstanceInfoCache } from "../../hooks/useInstanceInfo";
-import { AdminNav } from "../../components/admin/AdminNav";
+import { AdminLayout } from "../../components/admin/AdminLayout";
 import { AssetUploadCard } from "../../components/admin/AssetUploadCard";
 
 interface AdminSettings {
@@ -45,6 +45,7 @@ interface AdminSettings {
   theme: {
     primaryColor: string;
     darkMode: "light" | "dark" | "system";
+    nodeInfoThemeColor: string | null;
   };
 }
 
@@ -71,7 +72,18 @@ export default function AdminSettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"instance" | "registration" | "theme" | "assets" | "legal">("instance");
+  // Read tab from URL query parameter
+  const getActiveTab = (): "instance" | "registration" | "theme" | "assets" | "legal" => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get("tab");
+      if (tab && ["instance", "registration", "theme", "assets", "legal"].includes(tab)) {
+        return tab as "instance" | "registration" | "theme" | "assets" | "legal";
+      }
+    }
+    return "instance";
+  };
+  const activeTab = getActiveTab();
   const [assets, setAssets] = useState<{
     icon: string | null;
     darkIcon: string | null;
@@ -79,6 +91,8 @@ export default function AdminSettingsPage() {
     favicon: string | null;
     pwaIcon192: string | null;
     pwaIcon512: string | null;
+    pwaMaskableIcon192: string | null;
+    pwaMaskableIcon512: string | null;
   }>({
     icon: null,
     darkIcon: null,
@@ -86,6 +100,8 @@ export default function AdminSettingsPage() {
     favicon: null,
     pwaIcon192: null,
     pwaIcon512: null,
+    pwaMaskableIcon192: null,
+    pwaMaskableIcon512: null,
   });
   const [isUploadingAsset, setIsUploadingAsset] = useState<string | null>(null);
 
@@ -120,6 +136,8 @@ export default function AdminSettingsPage() {
             favicon: string | null;
             pwaIcon192: string | null;
             pwaIcon512: string | null;
+            pwaMaskableIcon192: string | null;
+            pwaMaskableIcon512: string | null;
           }>("/api/admin/assets"),
         ]);
         setSettings(settingsResponse);
@@ -194,7 +212,7 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleAssetUpload = async (assetType: "icon" | "darkIcon" | "banner" | "favicon" | "pwaIcon192" | "pwaIcon512", file: File) => {
+  const handleAssetUpload = async (assetType: "icon" | "darkIcon" | "banner" | "favicon" | "pwaIcon192" | "pwaIcon512" | "pwaMaskableIcon192" | "pwaMaskableIcon512", file: File) => {
     setIsUploadingAsset(assetType);
     setError(null);
 
@@ -229,7 +247,7 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleAssetDelete = async (assetType: "icon" | "darkIcon" | "banner" | "favicon" | "pwaIcon192" | "pwaIcon512") => {
+  const handleAssetDelete = async (assetType: "icon" | "darkIcon" | "banner" | "favicon" | "pwaIcon192" | "pwaIcon512" | "pwaMaskableIcon192" | "pwaMaskableIcon512") => {
     setIsUploadingAsset(assetType);
     setError(null);
 
@@ -268,75 +286,11 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <Layout>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-(--text-primary)">
-          <Trans>Admin Settings</Trans>
-        </h1>
-        <p className="mt-2 text-(--text-secondary)">
-          <Trans>Configure your instance settings</Trans>
-        </p>
-      </div>
-
-      {/* Admin Navigation */}
-      <AdminNav currentPath="/admin/settings" />
-
-      {/* Tab Navigation */}
-      <div className="border-b border-(--border-color) mb-6">
-        <nav className="flex gap-4">
-          <button
-            onClick={() => setActiveTab("instance")}
-            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === "instance"
-                ? "border-primary-600 text-primary-600"
-                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
-            }`}
-          >
-            <Trans>Instance</Trans>
-          </button>
-          <button
-            onClick={() => setActiveTab("registration")}
-            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === "registration"
-                ? "border-primary-600 text-primary-600"
-                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
-            }`}
-          >
-            <Trans>Registration</Trans>
-          </button>
-          <button
-            onClick={() => setActiveTab("theme")}
-            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === "theme"
-                ? "border-primary-600 text-primary-600"
-                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
-            }`}
-          >
-            <Trans>Theme</Trans>
-          </button>
-          <button
-            onClick={() => setActiveTab("assets")}
-            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === "assets"
-                ? "border-primary-600 text-primary-600"
-                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
-            }`}
-          >
-            <Trans>Assets</Trans>
-          </button>
-          <button
-            onClick={() => setActiveTab("legal")}
-            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === "legal"
-                ? "border-primary-600 text-primary-600"
-                : "border-transparent text-(--text-muted) hover:text-(--text-primary)"
-            }`}
-          >
-            <Trans>Legal</Trans>
-          </button>
-        </nav>
-      </div>
-
+    <AdminLayout
+      currentPath={`/admin/settings?tab=${activeTab}`}
+      title={<Trans>Settings</Trans>}
+      subtitle={<Trans>Configure your instance settings</Trans>}
+    >
       {error && <InlineError message={error} className="mb-4" />}
 
       {/* Instance Settings */}
@@ -710,6 +664,75 @@ export default function AdminSettingsPage() {
               </p>
             </div>
 
+            {/* External Theme Color */}
+            <div className="border-t border-(--border-color) pt-4">
+              <label className="block text-sm font-medium text-(--text-primary) mb-1">
+                <Trans>External Theme Color</Trans>
+              </label>
+              <p className="text-sm text-(--text-muted) mb-3">
+                <Trans>
+                  This color is shown on external services like Misskey when displaying your instance info.
+                  Leave empty to use the primary color.
+                </Trans>
+              </p>
+
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={settings.theme.nodeInfoThemeColor !== null}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        theme: {
+                          ...settings.theme,
+                          nodeInfoThemeColor: e.target.checked ? settings.theme.primaryColor : null,
+                        },
+                      })
+                    }
+                    className="w-4 h-4 rounded border-(--border-color) text-primary-600 focus:ring-primary-500"
+                    disabled={isSaving}
+                  />
+                  <span className="text-sm text-(--text-primary)">
+                    <Trans>Use different color</Trans>
+                  </span>
+                </label>
+              </div>
+
+              {settings.theme.nodeInfoThemeColor !== null && (
+                <div className="flex items-center gap-3 mt-3">
+                  <input
+                    type="color"
+                    value={settings.theme.nodeInfoThemeColor}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        theme: { ...settings.theme, nodeInfoThemeColor: e.target.value },
+                      })
+                    }
+                    className="w-12 h-10 rounded cursor-pointer"
+                    disabled={isSaving}
+                  />
+                  <input
+                    type="text"
+                    value={settings.theme.nodeInfoThemeColor}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^#[0-9a-fA-F]{0,6}$/.test(value)) {
+                        setSettings({
+                          ...settings,
+                          theme: { ...settings.theme, nodeInfoThemeColor: value },
+                        });
+                      }
+                    }}
+                    placeholder="#ff6b6b"
+                    className="w-28 rounded-md border border-(--border-color) bg-(--card-bg) px-3 py-2 text-(--text-primary) font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    disabled={isSaving}
+                  />
+                </div>
+              )}
+            </div>
+
             {/* Preview */}
             <div className="border border-(--border-color) rounded-lg p-4">
               <h4 className="text-sm font-medium text-(--text-primary) mb-3">
@@ -825,6 +848,44 @@ export default function AdminSettingsPage() {
               onDelete={() => handleAssetDelete("pwaIcon512")}
               previewClassName="w-16 h-16 rounded-lg"
             />
+
+            {/* Maskable Icons Section */}
+            <div className="border-t border-(--border-color) pt-6 mt-6">
+              <h3 className="text-lg font-medium text-(--text-primary) mb-2">
+                <Trans>Maskable Icons (Optional)</Trans>
+              </h3>
+              <p className="text-sm text-(--text-muted) mb-4">
+                <Trans>
+                  Maskable icons are designed to be cropped by the OS into different shapes (circles, rounded squares, etc.).
+                  These should have important content within a "safe zone" (centered 80% of the icon).
+                  If not set, only standard icons will be used.
+                </Trans>
+              </p>
+
+              <div className="space-y-6">
+                <AssetUploadCard
+                  type="pwaMaskableIcon192"
+                  title={<Trans>PWA Maskable Icon (192x192)</Trans>}
+                  description={<Trans>Maskable icon for PWA with safe zone padding, 192x192 pixels (max 1MB).</Trans>}
+                  currentUrl={assets.pwaMaskableIcon192}
+                  isUploading={isUploadingAsset === "pwaMaskableIcon192"}
+                  onUpload={(file) => handleAssetUpload("pwaMaskableIcon192", file)}
+                  onDelete={() => handleAssetDelete("pwaMaskableIcon192")}
+                  previewClassName="w-12 h-12 rounded-full"
+                />
+
+                <AssetUploadCard
+                  type="pwaMaskableIcon512"
+                  title={<Trans>PWA Maskable Icon (512x512)</Trans>}
+                  description={<Trans>High-res maskable icon for PWA with safe zone padding, 512x512 pixels (max 2MB).</Trans>}
+                  currentUrl={assets.pwaMaskableIcon512}
+                  isUploading={isUploadingAsset === "pwaMaskableIcon512"}
+                  onUpload={(file) => handleAssetUpload("pwaMaskableIcon512", file)}
+                  onDelete={() => handleAssetDelete("pwaMaskableIcon512")}
+                  previewClassName="w-16 h-16 rounded-full"
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -958,6 +1019,6 @@ export default function AdminSettingsPage() {
           </CardContent>
         </Card>
       )}
-    </Layout>
+    </AdminLayout>
   );
 }

@@ -11,7 +11,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useAtom } from "jotai";
 import { Trans, useLingui } from "@lingui/react/macro";
 import {
-  RefreshCw,
   MessageCircle,
   CheckCircle,
   XCircle,
@@ -24,13 +23,13 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
-import { Layout } from "../../components/layout/Layout";
-import { AdminNav } from "../../components/admin/AdminNav";
+import { AdminLayout } from "../../components/admin/AdminLayout";
 import {
   listContactThreadsAdmin,
   getContactThreadAdmin,
@@ -113,6 +112,8 @@ export default function AdminContactsPage() {
     setError(null);
 
     try {
+      apiClient.setToken(token);
+
       const params: any = { limit, offset };
       if (statusFilter !== "all") {
         params.status = statusFilter;
@@ -144,6 +145,7 @@ export default function AdminContactsPage() {
 
       setIsLoadingDetail(true);
       try {
+        apiClient.setToken(token);
         const response = await getContactThreadAdmin(threadId);
         setSelectedThread(response.thread);
         setMessages(response.messages);
@@ -170,10 +172,11 @@ export default function AdminContactsPage() {
 
   async function handleSendReply(e: React.FormEvent) {
     e.preventDefault();
-    if (!replyText.trim() || isSending || !selectedThread) return;
+    if (!replyText.trim() || isSending || !selectedThread || !token) return;
 
     setIsSending(true);
     try {
+      apiClient.setToken(token);
       const newMessage = await replyToContactThread(selectedThread.id, replyText.trim());
       setMessages((prev) => [
         ...prev,
@@ -199,9 +202,10 @@ export default function AdminContactsPage() {
   }
 
   async function handleStatusChange(status: string) {
-    if (!selectedThread) return;
+    if (!selectedThread || !token) return;
 
     try {
+      apiClient.setToken(token);
       await updateContactThreadStatus(selectedThread.id, status);
       setSelectedThread((prev) => (prev ? { ...prev, status: status as any } : null));
       addToast({ type: "success", message: "Status updated" });
@@ -212,9 +216,10 @@ export default function AdminContactsPage() {
   }
 
   async function handlePriorityChange(priority: number) {
-    if (!selectedThread) return;
+    if (!selectedThread || !token) return;
 
     try {
+      apiClient.setToken(token);
       await updateContactThreadPriority(selectedThread.id, priority);
       setSelectedThread((prev) => (prev ? { ...prev, priority } : null));
       addToast({ type: "success", message: "Priority updated" });
@@ -225,9 +230,10 @@ export default function AdminContactsPage() {
   }
 
   async function handleSaveNotes() {
-    if (!selectedThread) return;
+    if (!selectedThread || !token) return;
 
     try {
+      apiClient.setToken(token);
       await updateContactThreadNotes(selectedThread.id, internalNotes);
       addToast({ type: "success", message: "Notes saved" });
     } catch (err: any) {
@@ -237,33 +243,38 @@ export default function AdminContactsPage() {
 
   if (!currentUser) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/contacts"
+        title={<Trans>Contact Inquiries</Trans>}
+        subtitle={<Trans>Manage user inquiries and support requests</Trans>}
+      >
         <div className="flex items-center justify-center py-20">
           <Spinner size="lg" />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
   // Permission denied view
   if (permissionDenied) {
     return (
-      <Layout>
-        <div className="max-w-6xl mx-auto">
-          <AdminNav currentPath="/admin/contacts" />
-          <Card>
-            <CardContent className="p-8 text-center">
-              <Shield className="w-16 h-16 mx-auto mb-4 text-(--text-muted) opacity-50" />
-              <h2 className="text-xl font-bold text-(--text-primary) mb-2">
-                <Trans>Permission Denied</Trans>
-              </h2>
-              <p className="text-(--text-muted)">
-                <Trans>You don't have permission to manage contact inquiries.</Trans>
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
+      <AdminLayout
+        currentPath="/admin/contacts"
+        title={<Trans>Contact Inquiries</Trans>}
+        subtitle={<Trans>Manage user inquiries and support requests</Trans>}
+      >
+        <Card>
+          <CardContent className="p-8 text-center">
+            <Shield className="w-16 h-16 mx-auto mb-4 text-(--text-muted) opacity-50" />
+            <h2 className="text-xl font-bold text-(--text-primary) mb-2">
+              <Trans>Permission Denied</Trans>
+            </h2>
+            <p className="text-(--text-muted)">
+              <Trans>You don't have permission to manage contact inquiries.</Trans>
+            </p>
+          </CardContent>
+        </Card>
+      </AdminLayout>
     );
   }
 
@@ -272,9 +283,12 @@ export default function AdminContactsPage() {
     const isClosed = selectedThread.status === "closed";
 
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/contacts"
+        title={selectedThread.subject}
+        subtitle={<Trans>Contact thread details</Trans>}
+      >
         <div className="max-w-6xl mx-auto">
-          <AdminNav currentPath="/admin/contacts" />
 
           <div className="mb-4">
             <button
@@ -468,53 +482,45 @@ export default function AdminContactsPage() {
             </div>
           </div>
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
   // List view
   return (
-    <Layout>
+    <AdminLayout
+      currentPath="/admin/contacts"
+      title={
+        <>
+          <Trans>Contact Inquiries</Trans>
+          {unreadCount > 0 && (
+            <span className="ml-2 px-2 py-0.5 text-sm bg-primary-500 text-white rounded-full">
+              {unreadCount}
+            </span>
+          )}
+        </>
+      }
+      subtitle={<Trans>Manage user inquiries and support requests</Trans>}
+      showReload
+      onReload={loadThreads}
+    >
       <div className="max-w-6xl mx-auto">
-        <AdminNav currentPath="/admin/contacts" />
 
-        <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-(--text-primary) flex items-center gap-3">
-              <MessageCircle className="w-7 h-7" />
-              <Trans>Contact Inquiries</Trans>
-              {unreadCount > 0 && (
-                <span className="px-2 py-0.5 text-sm bg-primary-500 text-white rounded-full">
-                  {unreadCount}
-                </span>
-              )}
-            </h1>
-            <p className="text-(--text-muted) mt-1">
-              <Trans>Manage user inquiries and support requests</Trans>
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setOffset(0);
-              }}
-              className="px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary)"
-            >
-              <option value="all">All Status</option>
-              <option value="open">Open</option>
-              <option value="in_progress">In Progress</option>
-              <option value="resolved">Resolved</option>
-              <option value="closed">Closed</option>
-            </select>
-
-            <Button variant="secondary" onPress={loadThreads}>
-              <RefreshCw className="w-4 h-4 mr-2" />
-              <Trans>Refresh</Trans>
-            </Button>
-          </div>
+        <div className="mb-6 flex items-center justify-end">
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setOffset(0);
+            }}
+            className="px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary)"
+          >
+            <option value="all">All Status</option>
+            <option value="open">Open</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="closed">Closed</option>
+          </select>
         </div>
 
         {error && (
@@ -610,6 +616,6 @@ export default function AdminContactsPage() {
           </div>
         )}
       </div>
-    </Layout>
+    </AdminLayout>
   );
 }

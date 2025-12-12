@@ -6,12 +6,107 @@
  * Allows users to manage push notification subscriptions
  */
 
-import { Trans } from "@lingui/react/macro";
-import { Bell, BellOff, Smartphone, Send, AlertCircle, Check } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { useAtom } from "jotai";
+import { Trans, useLingui } from "@lingui/react/macro";
+import { msg } from "@lingui/core/macro";
+import type { MessageDescriptor } from "@lingui/core";
+import {
+  Bell,
+  BellOff,
+  Smartphone,
+  Send,
+  AlertCircle,
+  Check,
+  UserPlus,
+  AtSign,
+  MessageSquare,
+  Heart,
+  Repeat,
+  Quote,
+  ShieldAlert,
+  UserCheck,
+  Mail,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { usePushNotifications } from "../../hooks/usePushNotifications";
 import { Button } from "../ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { Spinner } from "../ui/Spinner";
+import { Switch } from "../ui/Switch";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { usersApi } from "../../lib/api/users";
+import { addToastAtom } from "../../lib/atoms/toast";
+
+/**
+ * Notification type configuration
+ */
+interface NotificationTypeConfig {
+  type: string;
+  label: MessageDescriptor;
+  description: MessageDescriptor;
+  icon: LucideIcon;
+}
+
+/**
+ * Available notification types with labels and icons
+ */
+const NOTIFICATION_TYPES: NotificationTypeConfig[] = [
+  {
+    type: "follow",
+    label: msg`New followers`,
+    description: msg`When someone follows you`,
+    icon: UserPlus,
+  },
+  {
+    type: "mention",
+    label: msg`Mentions`,
+    description: msg`When someone mentions you`,
+    icon: AtSign,
+  },
+  {
+    type: "reply",
+    label: msg`Replies`,
+    description: msg`When someone replies to your post`,
+    icon: MessageSquare,
+  },
+  {
+    type: "reaction",
+    label: msg`Reactions`,
+    description: msg`When someone reacts to your post`,
+    icon: Heart,
+  },
+  {
+    type: "renote",
+    label: msg`Renotes`,
+    description: msg`When someone renotes your post`,
+    icon: Repeat,
+  },
+  {
+    type: "quote",
+    label: msg`Quotes`,
+    description: msg`When someone quotes your post`,
+    icon: Quote,
+  },
+  {
+    type: "follow_request_accepted",
+    label: msg`Follow requests accepted`,
+    description: msg`When your follow request is accepted`,
+    icon: UserCheck,
+  },
+  {
+    type: "dm",
+    label: msg`Direct messages`,
+    description: msg`When you receive a direct message`,
+    icon: Mail,
+  },
+  {
+    type: "warning",
+    label: msg`Warnings`,
+    description: msg`When you receive a moderation warning`,
+    icon: ShieldAlert,
+  },
+];
 
 /**
  * Format date for display
@@ -46,6 +141,9 @@ function getDeviceName(userAgent?: string): string {
 }
 
 export function PushNotificationSection() {
+  const { t } = useLingui();
+  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
+  const [, addToast] = useAtom(addToastAtom);
   const {
     isSupported,
     isAvailable,
@@ -58,6 +156,51 @@ export function PushNotificationSection() {
     unsubscribe,
     sendTest,
   } = usePushNotifications();
+
+  // Track disabled notification types
+  const [disabledTypes, setDisabledTypes] = useState<string[]>([]);
+  const [savingTypes, setSavingTypes] = useState(false);
+
+  // Load disabled types from user settings
+  useEffect(() => {
+    if (currentUser?.uiSettings?.disabledPushNotificationTypes) {
+      setDisabledTypes(currentUser.uiSettings.disabledPushNotificationTypes);
+    }
+  }, [currentUser?.uiSettings?.disabledPushNotificationTypes]);
+
+  /**
+   * Toggle a notification type on/off
+   */
+  const toggleNotificationType = useCallback(
+    async (type: string, enabled: boolean) => {
+      const newDisabledTypes = enabled
+        ? disabledTypes.filter((t) => t !== type)
+        : [...disabledTypes, type];
+
+      setDisabledTypes(newDisabledTypes);
+      setSavingTypes(true);
+
+      try {
+        const updatedUser = await usersApi.updateMe({
+          uiSettings: {
+            ...currentUser?.uiSettings,
+            disabledPushNotificationTypes: newDisabledTypes,
+          },
+        });
+        setCurrentUser(updatedUser);
+      } catch {
+        // Revert on error
+        setDisabledTypes(disabledTypes);
+        addToast({
+          type: "error",
+          message: t(msg`Failed to update notification settings`),
+        });
+      } finally {
+        setSavingTypes(false);
+      }
+    },
+    [disabledTypes, currentUser?.uiSettings, setCurrentUser, addToast, t],
+  );
 
   // Not supported by browser
   if (!isSupported) {
@@ -232,6 +375,44 @@ export function PushNotificationSection() {
                   </div>
                 </li>
               ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Notification type settings */}
+        {isSubscribed && (
+          <div className="pt-4 border-t border-(--border-color)">
+            <h4 className="text-sm font-medium text-(--text-primary) mb-3">
+              <Trans>Notification types</Trans>
+            </h4>
+            <p className="text-sm text-(--text-muted) mb-4">
+              <Trans>Choose which types of notifications you want to receive.</Trans>
+            </p>
+            <ul className="space-y-3">
+              {NOTIFICATION_TYPES.map((config) => {
+                const Icon = config.icon;
+                const isEnabled = !disabledTypes.includes(config.type);
+                return (
+                  <li
+                    key={config.type}
+                    className="flex items-center justify-between p-3 bg-(--bg-secondary) rounded-lg"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className="w-5 h-5 text-(--text-muted)" />
+                      <div>
+                        <p className="text-sm font-medium text-(--text-primary)">{t(config.label)}</p>
+                        <p className="text-xs text-(--text-muted)">{t(config.description)}</p>
+                      </div>
+                    </div>
+                    <Switch
+                      isSelected={isEnabled}
+                      onChange={(enabled) => toggleNotificationType(config.type, enabled)}
+                      isDisabled={savingTypes}
+                      aria-label={t(config.label)}
+                    />
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}

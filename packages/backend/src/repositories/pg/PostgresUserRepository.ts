@@ -253,4 +253,75 @@ export class PostgresUserRepository implements IUserRepository {
 
     return (result as User) ?? null;
   }
+
+  /**
+   * Count user registrations within a time period
+   * Used for Mastodon API instance activity statistics
+   */
+  async countRegistrationsInPeriod(startDate: Date, endDate: Date): Promise<number> {
+    const result = await this.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(users)
+      .where(
+        and(
+          isNull(users.host), // Local users only
+          sql`${users.createdAt} >= ${startDate}`,
+          sql`${users.createdAt} < ${endDate}`,
+        ),
+      );
+
+    return result[0]?.count ?? 0;
+  }
+
+  /**
+   * Increment followers count for a user
+   */
+  async incrementFollowersCount(userId: string): Promise<void> {
+    await this.db
+      .update(users)
+      .set({
+        followersCount: sql`${users.followersCount} + 1`,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  }
+
+  /**
+   * Decrement followers count for a user
+   */
+  async decrementFollowersCount(userId: string): Promise<void> {
+    await this.db
+      .update(users)
+      .set({
+        followersCount: sql`GREATEST(${users.followersCount} - 1, 0)`,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  }
+
+  /**
+   * Increment following count for a user
+   */
+  async incrementFollowingCount(userId: string): Promise<void> {
+    await this.db
+      .update(users)
+      .set({
+        followingCount: sql`${users.followingCount} + 1`,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  }
+
+  /**
+   * Decrement following count for a user
+   */
+  async decrementFollowingCount(userId: string): Promise<void> {
+    await this.db
+      .update(users)
+      .set({
+        followingCount: sql`GREATEST(${users.followingCount} - 1, 0)`,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  }
 }

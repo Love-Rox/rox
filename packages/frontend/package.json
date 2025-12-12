@@ -1,6 +1,6 @@
 {
   "name": "waku_rox",
-  "version": "0.1.0-rc.10",
+  "version": "1.0.0",
   "license": "AGPL-3.0-only",
   "private": true,
   "type": "module",
@@ -23,6 +23,7 @@
     "katex": "^0.16.27",
     "lucide-react": "^0.554.0",
     "mfm-js": "^0.24.0",
+    "qrcode.react": "^4.2.0",
     "react": "^19.2.1",
     "react-aria-components": "^1.13.0",
     "react-dom": "^19.2.1",

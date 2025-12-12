@@ -36,6 +36,10 @@ export interface UISettings {
   theme?: "light" | "dark" | "system";
   /** Custom CSS applied to the entire app (for this user only) */
   appCustomCss?: string;
+  /** Preferred language for notifications and emails */
+  language?: "en" | "ja";
+  /** Disabled push notification types (empty = all enabled) */
+  disabledPushNotificationTypes?: NotificationType[];
 }
 
 /**
@@ -126,6 +130,9 @@ export const users = pgTable(
     profileEmojis: jsonb("profile_emojis").$type<ProfileEmoji[]>().default([]),
     // Storage quota override (null = use role default, -1 = unlimited)
     storageQuotaMb: integer("storage_quota_mb"),
+    // Follower/following counts (cached for performance)
+    followersCount: integer("followers_count").notNull().default(0),
+    followingCount: integer("following_count").notNull().default(0),
     // Remote actor fetch status (for detecting 410 Gone)
     goneDetectedAt: timestamp("gone_detected_at"), // First detection of 410 Gone
     fetchFailureCount: integer("fetch_failure_count").notNull().default(0), // Consecutive fetch failures
@@ -619,7 +626,8 @@ export type NotificationType =
   | "renote"
   | "warning"
   | "follow_request_accepted"
-  | "quote";
+  | "quote"
+  | "dm";
 
 // Notifications table
 export const notifications = pgTable(
@@ -660,6 +668,7 @@ export const pushSubscriptions = pgTable(
     p256dh: text("p256dh").notNull(), // Client public key for encryption
     auth: text("auth").notNull(), // Auth secret for encryption
     userAgent: text("user_agent"), // Browser/device info for management
+    language: text("language"), // User's preferred language for notifications (en, ja)
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

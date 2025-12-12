@@ -18,8 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Ca
 import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
-import { Layout } from "../../components/layout/Layout";
-import { AdminNav } from "../../components/admin/AdminNav";
+import { AdminLayout } from "../../components/admin/AdminLayout";
 
 interface RolePolicies {
   canViewGlobalTimeline?: boolean;
@@ -292,39 +291,39 @@ export default function AdminRolesPage() {
 
   if (isLoading) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/roles"
+        title={<Trans>Role Management</Trans>}
+        subtitle={<Trans>Create and manage user roles with custom permissions</Trans>}
+      >
         <div className="flex justify-center items-center min-h-[400px]">
           <Spinner size="lg" />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
   if (error) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/roles"
+        title={<Trans>Role Management</Trans>}
+        subtitle={<Trans>Create and manage user roles with custom permissions</Trans>}
+      >
         <div className="max-w-4xl mx-auto p-6">
           <InlineError message={error} />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
   return (
-    <Layout>
-      <div className="max-w-4xl mx-auto p-6">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-(--text-primary)">
-            <Trans>Role Management</Trans>
-          </h1>
-          <p className="text-(--text-secondary) mt-2">
-            <Trans>Create and manage user roles with custom permissions</Trans>
-          </p>
-        </div>
-
-        {/* Admin Navigation */}
-        <AdminNav currentPath="/admin/roles" />
+    <AdminLayout
+      currentPath="/admin/roles"
+      title={<Trans>Role Management</Trans>}
+      subtitle={<Trans>Create and manage user roles with custom permissions</Trans>}
+    >
+      <div className="max-w-4xl mx-auto">
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 mb-8">
@@ -676,6 +675,6 @@ export default function AdminRolesPage() {
           </CardContent>
         </Card>
       </div>
-    </Layout>
+    </AdminLayout>
   );
 }

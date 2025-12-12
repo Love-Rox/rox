@@ -1069,9 +1069,13 @@ app.patch("/settings/instance", async (c) => {
  * ```json
  * {
  *   "primaryColor": "#3b82f6",
- *   "darkMode": "system"
+ *   "darkMode": "system",
+ *   "nodeInfoThemeColor": "#ff6b6b"
  * }
  * ```
+ *
+ * Note: nodeInfoThemeColor is used for external services (e.g., Misskey instance info).
+ * Set to null to use primaryColor as fallback.
  */
 app.patch("/settings/theme", async (c) => {
   const instanceSettingsService = c.get("instanceSettingsService");
@@ -1094,10 +1098,22 @@ app.patch("/settings/theme", async (c) => {
     }
   }
 
+  // Validate nodeInfoThemeColor (can be null to use primaryColor as fallback)
+  if (body.nodeInfoThemeColor !== undefined && body.nodeInfoThemeColor !== null) {
+    const hexColorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+    if (!hexColorRegex.test(body.nodeInfoThemeColor)) {
+      return c.json(
+        { error: "nodeInfoThemeColor must be a valid hex color (e.g., #ff6b6b) or null" },
+        400,
+      );
+    }
+  }
+
   await instanceSettingsService.updateThemeSettings(
     {
       primaryColor: body.primaryColor,
       darkMode: body.darkMode,
+      nodeInfoThemeColor: body.nodeInfoThemeColor,
     },
     admin?.id,
   );
@@ -1461,7 +1477,7 @@ app.post("/assets/upload", async (c) => {
   }
 
   // Validate asset type
-  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon", "pwaIcon192", "pwaIcon512"];
+  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon", "pwaIcon192", "pwaIcon512", "pwaMaskableIcon192", "pwaMaskableIcon512"];
   if (!assetType || !validAssetTypes.includes(assetType)) {
     return errorResponse(c, `type must be one of: ${validAssetTypes.join(", ")}`);
   }
@@ -1479,6 +1495,8 @@ app.post("/assets/upload", async (c) => {
     favicon: 512 * 1024, // 512KB
     pwaIcon192: 1 * 1024 * 1024, // 1MB
     pwaIcon512: 2 * 1024 * 1024, // 2MB
+    pwaMaskableIcon192: 1 * 1024 * 1024, // 1MB
+    pwaMaskableIcon512: 2 * 1024 * 1024, // 2MB
   };
 
   if (file.size > sizeLimits[assetType]!) {
@@ -1522,6 +1540,12 @@ app.post("/assets/upload", async (c) => {
       case "pwaIcon512":
         updateData.pwaIcon512Url = driveFile.url;
         break;
+      case "pwaMaskableIcon192":
+        updateData.pwaMaskableIcon192Url = driveFile.url;
+        break;
+      case "pwaMaskableIcon512":
+        updateData.pwaMaskableIcon512Url = driveFile.url;
+        break;
     }
 
     await instanceSettingsService.updateInstanceMetadata(updateData, admin?.id);
@@ -1556,7 +1580,7 @@ app.delete("/assets/:type", async (c) => {
   const assetType = c.req.param("type");
 
   // Validate asset type
-  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon", "pwaIcon192", "pwaIcon512"];
+  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon", "pwaIcon192", "pwaIcon512", "pwaMaskableIcon192", "pwaMaskableIcon512"];
   if (!validAssetTypes.includes(assetType)) {
     return errorResponse(c, `type must be one of: ${validAssetTypes.join(", ")}`);
   }
@@ -1581,6 +1605,12 @@ app.delete("/assets/:type", async (c) => {
       break;
     case "pwaIcon512":
       updateData.pwaIcon512Url = null;
+      break;
+    case "pwaMaskableIcon192":
+      updateData.pwaMaskableIcon192Url = null;
+      break;
+    case "pwaMaskableIcon512":
+      updateData.pwaMaskableIcon512Url = null;
       break;
   }
 
@@ -1611,6 +1641,8 @@ app.get("/assets", async (c) => {
     favicon: metadata.faviconUrl,
     pwaIcon192: metadata.pwaIcon192Url,
     pwaIcon512: metadata.pwaIcon512Url,
+    pwaMaskableIcon192: metadata.pwaMaskableIcon192Url,
+    pwaMaskableIcon512: metadata.pwaMaskableIcon512Url,
   });
 });
 

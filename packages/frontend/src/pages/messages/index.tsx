@@ -11,6 +11,7 @@ import { Trans } from "@lingui/react/macro";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Mail, Loader2, PenSquare } from "lucide-react";
 import { Layout } from "../../components/layout/Layout";
+import { PageHeader } from "../../components/ui/PageHeader";
 import { Avatar } from "../../components/ui/Avatar";
 import { UserDisplayName } from "../../components/user/UserDisplayName";
 import { useConversations } from "../../hooks/useDirectMessages";
@@ -134,32 +135,26 @@ export default function MessagesPage() {
     );
   }
 
-  return (
-    <Layout>
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-4 sm:mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <Mail className="w-6 h-6 sm:w-8 sm:h-8 text-(--text-primary)" />
-              <h1 className="text-xl sm:text-2xl font-bold text-(--text-primary)">
-                <Trans>Messages</Trans>
-              </h1>
-            </div>
-            <button
-              type="button"
-              onClick={() => openComposeModal({ initialVisibility: "specified" })}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors cursor-pointer"
-            >
-              <PenSquare className="w-4 h-4" />
-              <span className="hidden sm:inline"><Trans>New Message</Trans></span>
-            </button>
-          </div>
-          <p className="mt-2 text-sm text-(--text-muted)">
-            <Trans>Your direct message conversations</Trans>
-          </p>
-        </div>
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Messages</Trans>}
+      subtitle={<Trans>Your direct message conversations</Trans>}
+      icon={<Mail className="w-6 h-6" />}
+      actions={[
+        {
+          key: "new-message",
+          label: <Trans>New Message</Trans>,
+          icon: <PenSquare className="w-4 h-4" />,
+          onPress: () => openComposeModal({ initialVisibility: "specified" }),
+          variant: "primary",
+        },
+      ]}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
+      <div className="max-w-2xl mx-auto">
         {/* Conversations List */}
         <div className="bg-(--card-bg) rounded-lg border border-(--border-color) overflow-hidden">
           {loading && conversations.length === 0 ? (

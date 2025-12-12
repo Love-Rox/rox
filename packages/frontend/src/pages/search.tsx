@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { usersApi } from "../lib/api/users";
 import { Layout } from "../components/layout/Layout";
+import { PageHeader } from "../components/ui/PageHeader";
 import { Avatar } from "../components/ui/Avatar";
 import { MfmRenderer } from "../components/mfm/MfmRenderer";
 import { UserDisplayName } from "../components/user/UserDisplayName";
@@ -323,22 +324,17 @@ export default function SearchPage() {
     );
   }
 
-  return (
-    <Layout>
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center gap-3">
-            <Search className="w-8 h-8 text-(--text-primary)" />
-            <h1 className="text-2xl font-bold text-(--text-primary)">
-              <Trans>Search</Trans>
-            </h1>
-          </div>
-          <p className="mt-2 text-(--text-secondary)">
-            <Trans>Find users by username or display name</Trans>
-          </p>
-        </div>
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Search</Trans>}
+      subtitle={<Trans>Find users by username or display name</Trans>}
+      icon={<Search className="w-6 h-6" />}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
+      <div className="max-w-2xl mx-auto">
         {/* Search Form */}
         <form onSubmit={handleSubmit} className="mb-6">
           <div className="flex gap-2">

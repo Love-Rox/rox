@@ -71,6 +71,14 @@ export const usersApi = {
     avatarUrl?: string;
     bannerUrl?: string;
     customCss?: string;
+    uiSettings?: {
+      fontSize?: "small" | "medium" | "large" | "xlarge";
+      lineHeight?: "compact" | "normal" | "relaxed";
+      contentWidth?: "narrow" | "normal" | "wide";
+      theme?: "light" | "dark" | "system";
+      appCustomCss?: string;
+      disabledPushNotificationTypes?: string[];
+    };
   }): Promise<User> {
     return apiClient.patch<User>("/api/users/@me", data);
   },

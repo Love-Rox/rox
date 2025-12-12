@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Layout } from "../layout/Layout";
+import { PageHeader } from "../ui/PageHeader";
 import { NoteCard } from "../note/NoteCard";
 import { Spinner } from "../ui/Spinner";
 import { InlineError } from "../ui/ErrorMessage";
@@ -101,36 +102,17 @@ export function NoteDetailPageClient({ noteId }: { noteId: string }) {
     );
   }
 
-  return (
-    <Layout>
-      <div className="max-w-2xl mx-auto">
-        {/* Breadcrumb navigation */}
-        <nav
-          className="px-4 py-2 border-b border-gray-200 dark:border-gray-700"
-          aria-label="Breadcrumb"
-        >
-          <ol className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <li>
-              <a href="/timeline" className="hover:text-primary-600 dark:hover:text-primary-400">
-                <Trans>Timeline</Trans>
-              </a>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <a
-                href={`/@${note.user.username}${note.user.host ? `@${note.user.host}` : ""}`}
-                className="hover:text-primary-600 dark:hover:text-primary-400"
-              >
-                @{note.user.username}{note.user.host ? `@${note.user.host}` : ""}
-              </a>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-gray-900 dark:text-gray-100 font-medium" aria-current="page">
-              <Trans>Note</Trans>
-            </li>
-          </ol>
-        </nav>
+  const pageHeader = (
+    <PageHeader
+      title={<Trans>Note</Trans>}
+      backHref="/timeline"
+      backLabel={<Trans>Back</Trans>}
+    />
+  );
 
+  return (
+    <Layout header={pageHeader}>
+      <div className="max-w-2xl mx-auto">
         {/* Ancestor notes (conversation context) */}
         {ancestors.length > 0 && (
           <div className="border-b border-gray-200 dark:border-gray-700">
@@ -146,14 +128,13 @@ export function NoteDetailPageClient({ noteId }: { noteId: string }) {
         )}
 
         {/* Main note (highlighted) */}
-        <div className="border-b-4 border-primary-500 bg-primary-50/30 dark:bg-primary-900/20">
-          <NoteCard
-            note={note}
-            onNoteDeleted={handleNoteDeleted}
-            onReplyCreated={handleReplyCreated}
-            showDetailedTimestamp
-          />
-        </div>
+        <NoteCard
+          note={note}
+          onNoteDeleted={handleNoteDeleted}
+          onReplyCreated={handleReplyCreated}
+          showDetailedTimestamp
+          isHighlighted
+        />
 
         {/* Descendant notes (replies) */}
         {descendants.length > 0 && (

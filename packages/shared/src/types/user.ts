@@ -49,6 +49,9 @@ export interface User extends Timestamps {
   fetchFailureCount: number; // Number of consecutive fetch failures
   lastFetchAttemptAt: Date | null; // Last attempt to fetch remote actor
   lastFetchError: string | null; // Last error message from fetch attempt
+  // Cached follower/following counts (for performance)
+  followersCount: number;
+  followingCount: number;
 }
 
 export interface UserProfile {

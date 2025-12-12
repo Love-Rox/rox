@@ -24,11 +24,14 @@ export type InstanceSettingKey =
   | "instance.faviconUrl"
   | "instance.pwaIcon192Url"
   | "instance.pwaIcon512Url"
+  | "instance.pwaMaskableIcon192Url"
+  | "instance.pwaMaskableIcon512Url"
   | "instance.tosUrl"
   | "instance.privacyPolicyUrl"
   | "instance.sourceCodeUrl"
   | "theme.primaryColor"
   | "theme.darkMode"
+  | "theme.nodeInfoThemeColor"
   | "onboarding.completed";
 
 /**

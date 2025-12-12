@@ -30,7 +30,7 @@ import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { Layout } from "../../components/layout/Layout";
-import { AdminNav } from "../../components/admin/AdminNav";
+import { AdminLayout } from "../../components/admin/AdminLayout";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { MfmRenderer } from "../../components/mfm/MfmRenderer";
 
@@ -288,20 +288,12 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <Layout>
-      <div className="max-w-4xl mx-auto p-6">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-(--text-primary)">
-            <Trans>Users</Trans>
-          </h1>
-          <p className="text-(--text-secondary) mt-2">
-            <Trans>Manage user accounts</Trans>
-          </p>
-        </div>
-
-        {/* Admin Navigation */}
-        <AdminNav currentPath="/admin/users" />
+    <AdminLayout
+      currentPath="/admin/users"
+      title={<Trans>Users</Trans>}
+      subtitle={<Trans>Manage user accounts</Trans>}
+    >
+      <div className="space-y-6">
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -639,6 +631,6 @@ export default function AdminUsersPage() {
           </div>
         )}
       </div>
-    </Layout>
+    </AdminLayout>
   );
 }

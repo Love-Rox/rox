@@ -41,6 +41,10 @@ export interface UISettings {
   theme?: "light" | "dark" | "system";
   /** Custom CSS applied to the entire app (for this user only) */
   appCustomCss?: string;
+  /** Preferred language for notifications and emails */
+  language?: "en" | "ja";
+  /** Disabled push notification types (empty = all enabled) */
+  disabledPushNotificationTypes?: NotificationType[];
 }
 
 /**
@@ -109,6 +113,9 @@ export const users = sqliteTable(
     fetchFailureCount: integer("fetch_failure_count").notNull().default(0),
     lastFetchAttemptAt: integer("last_fetch_attempt_at", { mode: "timestamp" }),
     lastFetchError: text("last_fetch_error"),
+    // Cached follower/following counts (for performance)
+    followersCount: integer("followers_count").notNull().default(0),
+    followingCount: integer("following_count").notNull().default(0),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),
@@ -633,7 +640,8 @@ export type NotificationType =
   | "renote"
   | "warning"
   | "follow_request_accepted"
-  | "quote";
+  | "quote"
+  | "dm";
 
 // Notifications table
 export const notifications = sqliteTable(
@@ -676,6 +684,7 @@ export const pushSubscriptions = sqliteTable(
     p256dh: text("p256dh").notNull(),
     auth: text("auth").notNull(),
     userAgent: text("user_agent"),
+    language: text("language"), // User's preferred language for notifications (en, ja)
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .$defaultFn(() => new Date()),

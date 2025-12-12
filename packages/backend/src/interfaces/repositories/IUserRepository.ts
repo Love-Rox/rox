@@ -162,4 +162,42 @@ export interface IUserRepository {
    * @returns First admin user found, or null if none exists
    */
   findFirstLocalAdmin(): Promise<User | null>;
+
+  /**
+   * Count user registrations within a time period
+   * Used for Mastodon API instance activity statistics
+   *
+   * @param startDate - Start of the period (inclusive)
+   * @param endDate - End of the period (exclusive)
+   * @returns Number of local users registered in the period
+   */
+  countRegistrationsInPeriod?(startDate: Date, endDate: Date): Promise<number>;
+
+  /**
+   * Increment followers count for a user
+   *
+   * @param userId - User ID to update
+   */
+  incrementFollowersCount(userId: string): Promise<void>;
+
+  /**
+   * Decrement followers count for a user
+   *
+   * @param userId - User ID to update
+   */
+  decrementFollowersCount(userId: string): Promise<void>;
+
+  /**
+   * Increment following count for a user
+   *
+   * @param userId - User ID to update
+   */
+  incrementFollowingCount(userId: string): Promise<void>;
+
+  /**
+   * Decrement following count for a user
+   *
+   * @param userId - User ID to update
+   */
+  decrementFollowingCount(userId: string): Promise<void>;
 }

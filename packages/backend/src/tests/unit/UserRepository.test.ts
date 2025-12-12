@@ -47,6 +47,8 @@ describe("UserRepository", () => {
     fetchFailureCount: 0,
     lastFetchAttemptAt: null,
     lastFetchError: null,
+    followersCount: 0,
+    followingCount: 0,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -127,6 +129,11 @@ describe("UserRepository", () => {
       recordFetchFailure: mock(async () => Promise.resolve()),
       clearFetchFailure: mock(async () => Promise.resolve()),
       findFirstLocalAdmin: mock(async () => Promise.resolve(mockAdminUser)),
+      countRegistrationsInPeriod: mock(async () => Promise.resolve(0)),
+      incrementFollowersCount: mock(async () => Promise.resolve()),
+      decrementFollowersCount: mock(async () => Promise.resolve()),
+      incrementFollowingCount: mock(async () => Promise.resolve()),
+      decrementFollowingCount: mock(async () => Promise.resolve()),
     };
   });
 
@@ -165,6 +172,8 @@ describe("UserRepository", () => {
         fetchFailureCount: 0,
         lastFetchAttemptAt: null,
         lastFetchError: null,
+    followersCount: 0,
+    followingCount: 0,
       };
 
       const result = await mockRepo.create(input);
@@ -210,6 +219,8 @@ describe("UserRepository", () => {
         fetchFailureCount: 0,
         lastFetchAttemptAt: null,
         lastFetchError: null,
+    followersCount: 0,
+    followingCount: 0,
       };
 
       const result = await mockRepo.create(input);

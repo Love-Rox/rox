@@ -11,7 +11,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import {
-  RefreshCw,
   Activity,
   CheckCircle,
   XCircle,
@@ -22,12 +21,10 @@ import {
 } from "lucide-react";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { apiClient } from "../../lib/api/client";
-import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
-import { Layout } from "../../components/layout/Layout";
-import { AdminNav } from "../../components/admin/AdminNav";
+import { AdminLayout } from "../../components/admin/AdminLayout";
 
 interface QueueStats {
   available: boolean;
@@ -71,7 +68,19 @@ export default function AdminQueuePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"overview" | "servers">("overview");
+
+  // Read tab from URL query parameter
+  const getActiveTab = (): "overview" | "servers" => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get("tab");
+      if (tab && ["overview", "servers"].includes(tab)) {
+        return tab as "overview" | "servers";
+      }
+    }
+    return "overview";
+  };
+  const activeTab = getActiveTab();
 
   const loadData = useCallback(async () => {
     if (!token) return;
@@ -152,84 +161,67 @@ export default function AdminQueuePage() {
 
   if (isLoading) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath={`/admin/queue?tab=${activeTab}`}
+        title={<Trans>Job Queue</Trans>}
+        subtitle={<Trans>Monitor ActivityPub delivery queue status</Trans>}
+      >
         <div className="flex items-center justify-center min-h-64">
           <Spinner size="lg" />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
   if (error) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath={`/admin/queue?tab=${activeTab}`}
+        title={<Trans>Job Queue</Trans>}
+        subtitle={<Trans>Monitor ActivityPub delivery queue status</Trans>}
+      >
         <InlineError message={error} />
-      </Layout>
+      </AdminLayout>
     );
   }
 
   // Queue not available (e.g., no Redis/Dragonfly)
   if (stats && !stats.available) {
     return (
-      <Layout>
-        <AdminNav currentPath="/admin/queue" />
-        <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                <Activity className="w-6 h-6 sm:w-8 sm:h-8" />
-                <Trans>Job Queue</Trans>
-              </h1>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                <Trans>Monitor ActivityPub delivery queue status</Trans>
-              </p>
-            </div>
-          </div>
-
-          <Card>
-            <CardContent className="p-8 text-center">
-              <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-yellow-500" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                <Trans>Queue Not Available</Trans>
-              </h2>
-              <p className="text-gray-500 dark:text-gray-400">
-                {stats.message || <Trans>The job queue system is not currently configured or running.</Trans>}
-              </p>
-              <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
-                <Trans>ActivityPub delivery is running in synchronous mode.</Trans>
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
+      <AdminLayout
+        currentPath={`/admin/queue?tab=${activeTab}`}
+        title={<Trans>Job Queue</Trans>}
+        subtitle={<Trans>Monitor ActivityPub delivery queue status</Trans>}
+      >
+        <Card>
+          <CardContent className="p-8 text-center">
+            <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-yellow-500" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              <Trans>Queue Not Available</Trans>
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400">
+              {stats.message || <Trans>The job queue system is not currently configured or running.</Trans>}
+            </p>
+            <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
+              <Trans>ActivityPub delivery is running in synchronous mode.</Trans>
+            </p>
+          </CardContent>
+        </Card>
+      </AdminLayout>
     );
   }
 
   return (
-    <Layout>
-      <AdminNav currentPath="/admin/queue" />
+    <AdminLayout
+      currentPath={`/admin/queue?tab=${activeTab}`}
+      title={<Trans>Job Queue</Trans>}
+      subtitle={<Trans>Monitor ActivityPub delivery queue status</Trans>}
+      showReload
+      onReload={handleRefresh}
+      isReloading={isRefreshing}
+    >
 
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <Activity className="w-6 h-6 sm:w-8 sm:h-8" />
-              <Trans>Job Queue</Trans>
-            </h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              <Trans>Monitor ActivityPub delivery queue status</Trans>
-            </p>
-          </div>
-          <Button variant="secondary" onPress={handleRefresh} isDisabled={isRefreshing}>
-            {isRefreshing ? (
-              <Spinner size="sm" className="mr-2" />
-            ) : (
-              <RefreshCw className="w-4 h-4 mr-2" />
-            )}
-            <Trans>Refresh</Trans>
-          </Button>
-        </div>
 
         {/* Stats Cards */}
         {stats && (
@@ -299,30 +291,6 @@ export default function AdminQueuePage() {
             </Card>
           </div>
         )}
-
-        {/* Tabs */}
-        <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
-          <button
-            onClick={() => setActiveTab("overview")}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === "overview"
-                ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400"
-            }`}
-          >
-            <Trans>Overview</Trans>
-          </button>
-          <button
-            onClick={() => setActiveTab("servers")}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === "servers"
-                ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400"
-            }`}
-          >
-            <Trans>Per Server</Trans> ({stats?.serverCount || 0})
-          </button>
-        </div>
 
         {/* Overview Tab */}
         {activeTab === "overview" && stats && (
@@ -493,6 +461,6 @@ export default function AdminQueuePage() {
           </Card>
         )}
       </div>
-    </Layout>
+    </AdminLayout>
   );
 }

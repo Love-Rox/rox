@@ -43,6 +43,7 @@ import contactRoute from "./routes/contact.js";
 import onboardingRoute from "./routes/onboarding.js";
 import mentionsRoute from "./routes/mentions.js";
 import directRoute from "./routes/direct.js";
+import mastodonRoute from "./routes/mastodon.js";
 import wsRoute, { websocket } from "./routes/ws.js";
 import packageJson from "../../../package.json";
 import { ReceivedActivitiesCleanupService } from "./services/ReceivedActivitiesCleanupService.js";
@@ -98,6 +99,9 @@ app.route("/api/onboarding", onboardingRoute);
 app.route("/api/mentions", mentionsRoute);
 app.route("/api/direct", directRoute);
 
+// Mastodon compatible API
+app.route("/api/v1", mastodonRoute);
+
 // WebSocket routes for real-time updates
 app.route("/ws", wsRoute);
 
@@ -116,16 +120,6 @@ app.route("/users", followingAPRoute); // /users/:username/following
 app.route("/", noteAPRoute); // /notes/:id
 
 const port = parseInt(process.env.PORT || "3000", 10);
-
-logger.info(
-  {
-    port,
-    database: process.env.DB_TYPE || "postgres",
-    storage: process.env.STORAGE_TYPE || "local",
-    environment: process.env.NODE_ENV || "development",
-  },
-  "Rox API server starting",
-);
 
 // Start cleanup service for received activities
 const cleanupService = new ReceivedActivitiesCleanupService({
@@ -167,6 +161,23 @@ const scheduledNotePublisher = new ScheduledNotePublisher(scheduledNoteService, 
   batchSize: 50,
 });
 scheduledNotePublisher.start();
+
+// Print startup banner (plain text for systemd/console compatibility)
+const env = process.env.NODE_ENV || "development";
+const queueMode = container.activityDeliveryQueue.isQueueEnabled() ? "redis" : "sync";
+const cacheMode = container.cacheService.isAvailable() ? "dragonfly" : "disabled";
+
+console.log("══════════════════════════════════════════════════");
+console.log(`🦊 Rox v${packageJson.version}`);
+console.log("══════════════════════════════════════════════════");
+console.log(`Environment:  ${env}`);
+console.log(`Port:         ${port}`);
+console.log(`URL:          ${process.env.URL || "(not set)"}`);
+console.log(`Database:     ${process.env.DB_TYPE || "postgres"}`);
+console.log(`Storage:      ${process.env.STORAGE_TYPE || "local"}`);
+console.log(`Queue:        ${queueMode}`);
+console.log(`Cache:        ${cacheMode}`);
+console.log("══════════════════════════════════════════════════");
 
 // Graceful shutdown handler
 let isShuttingDown = false;

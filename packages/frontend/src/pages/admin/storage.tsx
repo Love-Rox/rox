@@ -34,8 +34,7 @@ import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
 import { addToastAtom } from "../../lib/atoms/toast";
-import { Layout } from "../../components/layout/Layout";
-import { AdminNav } from "../../components/admin/AdminNav";
+import { AdminLayout } from "../../components/admin/AdminLayout";
 import type { DriveFile } from "shared";
 
 interface InstanceStorageStats {
@@ -249,21 +248,29 @@ export default function AdminStoragePage() {
 
   if (isLoading || !currentUser) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/storage"
+        title={<Trans>Storage Management</Trans>}
+        subtitle={<Trans>Manage instance storage and user quotas</Trans>}
+      >
         <div className="flex items-center justify-center py-20">
           <Spinner size="lg" />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
   if (!currentUser.isAdmin) {
     return (
-      <Layout>
+      <AdminLayout
+        currentPath="/admin/storage"
+        title={<Trans>Storage Management</Trans>}
+        subtitle={<Trans>Manage instance storage and user quotas</Trans>}
+      >
         <div className="flex items-center justify-center py-20">
           <Spinner size="lg" />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
@@ -274,18 +281,11 @@ export default function AdminStoragePage() {
   );
 
   return (
-    <Layout>
-      <div className="mb-4 sm:mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
-          <Trans>Storage Management</Trans>
-        </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          <Trans>Manage instance storage and user quotas</Trans>
-        </p>
-      </div>
-
-      {/* Admin Navigation */}
-      <AdminNav currentPath="/admin/storage" />
+    <AdminLayout
+      currentPath="/admin/storage"
+      title={<Trans>Storage Management</Trans>}
+      subtitle={<Trans>Manage instance storage and user quotas</Trans>}
+    >
 
       {/* Instance Overview */}
       {stats && (
@@ -631,6 +631,6 @@ export default function AdminStoragePage() {
           )}
         </CardContent>
       </Card>
-    </Layout>
+    </AdminLayout>
   );
 }

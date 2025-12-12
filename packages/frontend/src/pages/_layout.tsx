@@ -4,6 +4,153 @@ import { AppProviders } from "../components/AppProviders.js";
 import { ToastContainer } from "../components/ui/Toast";
 
 /**
+ * Inline CSS for PWA splash screen.
+ * This is injected directly into the HTML to ensure it's available immediately,
+ * before any CSS files are loaded, preventing flash of unstyled content.
+ */
+const splashScreenStyles = `
+#rox-splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f9fafb;
+  transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+}
+@media (prefers-color-scheme: dark) {
+  #rox-splash-screen {
+    background: #111827;
+  }
+}
+#rox-splash-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+#rox-splash-screen .splash-icon {
+  width: 96px;
+  height: 96px;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  animation: splash-bounce 1s ease-in-out infinite;
+}
+@media (prefers-color-scheme: dark) {
+  #rox-splash-screen .splash-icon {
+    background: #1f2937;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+}
+#rox-splash-screen .splash-icon img {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+#rox-splash-screen .splash-icon svg {
+  width: 48px;
+  height: 48px;
+  color: #4f46e5;
+}
+#rox-splash-screen .splash-title {
+  font-family: "M PLUS Rounded 1c", system-ui, -apple-system, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+@media (prefers-color-scheme: dark) {
+  #rox-splash-screen .splash-title {
+    color: #f9fafb;
+  }
+}
+#rox-splash-screen .splash-subtitle {
+  font-family: "M PLUS Rounded 1c", system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  color: #6b7280;
+}
+@media (prefers-color-scheme: dark) {
+  #rox-splash-screen .splash-subtitle {
+    color: #9ca3af;
+  }
+}
+#rox-splash-screen .splash-loader {
+  width: 40px;
+  height: 40px;
+  margin-top: 32px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #4f46e5;
+  border-radius: 50%;
+  animation: splash-spin 0.8s linear infinite;
+}
+@media (prefers-color-scheme: dark) {
+  #rox-splash-screen .splash-loader {
+    border-color: #374151;
+    border-top-color: #818cf8;
+  }
+}
+@keyframes splash-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes splash-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+/* Only show splash screen in PWA standalone mode */
+@media not all and (display-mode: standalone) {
+  #rox-splash-screen {
+    display: none;
+  }
+}
+/* Hide splash if already shown this session */
+#rox-splash-screen.session-shown {
+  display: none;
+}
+`;
+
+/**
+ * Blocking script to check if splash screen should be shown.
+ * Uses sessionStorage to track if splash was already shown this session.
+ * This ensures splash only appears on PWA cold start, not on page navigation.
+ */
+const splashCheckScript = `
+(function() {
+  try {
+    var splash = document.getElementById('rox-splash-screen');
+    if (!splash) return;
+
+    // Check if we're in standalone mode
+    var isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                       window.navigator.standalone === true;
+
+    if (!isStandalone) {
+      // Not in PWA mode, splash is already hidden by CSS
+      return;
+    }
+
+    // Check if splash was already shown this session
+    var wasShown = sessionStorage.getItem('rox-splash-shown');
+    if (wasShown) {
+      // Already shown this session, hide immediately
+      splash.classList.add('session-shown');
+    } else {
+      // First load this session, mark as shown
+      sessionStorage.setItem('rox-splash-shown', '1');
+    }
+  } catch (e) {
+    // Silently fail - splash will be shown
+  }
+})();
+`;
+
+/**
  * Blocking script to apply UI settings from localStorage before React hydration.
  *
  * IMPORTANT: This script MUST NOT modify any DOM elements that React hydrates (html, head, body).
@@ -88,6 +235,14 @@ const uiSettingsScript = `
       document.head.appendChild(style);
     }
 
+    // Update theme-color meta tag for PWA
+    if (primaryColor && /^#[0-9A-Fa-f]{6}$/.test(primaryColor)) {
+      var themeColorMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeColorMeta) {
+        themeColorMeta.setAttribute('content', primaryColor);
+      }
+    }
+
     // Apply custom CSS if present
     if (settings.appCustomCss) {
       var style = document.createElement('style');
@@ -112,6 +267,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <>
       <meta charSet="utf-8" />
+      {/* Splash screen styles - must be inline for immediate availability */}
+      <style dangerouslySetInnerHTML={{ __html: splashScreenStyles }} />
       {/* Blocking script to prevent UI flash - must run before any rendering */}
       <script dangerouslySetInnerHTML={{ __html: uiSettingsScript }} />
       {/* Viewport with maximum-scale=1 prevents iOS zoom on input focus */}
@@ -136,6 +293,26 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
       {/* Favicon */}
       <link rel="icon" type="image/png" href="/favicon.png" />
+
+      {/* Google Fonts - M PLUS Rounded 1c */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link
+        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700&display=swap"
+        rel="stylesheet"
+      />
+
+      {/* PWA Splash Screen - shown only in standalone mode until app loads */}
+      <div id="rox-splash-screen">
+        <div className="splash-icon">
+          <img src="/api/instance/apple-touch-icon.png" alt="" />
+        </div>
+        <div className="splash-title">Rox</div>
+        <div className="splash-subtitle">Loading...</div>
+        <div className="splash-loader" />
+      </div>
+      {/* Check if splash should be shown (only on PWA cold start) */}
+      <script dangerouslySetInnerHTML={{ __html: splashCheckScript }} />
 
       <AppProviders>
         {children}

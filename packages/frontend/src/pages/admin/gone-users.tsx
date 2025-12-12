@@ -10,7 +10,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { Ghost, RefreshCw, Trash2, RotateCcw, CheckSquare, Square, AlertTriangle } from "lucide-react";
+import { Ghost, Trash2, RotateCcw, CheckSquare, Square, AlertTriangle } from "lucide-react";
 import { tokenAtom } from "../../lib/atoms/auth";
 import { apiClient } from "../../lib/api/client";
 import { Button } from "../../components/ui/Button";
@@ -18,8 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Ca
 import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
 import { addToastAtom } from "../../lib/atoms/toast";
-import { Layout } from "../../components/layout/Layout";
-import { AdminNav } from "../../components/admin/AdminNav";
+import { AdminLayout } from "../../components/admin/AdminLayout";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 
 interface GoneUser {
@@ -164,32 +163,35 @@ export default function AdminGoneUsersPage() {
 
   if (isLoading) {
     return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8 max-w-6xl">
-          <AdminNav currentPath="/admin/gone-users" />
-          <div className="flex justify-center items-center py-16">
-            <Spinner size="lg" />
-          </div>
+      <AdminLayout
+        currentPath="/admin/gone-users"
+        title={<Trans>Gone Users</Trans>}
+        subtitle={<Trans>Manage remote users with fetch errors</Trans>}
+      >
+        <div className="flex justify-center items-center py-16">
+          <Spinner size="lg" />
         </div>
-      </Layout>
+      </AdminLayout>
     );
   }
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <AdminNav currentPath="/admin/gone-users" />
+    <AdminLayout
+      currentPath="/admin/gone-users"
+      title={<Trans>Gone Users</Trans>}
+      subtitle={<Trans>Manage remote users with fetch errors</Trans>}
+      showReload
+      onReload={() => loadUsers()}
+      isReloading={isLoading}
+    >
+      <div className="container mx-auto max-w-6xl">
 
         <Card className="mt-6">
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Ghost className="w-5 h-5" />
-              <Trans>Gone Users</Trans>
+              <Trans>User List</Trans>
               <span className="text-sm font-normal text-(--text-secondary)">({total})</span>
             </CardTitle>
-            <Button variant="ghost" size="sm" onPress={() => loadUsers()} isDisabled={isLoading}>
-              <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
-            </Button>
           </CardHeader>
           <CardContent>
             {error && <InlineError message={error} />}
@@ -345,6 +347,6 @@ export default function AdminGoneUsersPage() {
           </CardContent>
         </Card>
       </div>
-    </Layout>
+    </AdminLayout>
   );
 }

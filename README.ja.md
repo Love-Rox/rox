@@ -20,7 +20,7 @@
   </a>
   <img src="https://img.shields.io/badge/runtime-Bun-f9f1e1?logo=bun&logoColor=black" alt="Bun" />
   <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/tests-342%2B-brightgreen" alt="Tests" />
+  <img src="https://img.shields.io/badge/tests-800%2B-brightgreen" alt="Tests" />
 </p>
 
 <p align="center">
@@ -40,30 +40,11 @@
 
 ## ハイライト
 
-<table>
-  <tr>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/zap.svg" width="48" height="48" alt="Fast" /><br />
-      <b>超高速</b><br />
-      <sub>Bunランタイムで<br />最高のパフォーマンス</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/server.svg" width="48" height="48" alt="Flexible" /><br />
-      <b>インフラ非依存</b><br />
-      <sub>VPS、Docker、<br />エッジ環境で動作</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/globe.svg" width="48" height="48" alt="Federated" /><br />
-      <b>完全連合</b><br />
-      <sub>Mastodon、Misskey<br />などと連携</sub>
-    </td>
-    <td align="center" width="25%">
-      <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/shield-check.svg" width="48" height="48" alt="Secure" /><br />
-      <b>セキュア設計</b><br />
-      <sub>Passkey、OAuth、<br />ロールベース権限</sub>
-    </td>
-  </tr>
-</table>
+| | | | |
+|:---:|:---:|:---:|:---:|
+| ⚡ | 🖥️ | 🌐 | 🔒 |
+| **超高速** | **インフラ非依存** | **完全連合** | **セキュア設計** |
+| Bunランタイムで最高のパフォーマンス | VPS、Docker、エッジ環境で動作 | Mastodon、Misskeyなどと連携 | Passkey、OAuth、ロールベース権限 |
 
 ## 特徴
 
@@ -108,8 +89,8 @@ bun install
 cp .env.example .env
 # .envファイルを編集して設定を変更
 
-# 開発サービスを起動（PostgreSQL + Dragonfly）
-docker compose up -d
+# 開発サービスを起動（PostgreSQL + MariaDB + Dragonfly）
+docker compose -f docker/compose.dev.yml up -d
 
 # データベースマイグレーションを実行
 bun run db:generate
@@ -185,11 +166,11 @@ DATABASE_URL=postgresql://rox:rox_dev_password@localhost:5432/rox
 </details>
 
 <details>
-<summary><b>MySQL</b></summary>
+<summary><b>MySQL/MariaDB</b></summary>
 
 ```bash
-# MySQLサービスを起動
-docker compose --profile mysql up -d
+# MariaDBは開発用composeに含まれています
+docker compose -f docker/compose.dev.yml up -d
 
 DB_TYPE=mysql
 DATABASE_URL=mysql://rox:rox_dev_password@localhost:3306/rox
@@ -356,9 +337,10 @@ Roxは**リポジトリパターン**と**アダプターパターン**を使用
 | リソース | 説明 |
 |----------|-------------|
 | [コントリビューションガイドライン](./CONTRIBUTING.ja.md) | 貢献方法 |
+| [DevContainerガイド](./docs/development/devcontainer.ja.md) | VS Code/Cursor DevContainerセットアップ |
 | [プロジェクト仕様書](./docs/project/v1.md) | 元の仕様書（日本語） |
 | [実装ガイド](./docs/implementation/README.md) | アーキテクチャ詳細 |
-| [テストガイド](./docs/development/testing.md) | テストドキュメント |
+| [テストガイド](./docs/development/testing.ja.md) | テストドキュメント |
 | [デプロイガイド](./docs/deployment/README.md) | 本番デプロイ |
 
 ---
