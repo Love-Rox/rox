@@ -1,4 +1,31 @@
-# Session Status - 2025-12-12
+# Session Status - 2025-12-12 (Updated)
+
+## Release Readiness Assessment (v2025.12.0-rc.10)
+
+### Overall Status: ✅ READY FOR RELEASE
+
+| Check | Status | Notes |
+|-------|--------|-------|
+| TypeScript type check | ✅ Pass | All packages pass |
+| Linting (oxlint) | ✅ Pass | 0 warnings, 0 errors |
+| Unit tests | ✅ Pass | 841 tests passing |
+| Build | ✅ Pass | Backend and frontend build successfully |
+| Translations | ✅ Complete | 1110 strings, 0 missing in Japanese |
+| Docker configs | ✅ Ready | compose.yml, compose.dev.yml configured |
+| DevContainer | ✅ Ready | Full setup with HTTPS, Claude Code |
+| Documentation | ✅ Updated | DevContainer guide, Testing guide updated |
+
+### Docker Reorganization Completed
+- Renamed `docker-compose.prod.yml` → `compose.yml`
+- Renamed `docker-compose.dev.yml` → `compose.dev.yml`
+- Deleted deprecated `/compose.yml` (root) and `/docker/caddy-deprecated/`
+- Added MariaDB service for MySQL compatibility testing
+- Created DevContainer with HTTPS support via mkcert
+- Claude Code CLI auto-installed in DevContainer
+- Claude Code history persisted in project root `/.claude/`
+
+### Recent Bug Fix
+- Fixed `FollowService.test.ts` mock type error (missing increment/decrement methods)
 
 ## Current Status
 
