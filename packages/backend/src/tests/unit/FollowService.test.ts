@@ -141,6 +141,10 @@ describe("FollowService", () => {
           if (id === "nonexistent") return Promise.resolve(null);
           return Promise.resolve(mockRemoteUser as User);
         }),
+        incrementFollowersCount: mock(() => Promise.resolve()),
+        decrementFollowersCount: mock(() => Promise.resolve()),
+        incrementFollowingCount: mock(() => Promise.resolve()),
+        decrementFollowingCount: mock(() => Promise.resolve()),
       };
 
       const service = new FollowService(
@@ -158,6 +162,10 @@ describe("FollowService", () => {
           if (id === "user1") return Promise.resolve(mockLocalUser as User);
           return Promise.resolve(null);
         }),
+        incrementFollowersCount: mock(() => Promise.resolve()),
+        decrementFollowersCount: mock(() => Promise.resolve()),
+        incrementFollowingCount: mock(() => Promise.resolve()),
+        decrementFollowingCount: mock(() => Promise.resolve()),
       };
 
       const service = new FollowService(
