@@ -10,7 +10,7 @@
  * @module components/list/AddToListModal
  */
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Trans } from "@lingui/react/macro";
 import { X, List as ListIcon, Loader2, Plus, Check } from "lucide-react";
 import {
@@ -118,17 +118,24 @@ export function AddToListModal({
   const [loadingListIds, setLoadingListIds] = useState<Set<string>>(new Set());
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  // Track if we've already fetched for this userId to prevent duplicate calls
-  const fetchedForUserRef = useRef<string | null>(null);
+  // Track fetch state to prevent duplicate calls
+  const isFetchingRef = useRef(false);
+  const lastFetchedUserRef = useRef<string | null>(null);
 
-  // Fetch user's lists and which ones contain the target user
-  const fetchData = useCallback(async () => {
-    if (!isOpen) return;
+  // Manual fetch function for retry button
+  const handleRetry = async () => {
+    lastFetchedUserRef.current = null;
+    isFetchingRef.current = false;
+    await fetchLists();
+  };
 
-    // Prevent duplicate fetches for the same user
-    if (fetchedForUserRef.current === userId) return;
-    fetchedForUserRef.current = userId;
+  // Fetch lists (extracted for retry functionality)
+  const fetchLists = async () => {
+    if (isFetchingRef.current) return;
+    if (lastFetchedUserRef.current === userId) return;
 
+    isFetchingRef.current = true;
+    lastFetchedUserRef.current = userId;
     setLoading(true);
     setError(null);
 
@@ -142,24 +149,25 @@ export function AddToListModal({
       setContainingListIds(new Set(containingLists.map((l) => l.id)));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load lists");
+      // Reset on error so user can retry
+      lastFetchedUserRef.current = null;
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
-  }, [isOpen, userId, setLists]);
+  };
 
-  // Reset fetch tracking when modal closes
-  useEffect(() => {
-    if (!isOpen) {
-      fetchedForUserRef.current = null;
-    }
-  }, [isOpen]);
-
-  // Load on open
+  // Fetch on open or when userId changes
   useEffect(() => {
     if (isOpen) {
-      fetchData();
+      fetchLists();
+    } else {
+      // Reset when modal closes
+      lastFetchedUserRef.current = null;
+      isFetchingRef.current = false;
     }
-  }, [isOpen, fetchData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, userId]);
 
   // Handle toggle list membership
   const handleToggle = async (listId: string) => {
@@ -276,7 +284,7 @@ export function AddToListModal({
                   ) : error ? (
                     <div className="text-center py-12">
                       <p className="text-red-500 mb-4">{error}</p>
-                      <Button variant="secondary" onPress={fetchData}>
+                      <Button variant="secondary" onPress={handleRetry}>
                         <Trans>Try again</Trans>
                       </Button>
                     </div>
