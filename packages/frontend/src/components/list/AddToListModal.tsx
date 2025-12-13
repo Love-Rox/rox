@@ -20,10 +20,12 @@ import {
   Heading,
   Button as AriaButton,
 } from "react-aria-components";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { listsApi, type ListWithMemberCount, type List } from "../../lib/api/lists";
 import { myListsAtom, addListAtom, updateListMemberCountAtom } from "../../lib/atoms/lists";
 import { addToastAtom } from "../../lib/atoms/toast";
+import { tokenAtom } from "../../lib/atoms/auth";
+import { apiClient } from "../../lib/api/client";
 import { Button } from "../ui/Button";
 import { ListCreateModal } from "./ListCreateModal";
 
@@ -111,6 +113,7 @@ export function AddToListModal({
   const addList = useSetAtom(addListAtom);
   const updateMemberCount = useSetAtom(updateListMemberCountAtom);
   const [, addToast] = useAtom(addToastAtom);
+  const token = useAtomValue(tokenAtom);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -120,7 +123,10 @@ export function AddToListModal({
 
   // Fetch user's lists and which ones contain the target user
   const fetchData = useCallback(async () => {
-    if (!isOpen) return;
+    if (!isOpen || !token) return;
+
+    // Ensure token is set before making API calls
+    apiClient.setToken(token);
 
     setLoading(true);
     setError(null);
@@ -138,7 +144,7 @@ export function AddToListModal({
     } finally {
       setLoading(false);
     }
-  }, [isOpen, userId, setLists]);
+  }, [isOpen, userId, setLists, token]);
 
   // Load on open
   useEffect(() => {
