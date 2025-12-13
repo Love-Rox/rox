@@ -8,7 +8,7 @@ import { notesApi } from "../../lib/api/notes";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { apiClient, ApiError } from "../../lib/api/client";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
-import { Flag, QrCode } from "lucide-react";
+import { Flag, QrCode, ListPlus } from "lucide-react";
 import { Button } from "../ui/Button";
 import { NoteCard } from "../note/NoteCard";
 import { MfmRenderer } from "../mfm/MfmRenderer";
@@ -21,6 +21,7 @@ import { ReportDialog } from "../report/ReportDialog";
 import { RoleBadgeList } from "./RoleBadge";
 import { FollowListModal } from "./FollowListModal";
 import { UserQRCodeModal } from "./UserQRCodeModal";
+import { AddToListModal } from "../list/AddToListModal";
 import { useRouter } from "../ui/SpaLink";
 
 /**
@@ -113,6 +114,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
   const [publicRoles, setPublicRoles] = useState<PublicRole[]>([]);
   const [showFollowList, setShowFollowList] = useState<"followers" | "following" | null>(null);
   const [showQRCode, setShowQRCode] = useState(false);
+  const [showAddToList, setShowAddToList] = useState(false);
 
   // Generate unique ID for custom CSS scoping
   const profileContainerId = useId().replace(/:/g, "-");
@@ -454,6 +456,14 @@ export function UserProfile({ username, host }: UserProfileProps) {
                     </Button>
                     <Button
                       variant="ghost"
+                      onPress={() => setShowAddToList(true)}
+                      aria-label="Add to list"
+                      className="text-gray-500 dark:text-gray-400 hover:text-primary-500"
+                    >
+                      <ListPlus className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
                       onPress={() => setShowReportDialog(true)}
                       aria-label="Report user"
                       className="text-gray-500 dark:text-gray-400 hover:text-red-500"
@@ -618,6 +628,16 @@ export function UserProfile({ username, host }: UserProfileProps) {
         onClose={() => setShowQRCode(false)}
         user={user}
       />
+
+      {/* Add to List Modal */}
+      {currentUser && !isOwnProfile && (
+        <AddToListModal
+          isOpen={showAddToList}
+          onClose={() => setShowAddToList(false)}
+          userId={user.id}
+          username={user.username}
+        />
+      )}
     </Layout>
   );
 }
