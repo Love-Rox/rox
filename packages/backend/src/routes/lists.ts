@@ -296,7 +296,7 @@ lists.post(
  * @body {number} [offset=0] - Number of members to skip
  * @returns {ListMembership[]} Members with user details
  */
-lists.post("/get-memberships", async (c: Context) => {
+lists.post("/get-memberships", optionalAuth(), async (c: Context) => {
   const user = c.get("user");
   const listService = getListService(c);
 
@@ -375,7 +375,7 @@ lists.post(
  * @query {string} [untilId] - Return notes older than this ID
  * @returns {Note[]} Notes from list members
  */
-lists.get("/timeline", async (c: Context) => {
+lists.get("/timeline", optionalAuth(), async (c: Context) => {
   const user = c.get("user");
   const listService = getListService(c);
 
