@@ -119,17 +119,6 @@ export function ListEditModal({ isOpen, onClose, list, onUpdated }: ListEditModa
     onClose();
   };
 
-  const getNotifyLevelIcon = (level: ListNotifyLevel) => {
-    switch (level) {
-      case "none":
-        return <BellOff className="w-4 h-4" />;
-      case "all":
-        return <BellRing className="w-4 h-4" />;
-      case "original":
-        return <Bell className="w-4 h-4" />;
-    }
-  };
-
   return (
     <ModalOverlay
       isOpen={isOpen}
@@ -202,10 +191,7 @@ export function ListEditModal({ isOpen, onClose, list, onUpdated }: ListEditModa
                     className="w-full"
                   >
                     <AriaButton className="flex items-center justify-between w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--input-bg) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500">
-                      <span className="flex items-center gap-2">
-                        {getNotifyLevelIcon(notifyLevel)}
-                        <SelectValue />
-                      </span>
+                      <SelectValue className="flex items-center gap-2" />
                       <span className="text-(--text-muted)">▼</span>
                     </AriaButton>
                     <Popover className="w-[--trigger-width] bg-(--card-bg) border border-(--border-color) rounded-lg shadow-lg overflow-hidden">
