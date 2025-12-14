@@ -5,7 +5,12 @@
  */
 
 import { i18n } from "@lingui/core";
+import { compileMessage } from "@lingui/message-utils/compileMessage";
 import { messages as enMessages } from "../../locales/en/messages.js";
+
+// Set message compiler as fallback for SSG/SSR edge cases
+// This prevents "Uncompiled message detected" warnings during static site generation
+i18n.setMessagesCompiler(compileMessage);
 
 /**
  * Available locales with display names

@@ -1,5 +1,8 @@
 import "../styles/globals.css";
 
+// Ensure i18n is initialized before any component rendering (including SSG)
+import "../lib/i18n/index.js";
+
 import { AppProviders } from "../components/AppProviders.js";
 import { ToastContainer } from "../components/ui/Toast";
 
