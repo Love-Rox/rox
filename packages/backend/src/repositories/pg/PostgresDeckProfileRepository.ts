@@ -132,11 +132,20 @@ export class PostgresDeckProfileRepository implements IDeckProfileRepository {
     await this.db.delete(deckProfiles).where(eq(deckProfiles.userId, userId));
   }
 
-  async clearDefaultForUser(userId: string): Promise<void> {
-    await this.db
-      .update(deckProfiles)
-      .set({ isDefault: false })
-      .where(eq(deckProfiles.userId, userId));
+  async clearDefaultForUser(userId: string, excludeProfileId?: string): Promise<void> {
+    if (excludeProfileId) {
+      await this.db
+        .update(deckProfiles)
+        .set({ isDefault: false })
+        .where(
+          and(eq(deckProfiles.userId, userId), sql`${deckProfiles.id} != ${excludeProfileId}`)
+        );
+    } else {
+      await this.db
+        .update(deckProfiles)
+        .set({ isDefault: false })
+        .where(eq(deckProfiles.userId, userId));
+    }
   }
 
   async countByUserId(userId: string): Promise<number> {
