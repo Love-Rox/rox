@@ -56,8 +56,10 @@ export interface IDeckProfileRepository {
   /**
    * Clear the default flag for all profiles of a user
    * Used when setting a new default profile
+   * @param userId - User ID
+   * @param excludeProfileId - Optional profile ID to exclude from clearing
    */
-  clearDefaultForUser(userId: string): Promise<void>;
+  clearDefaultForUser(userId: string, excludeProfileId?: string): Promise<void>;
 
   /**
    * Count profiles for a user
