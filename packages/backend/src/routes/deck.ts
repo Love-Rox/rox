@@ -125,14 +125,10 @@ deck.post(
         return c.json({ error: "Maximum profile limit reached (10)" }, 400);
       }
 
-      // If this is set as default, clear other defaults
-      if (body.isDefault) {
-        await repository.clearDefaultForUser(user.id);
-      }
-
       // Make first profile default automatically
       const isDefault = body.isDefault ?? (profileCount === 0);
 
+      // Repository's create method handles clearing other defaults atomically in a transaction
       const profile = await repository.create({
         id: generateProfileId(),
         userId: user.id,
@@ -193,11 +189,7 @@ deck.patch(
         }
       }
 
-      // If setting as default, clear other defaults
-      if (body.isDefault && !existing.isDefault) {
-        await repository.clearDefaultForUser(user.id);
-      }
-
+      // Repository's update method handles clearing other defaults atomically in a transaction
       const updateData: Partial<Pick<DeckProfile, "name" | "columns" | "isDefault">> = {};
       if (body.name !== undefined) updateData.name = body.name.trim();
       if (body.columns !== undefined) updateData.columns = body.columns;
@@ -258,8 +250,14 @@ deck.delete(
         if (remainingProfiles.length > 0 && remainingProfiles[0]) {
           try {
             await repository.update(remainingProfiles[0].id, { isDefault: true });
-          } catch {
-            // Profile may have been deleted concurrently; ignore
+          } catch (error) {
+            // Only ignore if the profile was deleted concurrently
+            const stillExists = await repository.findById(remainingProfiles[0].id);
+            if (stillExists) {
+              // Re-throw if it's not a concurrent deletion
+              throw error;
+            }
+            // Otherwise, ignore - profile was deleted concurrently
           }
         }
       }

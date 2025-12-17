@@ -33,11 +33,15 @@ export function DeckProfileSwitcher() {
   const [isCreating, setIsCreating] = useState(false);
   const [newProfileName, setNewProfileName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleCreateProfile = useCallback(async () => {
     if (!newProfileName.trim() || isSubmitting) return;
 
     setIsSubmitting(true);
+    setCreateError(null);
     try {
       const newProfile = await createProfile({
         name: newProfileName.trim(),
@@ -49,6 +53,10 @@ export function DeckProfileSwitcher() {
         setNewProfileName("");
         setIsCreating(false);
       }
+    } catch (error) {
+      setCreateError(
+        error instanceof Error ? error.message : "Failed to create profile"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -57,10 +65,20 @@ export function DeckProfileSwitcher() {
   const handleDeleteProfile = useCallback(
     async (profileId: string) => {
       if (profiles.length <= 1) return;
-      await deleteProfile(profileId);
+      setIsDeleting(true);
+      try {
+        await deleteProfile(profileId);
+      } finally {
+        setIsDeleting(false);
+        setDeleteConfirmId(null);
+      }
     },
     [profiles.length, deleteProfile]
   );
+
+  const profileToDelete = deleteConfirmId
+    ? profiles.find((p) => p.id === deleteConfirmId)
+    : null;
 
   // Show loading state
   if (loading && profiles.length === 0) {
@@ -88,7 +106,11 @@ export function DeckProfileSwitcher() {
               disabled={isSubmitting}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleCreateProfile();
-                if (e.key === "Escape") setIsCreating(false);
+                if (e.key === "Escape") {
+                  setIsCreating(false);
+                  setNewProfileName("");
+                  setCreateError(null);
+                }
               }}
             />
             <Button
@@ -106,11 +128,20 @@ export function DeckProfileSwitcher() {
             <Button
               variant="ghost"
               size="sm"
-              onPress={() => setIsCreating(false)}
+              onPress={() => {
+                setIsCreating(false);
+                setNewProfileName("");
+                setCreateError(null);
+              }}
               isDisabled={isSubmitting}
             >
               <Trans>Cancel</Trans>
             </Button>
+            {createError && (
+              <span className="text-sm text-red-600 dark:text-red-400">
+                {createError}
+              </span>
+            )}
           </div>
         ) : (
           <Button variant="secondary" size="sm" onPress={() => setIsCreating(true)}>
@@ -164,7 +195,7 @@ export function DeckProfileSwitcher() {
               <>
                 <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
                 <MenuItem
-                  onAction={() => handleDeleteProfile(activeProfile.id)}
+                  onAction={() => setDeleteConfirmId(activeProfile.id)}
                   className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 outline-none text-red-600 dark:text-red-400"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -204,6 +235,7 @@ export function DeckProfileSwitcher() {
               if (e.key === "Escape") {
                 setIsCreating(false);
                 setNewProfileName("");
+                setCreateError(null);
               }
             }}
           />
@@ -225,11 +257,67 @@ export function DeckProfileSwitcher() {
             onPress={() => {
               setIsCreating(false);
               setNewProfileName("");
+              setCreateError(null);
             }}
             isDisabled={isSubmitting}
           >
             <Trans>Cancel</Trans>
           </Button>
+          {createError && (
+            <span className="text-sm text-red-600 dark:text-red-400">
+              {createError}
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {profileToDelete && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div
+            className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl p-6"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-dialog-title"
+            aria-describedby="delete-dialog-description"
+          >
+            <h2
+              id="delete-dialog-title"
+              className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4"
+            >
+              <Trans>Delete Profile</Trans>
+            </h2>
+            <p
+              id="delete-dialog-description"
+              className="text-gray-700 dark:text-gray-300 mb-6"
+            >
+              <Trans>
+                Are you sure you want to delete "{profileToDelete.name}"? This
+                will remove all columns and settings for this profile. This
+                action cannot be undone.
+              </Trans>
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="secondary"
+                onPress={() => setDeleteConfirmId(null)}
+                isDisabled={isDeleting}
+              >
+                <Trans>Cancel</Trans>
+              </Button>
+              <Button
+                variant="danger"
+                onPress={() => handleDeleteProfile(profileToDelete.id)}
+                isDisabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Trans>Delete</Trans>
+                )}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>
