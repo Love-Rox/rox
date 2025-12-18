@@ -314,6 +314,77 @@ ws.get(
 );
 
 /**
+ * WebSocket endpoint for global timeline
+ *
+ * Public endpoint, no authentication required.
+ * Streams all public notes (local and remote).
+ * Currently uses the same stream as local timeline.
+ */
+ws.get(
+  "/global-timeline",
+  upgradeWebSocket(() => {
+    let unsubscribe: (() => void) | null = null;
+    let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
+
+    return {
+      onOpen(_event, ws) {
+        const streamService = getTimelineStreamService();
+
+        // Subscribe to local timeline (includes public notes)
+        // TODO: Implement separate global stream for remote notes
+        unsubscribe = streamService.subscribeLocal((event) => {
+          try {
+            ws.send(JSON.stringify({ event: event.type, data: event.data }));
+          } catch {
+            // Connection closed
+          }
+        });
+
+        ws.send(JSON.stringify({ event: "connected", data: { channel: "global" } }));
+
+        // Start heartbeat
+        heartbeatInterval = setInterval(() => {
+          try {
+            ws.send(JSON.stringify({ event: "heartbeat", data: { timestamp: Date.now() } }));
+          } catch {
+            // Connection closed
+          }
+        }, 30000);
+      },
+
+      onMessage(event, ws) {
+        try {
+          const message = JSON.parse(event.data.toString());
+          if (message.type === "ping") {
+            ws.send(JSON.stringify({ event: "pong", data: { timestamp: Date.now() } }));
+          }
+        } catch {
+          // Invalid message format, ignore
+        }
+      },
+
+      onClose() {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+        if (heartbeatInterval) {
+          clearInterval(heartbeatInterval);
+        }
+      },
+
+      onError() {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+        if (heartbeatInterval) {
+          clearInterval(heartbeatInterval);
+        }
+      },
+    };
+  }),
+);
+
+/**
  * WebSocket endpoint for notifications
  *
  * Requires authentication via token query parameter.
