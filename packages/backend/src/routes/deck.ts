@@ -242,24 +242,10 @@ deck.delete(
         return c.json({ error: "Cannot delete the last profile" }, 400);
       }
 
-      await repository.delete(profileId);
-
-      // If deleted profile was default, make another profile default
-      if (existing.isDefault) {
-        const remainingProfiles = await repository.findByUserId(user.id);
-        if (remainingProfiles.length > 0 && remainingProfiles[0]) {
-          try {
-            await repository.update(remainingProfiles[0].id, { isDefault: true });
-          } catch (error) {
-            // Only ignore if the profile was deleted concurrently
-            const stillExists = await repository.findById(remainingProfiles[0].id);
-            if (stillExists) {
-              // Re-throw if it's not a concurrent deletion
-              throw error;
-            }
-            // Otherwise, ignore - profile was deleted concurrently
-          }
-        }
+      // Delete profile and promote another to default if needed (atomic operation)
+      const deleted = await repository.deleteAndPromoteDefault(profileId, user.id);
+      if (!deleted) {
+        return c.json({ error: "Profile not found" }, 404);
       }
 
       return c.json({ success: true });

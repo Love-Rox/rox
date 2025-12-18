@@ -44,12 +44,16 @@ export function ListColumnContent({
   const currentUser = useAtomValue(currentUserAtom);
   const hasLoadedRef = useRef(false);
   const currentListIdRef = useRef(listId);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const { notes, loading, error, hasMore, cursor } = state;
 
   // Reset when listId changes
   useEffect(() => {
     if (currentListIdRef.current !== listId) {
+      // Cancel any ongoing fetch
+      abortControllerRef.current?.abort();
+      abortControllerRef.current = null;
       currentListIdRef.current = listId;
       hasLoadedRef.current = false;
       updateState({
@@ -67,11 +71,19 @@ export function ListColumnContent({
     if (hasLoadedRef.current || !currentUser || !listId) return;
     hasLoadedRef.current = true;
 
+    // Cancel any previous request
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     const loadInitialData = async () => {
       updateState({ loading: true, error: null });
 
       try {
         const data = await listsApi.getTimeline(listId, { limit: 20 });
+        // Check if aborted before updating state
+        if (controller.signal.aborted) return;
+
         const lastNote = data[data.length - 1];
 
         updateState({
@@ -81,6 +93,8 @@ export function ListColumnContent({
           cursor: lastNote?.id ?? null,
         });
       } catch (err) {
+        // Ignore abort errors
+        if (controller.signal.aborted) return;
         updateState({
           loading: false,
           error:
@@ -92,6 +106,10 @@ export function ListColumnContent({
     };
 
     loadInitialData();
+
+    return () => {
+      controller.abort();
+    };
   }, [currentUser, listId, updateState]);
 
   // Load more

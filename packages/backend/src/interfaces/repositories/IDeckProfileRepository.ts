@@ -49,6 +49,14 @@ export interface IDeckProfileRepository {
   delete(id: string): Promise<void>;
 
   /**
+   * Delete deck profile and promote another to default if needed (atomic operation)
+   * @param id - Profile ID to delete
+   * @param userId - User ID (for finding remaining profiles)
+   * @returns true if deletion was successful
+   */
+  deleteAndPromoteDefault(id: string, userId: string): Promise<boolean>;
+
+  /**
    * Delete all deck profiles owned by a user
    */
   deleteByUserId(userId: string): Promise<void>;

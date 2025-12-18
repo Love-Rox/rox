@@ -128,6 +128,45 @@ export class PostgresDeckProfileRepository implements IDeckProfileRepository {
     await this.db.delete(deckProfiles).where(eq(deckProfiles.id, id));
   }
 
+  async deleteAndPromoteDefault(id: string, userId: string): Promise<boolean> {
+    return await this.db.transaction(async (tx) => {
+      // Get the profile to check if it's default
+      const [profile] = await tx
+        .select()
+        .from(deckProfiles)
+        .where(eq(deckProfiles.id, id))
+        .limit(1);
+
+      if (!profile) {
+        return false;
+      }
+
+      const wasDefault = profile.isDefault;
+
+      // Delete the profile
+      await tx.delete(deckProfiles).where(eq(deckProfiles.id, id));
+
+      // If it was default, promote another profile
+      if (wasDefault) {
+        const [remaining] = await tx
+          .select()
+          .from(deckProfiles)
+          .where(eq(deckProfiles.userId, userId))
+          .orderBy(deckProfiles.createdAt)
+          .limit(1);
+
+        if (remaining) {
+          await tx
+            .update(deckProfiles)
+            .set({ isDefault: true, updatedAt: new Date() })
+            .where(eq(deckProfiles.id, remaining.id));
+        }
+      }
+
+      return true;
+    });
+  }
+
   async deleteByUserId(userId: string): Promise<void> {
     await this.db.delete(deckProfiles).where(eq(deckProfiles.userId, userId));
   }
