@@ -10,6 +10,7 @@ import { ComposeModal } from "../note/ComposeModal";
 import { useUISettings } from "../../lib/hooks/useUISettings";
 import { useInstanceInfo } from "../../hooks/useInstanceInfo";
 import { SpaLink } from "../ui/SpaLink";
+import { CookieConsentBanner } from "../gdpr/CookieConsentBanner";
 
 /**
  * Props for the Layout component
@@ -115,6 +116,9 @@ export function Layout({ children, showSidebar = true, maxWidth = "2xl", header 
 
       {/* Compose Modal (for mobile post button) */}
       {shouldShowSidebar && <ComposeModal />}
+
+      {/* GDPR Cookie Consent Banner */}
+      <CookieConsentBanner />
     </div>
   );
 }

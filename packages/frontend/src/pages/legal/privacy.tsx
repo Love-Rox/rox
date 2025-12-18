@@ -212,15 +212,63 @@ export default function PrivacyPolicyPage() {
               </p>
             </section>
 
-            <section>
+            <section id="cookies">
               <h2 className="text-xl font-semibold text-(--text-primary) mb-3">
                 <Trans>6. Cookies and Local Storage</Trans>
               </h2>
-              <p className="text-(--text-secondary) leading-relaxed">
+              <p className="text-(--text-secondary) leading-relaxed mb-3">
                 <Trans>
-                  We use essential cookies and local storage to maintain your session and store
-                  preferences. These are necessary for the service to function and cannot be
-                  disabled without affecting functionality.
+                  We use cookies and local storage to provide and improve our service.
+                  You can manage your cookie preferences at any time.
+                </Trans>
+              </p>
+
+              <h3 className="text-lg font-medium text-(--text-primary) mb-2 mt-4">
+                <Trans>Types of Cookies We Use</Trans>
+              </h3>
+
+              <div className="space-y-3 text-(--text-secondary)">
+                <div>
+                  <p className="font-medium text-(--text-primary)">
+                    <Trans>Essential Cookies</Trans>
+                  </p>
+                  <p className="text-sm">
+                    <Trans>
+                      Required for the website to function properly. These include authentication
+                      tokens and session management. They cannot be disabled.
+                    </Trans>
+                  </p>
+                </div>
+
+                <div>
+                  <p className="font-medium text-(--text-primary)">
+                    <Trans>Functional Cookies</Trans>
+                  </p>
+                  <p className="text-sm">
+                    <Trans>
+                      Remember your preferences such as theme settings, language, and UI
+                      customizations. Disabling these may affect your experience.
+                    </Trans>
+                  </p>
+                </div>
+
+                <div>
+                  <p className="font-medium text-(--text-primary)">
+                    <Trans>Analytics Cookies</Trans>
+                  </p>
+                  <p className="text-sm">
+                    <Trans>
+                      Help us understand how visitors use the service. This data is anonymized
+                      and used only to improve the service. These are optional.
+                    </Trans>
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-(--text-secondary) leading-relaxed mt-4">
+                <Trans>
+                  You can change your cookie preferences at any time using the cookie settings
+                  banner or by clearing your browser's cookies.
                 </Trans>
               </p>
             </section>
