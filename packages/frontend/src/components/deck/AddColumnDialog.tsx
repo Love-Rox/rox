@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import {
   Dialog,
@@ -87,6 +87,9 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
   const [hasFetchedLists, setHasFetchedLists] = useState(false);
 
+  // AbortController for retry button to cancel ongoing requests on dialog close
+  const retryControllerRef = useRef<AbortController | null>(null);
+
   // Translated column types
   const columnTypes: ColumnTypeOption[] = useMemo(() => [
     {
@@ -160,6 +163,10 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
   }, [isOpen, selectedType, hasFetchedLists, listsLoading, fetchLists]);
 
   const handleClose = useCallback(() => {
+    // Abort any ongoing retry fetch
+    retryControllerRef.current?.abort();
+    retryControllerRef.current = null;
+
     setSelectedType(null);
     setSelectedTimeline("home");
     setSelectedListId(null);
@@ -168,6 +175,15 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
     setHasFetchedLists(false);
     onClose();
   }, [onClose]);
+
+  // Handle retry button click with abort signal
+  const handleRetry = useCallback(() => {
+    // Abort any previous retry request
+    retryControllerRef.current?.abort();
+    // Create new controller for this retry
+    retryControllerRef.current = new AbortController();
+    fetchLists(retryControllerRef.current.signal);
+  }, [fetchLists]);
 
   const handleAddColumn = useCallback(() => {
     if (!selectedType) return;
@@ -327,7 +343,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
                         <p className="text-sm text-red-500 mb-2">{listsError}</p>
                         <Button
                           variant="ghost"
-                          onPress={() => fetchLists()}
+                          onPress={handleRetry}
                           className="text-sm text-primary-500 hover:text-primary-600"
                         >
                           <Trans>Try again</Trans>
