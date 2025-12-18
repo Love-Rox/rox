@@ -78,6 +78,9 @@ export function AboutSection() {
                   >
                     <Github className="w-4 h-4" />
                     <Trans>View source on GitHub</Trans>
+                    <span className="sr-only">
+                      <Trans>(opens in new window)</Trans>
+                    </span>
                   </a>
                 )}
               </div>
