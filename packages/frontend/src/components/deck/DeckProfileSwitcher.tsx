@@ -36,6 +36,7 @@ export function DeckProfileSwitcher() {
   const [createError, setCreateError] = useState<string | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const handleCreateProfile = useCallback(async () => {
     if (!newProfileName.trim() || isSubmitting) return;
@@ -66,11 +67,16 @@ export function DeckProfileSwitcher() {
     async (profileId: string) => {
       if (profiles.length <= 1) return;
       setIsDeleting(true);
+      setDeleteError(null);
       try {
         await deleteProfile(profileId);
+        setDeleteConfirmId(null);
+      } catch (error) {
+        setDeleteError(
+          error instanceof Error ? error.message : "Failed to delete profile"
+        );
       } finally {
         setIsDeleting(false);
-        setDeleteConfirmId(null);
       }
     },
     [profiles.length, deleteProfile]
@@ -297,10 +303,18 @@ export function DeckProfileSwitcher() {
                 action cannot be undone.
               </Trans>
             </p>
+            {deleteError && (
+              <p className="text-sm text-red-600 dark:text-red-400 mb-4">
+                {deleteError}
+              </p>
+            )}
             <div className="flex justify-end gap-2">
               <Button
                 variant="secondary"
-                onPress={() => setDeleteConfirmId(null)}
+                onPress={() => {
+                  setDeleteConfirmId(null);
+                  setDeleteError(null);
+                }}
                 isDisabled={isDeleting}
               >
                 <Trans>Cancel</Trans>

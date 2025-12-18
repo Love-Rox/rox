@@ -41,38 +41,51 @@ export function NotificationsColumnContent({
 
   const currentUser = useAtomValue(currentUserAtom);
   const hasLoadedRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const { notifications, loading, error, hasMore, cursor } = state;
 
-  // Load initial data
+  // Load initial data function (extracted for reuse in retry)
+  const loadInitialData = useCallback(async (signal?: AbortSignal) => {
+    updateState({ loading: true, error: null });
+
+    try {
+      const data = await notificationsApi.getNotifications({ limit: 20 });
+      if (signal?.aborted) return;
+
+      const lastItem = data[data.length - 1];
+
+      updateState({
+        notifications: data,
+        loading: false,
+        hasMore: data.length >= 20,
+        cursor: lastItem?.id ?? null,
+      });
+    } catch (err) {
+      if (signal?.aborted) return;
+      updateState({
+        loading: false,
+        error:
+          err instanceof Error ? err.message : "Failed to load notifications",
+      });
+    }
+  }, [updateState]);
+
+  // Load initial data on mount
   useEffect(() => {
     if (hasLoadedRef.current || !currentUser) return;
     hasLoadedRef.current = true;
 
-    const loadInitialData = async () => {
-      updateState({ loading: true, error: null });
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
-      try {
-        const data = await notificationsApi.getNotifications({ limit: 20 });
-        const lastItem = data[data.length - 1];
+    loadInitialData(controller.signal);
 
-        updateState({
-          notifications: data,
-          loading: false,
-          hasMore: data.length >= 20,
-          cursor: lastItem?.id ?? null,
-        });
-      } catch (err) {
-        updateState({
-          loading: false,
-          error:
-            err instanceof Error ? err.message : "Failed to load notifications",
-        });
-      }
+    return () => {
+      controller.abort();
     };
-
-    loadInitialData();
-  }, [currentUser, updateState]);
+  }, [currentUser, loadInitialData]);
 
   // Load more
   const loadMore = useCallback(async () => {
@@ -117,14 +130,17 @@ export function NotificationsColumnContent({
 
   // Retry
   const handleRetry = useCallback(() => {
-    updateState({ error: null });
-    // For initial load failures, reset and reload from scratch
+    // For initial load failures, reload from scratch
     if (notifications.length === 0) {
-      hasLoadedRef.current = false;
-      updateState({ hasMore: true });
+      abortControllerRef.current?.abort();
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+      loadInitialData(controller.signal);
+    } else {
+      // For load more failures, just retry loadMore
+      loadMore();
     }
-    loadMore();
-  }, [loadMore, updateState, notifications.length]);
+  }, [loadMore, loadInitialData, notifications.length]);
 
   if (!currentUser) {
     return (
