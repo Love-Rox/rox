@@ -622,6 +622,7 @@ export default myPlugin;
 - `packages/frontend/src/components/note/NoteCard.tsx` - Integrated 3 plugin slots
 
 **Available Slots**:
+
 | Slot Name | Location |
 |-----------|----------|
 | `note:header` | Before note header content |
@@ -670,6 +671,7 @@ export default myPlugin;
 - `plugins/auto-cw/` - Backend + Frontend plugin for automatic content warnings
 
 **CLI Commands** (via `bun run plugin <command>`):
+
 | Command | Description |
 |---------|-------------|
 | `install <source>` | Install from Git URL or local path |
@@ -700,6 +702,7 @@ export default myPlugin;
 - `docs/plugins/marketplace-specification.md` - Marketplace API specification
 
 **API Endpoints** (under `/api/admin/plugins`):
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/` | List all plugins |

@@ -10,6 +10,7 @@
 
 import { readdir, stat, readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import type { Hono } from "hono";
 import type pino from "pino";
 import type { IEventBus } from "../interfaces/IEventBus.js";
@@ -26,6 +27,7 @@ import type {
   PluginLoadResult,
   ScheduledTask,
 } from "./types/plugin.js";
+import { isValidPluginId } from "shared";
 
 /**
  * Default plugin directory
@@ -507,11 +509,13 @@ export class PluginLoader {
         const moduleStat = await stat(modulePath).catch(() => null);
 
         if (moduleStat?.isFile()) {
+          // Convert file path to file:// URL for cross-platform compatibility
+          // This is required for Windows where file paths need to be file:// URLs
+          const fileUrl = pathToFileURL(modulePath).href;
+
           // Dynamic import with optional cache busting
           // Append a timestamp query to force Bun to re-import the module
-          const importPath = bustCache
-            ? `${modulePath}?t=${Date.now()}`
-            : modulePath;
+          const importPath = bustCache ? `${fileUrl}?t=${Date.now()}` : fileUrl;
           const module = await import(importPath);
           const plugin = module.default as RoxPlugin;
 
@@ -532,6 +536,11 @@ export class PluginLoader {
 
   /**
    * Validate that an object is a valid RoxPlugin
+   *
+   * Checks that the plugin has required properties and that the plugin ID
+   * matches the expected format (lowercase alphanumeric with hyphens).
+   * This validation is critical for security as the plugin ID is used
+   * in file paths for configuration storage.
    */
   private isValidPlugin(obj: unknown): obj is RoxPlugin {
     if (!obj || typeof obj !== "object") {
@@ -539,11 +548,27 @@ export class PluginLoader {
     }
 
     const plugin = obj as RoxPlugin;
-    return (
-      typeof plugin.id === "string" &&
-      typeof plugin.name === "string" &&
-      typeof plugin.version === "string"
-    );
+
+    // Validate required properties exist and are strings
+    if (
+      typeof plugin.id !== "string" ||
+      typeof plugin.name !== "string" ||
+      typeof plugin.version !== "string"
+    ) {
+      return false;
+    }
+
+    // Validate plugin ID format to prevent path traversal attacks
+    // Plugin IDs are used in file paths for configuration storage
+    if (!isValidPluginId(plugin.id)) {
+      this.logger.warn(
+        { pluginId: plugin.id },
+        "Plugin ID failed validation - must be lowercase alphanumeric with hyphens, 3-50 characters",
+      );
+      return false;
+    }
+
+    return true;
   }
 
   /**
