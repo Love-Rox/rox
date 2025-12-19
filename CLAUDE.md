@@ -113,6 +113,13 @@ For cards that respond to user interaction (click/press), use the `InteractiveCa
 </InteractiveCard>
 ```
 
+**Accessibility Best Practices:**
+
+1. **Always add `aria-label` to inputs** - Don't rely on `placeholder` alone for accessibility
+2. **Use RAC form components** - Prefer `TextField`, `SearchField` over plain `<input>`
+3. **Use RAC selection patterns** - Prefer `RadioGroup`, `Select` over custom state-based buttons
+4. **Ensure keyboard navigation** - All interactive elements must be keyboard accessible
+
 ## Development Commands
 
 ### Running the Application
