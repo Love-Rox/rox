@@ -311,10 +311,11 @@ export function DeckLayout({
             </div>
           )}
 
-          {/* Mobile Column Indicators - positioned above AppBar (h-14 = 3.5rem) */}
+          {/* Mobile Column Indicators - positioned above AppBar (h-14 = 3.5rem)
+              z-30 ensures indicators are below mobile header (z-40) and sidebar (z-50) */}
           {columns.length > 1 && (
             <div
-              className="fixed left-0 right-0 flex justify-center gap-2 pb-2 z-50"
+              className="fixed left-0 right-0 flex justify-center gap-2 pb-2 z-30"
               style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px) + 0.5rem)" }}
             >
               {columns.map((col, index) => (
@@ -332,10 +333,11 @@ export function DeckLayout({
             </div>
           )}
 
-          {/* Swipe hint for first-time users - positioned above indicators */}
+          {/* Swipe hint for first-time users - positioned above indicators
+              z-30 ensures hint is below mobile header (z-40) and sidebar (z-50) */}
           {columns.length > 1 && mobileColumnIndex === 0 && (
             <div
-              className="fixed left-0 right-0 flex justify-center pointer-events-none z-50"
+              className="fixed left-0 right-0 flex justify-center pointer-events-none z-30"
               style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)" }}
             >
               <div className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
