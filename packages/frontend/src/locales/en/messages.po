@@ -468,7 +468,7 @@ msgstr "All Actions"
 msgid "All Categories"
 msgstr "All Categories"
 
-#: src/components/ui/EmojiPicker.tsx:1028
+#: src/components/ui/EmojiPicker.tsx:1029
 msgid "All custom emojis"
 msgstr "All custom emojis"
 
@@ -795,7 +795,7 @@ msgstr "Can suspend users"
 #: src/components/list/ListDeleteConfirmDialog.tsx:125
 #: src/components/list/ListEditModal.tsx:229
 #: src/components/note/NoteCard.tsx:764
-#: src/components/note/NoteComposer.tsx:1341
+#: src/components/note/NoteComposer.tsx:1342
 #: src/components/report/ReportDialog.tsx:170
 #: src/components/settings/AccountDeletionSection.tsx:177
 #: src/components/settings/PasskeySection.tsx:333
@@ -1106,7 +1106,7 @@ msgstr "Custom CSS applied to the entire app (max 10KB)"
 msgid "Custom CSS for your profile page (max 10KB)"
 msgstr "Custom CSS for your profile page (max 10KB)"
 
-#: src/components/ui/EmojiPicker.tsx:1111
+#: src/components/ui/EmojiPicker.tsx:1112
 #: src/pages/admin/emojis.tsx:744
 #: src/pages/admin/emojis.tsx:758
 #: src/pages/admin/emojis.tsx:808
@@ -2981,7 +2981,7 @@ msgid "No drafts saved"
 msgstr "No drafts saved"
 
 #: src/components/note/NoteComposer.tsx:987
-#: src/components/ui/EmojiPicker.tsx:1180
+#: src/components/ui/EmojiPicker.tsx:1181
 msgid "No emojis found"
 msgstr "No emojis found"
 
@@ -3489,7 +3489,7 @@ msgstr "Please type \"{CONFIRM_TEXT}\" to confirm"
 
 #: src/components/layout/Sidebar.tsx:226
 #: src/components/layout/Sidebar.tsx:367
-#: src/components/note/NoteComposer.tsx:1389
+#: src/components/note/NoteComposer.tsx:1390
 msgid "Post"
 msgstr "Post"
 
@@ -3497,7 +3497,7 @@ msgstr "Post"
 msgid "Post illegal content or engage in illegal activities"
 msgstr "Post illegal content or engage in illegal activities"
 
-#: src/components/note/NoteComposer.tsx:1385
+#: src/components/note/NoteComposer.tsx:1386
 msgid "Posting..."
 msgstr "Posting..."
 
@@ -3939,7 +3939,7 @@ msgstr "Replies"
 msgid "Replies ({0})"
 msgstr "Replies ({0})"
 
-#: src/components/note/NoteComposer.tsx:1387
+#: src/components/note/NoteComposer.tsx:1388
 #: src/pages/notifications.tsx:233
 msgid "Reply"
 msgstr "Reply"
@@ -4225,9 +4225,13 @@ msgstr "Saving..."
 msgid "Scan to follow from another server"
 msgstr "Scan to follow from another server"
 
-#: src/components/note/NoteComposer.tsx:1356
+#: src/components/note/NoteComposer.tsx:1357
 msgid "Schedule"
 msgstr "Schedule"
+
+#: src/components/note/NoteComposer.tsx:1322
+msgid "Schedule date and time"
+msgstr "Schedule date and time"
 
 #: src/components/note/NoteComposer.tsx:1301
 #: src/components/note/NoteComposer.tsx:1302
@@ -4239,8 +4243,8 @@ msgstr "Schedule post"
 msgid "Scheduled time must be in the future"
 msgstr "Scheduled time must be in the future"
 
-#: src/components/ui/EmojiPicker.tsx:1136
-#: src/components/ui/EmojiPicker.tsx:1168
+#: src/components/ui/EmojiPicker.tsx:1137
+#: src/components/ui/EmojiPicker.tsx:1169
 msgid "Scroll for more..."
 msgstr "Scroll for more..."
 
@@ -4250,6 +4254,10 @@ msgstr "Scroll for more..."
 #: src/pages/search.tsx:356
 msgid "Search"
 msgstr "Search"
+
+#: src/components/ui/EmojiPicker.tsx:925
+msgid "Search emoji"
+msgstr "Search emoji"
 
 #: src/components/ui/EmojiPicker.tsx:924
 msgid "Search emoji..."
@@ -4533,7 +4541,7 @@ msgstr "Source Code URL (AGPL-3.0 Compliance)"
 msgid "spam.example.com"
 msgstr "spam.example.com"
 
-#: src/components/ui/EmojiPicker.tsx:1148
+#: src/components/ui/EmojiPicker.tsx:1149
 msgid "Standard Emojis"
 msgstr "Standard Emojis"
 
@@ -4973,12 +4981,12 @@ msgstr "Unblock"
 msgid "Unblock instance"
 msgstr "Unblock instance"
 
-#: src/components/ui/EmojiPicker.tsx:1079
+#: src/components/ui/EmojiPicker.tsx:1080
 #: src/pages/admin/emojis.tsx:1586
 msgid "Uncategorized"
 msgstr "Uncategorized"
 
-#: src/components/ui/EmojiPicker.tsx:1071
+#: src/components/ui/EmojiPicker.tsx:1072
 msgid "Uncategorized emojis"
 msgstr "Uncategorized emojis"
 
@@ -5066,7 +5074,7 @@ msgstr "Uploaded media files metadata"
 msgid "Uploading files..."
 msgstr "Uploading files..."
 
-#: src/components/note/NoteComposer.tsx:1383
+#: src/components/note/NoteComposer.tsx:1384
 #: src/components/settings/ProfileImageSection.tsx:253
 #: src/components/settings/ProfileImageSection.tsx:329
 #: src/pages/admin/emojis.tsx:882
@@ -5417,7 +5425,7 @@ msgid "Width:"
 msgstr "Width:"
 
 #. placeholder {0}: new Date(scheduledAt).toLocaleString()
-#: src/components/note/NoteComposer.tsx:1326
+#: src/components/note/NoteComposer.tsx:1327
 msgid "Will be posted at {0}"
 msgstr "Will be posted at {0}"
 
