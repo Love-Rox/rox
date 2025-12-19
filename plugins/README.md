@@ -259,3 +259,118 @@ function PluginManager() {
     </div>
   );
 }
+```
+
+---
+
+## Plugin Distribution
+
+### Plugin CLI
+
+Rox provides a CLI for managing plugins:
+
+```bash
+# Install from GitHub
+bun run plugin install https://github.com/user/my-rox-plugin
+
+# Install from local path
+bun run plugin install ./my-plugin
+
+# Force reinstall
+bun run plugin install https://github.com/user/plugin --force
+
+# List installed plugins
+bun run plugin list
+
+# Enable/disable a plugin
+bun run plugin enable my-plugin
+bun run plugin disable my-plugin
+
+# Show plugin details
+bun run plugin info my-plugin
+
+# Uninstall a plugin
+bun run plugin uninstall my-plugin
+```
+
+### Plugin Package Format
+
+A complete plugin package should have the following structure:
+
+```
+my-plugin/
+├── plugin.json      # Plugin manifest (required)
+├── index.ts         # Backend entry point
+├── frontend.tsx     # Frontend entry point (optional)
+├── README.md        # Documentation
+└── LICENSE          # License file
+```
+
+### Plugin Manifest (plugin.json)
+
+The manifest file defines your plugin's metadata and configuration:
+
+```json
+{
+  "id": "my-plugin",
+  "name": "My Plugin",
+  "version": "1.0.0",
+  "description": "A description of what the plugin does",
+  "author": "Your Name",
+  "license": "MIT",
+  "homepage": "https://example.com/my-plugin",
+  "repository": "https://github.com/user/my-plugin",
+  "minRoxVersion": "2025.12.0",
+  "permissions": ["note:read", "note:write", "config:read", "config:write"],
+  "dependencies": [],
+  "backend": "index.ts",
+  "frontend": "frontend.tsx",
+  "keywords": ["example", "demo"],
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "enabled": { "type": "boolean" },
+      "keywords": { "type": "array", "items": { "type": "string" } }
+    }
+  }
+}
+```
+
+### Available Permissions
+
+| Permission | Description |
+|------------|-------------|
+| `note:read` | Read note data |
+| `note:write` | Create/modify/delete notes |
+| `user:read` | Read user data |
+| `user:write` | Modify user data |
+| `config:read` | Read plugin configuration |
+| `config:write` | Write plugin configuration |
+| `admin:read` | Read admin data |
+| `admin:write` | Modify admin settings |
+| `storage:read` | Read from file storage |
+| `storage:write` | Write to file storage |
+
+### Publishing Your Plugin
+
+1. **Create a GitHub repository** for your plugin
+2. **Include a valid `plugin.json`** manifest
+3. **Test your plugin** thoroughly
+4. **Document your plugin** in README.md
+5. **Share the repository URL** for installation
+
+Users can install your plugin with:
+
+```bash
+bun run plugin install https://github.com/your-username/your-plugin
+```
+
+### Best Practices
+
+1. **Use semantic versioning** for your plugin version
+2. **Declare minimum Rox version** compatibility
+3. **Request only necessary permissions**
+4. **Handle errors gracefully** - don't break core functionality
+5. **Clean up in onUnload** - remove subscriptions and resources
+6. **Use the provided logger** - don't use console.log directly
+7. **Write tests** for your plugin logic
