@@ -250,6 +250,10 @@ export class PluginLoader {
       }
 
       // Register middleware if defined
+      // LIMITATION: Hono does not support runtime removal of middleware.
+      // Once registered, middleware persists until server restart.
+      // For hot-reloadable middleware, consider using conditional wrappers
+      // that check plugin enabled state before executing.
       if (plugin.middleware) {
         for (const mw of plugin.middleware) {
           this.app.use("*", mw);
@@ -625,11 +629,16 @@ export class PluginLoader {
       });
     }
 
-    // Fallback to basic context for plugins without manifest permissions
-    // (backward compatibility, but logs a warning)
+    // Fallback to basic context for plugins without manifest permissions.
+    // SECURITY NOTE: Plugins without permissions have unrestricted access to
+    // the event bus and can perform any operation. This is a security risk
+    // for untrusted plugins. Production deployments should require plugins
+    // to declare permissions via plugin.json manifest file.
+    // TODO: Add configuration option to reject permission-less plugins.
     this.logger.warn(
       { pluginId },
-      "Plugin loaded without permission manifest - using unrestricted context",
+      "Plugin loaded without permission manifest - using unrestricted context. " +
+        "This is a security risk for untrusted plugins.",
     );
 
     return {

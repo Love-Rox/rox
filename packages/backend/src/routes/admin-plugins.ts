@@ -207,10 +207,12 @@ app.post("/:id/disable", async (c) => {
  * ```
  */
 app.post("/install", async (c) => {
-  const body = await c.req.json<{
-    source: string;
-    force?: boolean;
-  }>();
+  let body: { source: string; force?: boolean };
+  try {
+    body = await c.req.json();
+  } catch {
+    return errorResponse(c, "Invalid JSON body");
+  }
 
   if (!body.source) {
     return errorResponse(c, "source is required");
@@ -344,7 +346,13 @@ app.get("/:id/config", async (c) => {
  */
 app.put("/:id/config", async (c) => {
   const pluginId = c.req.param("id");
-  const body = await c.req.json();
+
+  let body: Record<string, unknown>;
+  try {
+    body = await c.req.json();
+  } catch {
+    return errorResponse(c, "Invalid JSON body");
+  }
 
   if (!pluginManager.isInstalled(pluginId)) {
     return errorResponse(c, "Plugin not found", 404);
