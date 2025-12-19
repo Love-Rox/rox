@@ -152,6 +152,7 @@ describe("PluginPermissions", () => {
       });
 
       it("should include correct details in error", () => {
+        expect.assertions(3);
         try {
           manager.assertPermission("test-plugin", "admin:write");
         } catch (e) {
