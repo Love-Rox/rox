@@ -38,6 +38,7 @@ import {
   Server,
   BarChart3,
   Ban,
+  Package,
 } from "lucide-react";
 import { Layout } from "../layout/Layout";
 import { PageHeader } from "../ui/PageHeader";
@@ -117,6 +118,7 @@ const ADMIN_NAV_CATEGORIES: NavCategory[] = [
       { href: "/admin/queue?tab=servers", icon: Server, label: msg`Queue Servers` },
       { href: "/admin/blocks", icon: Shield, label: msg`Blocks` },
       { href: "/admin/contacts", icon: MessageCircle, label: msg`Contacts` },
+      { href: "/admin/plugins", icon: Package, label: msg`Plugins` },
     ],
   },
 ];
