@@ -6,6 +6,8 @@ This directory contains documentation for the Rox plugin system.
 
 | Document | Description |
 |----------|-------------|
+| [development-guide.md](./development-guide.md) | Plugin Development Guide (English) |
+| [development-guide.ja.md](./development-guide.ja.md) | プラグイン開発ガイド（日本語） |
 | [marketplace-specification.md](./marketplace-specification.md) | Plugin Marketplace specification for future implementation |
 
 ## Plugin System Overview
@@ -35,7 +37,8 @@ The Rox plugin system allows extending the functionality of both backend and fro
 
 ### Getting Started
 
-See the [Plugin Development Guide](../../packages/backend/src/plugins/README.md) for creating plugins.
+See the [Plugin Development Guide](./development-guide.md) for creating plugins.
+Japanese version: [プラグイン開発ガイド](./development-guide.ja.md)
 
 ### Admin Plugin Management
 
