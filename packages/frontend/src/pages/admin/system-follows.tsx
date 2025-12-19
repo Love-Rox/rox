@@ -7,7 +7,7 @@
  * Shows which lists each account is in for easy management.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
@@ -87,6 +87,8 @@ export default function AdminSystemFollowsPage() {
   // Filter state
   const [userFilter, setUserFilter] = useState<FilterType>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Unfollow confirmation state
   const [userToUnfollow, setUserToUnfollow] = useState<SystemFollow | null>(null);
@@ -109,8 +111,8 @@ export default function AdminSystemFollowsPage() {
         if (userFilter !== "all") {
           params.set("filter", userFilter);
         }
-        if (searchQuery) {
-          params.set("search", searchQuery);
+        if (debouncedSearchQuery) {
+          params.set("search", debouncedSearchQuery);
         }
         const response = await apiClient.get<SystemFollowsResponse>(
           `/api/admin/system-follows?${params}`,
@@ -130,7 +132,7 @@ export default function AdminSystemFollowsPage() {
         setIsLoadingMore(false);
       }
     },
-    [token, userFilter, searchQuery],
+    [token, userFilter, debouncedSearchQuery],
   );
 
   // Check admin access and load follows
@@ -165,12 +167,27 @@ export default function AdminSystemFollowsPage() {
     checkAccess();
   }, [token, loadFollows, setCurrentUser]);
 
-  // Reload when filter changes (reset pagination)
+  // Debounce search query
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    searchTimeoutRef.current = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery]);
+
+  // Reload when filter or debounced search changes (reset pagination)
   useEffect(() => {
     if (!isLoading && token) {
       loadFollows(0);
     }
-  }, [userFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [userFilter, debouncedSearchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLoadMore = () => {
     loadFollows(follows.length);
