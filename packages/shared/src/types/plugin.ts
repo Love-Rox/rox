@@ -163,7 +163,16 @@ export interface PluginListEntry {
 
 /**
  * Validate plugin ID format
- * Must be lowercase alphanumeric with hyphens, 2-50 characters
+ *
+ * Must be lowercase alphanumeric with hyphens, 3-50 characters.
+ * - Must start with a lowercase letter
+ * - Must end with a lowercase letter or digit
+ * - Can contain lowercase letters, digits, and hyphens in the middle
+ *
+ * @example
+ * isValidPluginId("my-plugin") // true
+ * isValidPluginId("a1") // false (too short)
+ * isValidPluginId("my_plugin") // false (underscores not allowed)
  */
 export function isValidPluginId(id: string): boolean {
   return /^[a-z][a-z0-9-]{1,48}[a-z0-9]$/.test(id);

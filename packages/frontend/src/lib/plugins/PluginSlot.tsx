@@ -13,7 +13,14 @@
  * />
  */
 
-import { type ComponentType, Suspense, useMemo } from "react";
+import {
+  Component,
+  type ComponentType,
+  type ErrorInfo,
+  type ReactNode,
+  Suspense,
+  useMemo,
+} from "react";
 import type { PluginSlotName, SlotProps } from "./types.js";
 import { usePluginSlotComponents } from "./registry.js";
 
@@ -32,7 +39,7 @@ interface PluginSlotProps<T extends PluginSlotName> {
 }
 
 /**
- * Error boundary fallback for plugin components
+ * Error fallback UI for plugin components
  */
 function PluginErrorFallback({ pluginId }: { pluginId: string }) {
   return (
@@ -43,10 +50,57 @@ function PluginErrorFallback({ pluginId }: { pluginId: string }) {
 }
 
 /**
- * Wrapper to catch errors in plugin components
+ * Error boundary props
+ */
+interface PluginErrorBoundaryProps {
+  pluginId: string;
+  children: ReactNode;
+}
+
+/**
+ * Error boundary state
+ */
+interface PluginErrorBoundaryState {
+  hasError: boolean;
+}
+
+/**
+ * Error boundary for plugin components
+ *
+ * This class component catches React rendering errors that cannot be caught
+ * by try/catch in function components. It provides a fallback UI when a
+ * plugin component fails to render.
+ */
+class PluginErrorBoundary extends Component<
+  PluginErrorBoundaryProps,
+  PluginErrorBoundaryState
+> {
+  constructor(props: PluginErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): PluginErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    console.error(`Plugin ${this.props.pluginId} error:`, error, errorInfo);
+  }
+
+  render(): ReactNode {
+    if (this.state.hasError) {
+      return <PluginErrorFallback pluginId={this.props.pluginId} />;
+    }
+    return this.props.children;
+  }
+}
+
+/**
+ * Wrapper that renders plugin components with error boundary protection
  */
 function PluginComponentWrapper<T extends PluginSlotName>({
-  Component,
+  Component: PluginComponent,
   pluginId,
   props,
 }: {
@@ -54,12 +108,12 @@ function PluginComponentWrapper<T extends PluginSlotName>({
   pluginId: string;
   props: Omit<SlotProps[T], "pluginId">;
 }) {
-  try {
-    const fullProps = { ...props, pluginId } as SlotProps[T];
-    return <Component {...fullProps} />;
-  } catch {
-    return <PluginErrorFallback pluginId={pluginId} />;
-  }
+  const fullProps = { ...props, pluginId } as SlotProps[T];
+  return (
+    <PluginErrorBoundary pluginId={pluginId}>
+      <PluginComponent {...fullProps} />
+    </PluginErrorBoundary>
+  );
 }
 
 /**

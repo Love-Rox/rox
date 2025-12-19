@@ -7,7 +7,7 @@
 
 import { existsSync, readFileSync, writeFileSync, rmSync, mkdirSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import type {
   PluginManifest,
   InstalledPlugin,
@@ -58,13 +58,17 @@ export class PluginManager {
 
   /**
    * Save installed plugins registry to disk
+   *
+   * @returns true if save was successful, false otherwise
    */
-  private saveRegistry(): void {
+  private saveRegistry(): boolean {
     try {
       const plugins = Array.from(this.installedPlugins.values());
       writeFileSync(this.registryPath, JSON.stringify(plugins, null, 2));
+      return true;
     } catch (error) {
       console.error("Failed to save plugin registry:", error);
+      return false;
     }
   }
 
@@ -81,21 +85,23 @@ export class PluginManager {
       let manifest: PluginManifest;
 
       switch (source.type) {
-        case "git":
+        case "git": {
           const gitResult = await this.installFromGit(source.url, source.ref, options);
           if (!gitResult.success) {
             return gitResult;
           }
           manifest = gitResult.manifest!;
           break;
+        }
 
-        case "local":
+        case "local": {
           const localResult = await this.installFromLocal(source.path, options);
           if (!localResult.success) {
             return localResult;
           }
           manifest = localResult.manifest!;
           break;
+        }
 
         case "registry":
           // Registry installation will be implemented when the official registry is available
@@ -141,7 +147,15 @@ export class PluginManager {
       };
 
       this.installedPlugins.set(manifest.id, installedPlugin);
-      this.saveRegistry();
+
+      if (!this.saveRegistry()) {
+        // Rollback in-memory state if save failed
+        this.installedPlugins.delete(manifest.id);
+        return {
+          success: false,
+          error: "Failed to persist plugin registry to disk",
+        };
+      }
 
       return {
         success: true,
@@ -186,12 +200,15 @@ export class PluginManager {
     }
 
     try {
-      // Clone the repository
-      const cloneCmd = ref
-        ? `git clone --depth 1 --branch ${ref} ${url} ${targetDir}`
-        : `git clone --depth 1 ${url} ${targetDir}`;
+      // Clone the repository using execFileSync to prevent command injection
+      // Arguments are passed as an array, avoiding shell interpretation
+      const args = ["clone", "--depth", "1"];
+      if (ref) {
+        args.push("--branch", ref);
+      }
+      args.push(url, targetDir);
 
-      execSync(cloneCmd, { stdio: "pipe" });
+      execFileSync("git", args, { stdio: "pipe" });
 
       // Read and validate manifest
       const manifestPath = join(targetDir, "plugin.json");
@@ -286,8 +303,17 @@ export class PluginManager {
     }
 
     // Remove from registry
+    const previousPlugin = this.installedPlugins.get(pluginId);
     this.installedPlugins.delete(pluginId);
-    this.saveRegistry();
+
+    if (!this.saveRegistry()) {
+      // Rollback if save failed
+      if (previousPlugin) {
+        this.installedPlugins.set(pluginId, previousPlugin);
+      }
+      console.error("Failed to persist plugin registry after uninstall");
+      return false;
+    }
 
     return true;
   }
@@ -301,9 +327,17 @@ export class PluginManager {
       return false;
     }
 
+    const wasEnabled = plugin.enabled;
     plugin.enabled = true;
     this.installedPlugins.set(pluginId, plugin);
-    this.saveRegistry();
+
+    if (!this.saveRegistry()) {
+      // Rollback if save failed
+      plugin.enabled = wasEnabled;
+      this.installedPlugins.set(pluginId, plugin);
+      return false;
+    }
+
     return true;
   }
 
@@ -316,9 +350,17 @@ export class PluginManager {
       return false;
     }
 
+    const wasEnabled = plugin.enabled;
     plugin.enabled = false;
     this.installedPlugins.set(pluginId, plugin);
-    this.saveRegistry();
+
+    if (!this.saveRegistry()) {
+      // Rollback if save failed
+      plugin.enabled = wasEnabled;
+      this.installedPlugins.set(pluginId, plugin);
+      return false;
+    }
+
     return true;
   }
 
