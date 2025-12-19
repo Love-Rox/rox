@@ -59,4 +59,6 @@ export {
   FilePluginConfigStorage,
   InMemoryPluginConfigStorage,
 } from "./PluginConfigStorage.js";
+export { PluginManager } from "./PluginManager.js";
+export { validateManifest, parseManifest } from "./ManifestValidator.js";
 export * from "./types";
