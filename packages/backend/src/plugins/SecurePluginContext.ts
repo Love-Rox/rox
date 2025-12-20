@@ -7,7 +7,7 @@
  * @module plugins/SecurePluginContext
  */
 
-import type pino from "pino";
+import pino from "pino";
 import type { IEventBus } from "../interfaces/IEventBus.js";
 import type {
   PluginContext,
@@ -86,10 +86,13 @@ function createSecureEventBus(
             "Plugin attempted to subscribe to event without permission"
           );
           const firstPermission = requiredPermissions[0];
+          if (!firstPermission) {
+            throw new Error(`No permission defined in EVENT_PERMISSIONS for '${type}'`);
+          }
           throw new PluginPermissionError(
             `Plugin '${pluginId}' does not have permission to subscribe to '${type}' events`,
             pluginId,
-            firstPermission ?? "note:read"
+            firstPermission
           );
         }
         const firstPermission = requiredPermissions[0];
@@ -308,7 +311,7 @@ export class PluginSecurityAuditor {
   }> = [];
 
   constructor(logger?: pino.Logger) {
-    this.logger = logger || require("pino")({ name: "plugin-security-audit" });
+    this.logger = logger || pino({ name: "plugin-security-audit" });
   }
 
   /**
