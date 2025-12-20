@@ -421,6 +421,12 @@ export class PluginManager {
    * Get plugin configuration
    */
   getPluginConfig(pluginId: string): Record<string, unknown> {
+    // Validate plugin ID to prevent path traversal attacks
+    if (!isValidPluginId(pluginId)) {
+      console.error(`Invalid plugin ID: ${pluginId}`);
+      return {};
+    }
+
     const configPath = join(this.pluginDir, pluginId, "config.json");
     try {
       if (existsSync(configPath)) {
@@ -437,6 +443,12 @@ export class PluginManager {
    * Set plugin configuration
    */
   setPluginConfig(pluginId: string, config: Record<string, unknown>): boolean {
+    // Validate plugin ID to prevent path traversal attacks
+    if (!isValidPluginId(pluginId)) {
+      console.error(`Invalid plugin ID: ${pluginId}`);
+      return false;
+    }
+
     const pluginPath = join(this.pluginDir, pluginId);
     if (!existsSync(pluginPath)) {
       return false;
