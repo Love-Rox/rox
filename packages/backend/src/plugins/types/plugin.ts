@@ -12,6 +12,12 @@ import type { Hono } from "hono";
 import type { MiddlewareHandler } from "hono/types";
 import type pino from "pino";
 import type { IEventBus } from "../../interfaces/IEventBus.js";
+import type { PluginPermission } from "shared";
+
+/**
+ * Plugin Permissions - re-exported from shared package
+ */
+export type { PluginPermission } from "shared";
 
 /**
  * Plugin Configuration Storage Interface
@@ -205,22 +211,6 @@ export interface PluginManifest {
   configSchema?: Record<string, unknown>;
 }
 
-/**
- * Plugin Permissions
- *
- * Permissions that plugins can request for accessing various Rox features.
- */
-export type PluginPermission =
-  | "note:read"
-  | "note:write"
-  | "user:read"
-  | "user:write"
-  | "storage:read"
-  | "storage:write"
-  | "admin:read"
-  | "admin:write"
-  | "config:read"
-  | "config:write";
 
 /**
  * Rox Plugin Interface

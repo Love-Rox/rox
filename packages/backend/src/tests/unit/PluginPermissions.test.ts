@@ -15,7 +15,7 @@ import {
   ALL_PERMISSIONS,
   PERMISSION_RISK_LEVELS,
 } from "../../plugins/PluginPermissions.js";
-import type { PluginPermission, PluginManifest } from "../../plugins/types/plugin.js";
+import type { PluginPermission, PluginManifest } from "shared";
 
 describe("PluginPermissions", () => {
   describe("isValidPermission", () => {

@@ -7,7 +7,7 @@
  * @module plugins/PluginPermissions
  */
 
-import type { PluginPermission, PluginManifest } from "./types/plugin.js";
+import type { PluginPermission, PluginManifest } from "shared";
 import pino from "pino";
 
 /**

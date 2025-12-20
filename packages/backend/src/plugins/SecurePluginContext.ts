@@ -13,8 +13,8 @@ import type {
   PluginContext,
   PluginConfigStorage,
   ScheduledTask,
-  PluginPermission,
 } from "./types/plugin.js";
+import type { PluginPermission } from "shared";
 import {
   PluginPermissionManager,
   PluginPermissionError,
