@@ -3,39 +3,94 @@
  *
  * Provides Actor document endpoints for ActivityPub federation.
  * Returns JSON-LD Person objects representing users.
+ * Also serves Open Graph Protocol (OGP) HTML for embed crawlers (Discord, Slack, etc.)
+ * to enable rich link previews when profile URLs are shared.
  *
  * @module routes/ap/actor
  */
 
 import { Hono } from "hono";
 import type { Context } from "hono";
+import {
+  isEmbedCrawler,
+  isActivityPubRequest,
+} from "../../lib/crawlerDetection.js";
+import { generateUserOgpHtml } from "../../lib/ogp.js";
 
 const actor = new Hono();
+
+/**
+ * Handle OGP request for embed crawlers (Discord, Slack, etc.)
+ *
+ * @param c - Hono context
+ * @returns HTML response with OGP meta tags
+ */
+async function handleUserOgpRequest(c: Context): Promise<Response> {
+  const { username } = c.req.param();
+  const baseUrl = process.env.URL || "http://localhost:3000";
+
+  // Get user from repository
+  const userRepository = c.get("userRepository");
+  const user = await userRepository.findByUsername(username as string);
+
+  // Only serve OGP for local, non-deleted users
+  if (!user || user.host !== null || user.isDeleted) {
+    return c.notFound();
+  }
+
+  // Get instance settings
+  const instanceSettingsService = c.get("instanceSettingsService");
+  const instanceInfo = await instanceSettingsService.getPublicInstanceInfo();
+
+  // Use avatar or fallback to instance icon
+  const avatarUrl = user.avatarUrl || instanceInfo.iconUrl;
+
+  const html = generateUserOgpHtml({
+    username: user.username,
+    displayName: user.displayName,
+    bio: user.bio,
+    host: null, // Local user
+    avatarUrl,
+    baseUrl,
+    instanceName: instanceInfo.name,
+    themeColor: instanceInfo.theme.primaryColor,
+  });
+
+  return c.html(html);
+}
 
 /**
  * GET /:username
  *
  * Returns ActivityPub Actor document for a local user.
- * Content negotiation is performed based on the Accept header.
+ * Also serves OGP HTML for embed crawlers (Discord, Slack, etc.)
+ * Content negotiation is performed based on the Accept header and User-Agent.
  *
  * @param username - Username of the actor
- * @returns Actor document (JSON-LD) or redirect to frontend
+ * @returns Actor document (JSON-LD), OGP HTML, or redirect to frontend
  *
  * @example
  * ```bash
- * curl -H "Accept: application/activity+json" https://example.com/alice
+ * # ActivityPub request
+ * curl -H "Accept: application/activity+json" https://example.com/users/alice
+ *
+ * # Discord/Slack crawler (returns OGP HTML)
+ * curl -H "User-Agent: Discordbot/2.0" https://example.com/users/alice
  * ```
  */
 actor.get("/:username", async (c: Context) => {
   const { username } = c.req.param();
   const accept = c.req.header("Accept") || "";
+  const userAgent = c.req.header("User-Agent") || "";
 
-  // ActivityPub content negotiation
-  const isActivityPubRequest =
-    accept.includes("application/activity+json") || accept.includes("application/ld+json");
-
-  // If not an ActivityPub request, redirect to frontend
-  if (!isActivityPubRequest) {
+  // Check if this is an ActivityPub request
+  if (isActivityPubRequest(accept)) {
+    // Continue with ActivityPub handling below
+  } else if (isEmbedCrawler(userAgent)) {
+    // Serve OGP HTML for embed crawlers
+    return handleUserOgpRequest(c);
+  } else {
+    // Regular browser request - redirect to frontend
     return c.redirect(`/@${username}`);
   }
 
