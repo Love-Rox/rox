@@ -403,6 +403,7 @@ export function useNotificationStream(options: UseNotificationStreamOptions) {
       const connection = notificationConnection;
       connection.connectionCount = 0;
       connection.columnCallbacks.clear();
+      mentionCallbacks.clear();
       isInitializedRef.current = false;
       disconnectNotificationWS(true);
     }
