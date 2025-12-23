@@ -167,11 +167,10 @@ describe("generateNoteOgpHtml", () => {
     expect(html).toContain('content="https://example.com/notes/abc123"');
   });
 
-  it("should include refresh meta tag for redirect", () => {
+  it("should not include refresh meta tag (Discord compatibility)", () => {
     const html = generateNoteOgpHtml(baseOptions);
-    expect(html).toContain(
-      '<meta http-equiv="refresh" content="0;url=https://example.com/notes/abc123">'
-    );
+    // Refresh meta tag can cause Discord to follow redirect and miss OGP
+    expect(html).not.toContain('http-equiv="refresh"');
   });
 
   it("should include author username in title", () => {
@@ -342,11 +341,10 @@ describe("generateUserOgpHtml", () => {
     expect(html).toContain('content="https://example.com/@alice"');
   });
 
-  it("should include refresh meta tag for redirect", () => {
+  it("should not include refresh meta tag (Discord compatibility)", () => {
     const html = generateUserOgpHtml(baseOptions);
-    expect(html).toContain(
-      '<meta http-equiv="refresh" content="0;url=https://example.com/@alice">'
-    );
+    // Refresh meta tag can cause Discord to follow redirect and miss OGP
+    expect(html).not.toContain('http-equiv="refresh"');
   });
 
   it("should include display name and username in title", () => {
