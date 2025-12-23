@@ -205,7 +205,7 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   // Key findings from comparing with Misskey:
   // 1. theme-color comes BEFORE og:site_name
   // 2. Misskey includes <meta name="description"> (standard HTML meta)
-  // 3. twitter:card uses "property" attribute (not "name")
+  // 3. twitter:card uses "property" attribute (not "name") and comes AFTER og:image
   // 4. No redundant twitter:* tags
 
   return `<!DOCTYPE html>
@@ -220,8 +220,8 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedNoteUrl}">
-  <meta property="twitter:card" content="summary">
-  ${imageMeta}<title>${escapedTitle} - ${escapedInstanceName}</title>
+  ${imageMeta}<meta property="twitter:card" content="summary">
+  <title>${escapedTitle} - ${escapedInstanceName}</title>
 </head>
 <body>
   <p><a href="${escapedNoteUrl}">View note</a></p>
@@ -304,8 +304,9 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   // Key findings from comparing with Misskey:
   // 1. theme-color comes BEFORE og:site_name
   // 2. Misskey includes <meta name="description"> (standard HTML meta)
-  // 3. twitter:card uses "property" attribute (not "name")
+  // 3. twitter:card uses "property" attribute (not "name") and comes AFTER og:image
   // 4. No redundant twitter:* tags
+  // 5. Misskey uses og:type="blog" for user profiles (not "profile")
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -315,12 +316,12 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
   <meta name="description" content="${escapedDescription}">
-  <meta property="og:type" content="profile">
+  <meta property="og:type" content="blog">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedProfileUrl}">
-  <meta property="twitter:card" content="summary">
-  ${imageMeta}<title>${escapedTitle} - ${escapedInstanceName}</title>
+  ${imageMeta}<meta property="twitter:card" content="summary">
+  <title>${escapedTitle} - ${escapedInstanceName}</title>
 </head>
 <body>
   <p><a href="${escapedProfileUrl}">View profile</a></p>

@@ -162,6 +162,17 @@ describe("generateNoteOgpHtml", () => {
     expect(html).not.toContain('article:author');
   });
 
+  it("should have twitter:card after og:image like Misskey", () => {
+    const html = generateNoteOgpHtml({
+      ...baseOptions,
+      imageUrl: "https://example.com/image.jpg",
+    });
+    const ogImageIndex = html.indexOf('og:image');
+    const twitterCardIndex = html.indexOf('twitter:card');
+    // Misskey has twitter:card after og:image for proper Discord footer positioning
+    expect(ogImageIndex).toBeLessThan(twitterCardIndex);
+  });
+
   it("should include note URL in og:url", () => {
     const html = generateNoteOgpHtml(baseOptions);
     expect(html).toContain('content="https://example.com/notes/abc123"');
@@ -288,7 +299,8 @@ describe("generateUserOgpHtml", () => {
     expect(html).toContain('<meta property="og:title"');
     expect(html).toContain('<meta property="og:description"');
     expect(html).toContain('<meta property="og:url"');
-    expect(html).toContain('<meta property="og:type" content="profile">');
+    // Use og:type="blog" like Misskey for user profiles (helps with Discord footer positioning)
+    expect(html).toContain('<meta property="og:type" content="blog">');
     expect(html).toContain('<meta property="og:site_name"');
     // Uses property attribute like Misskey (not name attribute)
     expect(html).toContain('<meta property="twitter:card" content="summary">');
@@ -321,11 +333,18 @@ describe("generateUserOgpHtml", () => {
     expect(html).not.toContain('<meta name="twitter:image"');
   });
 
-  it("should not include og:locale or profile:* tags", () => {
+  it("should not include og:locale tags", () => {
     const html = generateUserOgpHtml(baseOptions);
     // Misskey doesn't include these extra tags
     expect(html).not.toContain('og:locale');
-    expect(html).not.toContain('profile:username');
+  });
+
+  it("should have twitter:card after og:image like Misskey", () => {
+    const html = generateUserOgpHtml(baseOptions);
+    const ogImageIndex = html.indexOf('og:image');
+    const twitterCardIndex = html.indexOf('twitter:card');
+    // Misskey has twitter:card after og:image for proper Discord footer positioning
+    expect(ogImageIndex).toBeLessThan(twitterCardIndex);
   });
 
   it("should not include og:image dimension tags", () => {
