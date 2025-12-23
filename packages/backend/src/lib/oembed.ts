@@ -165,23 +165,12 @@ function formatTimestamp(isoString: string | null): string {
  */
 export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
   const {
-    authorUsername,
-    authorDisplayName,
-    authorHost,
     authorAvatarUrl,
     imageUrl,
     createdAt,
     baseUrl,
     instanceName,
   } = options;
-
-  const formattedUsername = formatUsername(authorUsername, authorHost);
-  const displayName = authorDisplayName || authorUsername;
-
-  // Build author URL (profile page)
-  const authorUrl = authorHost
-    ? `${baseUrl}/@${authorUsername}@${authorHost}`
-    : `${baseUrl}/@${authorUsername}`;
 
   // Determine thumbnail (prefer note image, fallback to author avatar)
   const thumbnailUrl = imageUrl || authorAvatarUrl;
@@ -191,18 +180,21 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
   const footerText = timestamp ? `${instanceName}・${timestamp}` : instanceName;
 
   // Use "rich" type like FixupX - this makes Discord show:
-  // - author_name at the top (small text with link)
+  // - author_name at the top (small text with link) - FxTwitter uses this for STATS, not author
+  // - OGP og:title as the main title (author name)
+  // - OGP og:description as the main content (note text)
   // - provider_name at the bottom (footer with timestamp)
-  // - OGP og:description as the main content
-  // NOTE: FixupX includes title: "Embed" which may affect Discord's rendering
+  //
+  // IMPORTANT: FxTwitter puts stats (🔁 6 ❤️ 38) in author_name, NOT the author name!
+  // The author name comes from OGP og:title instead.
+  // We don't have stats yet, so we omit author_name to avoid duplicating og:title.
   const response: OEmbedResponse = {
     version: "1.0",
     type: "rich",
     // Title field like FixupX - required for proper Discord embed structure
     title: "Embed",
-    // Author info - maps to Discord embed author section (top, small text)
-    author_name: `${displayName} (${formattedUsername})`,
-    author_url: authorUrl,
+    // author_name is OMITTED - FxTwitter uses this for stats, not author name
+    // The author name is displayed via OGP og:title instead
     // Provider info - maps to Discord embed footer (bottom, with timestamp like X/Twitter)
     provider_name: footerText,
     provider_url: baseUrl,

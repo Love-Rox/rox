@@ -36,9 +36,9 @@ describe("oEmbed", () => {
       expect(response.version).toBe("1.0");
       // Uses "rich" type like FixupX - this enables footer display in Discord
       expect(response.type).toBe("rich");
-      // Author name appears at top of embed (small text)
-      expect(response.author_name).toBe("Alice (@alice)");
-      expect(response.author_url).toBe("https://example.com/@alice");
+      // author_name is OMITTED - FxTwitter uses it for stats, author comes from OGP og:title
+      expect(response.author_name).toBeUndefined();
+      expect(response.author_url).toBeUndefined();
       // Provider name includes timestamp like X/Twitter: "Instance・MM月DD日 HH:mm" (appears in footer)
       expect(response.provider_name).toContain("Test Instance");
       expect(response.provider_name).toContain("・");
@@ -71,16 +71,6 @@ describe("oEmbed", () => {
       expect(response.thumbnail_height).toBe(128);
     });
 
-    it("should handle remote users", () => {
-      const response = generateNoteOEmbed({
-        ...baseOptions,
-        authorHost: "remote.social",
-      });
-
-      expect(response.author_name).toBe("Alice (@alice@remote.social)");
-      expect(response.author_url).toBe("https://example.com/@alice@remote.social");
-    });
-
     it("should include cache_age", () => {
       const response = generateNoteOEmbed(baseOptions);
 
@@ -96,14 +86,6 @@ describe("oEmbed", () => {
       expect(response.thumbnail_url).toBeUndefined();
     });
 
-    it("should use username when displayName is null", () => {
-      const response = generateNoteOEmbed({
-        ...baseOptions,
-        authorDisplayName: null,
-      });
-
-      expect(response.author_name).toBe("alice (@alice)");
-    });
   });
 
   describe("generateUserOEmbed", () => {
