@@ -222,10 +222,9 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   <meta property="og:url" content="${escapedNoteUrl}">
   <meta property="twitter:card" content="summary">
   ${imageMeta}<title>${escapedTitle} - ${escapedInstanceName}</title>
-  <meta http-equiv="refresh" content="0;url=${escapedNoteUrl}">
 </head>
 <body>
-  <p>Redirecting to <a href="${escapedNoteUrl}">note</a>...</p>
+  <p><a href="${escapedNoteUrl}">View note</a></p>
 </body>
 </html>`;
 }
@@ -322,10 +321,9 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   <meta property="og:url" content="${escapedProfileUrl}">
   <meta property="twitter:card" content="summary">
   ${imageMeta}<title>${escapedTitle} - ${escapedInstanceName}</title>
-  <meta http-equiv="refresh" content="0;url=${escapedProfileUrl}">
 </head>
 <body>
-  <p>Redirecting to <a href="${escapedProfileUrl}">profile</a>...</p>
+  <p><a href="${escapedProfileUrl}">View profile</a></p>
 </body>
 </html>`;
 }
