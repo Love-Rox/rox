@@ -304,9 +304,11 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   `;
   }
 
-  // Match the same structure as notes for Discord footer positioning
-  // Key finding: Discord requires og:type="article" and specific tag ordering
-  // for proper footer display (og:site_name at bottom instead of top)
+  // Match Misskey.io's exact profile page structure for Discord footer positioning
+  // Key findings from misskey.io/@syuilo:
+  // 1. og:type="blog" (not "article" like notes)
+  // 2. og:image comes AFTER twitter:card
+  // 3. ActivityPub alternate link before og:type
 
   // Build ActivityPub alternate URL for local users only
   const activityPubUrl = host ? null : `${baseUrl}/users/${username}`;
@@ -321,7 +323,7 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   <meta property="instance_url" content="${escapeHtml(baseUrl)}">
   <meta name="description" content="${escapedDescription}">${activityPubUrl ? `
   <link rel="alternate" href="${escapeHtml(activityPubUrl)}" type="application/activity+json">` : ""}
-  <meta property="og:type" content="article">
+  <meta property="og:type" content="blog">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedProfileUrl}">
