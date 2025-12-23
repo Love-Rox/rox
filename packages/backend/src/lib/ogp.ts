@@ -190,10 +190,10 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   const escapedThemeColor = escapeHtml(themeColor);
   const escapedDisplayName = escapeHtml(displayName);
 
-  // Use fixed "tweet" card type like FxTwitter for better Discord embed rendering
-  // The "tweet" type triggers special X/Twitter-like embed styling in Discord
-  // This provides consistent behavior regardless of image presence
-  const twitterCard = "tweet";
+  // Use "summary" card type like Misskey for proper X-style Discord embed rendering
+  // Misskey achieves correct embed layout without oEmbed, using only OGP + twitter:card="summary"
+  // The "summary" type provides the expected layout where og:site_name appears as footer
+  const twitterCard = "summary";
 
   // Use note image, fallback to author avatar, then instance icon
   const finalImageUrl = imageUrl || authorAvatarUrl;
@@ -234,17 +234,16 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   `;
   }
 
-  // Build oEmbed discovery link for rich embeds (Discord, Slack)
-  const oembedUrl = `${baseUrl}/oembed?url=${encodeURIComponent(noteUrl)}`;
-  const oembedLink = `<link rel="alternate" type="application/json+oembed" href="${escapeHtml(oembedUrl)}" title="oEmbed">
-  `;
+  // Note: oEmbed discovery link removed for notes
+  // Discord/Slack achieve correct X-style embeds using only OGP meta tags (like Misskey)
+  // The oEmbed endpoint remains available at /oembed for platforms that request it directly
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  ${providerMeta}${oembedLink}<!-- Open Graph / Facebook -->
+  ${providerMeta}<!-- Open Graph / Facebook -->
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedNoteUrl}">
@@ -352,17 +351,16 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   `;
   }
 
-  // Build oEmbed discovery link for rich embeds (Discord, Slack)
-  const oembedUrl = `${baseUrl}/oembed?url=${encodeURIComponent(profileUrl)}`;
-  const oembedLink = `<link rel="alternate" type="application/json+oembed" href="${escapeHtml(oembedUrl)}" title="oEmbed">
-  `;
+  // Note: oEmbed discovery link removed for profiles
+  // Discord/Slack achieve correct X-style embeds using only OGP meta tags (like Misskey)
+  // The oEmbed endpoint remains available at /oembed for platforms that request it directly
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  ${providerMeta}${oembedLink}<!-- Open Graph / Facebook -->
+  ${providerMeta}<!-- Open Graph / Facebook -->
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedProfileUrl}">
