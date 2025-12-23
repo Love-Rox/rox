@@ -304,15 +304,9 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   `;
   }
 
-  // Minimal OGP meta tags matching Misskey's exact implementation
-  // Key findings from comparing with Misskey (profile pages):
-  // 1. theme-color comes BEFORE og:site_name
-  // 2. Misskey includes instance_url meta tag after og:site_name
-  // 3. Misskey includes <meta name="description"> (standard HTML meta)
-  // 4. For profiles: og:image comes BEFORE twitter:card (different from notes!)
-  // 5. No redundant twitter:* tags
-  // 6. Misskey uses og:type="blog" for user profiles (not "profile")
-  // 7. Misskey includes <link rel="alternate"> for ActivityPub discovery
+  // Match the same structure as notes for Discord footer positioning
+  // Key finding: Discord requires og:type="article" and specific tag ordering
+  // for proper footer display (og:site_name at bottom instead of top)
 
   // Build ActivityPub alternate URL for local users only
   const activityPubUrl = host ? null : `${baseUrl}/users/${username}`;
@@ -327,12 +321,12 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   <meta property="instance_url" content="${escapeHtml(baseUrl)}">
   <meta name="description" content="${escapedDescription}">${activityPubUrl ? `
   <link rel="alternate" href="${escapeHtml(activityPubUrl)}" type="application/activity+json">` : ""}
-  <meta property="og:type" content="blog">
+  <meta property="og:type" content="article">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedProfileUrl}">
-  ${imageMeta}<meta property="twitter:card" content="summary">
-  <title>${escapedTitle} - ${escapedInstanceName}</title>
+  <meta property="twitter:card" content="summary">
+  ${imageMeta}<title>${escapedTitle} - ${escapedInstanceName}</title>
 </head>
 <body>
   <p><a href="${escapedProfileUrl}">View profile</a></p>
