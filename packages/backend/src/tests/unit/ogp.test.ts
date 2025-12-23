@@ -299,8 +299,8 @@ describe("generateUserOgpHtml", () => {
     expect(html).toContain('<meta property="og:title"');
     expect(html).toContain('<meta property="og:description"');
     expect(html).toContain('<meta property="og:url"');
-    // Use og:type="blog" like Misskey for user profiles
-    expect(html).toContain('<meta property="og:type" content="blog">');
+    // Use og:type="article" for Discord footer positioning (same as notes)
+    expect(html).toContain('<meta property="og:type" content="article">');
     expect(html).toContain('<meta property="og:site_name"');
     // Uses property attribute like Misskey (not name attribute)
     expect(html).toContain('<meta property="twitter:card" content="summary">');
