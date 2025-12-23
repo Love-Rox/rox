@@ -145,7 +145,6 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
     authorHost,
     imageUrl,
     authorAvatarUrl,
-    createdAt,
     baseUrl,
     instanceName,
     instanceIconUrl,
@@ -155,9 +154,6 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   const formattedUsername = formatUsername(authorUsername, authorHost);
   const displayName = authorDisplayName || authorUsername;
   const noteUrl = `${baseUrl}/notes/${noteId}`;
-  const authorUrl = authorHost
-    ? `${baseUrl}/@${authorUsername}@${authorHost}`
-    : `${baseUrl}/@${authorUsername}`;
 
   // Determine title and description based on CW
   // FxTwitter-style: og:title = author name, og:description = full note text
@@ -185,47 +181,18 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   const escapedTitle = escapeHtml(title);
   const escapedDescription = escapeHtml(description);
   const escapedNoteUrl = escapeHtml(noteUrl);
-  const escapedAuthorUrl = escapeHtml(authorUrl);
   const escapedInstanceName = escapeHtml(instanceName);
   const escapedThemeColor = escapeHtml(themeColor);
-  const escapedDisplayName = escapeHtml(displayName);
 
-  // Use "summary" card type like Misskey for proper X-style Discord embed rendering
-  // Misskey achieves correct embed layout without oEmbed, using only OGP + twitter:card="summary"
-  // The "summary" type provides the expected layout where og:site_name appears as footer
-  const twitterCard = "summary";
-
-  // Use note image, fallback to author avatar, then instance icon
+  // Use note image, fallback to author avatar
   const finalImageUrl = imageUrl || authorAvatarUrl;
 
-  // Build comprehensive image meta tags for better embed support
+  // Build minimal image meta tag (like Misskey - only og:image, no extras)
   let imageMeta = "";
   if (finalImageUrl) {
-    const escapedImageUrl = escapeHtml(finalImageUrl);
-    const imageAlt = text
-      ? escapeHtml(truncateText(stripHtml(text), 100))
-      : `Note by ${escapedDisplayName}`;
-    imageMeta = `<meta property="og:image" content="${escapedImageUrl}">
-  <meta property="og:image:alt" content="${imageAlt}">
-  <meta name="twitter:image" content="${escapedImageUrl}">
-  <meta name="twitter:image:alt" content="${imageAlt}">
-  `;
-    // Add image dimensions hint for large images (Discord/Slack optimization)
-    if (imageUrl) {
-      imageMeta += `<meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  `;
-    }
-  }
-
-  // Build article metadata for better Discord/Slack embeds
-  let articleMeta = "";
-  if (createdAt) {
-    articleMeta += `<meta property="article:published_time" content="${escapeHtml(createdAt)}">
+    imageMeta = `<meta property="og:image" content="${escapeHtml(finalImageUrl)}">
   `;
   }
-  articleMeta += `<meta property="article:author" content="${escapedAuthorUrl}">
-  `;
 
   // Build provider/footer meta for Discord embeds
   let providerMeta = "";
@@ -234,31 +201,25 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   `;
   }
 
-  // Note: oEmbed discovery link removed for notes
-  // Discord/Slack achieve correct X-style embeds using only OGP meta tags (like Misskey)
-  // The oEmbed endpoint remains available at /oembed for platforms that request it directly
+  // Minimal OGP meta tags matching Misskey's working implementation
+  // Key differences from before:
+  // 1. twitter:card uses "property" attribute (not "name")
+  // 2. No redundant twitter:title, twitter:description, twitter:site, twitter:image
+  // 3. No og:locale, article:published_time, article:author
+  // 4. No og:image:alt, og:image:width, og:image:height
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  ${providerMeta}<!-- Open Graph / Facebook -->
+  ${providerMeta}<meta property="og:site_name" content="${escapedInstanceName}">
+  <meta property="og:type" content="article">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedNoteUrl}">
-  <meta property="og:type" content="article">
-  <meta property="og:site_name" content="${escapedInstanceName}">
-  <meta property="og:locale" content="ja_JP">
-  ${imageMeta}${articleMeta}<!-- Twitter -->
-  <meta name="twitter:card" content="${twitterCard}">
-  <meta name="twitter:title" content="${escapedTitle}">
-  <meta name="twitter:description" content="${escapedDescription}">
-  <meta name="twitter:site" content="${escapedInstanceName}">
-  <!-- Discord / Slack / Other -->
-  <meta name="theme-color" content="${escapedThemeColor}">
-  <meta name="author" content="${escapedDisplayName}">
-  <!-- Page -->
+  <meta property="twitter:card" content="summary">
+  ${imageMeta}<meta name="theme-color" content="${escapedThemeColor}">
   <title>${escapedTitle} - ${escapedInstanceName}</title>
   <meta http-equiv="refresh" content="0;url=${escapedNoteUrl}">
 </head>
@@ -302,7 +263,6 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   } = options;
 
   const formattedUsername = formatUsername(username, host);
-  const name = displayName || username;
 
   // Profile URL is /@username for local users, /@username@host for remote
   const profileUrl = host
@@ -325,24 +285,13 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   const escapedProfileUrl = escapeHtml(profileUrl);
   const escapedInstanceName = escapeHtml(instanceName);
   const escapedThemeColor = escapeHtml(themeColor);
-  const escapedName = escapeHtml(name);
 
-  // Build comprehensive image meta tags for better embed support
+  // Build minimal image meta tag (like Misskey - only og:image, no extras)
   let imageMeta = "";
   if (avatarUrl) {
-    const escapedAvatarUrl = escapeHtml(avatarUrl);
-    imageMeta = `<meta property="og:image" content="${escapedAvatarUrl}">
-  <meta property="og:image:alt" content="${escapedName}'s avatar">
-  <meta property="og:image:width" content="400">
-  <meta property="og:image:height" content="400">
-  <meta name="twitter:image" content="${escapedAvatarUrl}">
-  <meta name="twitter:image:alt" content="${escapedName}'s avatar">
+    imageMeta = `<meta property="og:image" content="${escapeHtml(avatarUrl)}">
   `;
   }
-
-  // Build profile metadata
-  const profileMeta = `<meta property="profile:username" content="${escapeHtml(username)}">
-  `;
 
   // Build provider/footer meta for Discord embeds
   let providerMeta = "";
@@ -351,31 +300,23 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   `;
   }
 
-  // Note: oEmbed discovery link removed for profiles
-  // Discord/Slack achieve correct X-style embeds using only OGP meta tags (like Misskey)
-  // The oEmbed endpoint remains available at /oembed for platforms that request it directly
+  // Minimal OGP meta tags matching Misskey's working implementation
+  // Key: twitter:card uses "property" attribute (not "name")
+  // No redundant twitter:title, twitter:description, twitter:site, twitter:image
+  // No og:locale, profile:username, or extra image metadata
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  ${providerMeta}<!-- Open Graph / Facebook -->
+  ${providerMeta}<meta property="og:site_name" content="${escapedInstanceName}">
+  <meta property="og:type" content="profile">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedProfileUrl}">
-  <meta property="og:type" content="profile">
-  <meta property="og:site_name" content="${escapedInstanceName}">
-  <meta property="og:locale" content="ja_JP">
-  ${imageMeta}${profileMeta}<!-- Twitter -->
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="${escapedTitle}">
-  <meta name="twitter:description" content="${escapedDescription}">
-  <meta name="twitter:site" content="${escapedInstanceName}">
-  <!-- Discord / Slack / Other -->
-  <meta name="theme-color" content="${escapedThemeColor}">
-  <meta name="author" content="${escapedName}">
-  <!-- Page -->
+  <meta property="twitter:card" content="summary">
+  ${imageMeta}<meta name="theme-color" content="${escapedThemeColor}">
   <title>${escapedTitle} - ${escapedInstanceName}</title>
   <meta http-equiv="refresh" content="0;url=${escapedProfileUrl}">
 </head>

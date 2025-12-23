@@ -123,8 +123,33 @@ describe("generateNoteOgpHtml", () => {
     expect(html).toContain('<meta property="og:url"');
     expect(html).toContain('<meta property="og:type" content="article">');
     expect(html).toContain('<meta property="og:site_name"');
-    expect(html).toContain('<meta name="twitter:card"');
+    // Uses property attribute like Misskey (not name attribute)
+    expect(html).toContain('<meta property="twitter:card"');
     expect(html).toContain('<meta name="theme-color"');
+  });
+
+  it("should use property attribute for twitter:card like Misskey", () => {
+    const html = generateNoteOgpHtml(baseOptions);
+    // Misskey uses property attribute, not name attribute
+    expect(html).toContain('<meta property="twitter:card" content="summary">');
+    expect(html).not.toContain('<meta name="twitter:card"');
+  });
+
+  it("should not include redundant Twitter Card tags", () => {
+    const html = generateNoteOgpHtml(baseOptions);
+    // Misskey doesn't include these redundant tags
+    expect(html).not.toContain('<meta name="twitter:title"');
+    expect(html).not.toContain('<meta name="twitter:description"');
+    expect(html).not.toContain('<meta name="twitter:site"');
+    expect(html).not.toContain('<meta name="twitter:image"');
+  });
+
+  it("should not include og:locale or article:* tags", () => {
+    const html = generateNoteOgpHtml(baseOptions);
+    // Misskey doesn't include these extra tags
+    expect(html).not.toContain('og:locale');
+    expect(html).not.toContain('article:published_time');
+    expect(html).not.toContain('article:author');
   });
 
   it("should include note URL in og:url", () => {
@@ -256,8 +281,40 @@ describe("generateUserOgpHtml", () => {
     expect(html).toContain('<meta property="og:url"');
     expect(html).toContain('<meta property="og:type" content="profile">');
     expect(html).toContain('<meta property="og:site_name"');
-    expect(html).toContain('<meta name="twitter:card" content="summary">');
+    // Uses property attribute like Misskey (not name attribute)
+    expect(html).toContain('<meta property="twitter:card" content="summary">');
     expect(html).toContain('<meta name="theme-color"');
+  });
+
+  it("should use property attribute for twitter:card like Misskey", () => {
+    const html = generateUserOgpHtml(baseOptions);
+    // Misskey uses property attribute, not name attribute
+    expect(html).toContain('<meta property="twitter:card" content="summary">');
+    expect(html).not.toContain('<meta name="twitter:card"');
+  });
+
+  it("should not include redundant Twitter Card tags", () => {
+    const html = generateUserOgpHtml(baseOptions);
+    // Misskey doesn't include these redundant tags
+    expect(html).not.toContain('<meta name="twitter:title"');
+    expect(html).not.toContain('<meta name="twitter:description"');
+    expect(html).not.toContain('<meta name="twitter:site"');
+    expect(html).not.toContain('<meta name="twitter:image"');
+  });
+
+  it("should not include og:locale or profile:* tags", () => {
+    const html = generateUserOgpHtml(baseOptions);
+    // Misskey doesn't include these extra tags
+    expect(html).not.toContain('og:locale');
+    expect(html).not.toContain('profile:username');
+  });
+
+  it("should not include og:image dimension tags", () => {
+    const html = generateUserOgpHtml(baseOptions);
+    // Minimal approach - no og:image:alt, og:image:width, og:image:height
+    expect(html).not.toContain('og:image:alt');
+    expect(html).not.toContain('og:image:width');
+    expect(html).not.toContain('og:image:height');
   });
 
   it("should include profile URL in og:url", () => {
