@@ -299,8 +299,8 @@ describe("generateUserOgpHtml", () => {
     expect(html).toContain('<meta property="og:title"');
     expect(html).toContain('<meta property="og:description"');
     expect(html).toContain('<meta property="og:url"');
-    // Use og:type="article" for Discord footer positioning (same as notes)
-    expect(html).toContain('<meta property="og:type" content="article">');
+    // Use og:type="blog" like Misskey for user profiles
+    expect(html).toContain('<meta property="og:type" content="blog">');
     expect(html).toContain('<meta property="og:site_name"');
     // Uses property attribute like Misskey (not name attribute)
     expect(html).toContain('<meta property="twitter:card" content="summary">');
@@ -339,11 +339,11 @@ describe("generateUserOgpHtml", () => {
     expect(html).not.toContain('og:locale');
   });
 
-  it("should have twitter:card before og:image for Discord footer positioning", () => {
+  it("should have og:image after twitter:card like Misskey profiles", () => {
     const html = generateUserOgpHtml(baseOptions);
     const ogImageIndex = html.indexOf('og:image');
     const twitterCardIndex = html.indexOf('twitter:card');
-    // Use same ordering as notes for consistent Discord footer display
+    // Misskey profiles have og:image after twitter:card (verified from misskey.io/@syuilo)
     expect(twitterCardIndex).toBeLessThan(ogImageIndex);
   });
 
