@@ -115,6 +115,27 @@ function formatUsername(username: string, host: string | null): string {
 }
 
 /**
+ * Format timestamp for footer display (similar to X/Twitter style)
+ *
+ * @param isoString - ISO 8601 timestamp string
+ * @returns Formatted timestamp (e.g., "12月23日 16:16")
+ */
+function formatTimestamp(isoString: string | null): string {
+  if (!isoString) return "";
+
+  try {
+    const date = new Date(isoString);
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    return `${month}月${day}日 ${hours}:${minutes}`;
+  } catch {
+    return "";
+  }
+}
+
+/**
  * Generate oEmbed response for a note
  *
  * Discord uses oEmbed for rich embed fields like:
@@ -149,6 +170,7 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
     authorHost,
     authorAvatarUrl,
     imageUrl,
+    createdAt,
     baseUrl,
     instanceName,
   } = options;
@@ -164,6 +186,10 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
   // Determine thumbnail (prefer note image, fallback to author avatar)
   const thumbnailUrl = imageUrl || authorAvatarUrl;
 
+  // Format footer with timestamp (similar to X/Twitter style: "Instance Name・12月23日 16:16")
+  const timestamp = formatTimestamp(createdAt);
+  const footerText = timestamp ? `${instanceName}・${timestamp}` : instanceName;
+
   // Use "link" type so Discord uses OGP title/description while we provide author/provider info
   // Note: Do NOT include "title" in oEmbed - Discord will use og:title from OGP instead
   // This avoids duplicate display of information
@@ -173,8 +199,8 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
     // Author info - maps to Discord embed author section (small text above title)
     author_name: `${displayName} (${formattedUsername})`,
     author_url: authorUrl,
-    // Provider info - maps to Discord embed footer
-    provider_name: instanceName,
+    // Provider info - maps to Discord embed footer (with timestamp like X/Twitter)
+    provider_name: footerText,
     provider_url: baseUrl,
     // Cache for 5 minutes
     cache_age: 300,

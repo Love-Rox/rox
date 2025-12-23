@@ -38,7 +38,9 @@ describe("oEmbed", () => {
       expect(response.type).toBe("link");
       expect(response.author_name).toBe("Alice (@alice)");
       expect(response.author_url).toBe("https://example.com/@alice");
-      expect(response.provider_name).toBe("Test Instance");
+      // Provider name includes timestamp like X/Twitter: "Instance・MM月DD日 HH:mm"
+      expect(response.provider_name).toContain("Test Instance");
+      expect(response.provider_name).toContain("・");
       expect(response.provider_url).toBe("https://example.com");
     });
 
