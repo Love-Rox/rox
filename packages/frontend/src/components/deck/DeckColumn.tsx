@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo, useRef, useEffect } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -124,12 +124,22 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
   const columns = activeProfile?.columns ?? [];
   const [showSettings, setShowSettings] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Reset atoms for refreshing
   const resetNotesState = useSetAtom(resetColumnStateAtomFamily(column.id));
   const resetNotificationsState = useSetAtom(
     resetNotificationColumnStateAtomFamily(column.id)
   );
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (refreshTimerRef.current) {
+        clearTimeout(refreshTimerRef.current);
+      }
+    };
+  }, []);
 
   // Translated width options
   const widthOptions: WidthOption[] = useMemo(() => [
@@ -216,8 +226,9 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
     }
 
     // Show spinning animation briefly then stop
-    setTimeout(() => {
+    refreshTimerRef.current = setTimeout(() => {
       setIsRefreshing(false);
+      refreshTimerRef.current = null;
     }, 500);
   }, [
     isRefreshing,
