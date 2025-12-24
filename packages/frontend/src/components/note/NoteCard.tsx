@@ -800,21 +800,21 @@ function NoteCardComponent({
                       <Share className="w-4 h-4" />
                       <Trans>Share</Trans>
                     </span>
-                    <span className="text-gray-400">›</span>
+                    <span className={`text-gray-400 transition-transform ${showShareMenu ? "rotate-90" : ""}`}>›</span>
                   </button>
-                  {/* Share submenu */}
+                  {/* Share submenu - shown below the parent item */}
                   {showShareMenu && (
-                    <div className="absolute right-full top-0 mr-1 w-48 rounded-lg border border-(--border-color) bg-(--bg-primary) shadow-lg">
+                    <div className="border-t border-(--border-color)">
                       <button
                         onClick={handleCopyLink}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-(--bg-secondary) rounded-t-lg"
+                        className="flex items-center gap-2 w-full px-3 py-2 pl-7 text-sm text-gray-700 dark:text-gray-300 hover:bg-(--bg-secondary)"
                       >
                         <Copy className="w-4 h-4" />
                         <Trans>Copy link</Trans>
                       </button>
                       <button
                         onClick={handleOpenInNewTab}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-(--bg-secondary)"
+                        className="flex items-center gap-2 w-full px-3 py-2 pl-7 text-sm text-gray-700 dark:text-gray-300 hover:bg-(--bg-secondary)"
                       >
                         <ExternalLink className="w-4 h-4" />
                         <Trans>Open in new tab</Trans>
@@ -822,7 +822,7 @@ function NoteCardComponent({
                       {canUseNativeShare && (
                         <button
                           onClick={handleNativeShare}
-                          className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-(--bg-secondary) rounded-b-lg"
+                          className="flex items-center gap-2 w-full px-3 py-2 pl-7 text-sm text-gray-700 dark:text-gray-300 hover:bg-(--bg-secondary)"
                         >
                           <Share className="w-4 h-4" />
                           <Trans>Share via...</Trans>
