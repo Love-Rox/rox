@@ -201,13 +201,9 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   `;
   }
 
-  // Build oEmbed discovery link for Discord footer
-  // Discord uses oEmbed provider_name for the footer, og:site_name for header
-  // FxTwitter pattern: include discovery link so Discord can fetch provider_name
-  const oembedUrl = `${baseUrl}/oembed?url=${encodeURIComponent(noteUrl)}`;
-
   // OGP meta tags matching Misskey's exact structure
   // Misskey order: theme-color → og:site_name → og:type → og:title → og:description → og:url → og:image → twitter:card
+  // Misskey does NOT include oEmbed discovery link - Discord uses OGP tags only
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -222,7 +218,6 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedNoteUrl}">
   ${imageMeta}<meta property="twitter:card" content="summary">
-  <link rel="alternate" href="${escapeHtml(oembedUrl)}" type="application/json+oembed" title="${escapedTitle}">
   <title>${escapedTitle} | ${escapedInstanceName}</title>
 </head>
 <body>
@@ -302,13 +297,9 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   `;
   }
 
-  // Build oEmbed discovery link for Discord footer
-  // Discord uses oEmbed provider_name for the footer, og:site_name for header
-  // FxTwitter pattern: include discovery link so Discord can fetch provider_name
-  const oembedUrl = `${baseUrl}/oembed?url=${encodeURIComponent(profileUrl)}`;
-
   // OGP meta tags matching Misskey's exact structure
   // Misskey order: theme-color → og:site_name → instance_url → og:type → og:title → og:description → og:url → og:image → twitter:card
+  // Misskey does NOT include oEmbed discovery link - Discord uses OGP tags only
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -324,7 +315,6 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedProfileUrl}">
   ${imageMeta}<meta property="twitter:card" content="summary">
-  <link rel="alternate" href="${escapeHtml(oembedUrl)}" type="application/json+oembed" title="${escapedTitle}">
   <title>${escapedTitle} | ${escapedInstanceName}</title>
 </head>
 <body>
