@@ -288,7 +288,7 @@ describe("generateUserOgpHtml", () => {
     expect(html).toContain('<meta property="og:title"');
     expect(html).toContain('<meta property="og:description"');
     expect(html).toContain('<meta property="og:url"');
-    expect(html).toContain('<meta property="og:type" content="profile">');
+    expect(html).toContain('<meta property="og:type" content="blog">');
     expect(html).toContain('<meta property="og:site_name"');
     // Uses property attribute like Misskey (not name attribute)
     expect(html).toContain('<meta property="twitter:card" content="summary">');
