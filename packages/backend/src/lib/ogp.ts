@@ -303,10 +303,11 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   // Minimal OGP meta tags matching Misskey's exact implementation
   // Key findings from comparing with Misskey:
   // 1. theme-color comes BEFORE og:site_name
-  // 2. Misskey includes <meta name="description"> (standard HTML meta)
-  // 3. Misskey uses og:type="blog" for user profiles (not "profile")
-  // 4. og:image comes before twitter:card
-  // 5. No redundant twitter:* tags
+  // 2. instance_url meta tag after og:site_name
+  // 3. Misskey includes <meta name="description"> (standard HTML meta)
+  // 4. Misskey uses og:type="blog" for user profiles (not "profile")
+  // 5. og:image comes before twitter:card
+  // 6. No redundant twitter:* tags
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -315,6 +316,7 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
+  <meta property="instance_url" content="${escapeHtml(baseUrl)}">
   <meta name="description" content="${escapedDescription}">
   <meta property="og:type" content="blog">
   <meta property="og:title" content="${escapedTitle}">
