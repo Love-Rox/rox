@@ -188,10 +188,10 @@ export class NoteService {
     const extractedMentions = this.extractMentions(text || "");
     const mentions = visibility === "specified" ? visibleUserIds : extractedMentions;
 
-    // Debug log for DM mentions
+    // Debug log for DM mentions (only log counts for privacy)
     if (visibility === "specified") {
-      logger.info(
-        { visibleUserIds, mentions, mentionsLength: mentions.length },
+      logger.debug(
+        { visibleUserIdsCount: visibleUserIds.length, mentionsCount: mentions.length },
         "DM mentions array being saved",
       );
     }

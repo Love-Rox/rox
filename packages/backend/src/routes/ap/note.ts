@@ -165,9 +165,19 @@ note.get("/notes/:id", async (c: Context) => {
     }
   }
 
-  // Convert plain text to HTML (newlines to <br> tags)
+  // Escape HTML special characters to prevent XSS
+  const escapeHtml = (text: string): string => {
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  };
+
+  // Convert plain text to HTML (escape + newlines to <br> tags)
   const textToHtml = (text: string): string => {
-    return `<p>${text.replace(/\n/g, "<br>")}</p>`;
+    return `<p>${escapeHtml(text).replace(/\n/g, "<br>")}</p>`;
   };
 
   // Build ActivityPub Note object (matching Misskey.io structure)
