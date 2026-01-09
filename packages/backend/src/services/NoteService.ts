@@ -248,14 +248,13 @@ export class NoteService {
     // Deliver ActivityPub activity (async, non-blocking)
     const author = await this.userRepository.findById(userId);
 
-    // Log DM delivery decision for debugging
+    // Log DM delivery decision for debugging (only counts for privacy)
     if (visibility === "specified") {
-      logger.info(
+      logger.debug(
         {
           noteId,
           visibility,
-          visibleUserIds,
-          visibleUserIdsLength: visibleUserIds.length,
+          visibleUserIdsCount: visibleUserIds.length,
           authorExists: !!author,
           authorHost: author?.host,
           localOnly,
@@ -267,7 +266,7 @@ export class NoteService {
     if (author && !author.host && !localOnly) {
       if (visibility === "specified" && visibleUserIds.length > 0) {
         // Direct message: deliver to specific recipients
-        logger.info({ noteId, visibleUserIds }, "Starting DM delivery");
+        logger.debug({ noteId, recipientCount: visibleUserIds.length }, "Starting DM delivery");
         this.deliveryService
           .deliverDirectMessage(note, author, visibleUserIds)
           .catch((error) => {
