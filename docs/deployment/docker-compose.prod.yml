@@ -29,6 +29,8 @@ services:
       - LOCAL_STORAGE_PATH=/app/uploads
       - PORT=3000
       - URL=${PUBLIC_URL}
+      # SSR API connection - localhost since backend/frontend run in same container
+      - INTERNAL_API_URL=http://localhost:3000
       - ENABLE_REGISTRATION=${ENABLE_REGISTRATION:-true}
       - SESSION_EXPIRY_DAYS=${SESSION_EXPIRY_DAYS:-30}
       # Redis (optional, for job queue)

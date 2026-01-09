@@ -138,6 +138,20 @@ describe("ogp utilities", () => {
         "<p>Hello &lt;world&gt;<br>Goodbye</p>"
       );
     });
+
+    it("should handle CRLF line endings", () => {
+      expect(textToHtml("Hello\r\nWorld")).toBe("<p>Hello<br>World</p>");
+    });
+
+    it("should handle CR only line endings", () => {
+      expect(textToHtml("Hello\rWorld")).toBe("<p>Hello<br>World</p>");
+    });
+
+    it("should handle mixed line endings", () => {
+      expect(textToHtml("Line1\r\nLine2\nLine3\rLine4")).toBe(
+        "<p>Line1<br>Line2<br>Line3<br>Line4</p>"
+      );
+    });
   });
 });
 

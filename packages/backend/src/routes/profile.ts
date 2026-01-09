@@ -94,16 +94,15 @@ profile.get("/:atuser", async (c: Context, next) => {
     return c.notFound();
   }
 
-  // EXPERIMENT: Return 404 for all non-ActivityPub requests (including embed crawlers)
-  // This allows nginx to route to frontend, which now serves full SPA with OGP meta tags
-  // This matches Misskey's approach where Discord bots receive the full page with embedded meta tags
+  // Backend handles ActivityPub requests only; HTML/OGP is served by frontend
+  // Return 404 for non-ActivityPub requests as a guard
+  // Note: Routing to frontend depends on reverse proxy configuration (e.g., nginx upstream/error_page)
   //
   // Previous approach: Serve minimal OGP HTML for embed crawlers
   // if (isEmbedCrawler(userAgent)) {
   //   return handleUserOgpRequest(c, username, host);
   // }
 
-  // Return 404 so nginx routes to frontend (Waku SSR with OGP meta tags)
   return c.notFound();
 });
 

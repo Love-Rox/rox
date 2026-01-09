@@ -223,9 +223,10 @@ note.get("/notes/:id", async (c: Context) => {
     tag: tags,
   };
 
-  // Add content warning if present (wrapped in <p> tag like Mastodon/Misskey)
+  // Add content warning if present (plain text for Fediverse interoperability)
+  // Note: ActivityPub spec allows HTML, but Mastodon/Misskey treat summary as plain text CW
   if (noteData.cw) {
-    apNote.summary = textToHtml(noteData.cw);
+    apNote.summary = noteData.cw;
   }
 
   return c.json(apNote, 200, {

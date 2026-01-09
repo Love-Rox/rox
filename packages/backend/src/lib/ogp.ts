@@ -62,7 +62,7 @@ export function stripHtml(html: string): string {
  * ```
  */
 export function textToHtml(text: string): string {
-  return `<p>${escapeHtml(text).replace(/\n/g, "<br>")}</p>`;
+  return `<p>${escapeHtml(text).replace(/\r\n|\r|\n/g, "<br>")}</p>`;
 }
 
 /**
