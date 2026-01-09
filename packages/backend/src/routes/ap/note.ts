@@ -42,7 +42,8 @@ note.get("/notes/:id", async (c: Context) => {
   const { id } = c.req.param();
   const accept = c.req.header("Accept") || "";
 
-  // Route non-ActivityPub requests to frontend (Waku SSR with OGP meta tags)
+  // Non-ActivityPub requests should be routed to frontend by the reverse proxy
+  // Return 404 so nginx can fall through to Waku SSR for OGP meta tags
   if (!isActivityPubRequest(accept)) {
     return c.text("", 404);
   }
@@ -134,11 +135,12 @@ note.get("/notes/:id", async (c: Context) => {
 
     for (const u of mentionedUsers) {
       if (u) {
+        // Use stored URI for remote users, fallback to constructed URL
+        const href = u.uri
+          ?? (u.host ? `https://${u.host}/users/${u.username}` : `${baseUrl}/users/${u.username}`);
         tags.push({
           type: "Mention",
-          href: u.host
-            ? `https://${u.host}/users/${u.username}`
-            : `${baseUrl}/users/${u.username}`,
+          href,
           name: `@${u.username}${u.host ? `@${u.host}` : ""}`,
         });
       }
@@ -173,12 +175,19 @@ note.get("/notes/:id", async (c: Context) => {
 
     for (const [, emoji] of emojiMap) {
       // Infer media type from URL extension, default to image/png
-      const urlLower = emoji.url.toLowerCase();
+      // Parse URL to handle query parameters (e.g., emoji.png?v=123)
+      let pathname: string;
+      try {
+        pathname = new URL(emoji.url).pathname.toLowerCase();
+      } catch {
+        // Fallback to simple lowercase if URL parsing fails
+        pathname = emoji.url.toLowerCase();
+      }
       let mediaType = "image/png";
-      if (urlLower.endsWith(".gif")) mediaType = "image/gif";
-      else if (urlLower.endsWith(".webp")) mediaType = "image/webp";
-      else if (urlLower.endsWith(".svg")) mediaType = "image/svg+xml";
-      else if (urlLower.endsWith(".jpg") || urlLower.endsWith(".jpeg")) mediaType = "image/jpeg";
+      if (pathname.endsWith(".gif")) mediaType = "image/gif";
+      else if (pathname.endsWith(".webp")) mediaType = "image/webp";
+      else if (pathname.endsWith(".svg")) mediaType = "image/svg+xml";
+      else if (pathname.endsWith(".jpg") || pathname.endsWith(".jpeg")) mediaType = "image/jpeg";
 
       tags.push({
         id: `${baseUrl}/emojis/${emoji.name}`,

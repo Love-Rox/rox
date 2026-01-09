@@ -79,7 +79,12 @@ export default async function UserPage({ username: usernameParam }: PageProps<"/
       avatarUrl = user.avatarUrl;
     } else {
       // Relative URL - resolve against baseUrl
-      avatarUrl = new URL(user.avatarUrl, baseUrl).toString();
+      try {
+        avatarUrl = new URL(user.avatarUrl, baseUrl).toString();
+      } catch {
+        // Invalid URL format - skip og:image
+        avatarUrl = null;
+      }
     }
   }
 
