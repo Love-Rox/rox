@@ -550,7 +550,7 @@ msgstr "Are you sure you want to delete {0} emojis? This action cannot be undone
 msgid "Are you sure you want to delete <0>@{0}</0>? This action will:"
 msgstr "Are you sure you want to delete <0>@{0}</0>? This action will:"
 
-#: src/components/note/NoteCard.tsx:796
+#: src/components/note/NoteCard.tsx:923
 msgid "Are you sure you want to delete this note? This action cannot be undone."
 msgstr "Are you sure you want to delete this note? This action cannot be undone."
 
@@ -803,7 +803,7 @@ msgstr "Can suspend users"
 #: src/components/list/ListCreateModal.tsx:158
 #: src/components/list/ListDeleteConfirmDialog.tsx:125
 #: src/components/list/ListEditModal.tsx:229
-#: src/components/note/NoteCard.tsx:806
+#: src/components/note/NoteCard.tsx:933
 #: src/components/note/NoteComposer.tsx:1342
 #: src/components/report/ReportDialog.tsx:170
 #: src/components/settings/AccountDeletionSection.tsx:177
@@ -908,9 +908,13 @@ msgid "Color"
 msgstr "Color"
 
 #: src/components/deck/AddColumnDialog.tsx:245
-#: src/components/deck/DeckColumn.tsx:149
+#: src/components/deck/DeckColumn.tsx:162
 msgid "Column"
 msgstr "Column"
+
+#: src/components/deck/DeckColumn.tsx:282
+msgid "Column settings"
+msgstr "Column settings"
 
 #: src/pages/admin/emojis.tsx:939
 msgid "comma, separated, aliases"
@@ -986,7 +990,7 @@ msgstr "Contacts"
 msgid "Content"
 msgstr "Content"
 
-#: src/components/note/NoteCard.tsx:430
+#: src/components/note/NoteCard.tsx:526
 msgid "Content Warning"
 msgstr "Content Warning"
 
@@ -1023,6 +1027,7 @@ msgstr "Copy address"
 msgid "Copy code"
 msgstr "Copy code"
 
+#: src/components/note/NoteCard.tsx:830
 #: src/components/user/UserQRCodeModal.tsx:217
 msgid "Copy link"
 msgstr "Copy link"
@@ -1223,8 +1228,8 @@ msgstr "Default: https://github.com/Love-Rox/rox. Change this if you are running
 #: src/components/deck/DeckProfileSwitcher.tsx:367
 #: src/components/list/ListCard.tsx:152
 #: src/components/list/ListDeleteConfirmDialog.tsx:139
-#: src/components/note/NoteCard.tsx:744
-#: src/components/note/NoteCard.tsx:809
+#: src/components/note/NoteCard.tsx:868
+#: src/components/note/NoteCard.tsx:936
 #: src/components/pages/ListDetailPageClient.tsx:191
 #: src/components/settings/PasskeySection.tsx:353
 #: src/pages/admin/emojis.tsx:1082
@@ -1250,7 +1255,7 @@ msgstr "Delete code"
 msgid "Delete draft"
 msgstr "Delete draft"
 
-#: src/components/note/NoteCard.tsx:793
+#: src/components/note/NoteCard.tsx:920
 #: src/pages/mod/audit-logs.tsx:244
 msgid "Delete Note"
 msgstr "Delete Note"
@@ -1313,7 +1318,7 @@ msgid "Deleted: {0}"
 msgstr "Deleted: {0}"
 
 #: src/components/list/ListDeleteConfirmDialog.tsx:136
-#: src/components/note/NoteCard.tsx:809
+#: src/components/note/NoteCard.tsx:936
 #: src/components/settings/AccountDeletionSection.tsx:169
 msgid "Deleting..."
 msgstr "Deleting..."
@@ -1332,12 +1337,12 @@ msgstr "Description"
 msgid "Deselect"
 msgstr "Deselect"
 
-#: src/components/note/NoteCard.tsx:400
+#: src/components/note/NoteCard.tsx:496
 #: src/components/note/NoteComposer.tsx:658
 msgid "Direct"
 msgstr "Direct"
 
-#: src/components/note/NoteCard.tsx:397
+#: src/components/note/NoteCard.tsx:493
 msgid "Direct message - Only visible to specified recipients"
 msgstr "Direct message - Only visible to specified recipients"
 
@@ -1577,11 +1582,11 @@ msgstr "Enabled"
 msgid "Enabled - View multiple columns side by side"
 msgstr "Enabled - View multiple columns side by side"
 
-#: src/components/deck/columns/ListColumn.tsx:232
+#: src/components/deck/columns/ListColumn.tsx:269
 msgid "End of list"
 msgstr "End of list"
 
-#: src/components/deck/columns/TimelineColumn.tsx:245
+#: src/components/deck/columns/TimelineColumn.tsx:256
 msgid "End of timeline"
 msgstr "End of timeline"
 
@@ -1637,19 +1642,19 @@ msgstr "Enter your password"
 msgid "Enter your server to follow"
 msgstr "Enter your server to follow"
 
-#: src/components/deck/columns/ListColumn.tsx:193
+#: src/components/deck/columns/ListColumn.tsx:230
 msgid "Error loading list"
 msgstr "Error loading list"
 
-#: src/components/deck/columns/MentionsColumn.tsx:150
+#: src/components/deck/columns/MentionsColumn.tsx:171
 msgid "Error loading mentions"
 msgstr "Error loading mentions"
 
-#: src/components/deck/columns/NotificationsColumn.tsx:158
+#: src/components/deck/columns/NotificationsColumn.tsx:181
 msgid "Error loading notifications"
 msgstr "Error loading notifications"
 
-#: src/components/deck/columns/TimelineColumn.tsx:206
+#: src/components/deck/columns/TimelineColumn.tsx:217
 #: src/components/list/ListTimeline.tsx:153
 #: src/components/timeline/Timeline.tsx:184
 msgid "Error loading timeline"
@@ -1725,7 +1730,7 @@ msgstr "Failed to add alias"
 msgid "Failed to add emoji"
 msgstr "Failed to add emoji"
 
-#: src/components/note/NoteCard.tsx:225
+#: src/components/note/NoteCard.tsx:244
 msgid "Failed to add reaction"
 msgstr "Failed to add reaction"
 
@@ -1753,6 +1758,10 @@ msgstr "Failed to clear failure status"
 #: src/pages/onboarding.tsx:186
 msgid "Failed to complete setup. Please try again."
 msgstr "Failed to complete setup. Please try again."
+
+#: src/components/note/NoteCard.tsx:317
+msgid "Failed to copy link"
+msgstr "Failed to copy link"
 
 #: src/components/drive/DrivePickerDialog.tsx:228
 msgid "Failed to create folder"
@@ -1786,7 +1795,7 @@ msgstr "Failed to delete file"
 msgid "Failed to delete invitation code"
 msgstr "Failed to delete invitation code"
 
-#: src/components/note/NoteCard.tsx:265
+#: src/components/note/NoteCard.tsx:284
 msgid "Failed to delete note"
 msgstr "Failed to delete note"
 
@@ -1934,7 +1943,7 @@ msgstr "Failed to remove instance"
 msgid "Failed to rename passkey"
 msgstr "Failed to rename passkey"
 
-#: src/components/note/NoteCard.tsx:243
+#: src/components/note/NoteCard.tsx:262
 msgid "Failed to renote"
 msgstr "Failed to renote"
 
@@ -2203,7 +2212,7 @@ msgid "Get Started"
 msgstr "Get Started"
 
 #: src/components/deck/AddColumnDialog.tsx:130
-#: src/components/deck/DeckColumn.tsx:140
+#: src/components/deck/DeckColumn.tsx:153
 #: src/pages/timeline.tsx:128
 msgid "Global"
 msgstr "Global"
@@ -2278,7 +2287,7 @@ msgid "High-res maskable icon for PWA with safe zone padding, 512x512 pixels (ma
 msgstr "High-res maskable icon for PWA with safe zone padding, 512x512 pixels (max 2MB)."
 
 #: src/components/deck/AddColumnDialog.tsx:127
-#: src/components/deck/DeckColumn.tsx:137
+#: src/components/deck/DeckColumn.tsx:150
 #: src/components/layout/Sidebar.tsx:119
 #: src/components/note/NoteComposer.tsx:656
 #: src/pages/timeline.tsx:129
@@ -2358,7 +2367,7 @@ msgstr "In Lists"
 msgid "In Lists (loaded)"
 msgstr "In Lists (loaded)"
 
-#: src/components/note/NoteCard.tsx:563
+#: src/components/note/NoteCard.tsx:644
 msgid "In reply to"
 msgstr "In reply to"
 
@@ -2626,8 +2635,12 @@ msgstr "Lightweight"
 msgid "Line Height"
 msgstr "Line Height"
 
+#: src/components/note/NoteCard.tsx:312
+msgid "Link copied to clipboard"
+msgstr "Link copied to clipboard"
+
 #: src/components/deck/AddColumnDialog.tsx:119
-#: src/components/deck/DeckColumn.tsx:148
+#: src/components/deck/DeckColumn.tsx:161
 msgid "List"
 msgstr "List"
 
@@ -2653,10 +2666,10 @@ msgstr "Lists"
 msgid "Load All ({0} more)"
 msgstr "Load All ({0} more)"
 
-#: src/components/deck/columns/ListColumn.tsx:248
-#: src/components/deck/columns/MentionsColumn.tsx:205
-#: src/components/deck/columns/NotificationsColumn.tsx:212
-#: src/components/deck/columns/TimelineColumn.tsx:261
+#: src/components/deck/columns/ListColumn.tsx:285
+#: src/components/deck/columns/MentionsColumn.tsx:226
+#: src/components/deck/columns/NotificationsColumn.tsx:235
+#: src/components/deck/columns/TimelineColumn.tsx:272
 #: src/components/drive/DrivePickerDialog.tsx:486
 #: src/components/list/ListMembersModal.tsx:226
 #: src/components/timeline/Timeline.tsx:258
@@ -2664,6 +2677,10 @@ msgstr "Load All ({0} more)"
 #: src/components/user/UserProfile.tsx:612
 msgid "Load more"
 msgstr "Load more"
+
+#: src/pages/admin/system-follows.tsx:510
+#~ msgid "Load More ({0} / {total})"
+#~ msgstr "Load More ({0} / {total})"
 
 #: src/pages/admin/system-follows.tsx:577
 msgid "Load More ({currentCount} / {total})"
@@ -2708,7 +2725,7 @@ msgid "Loading..."
 msgstr "Loading..."
 
 #: src/components/deck/AddColumnDialog.tsx:128
-#: src/components/deck/DeckColumn.tsx:138
+#: src/components/deck/DeckColumn.tsx:151
 #: src/pages/admin/system-follows.tsx:434
 #: src/pages/admin/users.tsx:324
 #: src/pages/admin/users.tsx:400
@@ -2913,7 +2930,7 @@ msgid "mentioned you"
 msgstr "mentioned you"
 
 #: src/components/deck/AddColumnDialog.tsx:113
-#: src/components/deck/DeckColumn.tsx:147
+#: src/components/deck/DeckColumn.tsx:160
 #: src/components/layout/Sidebar.tsx:137
 #: src/components/settings/PushNotificationSection.tsx:63
 #: src/pages/mentions.tsx:91
@@ -2978,7 +2995,7 @@ msgstr "Moderator Role"
 msgid "Monitor ActivityPub delivery queue status"
 msgstr "Monitor ActivityPub delivery queue status"
 
-#: src/components/note/NoteCard.tsx:728
+#: src/components/note/NoteCard.tsx:803
 msgid "More options"
 msgstr "More options"
 
@@ -3002,7 +3019,7 @@ msgstr "My Rox Server"
 msgid "Name"
 msgstr "Name"
 
-#: src/components/deck/DeckColumn.tsx:123
+#: src/components/deck/DeckColumn.tsx:136
 msgid "Narrow"
 msgstr "Narrow"
 
@@ -3071,7 +3088,7 @@ msgstr "No audit logs found"
 msgid "No blocked instances"
 msgstr "No blocked instances"
 
-#: src/components/deck/DeckLayout.tsx:308
+#: src/components/deck/DeckLayout.tsx:310
 msgid "No columns yet. Add your first column to get started."
 msgstr "No columns yet. Add your first column to get started."
 
@@ -3133,7 +3150,7 @@ msgstr "No instances found"
 msgid "No invitation codes yet"
 msgstr "No invitation codes yet"
 
-#: src/components/deck/columns/ListColumn.tsx:183
+#: src/components/deck/columns/ListColumn.tsx:220
 msgid "No list selected"
 msgstr "No list selected"
 
@@ -3150,7 +3167,7 @@ msgstr "No matching notifications"
 msgid "No members yet"
 msgstr "No members yet"
 
-#: src/components/deck/columns/MentionsColumn.tsx:197
+#: src/components/deck/columns/MentionsColumn.tsx:218
 #: src/pages/mentions.tsx:158
 msgid "No mentions yet"
 msgstr "No mentions yet"
@@ -3167,19 +3184,19 @@ msgstr "No messages yet. Start the conversation!"
 msgid "No metrics available"
 msgstr "No metrics available"
 
-#: src/components/deck/columns/MentionsColumn.tsx:189
+#: src/components/deck/columns/MentionsColumn.tsx:210
 msgid "No more mentions"
 msgstr "No more mentions"
 
-#: src/components/deck/columns/NotificationsColumn.tsx:196
+#: src/components/deck/columns/NotificationsColumn.tsx:219
 msgid "No more notifications"
 msgstr "No more notifications"
 
-#: src/components/deck/columns/ListColumn.tsx:240
+#: src/components/deck/columns/ListColumn.tsx:277
 msgid "No notes in this list"
 msgstr "No notes in this list"
 
-#: src/components/deck/columns/TimelineColumn.tsx:253
+#: src/components/deck/columns/TimelineColumn.tsx:264
 #: src/components/timeline/Timeline.tsx:246
 msgid "No notes yet"
 msgstr "No notes yet"
@@ -3189,7 +3206,7 @@ msgstr "No notes yet"
 msgid "No notifications"
 msgstr "No notifications"
 
-#: src/components/deck/columns/NotificationsColumn.tsx:204
+#: src/components/deck/columns/NotificationsColumn.tsx:227
 msgid "No notifications yet"
 msgstr "No notifications yet"
 
@@ -3253,7 +3270,7 @@ msgstr "No users found"
 msgid "No users with fetch errors found"
 msgstr "No users with fetch errors found"
 
-#: src/components/deck/DeckColumn.tsx:124
+#: src/components/deck/DeckColumn.tsx:137
 msgid "Normal"
 msgstr "Normal"
 
@@ -3273,7 +3290,12 @@ msgstr "Not in Lists (loaded)"
 msgid "Note"
 msgstr "Note"
 
-#: src/components/note/NoteCard.tsx:255
+#. placeholder {0}: note.user.username
+#: src/components/note/NoteCard.tsx:339
+msgid "Note by @{0}"
+msgstr "Note by @{0}"
+
+#: src/components/note/NoteCard.tsx:274
 #: src/components/pages/NoteDetailPageClient.tsx:66
 msgid "Note deleted"
 msgstr "Note deleted"
@@ -3290,7 +3312,7 @@ msgstr "Note not found"
 msgid "Note posted successfully"
 msgstr "Note posted successfully"
 
-#: src/components/note/NoteCard.tsx:237
+#: src/components/note/NoteCard.tsx:256
 msgid "Note renoted"
 msgstr "Note renoted"
 
@@ -3348,7 +3370,7 @@ msgid "Notification types"
 msgstr "Notification types"
 
 #: src/components/deck/AddColumnDialog.tsx:107
-#: src/components/deck/DeckColumn.tsx:146
+#: src/components/deck/DeckColumn.tsx:159
 #: src/components/layout/Sidebar.tsx:131
 #: src/components/list/ListEditModal.tsx:183
 #: src/components/notification/NotificationBell.tsx:85
@@ -3388,6 +3410,10 @@ msgstr "Only visible to staff"
 #: src/components/settings/AboutSection.tsx:133
 msgid "Open"
 msgstr "Open"
+
+#: src/components/note/NoteCard.tsx:837
+msgid "Open in new tab"
+msgstr "Open in new tab"
 
 #: src/components/LandingPage.tsx:104
 msgid "Open Registration"
@@ -3577,15 +3603,15 @@ msgstr "Please log in to update your profile"
 msgid "Please log in to use the deck."
 msgstr "Please log in to use the deck."
 
-#: src/components/deck/columns/ListColumn.tsx:175
+#: src/components/deck/columns/ListColumn.tsx:212
 msgid "Please log in to view list"
 msgstr "Please log in to view list"
 
-#: src/components/deck/columns/MentionsColumn.tsx:140
+#: src/components/deck/columns/MentionsColumn.tsx:161
 msgid "Please log in to view mentions"
 msgstr "Please log in to view mentions"
 
-#: src/components/deck/columns/NotificationsColumn.tsx:148
+#: src/components/deck/columns/NotificationsColumn.tsx:171
 msgid "Please log in to view notifications"
 msgstr "Please log in to view notifications"
 
@@ -3846,7 +3872,7 @@ msgstr "reacted with"
 msgid "Reaction"
 msgstr "Reaction"
 
-#: src/components/note/NoteCard.tsx:218
+#: src/components/note/NoteCard.tsx:237
 msgid "Reaction added"
 msgstr "Reaction added"
 
@@ -3917,6 +3943,10 @@ msgstr "Redirecting..."
 msgid "Refresh"
 msgstr "Refresh"
 
+#: src/components/deck/DeckColumn.tsx:269
+msgid "Refresh column"
+msgstr "Refresh column"
+
 #: src/pages/admin/federation.tsx:241
 msgid "Refresh List"
 msgstr "Refresh List"
@@ -3984,10 +4014,6 @@ msgstr "Reject Report"
 msgid "Rejected"
 msgstr "Rejected"
 
-#: src/components/admin/plugins/PluginsPage.tsx:179
-#~ msgid "Reload"
-#~ msgstr "Reload"
-
 #: src/components/gdpr/CookieConsentBanner.tsx:219
 msgid "Remember your preferences and settings for a better experience."
 msgstr "Remember your preferences and settings for a better experience."
@@ -4052,6 +4078,10 @@ msgstr "Remove avatar"
 msgid "Remove banner"
 msgstr "Remove banner"
 
+#: src/components/deck/DeckColumn.tsx:292
+msgid "Remove column"
+msgstr "Remove column"
+
 #: src/components/settings/PasskeySection.tsx:344
 msgid "Rename"
 msgstr "Rename"
@@ -4065,7 +4095,7 @@ msgstr "Rename Profile"
 msgid "Renote"
 msgstr "Renote"
 
-#: src/components/note/NoteCard.tsx:421
+#: src/components/note/NoteCard.tsx:517
 msgid "Renoted"
 msgstr "Renoted"
 
@@ -4100,7 +4130,7 @@ msgstr "Reply"
 msgid "Replying to"
 msgstr "Replying to"
 
-#: src/components/note/NoteCard.tsx:755
+#: src/components/note/NoteCard.tsx:883
 msgid "Report"
 msgstr "Report"
 
@@ -4606,6 +4636,14 @@ msgstr "Settings"
 msgid "Setup Complete"
 msgstr "Setup Complete"
 
+#: src/components/note/NoteCard.tsx:818
+msgid "Share"
+msgstr "Share"
+
+#: src/components/note/NoteCard.tsx:845
+msgid "Share via..."
+msgstr "Share via..."
+
 #: src/components/LandingPage.tsx:246
 msgid "Share your thoughts, connect with friends, and join conversations across the fediverse. Your data stays with you, and you control who sees what you share."
 msgstr "Share your thoughts, connect with friends, and join conversations across the fediverse. Your data stays with you, and you control who sees what you share."
@@ -4615,7 +4653,7 @@ msgstr "Share your thoughts, connect with friends, and join conversations across
 msgid "Show all {0} files"
 msgstr "Show all {0} files"
 
-#: src/components/note/NoteCard.tsx:440
+#: src/components/note/NoteCard.tsx:536
 msgid "Show content"
 msgstr "Show content"
 
@@ -4675,7 +4713,7 @@ msgid "Skipped"
 msgstr "Skipped"
 
 #: src/components/deck/AddColumnDialog.tsx:129
-#: src/components/deck/DeckColumn.tsx:139
+#: src/components/deck/DeckColumn.tsx:152
 #: src/pages/timeline.tsx:127
 msgid "Social"
 msgstr "Social"
@@ -4786,7 +4824,7 @@ msgstr "Suspend Users"
 msgid "Suspended"
 msgstr "Suspended"
 
-#: src/components/deck/DeckLayout.tsx:345
+#: src/components/deck/DeckLayout.tsx:347
 msgid "Swipe to navigate"
 msgstr "Swipe to navigate"
 
@@ -5019,7 +5057,7 @@ msgid "This username is blocked"
 msgstr "This username is blocked"
 
 #: src/components/deck/AddColumnDialog.tsx:101
-#: src/components/deck/DeckColumn.tsx:141
+#: src/components/deck/DeckColumn.tsx:154
 #: src/pages/timeline.tsx:123
 msgid "Timeline"
 msgstr "Timeline"
@@ -5180,7 +5218,7 @@ msgstr "Uninstall plugin"
 msgid "Unknown"
 msgstr "Unknown"
 
-#: src/components/deck/DeckColumn.tsx:96
+#: src/components/deck/DeckColumn.tsx:102
 msgid "Unknown column type"
 msgstr "Unknown column type"
 
@@ -5403,7 +5441,7 @@ msgstr "Validation failed"
 msgid "Version"
 msgstr "Version"
 
-#: src/components/note/NoteCard.tsx:611
+#: src/components/note/NoteCard.tsx:684
 msgid "View"
 msgstr "View"
 
@@ -5596,11 +5634,11 @@ msgstr "Why is this instance being blocked?"
 msgid "Why Join?"
 msgstr "Why Join?"
 
-#: src/components/deck/DeckColumn.tsx:125
+#: src/components/deck/DeckColumn.tsx:138
 msgid "Wide"
 msgstr "Wide"
 
-#: src/components/deck/DeckColumn.tsx:250
+#: src/components/deck/DeckColumn.tsx:304
 msgid "Width:"
 msgstr "Width:"
 

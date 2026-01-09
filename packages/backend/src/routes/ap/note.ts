@@ -2,7 +2,8 @@
  * ActivityPub Note Object Endpoint
  *
  * Serves individual notes as ActivityPub Note objects.
- * This allows local notes to be referenced via URI in ActivityPub activities.
+ * Also serves Open Graph Protocol (OGP) HTML for embed crawlers (Discord, Slack, etc.)
+ * to enable rich link previews when note URLs are shared.
  *
  * @module routes/ap/note
  */
@@ -10,37 +11,112 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
 import { logger } from "../../lib/logger.js";
+import {
+  isEmbedCrawler,
+  isActivityPubRequest,
+} from "../../lib/crawlerDetection.js";
+import { generateNoteOgpHtml } from "../../lib/ogp.js";
 
 const note = new Hono();
+
+/**
+ * Handle OGP request for embed crawlers (Discord, Slack, etc.)
+ *
+ * @param c - Hono context
+ * @returns HTML response with OGP meta tags
+ */
+async function handleNoteOgpRequest(c: Context): Promise<Response> {
+  const { id } = c.req.param();
+  const baseUrl = process.env.URL || "http://localhost:3000";
+
+  // Get note from repository
+  const noteRepository = c.get("noteRepository");
+  const noteData = await noteRepository.findById(id as string);
+
+  if (!noteData || noteData.isDeleted) {
+    return c.notFound();
+  }
+
+  // Get note author
+  const userRepository = c.get("userRepository");
+  const author = await userRepository.findById(noteData.userId);
+
+  if (!author) {
+    return c.notFound();
+  }
+
+  // Get first image from attachments (if any)
+  let imageUrl: string | null = null;
+  if (noteData.fileIds && noteData.fileIds.length > 0) {
+    const driveFileRepository = c.get("driveFileRepository");
+    for (const fileId of noteData.fileIds) {
+      const file = await driveFileRepository.findById(fileId);
+      if (file && file.type.startsWith("image/")) {
+        imageUrl = file.url;
+        break;
+      }
+    }
+  }
+
+  // Get instance settings
+  const instanceSettingsService = c.get("instanceSettingsService");
+  const instanceInfo = await instanceSettingsService.getPublicInstanceInfo();
+
+  const html = generateNoteOgpHtml({
+    noteId: noteData.id,
+    text: noteData.text,
+    cw: noteData.cw,
+    authorUsername: author.username,
+    authorDisplayName: author.displayName,
+    authorHost: author.host,
+    imageUrl,
+    authorAvatarUrl: author.avatarUrl,
+    createdAt: noteData.createdAt?.toISOString(),
+    baseUrl,
+    instanceName: instanceInfo.name,
+    instanceIconUrl: instanceInfo.iconUrl,
+    themeColor: instanceInfo.theme.primaryColor,
+  });
+
+  return c.html(html, 200, {
+    // Cache OGP responses for 5 minutes to reduce load from embed crawlers
+    "Cache-Control": "public, max-age=300",
+  });
+}
 
 /**
  * GET /notes/:id
  *
  * Returns an ActivityPub Note object for the specified note ID.
+ * Also serves OGP HTML for embed crawlers (Discord, Slack, etc.)
  *
  * @param id - Note ID
- * @returns ActivityPub Note object (application/activity+json)
+ * @returns ActivityPub Note object (application/activity+json) or OGP HTML
  *
  * @example
  * ```bash
+ * # ActivityPub request
  * curl -H "Accept: application/activity+json" \
+ *   https://example.com/notes/abc123
+ *
+ * # Discord/Slack crawler (returns OGP HTML)
+ * curl -H "User-Agent: Discordbot/2.0" \
  *   https://example.com/notes/abc123
  * ```
  */
 note.get("/notes/:id", async (c: Context) => {
   const { id } = c.req.param();
-
-  // Check Accept header - only respond to ActivityPub requests
-  // Regular browser requests (text/html) should be handled by the frontend
   const accept = c.req.header("Accept") || "";
-  const isActivityPubRequest =
-    accept.includes("application/activity+json") || accept.includes("application/ld+json");
+  const userAgent = c.req.header("User-Agent") || "";
 
-  // If not an ActivityPub request, skip this handler and pass to next middleware
-  // This allows the request to be handled by the frontend (SSR or reverse proxy)
-  if (!isActivityPubRequest) {
-    // Use next() to pass to subsequent handlers instead of returning 404
-    // This allows integration with frontend serving middleware or reverse proxy
+  // Check if this is an ActivityPub request
+  if (isActivityPubRequest(accept)) {
+    // Continue with ActivityPub handling below
+  } else if (isEmbedCrawler(userAgent)) {
+    // Serve OGP HTML for embed crawlers
+    return handleNoteOgpRequest(c);
+  } else {
+    // Regular browser request - pass to frontend
     return c.text("", 404);
   }
 
@@ -130,9 +206,9 @@ note.get("/notes/:id", async (c: Context) => {
 
   // Add file attachments
   if (noteData.fileIds && noteData.fileIds.length > 0) {
-    const fileRepository = c.get("fileRepository");
+    const driveFileRepository = c.get("driveFileRepository");
     const files = await Promise.all(
-      noteData.fileIds.map((fileId) => fileRepository.findById(fileId)),
+      noteData.fileIds.map((fileId) => driveFileRepository.findById(fileId)),
     );
 
     apNote.attachment = files

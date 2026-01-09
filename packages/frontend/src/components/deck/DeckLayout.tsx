@@ -231,23 +231,24 @@ export function DeckLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-950 transition-colors overflow-hidden">
+    <div className="h-screen bg-gray-100 dark:bg-gray-950 transition-colors overflow-hidden">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Deck Area */}
       <main
-        className={`min-h-screen transition-all duration-300 ${sidebarMarginClass} pt-mobile-header lg:pt-0`}
+        className={`h-screen flex flex-col transition-all duration-300 ${sidebarMarginClass} pt-mobile-header lg:pt-0`}
       >
-        {/* Deck Header - Profile Switcher */}
+        {/* Deck Header - Profile Switcher (Responsive) */}
         {showProfileSwitcher && (
-          <div className="sticky top-0 z-20 bg-gray-100 dark:bg-gray-950 border-b border-(--border-color) px-4 py-2 hidden lg:block">
+          <div className="shrink-0 sticky top-0 z-20 bg-gray-100 dark:bg-gray-950 border-b border-(--border-color) px-2 py-1.5 lg:px-4 lg:py-2">
             <DeckProfileSwitcher />
           </div>
         )}
 
         {/* Desktop: Horizontal scrolling columns */}
-        <div className="hidden lg:block h-[calc(100vh-12*var(--spacing))] overflow-hidden">
+        {/* Uses flex-1 to fill remaining space, min-h-0 prevents flex item from overflowing */}
+        <div className="hidden lg:block flex-1 min-h-0 overflow-hidden">
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -265,7 +266,7 @@ export function DeckLayout({
                 {columns.map((column) => (
                   <div
                     key={column.id}
-                    className={`shrink-0 ${getColumnWidthClass(column.width)} snap-start`}
+                    className={`shrink-0 h-full ${getColumnWidthClass(column.width)} snap-start`}
                   >
                     <DeckColumn column={column} />
                   </div>
@@ -283,11 +284,12 @@ export function DeckLayout({
         </div>
 
         {/* Mobile: Single column with swipe */}
-        {/* Height: 100vh - header (4rem + safe-area) - AppBar (3.5rem) - safe-area-bottom */}
+        {/* Uses flex-1 to fill remaining space, accounting for mobile app bar */}
         <div
-          className="lg:hidden overflow-hidden"
+          className="lg:hidden flex-1 min-h-0 overflow-hidden"
           style={{
-            height: "calc(100vh - 4rem - env(safe-area-inset-top, 0px) - 3.5rem - env(safe-area-inset-bottom, 0px))",
+            // Subtract the mobile app bar height (3.5rem + safe-area)
+            marginBottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px))",
           }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}

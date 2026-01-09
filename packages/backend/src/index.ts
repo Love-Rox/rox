@@ -27,6 +27,8 @@ import followersRoute from "./routes/ap/followers.js";
 import followingAPRoute from "./routes/ap/following.js";
 import noteAPRoute from "./routes/ap/note.js";
 import nodeinfoRoute from "./routes/ap/nodeinfo.js";
+import oembedRoute from "./routes/oembed.js";
+import profileRoute from "./routes/profile.js";
 import proxyRoute from "./routes/proxy.js";
 import healthRoute from "./routes/health.js";
 import adminRoute from "./routes/admin.js";
@@ -128,6 +130,12 @@ app.route("/users", outboxRoute); // /users/:username/outbox
 app.route("/users", followersRoute); // /users/:username/followers
 app.route("/users", followingAPRoute); // /users/:username/following
 app.route("/", noteAPRoute); // /notes/:id
+
+// oEmbed endpoint for rich embeds in Discord/Slack
+app.route("/oembed", oembedRoute);
+
+// Profile routes for /@username style URLs (OGP for embed crawlers)
+app.route("/", profileRoute); // /@:username
 
 const port = parseInt(process.env.PORT || "3000", 10);
 
