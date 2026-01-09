@@ -63,32 +63,28 @@ export default async function NoteDetailPage({ noteId }: PageProps<"/notes/[note
 
   return (
     <>
-      {/* OGP Meta Tags - matching Misskey.io's exact structure (no oEmbed) */}
-      {note && (
-        <>
-          <meta name="application-name" content="Rox" />
-          <meta name="referrer" content="origin" />
-          <meta name="theme-color" content={themeColor} />
-          <meta name="theme-color-orig" content={themeColor} />
-          <meta property="og:site_name" content={instanceName} />
-          <meta property="instance_url" content={baseUrl} />
-          <meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no" />
-          <link rel="icon" href={`${baseUrl}/favicon.png`} type="image/png" />
-          {/* ActivityPub alternate link for Discord Mastodon-style embeds */}
-          <link rel="alternate" href={noteUrl} type="application/activity+json" />
-          <title>{title} | {instanceName}</title>
-          <meta name="description" content={description} />
-          <meta property="og:type" content="article" />
-          <meta property="og:title" content={title} />
-          <meta property="og:description" content={description} />
-          <meta property="og:url" content={noteUrl} />
-          {/* og:image: note image if available, otherwise avatar (like Misskey.io) */}
-          {ogImageUrl && (
-            <meta property="og:image" content={ogImageUrl} />
-          )}
-          <meta property="twitter:card" content={noteImageUrl ? "summary_large_image" : "summary"} />
-        </>
+      {/* OGP Meta Tags - always render basic meta tags for Discord/crawlers */}
+      <meta name="application-name" content="Rox" />
+      <meta name="referrer" content="origin" />
+      <meta name="theme-color" content={themeColor} />
+      <meta name="theme-color-orig" content={themeColor} />
+      <meta property="og:site_name" content={instanceName} />
+      <meta property="instance_url" content={baseUrl} />
+      <meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no" />
+      <link rel="icon" href={`${baseUrl}/favicon.png`} type="image/png" />
+      {/* ActivityPub alternate link for Discord Mastodon-style embeds */}
+      <link rel="alternate" href={noteUrl} type="application/activity+json" />
+      <title>{title} | {instanceName}</title>
+      <meta name="description" content={description} />
+      <meta property="og:type" content="article" />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:url" content={noteUrl} />
+      {/* og:image: note image if available, otherwise avatar (like Misskey.io) */}
+      {ogImageUrl && (
+        <meta property="og:image" content={ogImageUrl} />
       )}
+      <meta property="twitter:card" content={noteImageUrl ? "summary_large_image" : "summary"} />
 
       <NoteDetailPageClient noteId={noteId} />
     </>
