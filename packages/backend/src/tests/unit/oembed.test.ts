@@ -34,22 +34,21 @@ describe("oEmbed", () => {
       const response = generateNoteOEmbed(baseOptions);
 
       expect(response.version).toBe("1.0");
-      // Uses "rich" type like FixupX — enables footer display in Discord clients
+      // Uses "rich" type like Misskey
       expect(response.type).toBe("rich");
-      // author_name shows timestamp (like FxTwitter shows stats)
-      // This pushes provider_name to footer position
-      expect(response.author_name).toContain("📅");
-      expect(response.author_url).toBe("https://example.com/notes/abc123");
-      // Provider name is instance name only (like FxTwitter), no timestamp
+      // No author_name to make Discord show og:site_name in footer (like Misskey)
+      expect(response.author_name).toBeUndefined();
+      expect(response.author_url).toBeUndefined();
+      // Provider name is instance name - shows in footer when author_name is absent
       expect(response.provider_name).toBe("Test Instance");
       expect(response.provider_url).toBe("https://example.com");
     });
 
-    it("should include title 'Embed' like FixupX for proper Discord rendering", () => {
+    it("should not include title (not needed without author_name)", () => {
       const response = generateNoteOEmbed(baseOptions);
 
-      // Title is "Embed" like FixupX - required for Discord to position elements correctly
-      expect(response.title).toBe("Embed");
+      // No title needed when author_name is absent
+      expect(response.title).toBeUndefined();
     });
 
     it("should include image thumbnail when available", () => {
@@ -105,36 +104,18 @@ describe("oEmbed", () => {
 
       expect(response.version).toBe("1.0");
       expect(response.type).toBe("rich");
-      expect(response.author_name).toBe("Alice (@alice)");
-      expect(response.author_url).toBe("https://example.com/@alice");
+      // No author_name to make Discord show og:site_name in footer (like Misskey)
+      expect(response.author_name).toBeUndefined();
+      expect(response.author_url).toBeUndefined();
       expect(response.provider_name).toBe("Test Instance");
       expect(response.provider_url).toBe("https://example.com");
     });
 
-    it("should use bio as title", () => {
+    it("should not include title (not needed without author_name)", () => {
       const response = generateUserOEmbed(baseOptions);
 
-      expect(response.title).toBe("Hello, I'm Alice!");
-    });
-
-    it("should truncate long bio in title", () => {
-      const longBio = "a".repeat(300);
-      const response = generateUserOEmbed({
-        ...baseOptions,
-        bio: longBio,
-      });
-
-      expect(response.title!.length).toBeLessThanOrEqual(201);
-      expect(response.title!.endsWith("…")).toBe(true);
-    });
-
-    it("should use default title when bio is null", () => {
-      const response = generateUserOEmbed({
-        ...baseOptions,
-        bio: null,
-      });
-
-      expect(response.title).toBe("View @alice's profile");
+      // No title needed when author_name is absent
+      expect(response.title).toBeUndefined();
     });
 
     it("should include avatar as thumbnail", () => {
@@ -145,24 +126,6 @@ describe("oEmbed", () => {
       expect(response.thumbnail_height).toBe(128);
     });
 
-    it("should handle remote users", () => {
-      const response = generateUserOEmbed({
-        ...baseOptions,
-        host: "remote.social",
-      });
-
-      expect(response.author_name).toBe("Alice (@alice@remote.social)");
-      expect(response.author_url).toBe("https://example.com/@alice@remote.social");
-    });
-
-    it("should handle missing displayName", () => {
-      const response = generateUserOEmbed({
-        ...baseOptions,
-        displayName: null,
-      });
-
-      expect(response.author_name).toBe("@alice");
-    });
 
     it("should handle missing avatar", () => {
       const response = generateUserOEmbed({

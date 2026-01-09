@@ -201,31 +201,27 @@ export function generateNoteOgpHtml(options: NoteOgpOptions): string {
   `;
   }
 
-  // Minimal OGP meta tags matching Misskey's exact implementation
-  // Key findings from comparing with Misskey:
-  // 1. theme-color comes BEFORE og:site_name
-  // 2. Misskey includes instance_url meta tag after og:site_name
-  // 3. Misskey includes <meta name="description"> (standard HTML meta)
-  // 4. twitter:card comes BEFORE og:image (Misskey's exact order)
-  // 5. No redundant twitter:* tags
-  // 6. Misskey includes <link rel="alternate"> for ActivityPub discovery
-
+  // OGP meta tags matching Misskey's EXACT structure including tag order
+  // Critical findings: Discord's parser is sensitive to <title> and <link rel="icon"> placement
+  // Misskey structure: metadata → viewport → format-detection → icon → <title> → description → OG tags
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
+  <meta name="application-name" content="Rox">
+  <meta name="referrer" content="origin">
+  <meta name="theme-color" content="${escapedThemeColor}">
+  <meta name="theme-color-orig" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
-  <meta property="instance_url" content="${escapeHtml(baseUrl)}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no">
+  ${providerMeta}<title>${escapedTitle} | ${escapedInstanceName}</title>
   <meta name="description" content="${escapedDescription}">
-  <link rel="alternate" href="${escapedNoteUrl}" type="application/activity+json">
   <meta property="og:type" content="article">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:url" content="${escapedNoteUrl}">
-  <meta property="twitter:card" content="summary">
-  ${imageMeta}<title>${escapedTitle} - ${escapedInstanceName}</title>
+  ${imageMeta}<meta property="twitter:card" content="summary">
 </head>
 <body>
   <p><a href="${escapedNoteUrl}">View note</a></p>
@@ -304,29 +300,28 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   `;
   }
 
-  // Use og:type="article" for Discord footer positioning
-  // Note: Misskey uses "blog" but our notes use "article" which works correctly
-  // Testing with "article" for profiles to match working note behavior
-
-  // Build ActivityPub alternate URL for local users only
-  const activityPubUrl = host ? null : `${baseUrl}/users/${username}`;
-
+  // OGP meta tags matching Misskey's EXACT structure including tag order
+  // Critical findings: Discord's parser is sensitive to <title> and <link rel="icon"> placement
+  // Misskey structure: metadata → viewport → format-detection → icon → <title> → description → OG tags
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  ${providerMeta}<meta name="theme-color" content="${escapedThemeColor}">
+  <meta name="application-name" content="Rox">
+  <meta name="referrer" content="origin">
+  <meta name="theme-color" content="${escapedThemeColor}">
+  <meta name="theme-color-orig" content="${escapedThemeColor}">
   <meta property="og:site_name" content="${escapedInstanceName}">
   <meta property="instance_url" content="${escapeHtml(baseUrl)}">
-  <meta name="description" content="${escapedDescription}">${activityPubUrl ? `
-  <link rel="alternate" href="${escapeHtml(activityPubUrl)}" type="application/activity+json">` : ""}
-  <meta property="og:type" content="article">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no">
+  ${providerMeta}<title>${escapedTitle} | ${escapedInstanceName}</title>
+  <meta name="description" content="${escapedDescription}">
+  <meta property="og:type" content="blog">
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
-  <meta property="og:url" content="${activityPubUrl ? escapeHtml(activityPubUrl) : escapedProfileUrl}">
-  <meta property="twitter:card" content="summary">
-  ${imageMeta}<title>${escapedTitle} - ${escapedInstanceName}</title>
+  <meta property="og:url" content="${escapedProfileUrl}">
+  ${imageMeta}<meta property="twitter:card" content="summary">
 </head>
 <body>
   <p><a href="${escapedProfileUrl}">View profile</a></p>
