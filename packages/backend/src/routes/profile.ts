@@ -121,15 +121,17 @@ function parseUserParam(param: string): { username: string; host: string | null 
  * curl https://example.com/@alice
  * ```
  */
-profile.get("/:atuser", async (c: Context) => {
+profile.get("/:atuser", async (c: Context, next) => {
   const atuser = c.req.param("atuser");
-  const accept = c.req.header("Accept") || "";
-  const userAgent = c.req.header("User-Agent") || "";
 
   // Only handle paths starting with @ (user profile URLs)
+  // For other paths, pass through to next handler
   if (!atuser || !atuser.startsWith("@")) {
-    return c.notFound();
+    return next();
   }
+
+  const accept = c.req.header("Accept") || "";
+  const userAgent = c.req.header("User-Agent") || "";
 
   const { username, host } = parseUserParam(atuser);
 

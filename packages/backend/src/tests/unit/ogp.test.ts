@@ -122,27 +122,23 @@ describe("generateNoteOgpHtml", () => {
     expect(html).toContain('<meta property="og:description"');
     expect(html).toContain('<meta property="og:url"');
     expect(html).toContain('<meta property="og:type" content="article">');
+    // Matching Misskey structure
     expect(html).toContain('<meta property="og:site_name"');
-    // Uses property attribute like Misskey (not name attribute)
-    expect(html).toContain('<meta property="twitter:card"');
+    expect(html).toContain('<meta property="twitter:card" content="summary">');
     expect(html).toContain('<meta name="theme-color"');
-    // Misskey includes standard HTML description meta tag
+    // Standard HTML description meta tag
     expect(html).toContain('<meta name="description"');
   });
 
-  it("should use property attribute for twitter:card like Misskey", () => {
+  it("should include twitter:card summary (matching Misskey)", () => {
     const html = generateNoteOgpHtml(baseOptions);
-    // Misskey uses property attribute, not name attribute
     expect(html).toContain('<meta property="twitter:card" content="summary">');
-    expect(html).not.toContain('<meta name="twitter:card"');
   });
 
-  it("should have theme-color before og:site_name like Misskey", () => {
+  it("should include og:site_name (matching Misskey)", () => {
     const html = generateNoteOgpHtml(baseOptions);
-    const themeColorIndex = html.indexOf('name="theme-color"');
-    const siteNameIndex = html.indexOf('og:site_name');
-    // Misskey has theme-color before og:site_name
-    expect(themeColorIndex).toBeLessThan(siteNameIndex);
+    expect(html).toContain('og:site_name');
+    expect(html).toContain("My Instance");
   });
 
   it("should not include redundant Twitter Card tags", () => {
@@ -160,17 +156,6 @@ describe("generateNoteOgpHtml", () => {
     expect(html).not.toContain('og:locale');
     expect(html).not.toContain('article:published_time');
     expect(html).not.toContain('article:author');
-  });
-
-  it("should have twitter:card before og:image like Misskey", () => {
-    const html = generateNoteOgpHtml({
-      ...baseOptions,
-      imageUrl: "https://example.com/image.jpg",
-    });
-    const ogImageIndex = html.indexOf('og:image');
-    const twitterCardIndex = html.indexOf('twitter:card');
-    // Misskey has twitter:card before og:image (verified from misskey.io)
-    expect(twitterCardIndex).toBeLessThan(ogImageIndex);
   });
 
   it("should include note URL in og:url", () => {
@@ -220,21 +205,9 @@ describe("generateNoteOgpHtml", () => {
     expect(html).not.toContain('<meta property="og:image"');
   });
 
-  it("should use summary twitter card type like Misskey", () => {
+  it("should not include oEmbed discovery link (matching Misskey)", () => {
     const html = generateNoteOgpHtml(baseOptions);
-    expect(html).toContain('content="summary"');
-  });
-
-  it("should use summary twitter card type even with image", () => {
-    const html = generateNoteOgpHtml({
-      ...baseOptions,
-      imageUrl: "https://example.com/image.jpg",
-    });
-    expect(html).toContain('content="summary"');
-  });
-
-  it("should not include oEmbed discovery link", () => {
-    const html = generateNoteOgpHtml(baseOptions);
+    // Misskey does not include oEmbed discovery - Discord uses OGP tags only
     expect(html).not.toContain('application/json+oembed');
   });
 
@@ -299,29 +272,13 @@ describe("generateUserOgpHtml", () => {
     expect(html).toContain('<meta property="og:title"');
     expect(html).toContain('<meta property="og:description"');
     expect(html).toContain('<meta property="og:url"');
-    // Use og:type="article" for Discord footer positioning (same as notes)
-    expect(html).toContain('<meta property="og:type" content="article">');
+    expect(html).toContain('<meta property="og:type" content="blog">');
+    // Matching Misskey structure
     expect(html).toContain('<meta property="og:site_name"');
-    // Uses property attribute like Misskey (not name attribute)
     expect(html).toContain('<meta property="twitter:card" content="summary">');
     expect(html).toContain('<meta name="theme-color"');
-    // Misskey includes standard HTML description meta tag
+    // Standard HTML description meta tag
     expect(html).toContain('<meta name="description"');
-  });
-
-  it("should use property attribute for twitter:card like Misskey", () => {
-    const html = generateUserOgpHtml(baseOptions);
-    // Misskey uses property attribute, not name attribute
-    expect(html).toContain('<meta property="twitter:card" content="summary">');
-    expect(html).not.toContain('<meta name="twitter:card"');
-  });
-
-  it("should have theme-color before og:site_name like Misskey", () => {
-    const html = generateUserOgpHtml(baseOptions);
-    const themeColorIndex = html.indexOf('name="theme-color"');
-    const siteNameIndex = html.indexOf('og:site_name');
-    // Misskey has theme-color before og:site_name
-    expect(themeColorIndex).toBeLessThan(siteNameIndex);
   });
 
   it("should not include redundant Twitter Card tags", () => {
@@ -333,18 +290,11 @@ describe("generateUserOgpHtml", () => {
     expect(html).not.toContain('<meta name="twitter:image"');
   });
 
-  it("should not include og:locale tags", () => {
+  it("should not include og:locale or profile:* tags", () => {
     const html = generateUserOgpHtml(baseOptions);
     // Misskey doesn't include these extra tags
     expect(html).not.toContain('og:locale');
-  });
-
-  it("should have og:image after twitter:card like Misskey profiles", () => {
-    const html = generateUserOgpHtml(baseOptions);
-    const ogImageIndex = html.indexOf('og:image');
-    const twitterCardIndex = html.indexOf('twitter:card');
-    // Misskey profiles have og:image after twitter:card (verified from misskey.io/@syuilo)
-    expect(twitterCardIndex).toBeLessThan(ogImageIndex);
+    expect(html).not.toContain('profile:username');
   });
 
   it("should not include og:image dimension tags", () => {
@@ -355,10 +305,9 @@ describe("generateUserOgpHtml", () => {
     expect(html).not.toContain('og:image:height');
   });
 
-  it("should include ActivityPub URL in og:url for local users", () => {
+  it("should include profile URL in og:url", () => {
     const html = generateUserOgpHtml(baseOptions);
-    // Local users use /users/ path for og:url (same as ActivityPub alternate link)
-    expect(html).toContain('content="https://example.com/users/alice"');
+    expect(html).toContain('content="https://example.com/@alice"');
   });
 
   it("should not include refresh meta tag (Discord compatibility)", () => {

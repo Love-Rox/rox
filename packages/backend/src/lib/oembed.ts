@@ -9,7 +9,7 @@
  * @module lib/oembed
  */
 
-import { escapeHtml, truncateText, stripHtml } from "./ogp.js";
+import { escapeHtml } from "./ogp.js";
 
 /**
  * oEmbed response type
@@ -103,16 +103,6 @@ export interface UserOEmbedOptions {
   instanceIconUrl: string | null;
 }
 
-/**
- * Format username with host for display
- *
- * @param username - Username
- * @param host - Host (null for local users)
- * @returns Formatted username (e.g., "@alice" or "@alice@mastodon.social")
- */
-function formatUsername(username: string, host: string | null): string {
-  return host ? `@${username}@${host}` : `@${username}`;
-}
 
 /**
  * Generate oEmbed response for a note
@@ -144,10 +134,8 @@ function formatUsername(username: string, host: string | null): string {
  */
 export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
   const {
-    noteId,
     authorAvatarUrl,
     imageUrl,
-    createdAt,
     baseUrl,
     instanceName,
   } = options;
@@ -155,35 +143,14 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
   // Determine thumbnail (prefer note image, fallback to author avatar)
   const thumbnailUrl = imageUrl || authorAvatarUrl;
 
-  // Note URL for author_url link
-  const noteUrl = `${baseUrl}/notes/${noteId}`;
-
-  // Format timestamp for display (like FxTwitter's stats line)
-  // FxTwitter shows: "💬 16.1K   🔁 120.9K   ❤️ 264.9K"
-  // We don't have stats, so show timestamp instead
-  let authorNameText = "📝 Note";
-  if (createdAt) {
-    const date = new Date(createdAt);
-    // Use ISO date format (YYYY-MM-DD) for locale-independent display
-    const formatted = date.toISOString().split("T")[0];
-    authorNameText = `📅 ${formatted}`;
-  }
-
-  // Use "rich" type like FxTwitter - this makes Discord show:
-  // - author_name at the top (small text with link)
-  // - OGP og:title as the main title (author name)
-  // - OGP og:description as the main content (note text)
-  // - provider_name at the bottom (footer)
+  // Discord embed behavior:
+  // - When author_name is present: author_name shows at TOP, provider_name in footer
+  // - When author_name is absent: og:site_name shows in FOOTER (like Misskey)
+  // To match Misskey's footer display, we omit author_name entirely
   const response: OEmbedResponse = {
     version: "1.0",
     type: "rich",
-    // Title field like FxTwitter - required for proper Discord embed structure
-    title: "Embed",
-    // Show timestamp in author_name position (like FxTwitter shows stats)
-    // This pushes provider_name to footer position in Discord
-    author_name: authorNameText,
-    author_url: noteUrl,
-    // Provider info - displayed in footer when author_name exists
+    // Provider info - displayed in footer when author_name is absent
     provider_name: instanceName,
     provider_url: baseUrl,
     // Cache for 5 minutes
@@ -228,35 +195,19 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
  */
 export function generateUserOEmbed(options: UserOEmbedOptions): OEmbedResponse {
   const {
-    username,
-    displayName,
-    bio,
-    host,
     avatarUrl,
     baseUrl,
     instanceName,
   } = options;
 
-  const formattedUsername = formatUsername(username, host);
-
-  // Profile URL
-  const profileUrl = host
-    ? `${baseUrl}/@${username}@${host}`
-    : `${baseUrl}/@${username}`;
-
-  // Build title from bio or default
-  const title = bio
-    ? truncateText(stripHtml(bio), 200)
-    : `View ${formattedUsername}'s profile`;
-
+  // Discord embed behavior:
+  // - When author_name is present: author_name shows at TOP, provider_name in footer
+  // - When author_name is absent: og:site_name shows in FOOTER (like Misskey)
+  // To match Misskey's footer display, we omit author_name entirely
   const response: OEmbedResponse = {
     version: "1.0",
     type: "rich",
-    title,
-    // Author info - the user themselves
-    author_name: displayName ? `${displayName} (${formattedUsername})` : formattedUsername,
-    author_url: profileUrl,
-    // Provider info
+    // Provider info - displayed in footer when author_name is absent
     provider_name: instanceName,
     provider_url: baseUrl,
     // Cache for 5 minutes
