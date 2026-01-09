@@ -56,7 +56,16 @@ export default async function NoteDetailPage({ noteId }: PageProps<"/notes/[note
     : null;
 
   // Avatar URL for og:image (Misskey uses avatar when no note image)
-  const avatarUrl = user?.avatarUrl || null;
+  // Normalize to absolute URL - avatarUrl might be relative from remote servers
+  let avatarUrl: string | null = null;
+  if (user?.avatarUrl) {
+    if (user.avatarUrl.startsWith("http://") || user.avatarUrl.startsWith("https://")) {
+      avatarUrl = user.avatarUrl;
+    } else {
+      // Relative URL - resolve against baseUrl
+      avatarUrl = new URL(user.avatarUrl, baseUrl).toString();
+    }
+  }
 
   // og:image should be note image if available, otherwise avatar (like Misskey.io)
   const ogImageUrl = noteImageUrl || avatarUrl;

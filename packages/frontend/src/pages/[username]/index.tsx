@@ -70,7 +70,18 @@ export default async function UserPage({ username: usernameParam }: PageProps<"/
   const fullTitle = `${title} | ${instanceName}`;
   const description = user?.bio || `View ${username}'s profile on Rox`;
   const profileUrl = `${baseUrl}/@${username}${host ? `@${host}` : ""}`;
-  const avatarUrl = user?.avatarUrl || null;
+
+  // Avatar URL for og:image
+  // Normalize to absolute URL - avatarUrl might be relative from remote servers
+  let avatarUrl: string | null = null;
+  if (user?.avatarUrl) {
+    if (user.avatarUrl.startsWith("http://") || user.avatarUrl.startsWith("https://")) {
+      avatarUrl = user.avatarUrl;
+    } else {
+      // Relative URL - resolve against baseUrl
+      avatarUrl = new URL(user.avatarUrl, baseUrl).toString();
+    }
+  }
 
   return (
     <>

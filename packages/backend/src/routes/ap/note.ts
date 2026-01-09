@@ -84,14 +84,37 @@ note.get("/notes/:id", async (c: Context) => {
   }
 
   // Construct author URI and followers URL
-  const authorUri = author.host
-    ? author.uri || `https://${author.host}/users/${author.username}` // Remote user (prefer stored URI)
-    : `${baseUrl}/users/${author.username}`; // Local user
+  let authorUri: string;
+  let followersUrl: string;
 
-  // Use stored followersUrl for remote users, construct for local users
-  const followersUrl = author.host
-    ? author.followersUrl || `${authorUri}/followers` // Remote user (prefer stored URL)
-    : `${baseUrl}/users/${author.username}/followers`; // Local user
+  if (author.host) {
+    // Remote user - prefer stored URI, log warning if missing
+    if (author.uri) {
+      authorUri = author.uri;
+    } else {
+      // Fallback for incomplete remote user data (should rarely happen)
+      logger.warn(
+        { userId: author.id, username: author.username, host: author.host },
+        "Remote user missing URI, using fallback construction"
+      );
+      authorUri = `https://${author.host}/users/${author.username}`;
+    }
+
+    if (author.followersUrl) {
+      followersUrl = author.followersUrl;
+    } else {
+      // Fallback for incomplete remote user data
+      logger.warn(
+        { userId: author.id, username: author.username, host: author.host },
+        "Remote user missing followersUrl, using fallback construction"
+      );
+      followersUrl = `${authorUri}/followers`;
+    }
+  } else {
+    // Local user - construct from baseUrl
+    authorUri = `${baseUrl}/users/${author.username}`;
+    followersUrl = `${baseUrl}/users/${author.username}/followers`;
+  }
 
   // Build reply information
   let inReplyTo: string | null = null;
