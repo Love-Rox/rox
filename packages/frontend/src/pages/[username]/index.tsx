@@ -26,7 +26,7 @@ function parseUserParam(param: string): { username: string; host: string | null 
 
 /**
  * User profile page
- * Dynamic route for displaying user profiles
+ * Dynamic route for displaying user profiles with OGP meta tags
  *
  * @example
  * /alice - Shows alice's profile (local)
@@ -46,7 +46,75 @@ export default async function UserPage({ username: usernameParam }: PageProps<"/
 
   const { username, host } = parseUserParam(usernameParam);
 
-  return <UserProfile username={username} host={host} />;
+  // Fetch user data for OGP meta tags (Server Component can fetch directly)
+  let user: Awaited<ReturnType<typeof import("../../lib/api/users").usersApi.getByUsername>> | null = null;
+  try {
+    // Fetch user by username and host
+    user = await import("../../lib/api/users").then(m => m.usersApi.getByUsername(username, host));
+  } catch (error) {
+    console.error("[SSR] Failed to fetch user for OGP:", error);
+  }
+
+  // Generate OGP meta tags if user data is available
+  // Use public URL for OGP meta tags (not internal Docker URL)
+  const baseUrl = process.env.URL || "https://rox.love-rox.cc";
+  const instanceName = "Rox Origin"; // TODO: Fetch from instance settings
+  const themeColor = "#f97316"; // TODO: Fetch from instance settings
+
+  // Build title - ensure it's never empty
+  const displayName = user?.displayName || user?.username || username;
+  const userHandle = `@${username}${host ? `@${host}` : ""}`;
+  const title = user
+    ? `${displayName} (${userHandle})`
+    : userHandle;
+  const fullTitle = `${title} | ${instanceName}`;
+  const description = user?.bio || `View ${username}'s profile on Rox`;
+  const profileUrl = `${baseUrl}/@${username}${host ? `@${host}` : ""}`;
+
+  // Avatar URL for og:image
+  // Normalize to absolute URL - avatarUrl might be relative from remote servers
+  let avatarUrl: string | null = null;
+  if (user?.avatarUrl) {
+    if (user.avatarUrl.startsWith("http://") || user.avatarUrl.startsWith("https://")) {
+      avatarUrl = user.avatarUrl;
+    } else {
+      // Relative URL - resolve against baseUrl
+      try {
+        avatarUrl = new URL(user.avatarUrl, baseUrl).toString();
+      } catch {
+        // Invalid URL format - skip og:image
+        avatarUrl = null;
+      }
+    }
+  }
+
+  return (
+    <>
+      {/* OGP Meta Tags with ActivityPub discovery for rich Discord embeds */}
+      <meta name="application-name" content="Rox" />
+      <meta name="referrer" content="origin" />
+      <meta name="theme-color" content={themeColor} />
+      <meta name="theme-color-orig" content={themeColor} />
+      <meta property="og:site_name" content={instanceName} />
+      <meta property="instance_url" content={baseUrl} />
+      <meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no" />
+      <link rel="icon" href={`${baseUrl}/favicon.png`} type="image/png" />
+      {/* ActivityPub alternate link for Discord Mastodon-style embeds (only for local users) */}
+      {!host && (
+        <link rel="alternate" href={`${baseUrl}/users/${username}`} type="application/activity+json" />
+      )}
+      <title>{fullTitle}</title>
+      <meta name="description" content={description} />
+      <meta property="og:type" content="article" />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:url" content={profileUrl} />
+      {avatarUrl && <meta property="og:image" content={avatarUrl} />}
+      <meta property="twitter:card" content="summary" />
+
+      <UserProfile username={username} host={host} />
+    </>
+  );
 }
 
 /**

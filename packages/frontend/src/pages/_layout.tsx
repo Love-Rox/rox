@@ -280,7 +280,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
       />
-      <title>Rox - Lightweight ActivityPub Server</title>
+      {/* Note: <title> is intentionally NOT set here to avoid duplicate title tags.
+          Each page should set its own <title> tag. Waku hoists all <title> tags
+          from both layout and page components, causing duplicates if set in both. */}
 
       {/* PWA Meta Tags - manifest is served dynamically from backend */}
       <link rel="manifest" href="/api/instance/manifest.json" />

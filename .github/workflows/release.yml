@@ -114,8 +114,6 @@ jobs:
 
       - name: Generate changelog from commits
         id: changelog
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PREV_TAG="${{ steps.prev_tag.outputs.prev_tag }}"
           CURRENT_TAG="${{ steps.version.outputs.tag }}"
@@ -163,24 +161,17 @@ jobs:
           format_commits() {
             local grep_pattern="$1"
             local invert="${2:-false}"
-            local output=""
 
             if [ "$invert" = "true" ]; then
-              commits=$(git log $RANGE --pretty=format:"%s|%h|%H|%ae" --invert-grep --grep="^feat" --grep="^fix" --grep="^perf" --grep="^docs" --grep="^chore" --grep="^refactor" --grep="^Merge" 2>/dev/null || true)
+              git log $RANGE --pretty=format:"%s|%h|%H|%ae" --invert-grep --grep="^feat" --grep="^fix" --grep="^perf" --grep="^docs" --grep="^chore" --grep="^refactor" --grep="^Merge" 2>/dev/null || true
             else
-              commits=$(git log $RANGE --pretty=format:"%s|%h|%H|%ae" --grep="$grep_pattern" 2>/dev/null || true)
-            fi
-
-            # Process commits line by line without pipe (avoids subshell issues)
-            while IFS='|' read -r subject short_hash full_hash email; do
+              git log $RANGE --pretty=format:"%s|%h|%H|%ae" --grep="$grep_pattern" 2>/dev/null || true
+            fi | while IFS='|' read -r subject short_hash full_hash email; do
               if [ -n "$subject" ]; then
                 username=$(get_github_username "$full_hash" "$email")
-                output="${output}- $subject ($short_hash) @$username"$'\n'
+                echo "- $subject ($short_hash) @$username"
               fi
-            done <<< "$commits"
-
-            # Output without trailing newline
-            printf "%s" "${output%$'\n'}"
+            done
           }
 
           # Create changelog sections based on conventional commits

@@ -47,6 +47,25 @@ export function stripHtml(html: string): string {
 }
 
 /**
+ * Convert plain text to HTML with proper escaping
+ *
+ * Escapes HTML special characters and converts newlines to <br> tags.
+ * Wraps content in a <p> tag for ActivityPub compatibility.
+ *
+ * @param text - Plain text to convert
+ * @returns HTML-safe string wrapped in <p> tags
+ *
+ * @example
+ * ```typescript
+ * textToHtml("Hello\nWorld"); // "<p>Hello<br>World</p>"
+ * textToHtml("<script>alert('xss')</script>"); // "<p>&lt;script&gt;alert(&#039;xss&#039;)&lt;/script&gt;</p>"
+ * ```
+ */
+export function textToHtml(text: string): string {
+  return `<p>${escapeHtml(text).replace(/\n/g, "<br>")}</p>`;
+}
+
+/**
  * Options for generating Note OGP HTML
  */
 export interface NoteOgpOptions {
