@@ -14,6 +14,7 @@ import { logger } from "../../lib/logger.js";
 import {
   isActivityPubRequest,
 } from "../../lib/crawlerDetection.js";
+import { textToHtml } from "../../lib/ogp.js";
 
 const note = new Hono();
 
@@ -82,10 +83,15 @@ note.get("/notes/:id", async (c: Context) => {
     return c.notFound();
   }
 
-  // Construct author URI
+  // Construct author URI and followers URL
   const authorUri = author.host
-    ? `https://${author.host}/users/${author.username}` // Remote user
+    ? author.uri || `https://${author.host}/users/${author.username}` // Remote user (prefer stored URI)
     : `${baseUrl}/users/${author.username}`; // Local user
+
+  // Use stored followersUrl for remote users, construct for local users
+  const followersUrl = author.host
+    ? author.followersUrl || `${authorUri}/followers` // Remote user (prefer stored URL)
+    : `${baseUrl}/users/${author.username}/followers`; // Local user
 
   // Build reply information
   let inReplyTo: string | null = null;
@@ -136,49 +142,34 @@ note.get("/notes/:id", async (c: Context) => {
     }
   }
 
-  // Build custom emoji tags
+  // Build custom emoji tags (batch query to avoid N+1)
   if (noteData.emojis && noteData.emojis.length > 0) {
     const customEmojiRepository = c.get("customEmojiRepository");
-    for (const emojiName of noteData.emojis) {
-      const emoji = await customEmojiRepository.findByName(emojiName, null);
-      if (emoji) {
-        // Infer media type from URL extension, default to image/png
-        const urlLower = emoji.url.toLowerCase();
-        let mediaType = "image/png";
-        if (urlLower.endsWith(".gif")) mediaType = "image/gif";
-        else if (urlLower.endsWith(".webp")) mediaType = "image/webp";
-        else if (urlLower.endsWith(".svg")) mediaType = "image/svg+xml";
-        else if (urlLower.endsWith(".jpg") || urlLower.endsWith(".jpeg")) mediaType = "image/jpeg";
+    // Use batch query instead of individual lookups per emoji
+    const emojiMap = await customEmojiRepository.findManyByNames(noteData.emojis, null);
 
-        tags.push({
-          id: `${baseUrl}/emojis/${emoji.name}`,
-          type: "Emoji",
-          name: `:${emoji.name}:`,
-          updated: emoji.updatedAt?.toISOString() || emoji.createdAt.toISOString(),
-          icon: {
-            type: "Image",
-            mediaType,
-            url: emoji.url,
-          },
-        });
-      }
+    for (const [, emoji] of emojiMap) {
+      // Infer media type from URL extension, default to image/png
+      const urlLower = emoji.url.toLowerCase();
+      let mediaType = "image/png";
+      if (urlLower.endsWith(".gif")) mediaType = "image/gif";
+      else if (urlLower.endsWith(".webp")) mediaType = "image/webp";
+      else if (urlLower.endsWith(".svg")) mediaType = "image/svg+xml";
+      else if (urlLower.endsWith(".jpg") || urlLower.endsWith(".jpeg")) mediaType = "image/jpeg";
+
+      tags.push({
+        id: `${baseUrl}/emojis/${emoji.name}`,
+        type: "Emoji",
+        name: `:${emoji.name}:`,
+        updated: emoji.updatedAt?.toISOString() || emoji.createdAt.toISOString(),
+        icon: {
+          type: "Image",
+          mediaType,
+          url: emoji.url,
+        },
+      });
     }
   }
-
-  // Escape HTML special characters to prevent XSS
-  const escapeHtml = (text: string): string => {
-    return text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  };
-
-  // Convert plain text to HTML (escape + newlines to <br> tags)
-  const textToHtml = (text: string): string => {
-    return `<p>${escapeHtml(text).replace(/\n/g, "<br>")}</p>`;
-  };
 
   // Build ActivityPub Note object (matching Misskey.io structure)
   const apNote: any = {
@@ -193,7 +184,7 @@ note.get("/notes/:id", async (c: Context) => {
     content: noteData.text ? textToHtml(noteData.text) : "",
     published: noteData.createdAt.toISOString(),
     to: ["https://www.w3.org/ns/activitystreams#Public"],
-    cc: [`${authorUri}/followers`],
+    cc: [followersUrl],
     inReplyTo: inReplyTo,
     attachment: attachments,
     sensitive: noteData.cw ? true : false,

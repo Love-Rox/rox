@@ -49,10 +49,8 @@ export default async function UserPage({ username: usernameParam }: PageProps<"/
   // Fetch user data for OGP meta tags (Server Component can fetch directly)
   let user: Awaited<ReturnType<typeof import("../../lib/api/users").usersApi.getByUsername>> | null = null;
   try {
-    console.log("[SSR] Fetching user for OGP:", username, host, "INTERNAL_API_URL:", process.env.INTERNAL_API_URL);
     // Fetch user by username and host
     user = await import("../../lib/api/users").then(m => m.usersApi.getByUsername(username, host));
-    console.log("[SSR] User fetched successfully:", user?.username);
   } catch (error) {
     console.error("[SSR] Failed to fetch user for OGP:", error);
   }

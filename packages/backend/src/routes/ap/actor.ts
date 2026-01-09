@@ -15,7 +15,7 @@ import {
   isEmbedCrawler,
   isActivityPubRequest,
 } from "../../lib/crawlerDetection.js";
-import { generateUserOgpHtml } from "../../lib/ogp.js";
+import { generateUserOgpHtml, textToHtml } from "../../lib/ogp.js";
 
 const actor = new Hono();
 
@@ -128,21 +128,6 @@ actor.get("/:username", async (c: Context) => {
 
   // Determine actor type: Application for system user, Person for regular users
   const actorType = user.isSystemUser ? "Application" : "Person";
-
-  // Escape HTML special characters to prevent XSS
-  const escapeHtml = (text: string): string => {
-    return text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  };
-
-  // Convert plain text to HTML (escape + newlines to <br> tags)
-  const textToHtml = (text: string): string => {
-    return `<p>${escapeHtml(text).replace(/\n/g, "<br>")}</p>`;
-  };
 
   // Build ActivityPub Actor document
   const actorDocument: Record<string, unknown> = {

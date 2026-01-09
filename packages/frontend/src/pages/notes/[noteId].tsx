@@ -24,14 +24,11 @@ export default async function NoteDetailPage({ noteId }: PageProps<"/notes/[note
   let note: Awaited<ReturnType<typeof notesApi.getNote>> | null = null;
   let user: Awaited<ReturnType<typeof usersApi.getById>> | null = null;
   try {
-    console.log("[SSR] Fetching note for OGP:", noteId, "INTERNAL_API_URL:", process.env.INTERNAL_API_URL);
     // In SSR context, we need to use the internal API URL
     // This is handled by the API client's default baseUrl configuration
     note = await notesApi.getNote(noteId);
-    console.log("[SSR] Note fetched successfully:", note?.id);
     if (note?.user?.id) {
       user = await usersApi.getById(note.user.id);
-      console.log("[SSR] User fetched successfully:", user?.username);
     }
   } catch (error) {
     console.error("[SSR] Failed to fetch note for OGP:", error);
