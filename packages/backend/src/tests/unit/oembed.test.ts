@@ -60,33 +60,23 @@ describe("oEmbed", () => {
       expect(response.title).toBe("Sensitive content");
     });
 
-    it("should include HTML blockquote for rich rendering", () => {
+    it("should not include html field (minimal response for Discord compatibility)", () => {
       const response = generateNoteOEmbed(baseOptions);
 
-      expect(response.html).toContain('<blockquote class="activitypub-post">');
-      expect(response.html).toContain("<p>Hello, world!</p>");
-      expect(response.html).toContain("Alice (@alice@example.com)");
-      expect(response.html).toContain("https://example.com/@alice");
-      expect(response.html).toContain("https://example.com/notes/abc123");
+      // Minimal oEmbed response - no html field
+      expect(response.html).toBeUndefined();
     });
 
-    it("should include image thumbnail when available", () => {
+    it("should not include thumbnail fields (Discord uses og:image instead)", () => {
       const response = generateNoteOEmbed({
         ...baseOptions,
         imageUrl: "https://example.com/image.jpg",
       });
 
-      expect(response.thumbnail_url).toBe("https://example.com/image.jpg");
-      expect(response.thumbnail_width).toBe(400);
-      expect(response.thumbnail_height).toBe(300);
-    });
-
-    it("should use avatar as fallback thumbnail", () => {
-      const response = generateNoteOEmbed(baseOptions);
-
-      expect(response.thumbnail_url).toBe("https://example.com/avatar.jpg");
-      expect(response.thumbnail_width).toBe(128);
-      expect(response.thumbnail_height).toBe(128);
+      // No thumbnail fields in minimal response
+      expect(response.thumbnail_url).toBeUndefined();
+      expect(response.thumbnail_width).toBeUndefined();
+      expect(response.thumbnail_height).toBeUndefined();
     });
 
     it("should include cache_age", () => {
@@ -137,22 +127,20 @@ describe("oEmbed", () => {
       expect(response.title).toBe("Alice");
     });
 
-    it("should include HTML blockquote with bio", () => {
+    it("should not include html field (minimal response for Discord compatibility)", () => {
       const response = generateUserOEmbed(baseOptions);
 
-      expect(response.html).toContain('<blockquote class="activitypub-profile">');
-      // escapeHtml uses &#039; for apostrophe
-      expect(response.html).toContain("<p>Hello, I&#039;m Alice!</p>");
-      expect(response.html).toContain("Alice (@alice@example.com)");
-      expect(response.html).toContain("https://example.com/@alice");
+      // Minimal oEmbed response - no html field
+      expect(response.html).toBeUndefined();
     });
 
-    it("should include avatar as thumbnail", () => {
+    it("should not include thumbnail fields (Discord uses og:image instead)", () => {
       const response = generateUserOEmbed(baseOptions);
 
-      expect(response.thumbnail_url).toBe("https://example.com/avatar.jpg");
-      expect(response.thumbnail_width).toBe(128);
-      expect(response.thumbnail_height).toBe(128);
+      // No thumbnail fields in minimal response
+      expect(response.thumbnail_url).toBeUndefined();
+      expect(response.thumbnail_width).toBeUndefined();
+      expect(response.thumbnail_height).toBeUndefined();
     });
 
 
