@@ -155,6 +155,23 @@ function NoteCardComponent({
     };
   }, [showMoreMenu]);
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    if (!showMoreMenu) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
+        setShowMoreMenu(false);
+        setShowShareMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showMoreMenu]);
+
   // Sync reactions from props when they change (e.g., from SSE updates)
   useEffect(() => {
     if (note.reactions) {
