@@ -129,6 +129,11 @@ actor.get("/:username", async (c: Context) => {
   // Determine actor type: Application for system user, Person for regular users
   const actorType = user.isSystemUser ? "Application" : "Person";
 
+  // Convert plain text to HTML (newlines to <br> tags)
+  const textToHtml = (text: string): string => {
+    return `<p>${text.replace(/\n/g, "<br>")}</p>`;
+  };
+
   // Build ActivityPub Actor document
   const actorDocument: Record<string, unknown> = {
     "@context": ["https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"],
@@ -136,7 +141,8 @@ actor.get("/:username", async (c: Context) => {
     type: actorType,
     preferredUsername: user.username,
     name: user.displayName || user.username,
-    summary: user.bio || "",
+    summary: user.bio ? textToHtml(user.bio) : "",
+    url: `${baseUrl}/@${user.username}`,
     inbox: `${baseUrl}/users/${user.username}/inbox`,
     outbox: `${baseUrl}/users/${user.username}/outbox`,
     followers: `${baseUrl}/users/${user.username}/followers`,
