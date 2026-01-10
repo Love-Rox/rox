@@ -130,9 +130,21 @@ note.get("/notes/:id", async (c: Context) => {
 
     for (const u of mentionedUsers) {
       if (u) {
-        // Use stored URI for remote users, fallback to constructed URL
-        const href = u.uri
-          ?? (u.host ? `https://${u.host}/users/${u.username}` : `${baseUrl}/users/${u.username}`);
+        let href: string;
+        if (u.host) {
+          // Remote user - require stored URI (same validation as author)
+          if (!u.uri) {
+            logger.warn(
+              { userId: u.id, username: u.username, host: u.host },
+              "Remote mentioned user missing URI - skipping mention tag"
+            );
+            continue;
+          }
+          href = u.uri;
+        } else {
+          // Local user - construct from baseUrl
+          href = `${baseUrl}/users/${u.username}`;
+        }
         tags.push({
           type: "Mention",
           href,

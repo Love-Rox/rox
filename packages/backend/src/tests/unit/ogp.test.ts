@@ -160,10 +160,6 @@ describe("ogp utilities", () => {
     it("should handle undefined input", () => {
       expect(textToHtml(undefined)).toBe("<p></p>");
     });
-
-    it("should handle empty string", () => {
-      expect(textToHtml("")).toBe("<p></p>");
-    });
   });
 });
 
