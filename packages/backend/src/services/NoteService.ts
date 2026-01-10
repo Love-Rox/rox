@@ -13,7 +13,6 @@ import type { IFollowRepository } from "../interfaces/repositories/IFollowReposi
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
 import type { IListRepository } from "../interfaces/repositories/IListRepository.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
-import type { IEventBus } from "../interfaces/IEventBus.js";
 import type { Note } from "../../../shared/src/types/note.js";
 import type { User } from "../../../shared/src/types/user.js";
 import type { Visibility } from "../../../shared/src/types/common.js";
@@ -82,7 +81,6 @@ export class NoteService {
   private readonly maxTimelineLimit = 100;
 
   private readonly cacheService: ICacheService | null;
-  private readonly eventBus: IEventBus | null;
 
   /**
    * NoteService Constructor
@@ -95,7 +93,6 @@ export class NoteService {
    * @param cacheService - Optional cache service for timeline caching
    * @param notificationService - Optional notification service for notifications
    * @param listRepository - Optional list repository for list notifications
-   * @param eventBus - Optional event bus for plugin hooks
    */
   constructor(
     private readonly noteRepository: INoteRepository,
@@ -106,10 +103,8 @@ export class NoteService {
     cacheService?: ICacheService,
     private readonly notificationService?: NotificationService,
     private readonly listRepository?: IListRepository,
-    eventBus?: IEventBus,
   ) {
     this.cacheService = cacheService ?? null;
-    this.eventBus = eventBus ?? null;
   }
 
   /**
@@ -139,7 +134,7 @@ export class NoteService {
    * - Renote can have no text (quote renote if text is provided)
    */
   async create(input: NoteCreateInput): Promise<Note> {
-    let {
+    const {
       userId,
       text = null,
       cw = null,
@@ -150,29 +145,6 @@ export class NoteService {
       fileIds = [],
       visibleUserIds = [],
     } = input;
-
-    // Emit beforeCreate event (allows cancellation or modification)
-    if (this.eventBus) {
-      const beforeResult = await this.eventBus.emitBefore("note:beforeCreate", {
-        content: text || "",
-        userId,
-        cw,
-        visibility,
-        localOnly,
-      });
-
-      if (beforeResult.cancelled) {
-        throw new Error(beforeResult.reason || "Note creation was cancelled by a plugin");
-      }
-
-      // Apply modifications from plugins
-      if (!beforeResult.cancelled && beforeResult.data) {
-        text = beforeResult.data.content || null;
-        cw = beforeResult.data.cw ?? cw;
-        visibility = beforeResult.data.visibility || visibility;
-        localOnly = beforeResult.data.localOnly ?? localOnly;
-      }
-    }
 
     // バリデーション: テキストまたはファイルが必須（Renoteの場合は除く）
     if (!renoteId && !text && fileIds.length === 0) {
@@ -216,10 +188,10 @@ export class NoteService {
     const extractedMentions = this.extractMentions(text || "");
     const mentions = visibility === "specified" ? visibleUserIds : extractedMentions;
 
-    // Debug log for DM mentions
+    // Debug log for DM mentions (only log counts for privacy)
     if (visibility === "specified") {
-      logger.info(
-        { visibleUserIds, mentions, mentionsLength: mentions.length },
+      logger.debug(
+        { visibleUserIdsCount: visibleUserIds.length, mentionsCount: mentions.length },
         "DM mentions array being saved",
       );
     }
@@ -276,14 +248,13 @@ export class NoteService {
     // Deliver ActivityPub activity (async, non-blocking)
     const author = await this.userRepository.findById(userId);
 
-    // Log DM delivery decision for debugging
+    // Log DM delivery decision for debugging (only counts for privacy)
     if (visibility === "specified") {
-      logger.info(
+      logger.debug(
         {
           noteId,
           visibility,
-          visibleUserIds,
-          visibleUserIdsLength: visibleUserIds.length,
+          visibleUserIdsCount: visibleUserIds.length,
           authorExists: !!author,
           authorHost: author?.host,
           localOnly,
@@ -295,7 +266,7 @@ export class NoteService {
     if (author && !author.host && !localOnly) {
       if (visibility === "specified" && visibleUserIds.length > 0) {
         // Direct message: deliver to specific recipients
-        logger.info({ noteId, visibleUserIds }, "Starting DM delivery");
+        logger.debug({ noteId, recipientCount: visibleUserIds.length }, "Starting DM delivery");
         this.deliveryService
           .deliverDirectMessage(note, author, visibleUserIds)
           .catch((error) => {
@@ -347,13 +318,6 @@ export class NoteService {
     this.pushToTimelineStreams(note, userId, visibility, localOnly).catch((error) => {
       logger.error({ err: error, noteId }, "Failed to push note to timeline streams");
     });
-
-    // Emit afterCreate event (notification only, fire-and-forget)
-    if (this.eventBus) {
-      this.eventBus.emit("note:afterCreate", { note }).catch((error) => {
-        logger.error({ err: error, noteId }, "Failed to emit note:afterCreate event");
-      });
-    }
 
     return note;
   }
@@ -527,18 +491,6 @@ export class NoteService {
       throw new Error("Access denied");
     }
 
-    // Emit beforeDelete event (allows cancellation)
-    if (this.eventBus) {
-      const beforeResult = await this.eventBus.emitBefore("note:beforeDelete", {
-        noteId,
-        userId,
-      });
-
-      if (beforeResult.cancelled) {
-        throw new Error(beforeResult.reason || "Note deletion was cancelled by a plugin");
-      }
-    }
-
     // Get author info before deletion for ActivityPub delivery
     const author = await this.userRepository.findById(userId);
 
@@ -564,13 +516,6 @@ export class NoteService {
       // Only deliver if author is a local user
       this.deliveryService.deliverDelete(note, author).catch((error) => {
         logger.error({ err: error, noteId }, "Failed to deliver Delete activity");
-      });
-    }
-
-    // Emit afterDelete event (notification only, fire-and-forget)
-    if (this.eventBus) {
-      this.eventBus.emit("note:afterDelete", { noteId, userId }).catch((error) => {
-        logger.error({ err: error, noteId }, "Failed to emit note:afterDelete event");
       });
     }
   }

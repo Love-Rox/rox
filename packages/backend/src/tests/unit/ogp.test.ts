@@ -3,6 +3,7 @@ import {
   escapeHtml,
   truncateText,
   stripHtml,
+  textToHtml,
   generateNoteOgpHtml,
   generateUserOgpHtml,
 } from "../../lib/ogp.js";
@@ -96,6 +97,68 @@ describe("ogp utilities", () => {
 
     it("should preserve text without HTML", () => {
       expect(stripHtml("Hello World")).toBe("Hello World");
+    });
+  });
+
+  describe("textToHtml", () => {
+    it("should wrap text in paragraph tags", () => {
+      expect(textToHtml("Hello")).toBe("<p>Hello</p>");
+    });
+
+    it("should convert newlines to br tags", () => {
+      expect(textToHtml("Hello\nWorld")).toBe("<p>Hello<br>World</p>");
+    });
+
+    it("should handle multiple newlines", () => {
+      expect(textToHtml("Line 1\nLine 2\nLine 3")).toBe(
+        "<p>Line 1<br>Line 2<br>Line 3</p>"
+      );
+    });
+
+    it("should escape HTML special characters", () => {
+      expect(textToHtml('<script>alert("XSS")</script>')).toBe(
+        "<p>&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;</p>"
+      );
+    });
+
+    it("should escape ampersands", () => {
+      expect(textToHtml("Tom & Jerry")).toBe("<p>Tom &amp; Jerry</p>");
+    });
+
+    it("should escape single quotes", () => {
+      expect(textToHtml("It's fine")).toBe("<p>It&#039;s fine</p>");
+    });
+
+    it("should handle empty string", () => {
+      expect(textToHtml("")).toBe("<p></p>");
+    });
+
+    it("should handle both escaping and newlines together", () => {
+      expect(textToHtml("Hello <world>\nGoodbye")).toBe(
+        "<p>Hello &lt;world&gt;<br>Goodbye</p>"
+      );
+    });
+
+    it("should handle CRLF line endings", () => {
+      expect(textToHtml("Hello\r\nWorld")).toBe("<p>Hello<br>World</p>");
+    });
+
+    it("should handle CR only line endings", () => {
+      expect(textToHtml("Hello\rWorld")).toBe("<p>Hello<br>World</p>");
+    });
+
+    it("should handle mixed line endings", () => {
+      expect(textToHtml("Line1\r\nLine2\nLine3\rLine4")).toBe(
+        "<p>Line1<br>Line2<br>Line3<br>Line4</p>"
+      );
+    });
+
+    it("should handle null input", () => {
+      expect(textToHtml(null)).toBe("<p></p>");
+    });
+
+    it("should handle undefined input", () => {
+      expect(textToHtml(undefined)).toBe("<p></p>");
     });
   });
 });

@@ -92,6 +92,10 @@ services:
     environment:
       - NODE_ENV=production
       - FRONTEND_PORT=3001
+      # SSR API connection - use internal Docker network
+      - INTERNAL_API_URL=http://rox-backend:3000
+      # Public URL for client-side and OGP meta tags (matches backend URL)
+      - URL=${ROX_URL:-https://rox.example.com}
     networks:
       - rox-network
     deploy:

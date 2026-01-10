@@ -15,7 +15,7 @@ import {
   isEmbedCrawler,
   isActivityPubRequest,
 } from "../../lib/crawlerDetection.js";
-import { generateUserOgpHtml } from "../../lib/ogp.js";
+import { generateUserOgpHtml, textToHtml } from "../../lib/ogp.js";
 
 const actor = new Hono();
 
@@ -136,7 +136,8 @@ actor.get("/:username", async (c: Context) => {
     type: actorType,
     preferredUsername: user.username,
     name: user.displayName || user.username,
-    summary: user.bio || "",
+    summary: user.bio ? textToHtml(user.bio) : "",
+    url: `${baseUrl}/@${user.username}`,
     inbox: `${baseUrl}/users/${user.username}/inbox`,
     outbox: `${baseUrl}/users/${user.username}/outbox`,
     followers: `${baseUrl}/users/${user.username}/followers`,
