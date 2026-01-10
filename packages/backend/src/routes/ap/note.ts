@@ -89,28 +89,23 @@ note.get("/notes/:id", async (c: Context) => {
   let followersUrl: string;
 
   if (author.host) {
-    // Remote user - prefer stored URI, log warning if missing
-    if (author.uri) {
-      authorUri = author.uri;
-    } else {
-      // Fallback for incomplete remote user data (should rarely happen)
-      logger.warn(
+    // Remote user - require stored URI (different servers use different URL patterns)
+    // Synthesizing URIs is unsafe as Misskey uses UUIDs, PeerTube uses /accounts/, etc.
+    if (!author.uri) {
+      logger.error(
         { userId: author.id, username: author.username, host: author.host },
-        "Remote user missing URI, using fallback construction"
+        "Remote user missing URI - cannot serve ActivityPub Note without canonical actor URI"
       );
-      authorUri = `https://${author.host}/users/${author.username}`;
+      return c.json(
+        { error: "Remote actor URI unavailable" },
+        500,
+        { "Content-Type": "application/json" }
+      );
     }
+    authorUri = author.uri;
 
-    if (author.followersUrl) {
-      followersUrl = author.followersUrl;
-    } else {
-      // Fallback for incomplete remote user data
-      logger.warn(
-        { userId: author.id, username: author.username, host: author.host },
-        "Remote user missing followersUrl, using fallback construction"
-      );
-      followersUrl = `${authorUri}/followers`;
-    }
+    // followersUrl is less critical but still prefer stored value
+    followersUrl = author.followersUrl || `${authorUri}/followers`;
   } else {
     // Local user - construct from baseUrl
     authorUri = `${baseUrl}/users/${author.username}`;

@@ -152,6 +152,18 @@ describe("ogp utilities", () => {
         "<p>Line1<br>Line2<br>Line3<br>Line4</p>"
       );
     });
+
+    it("should handle null input", () => {
+      expect(textToHtml(null)).toBe("<p></p>");
+    });
+
+    it("should handle undefined input", () => {
+      expect(textToHtml(undefined)).toBe("<p></p>");
+    });
+
+    it("should handle empty string", () => {
+      expect(textToHtml("")).toBe("<p></p>");
+    });
   });
 });
 

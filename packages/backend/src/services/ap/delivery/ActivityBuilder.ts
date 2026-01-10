@@ -10,6 +10,7 @@
 import type { Note } from "../../../../../shared/src/types/note.js";
 import type { User } from "../../../../../shared/src/types/user.js";
 import { logger } from "../../../lib/logger.js";
+import { textToHtml } from "../../../lib/ogp.js";
 
 /**
  * Base ActivityPub activity structure
@@ -217,7 +218,7 @@ export class ActivityBuilder {
     const published = note.createdAt.toISOString();
 
     // Convert MFM text to HTML for content field
-    const htmlContent = note.text ? this.textToHtml(note.text) : "";
+    const htmlContent = textToHtml(note.text);
 
     const noteObject: NoteObject = {
       id: note.uri || `${this.baseUrl}/notes/${note.id}`,
@@ -536,7 +537,7 @@ export class ActivityBuilder {
     }
 
     // Convert plain text to simple HTML (escape special characters and wrap in <p>)
-    const htmlContent = this.textToHtml(note.text || "");
+    const htmlContent = textToHtml(note.text);
 
     const noteObject: NoteObject = {
       id: note.uri || `${this.baseUrl}/notes/${note.id}`,
@@ -570,26 +571,6 @@ export class ActivityBuilder {
     };
   }
 
-  /**
-   * Convert plain text to simple HTML for ActivityPub content
-   *
-   * Escapes HTML special characters and wraps in <p> tags.
-   * Converts newlines to <br> tags.
-   */
-  private textToHtml(text: string): string {
-    if (!text) return "<p></p>";
-
-    // Escape HTML special characters
-    const escaped = text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-
-    // Convert newlines to <br> and wrap in <p>
-    return `<p>${escaped.replace(/\n/g, "<br>")}</p>`;
-  }
 }
 
 /**

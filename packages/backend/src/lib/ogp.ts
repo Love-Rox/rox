@@ -10,10 +10,11 @@
 /**
  * Escape HTML special characters to prevent XSS
  *
- * @param text - Text to escape
+ * @param text - Text to escape (empty string if null/undefined)
  * @returns Escaped text safe for HTML attributes
  */
 export function escapeHtml(text: string): string {
+  if (!text) return "";
   return text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -51,18 +52,21 @@ export function stripHtml(html: string): string {
  *
  * Escapes HTML special characters and converts newlines to <br> tags.
  * Wraps content in a <p> tag for ActivityPub compatibility.
+ * Handles null/undefined values defensively by returning empty paragraph.
  *
- * @param text - Plain text to convert
+ * @param text - Plain text to convert (null/undefined returns empty paragraph)
  * @returns HTML-safe string wrapped in <p> tags
  *
  * @example
  * ```typescript
  * textToHtml("Hello\nWorld"); // "<p>Hello<br>World</p>"
- * textToHtml("<script>alert('xss')</script>"); // "<p>&lt;script&gt;alert(&#039;xss&#039;)&lt;/script&gt;</p>"
+ * textToHtml("Line1\r\nLine2"); // "<p>Line1<br>Line2</p>"
+ * textToHtml(null); // "<p></p>"
+ * textToHtml(undefined); // "<p></p>"
  * ```
  */
-export function textToHtml(text: string): string {
-  return `<p>${escapeHtml(text).replace(/\r\n|\r|\n/g, "<br>")}</p>`;
+export function textToHtml(text: string | null | undefined): string {
+  return `<p>${escapeHtml(text ?? "").replace(/\r\n|\r|\n/g, "<br>")}</p>`;
 }
 
 /**
