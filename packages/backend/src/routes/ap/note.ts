@@ -210,6 +210,44 @@ note.get("/notes/:id", async (c: Context) => {
     }
   }
 
+  // Build to/cc based on visibility (ActivityPub addressing)
+  const AS_PUBLIC = "https://www.w3.org/ns/activitystreams#Public";
+  let to: string[] = [];
+  let cc: string[] = [];
+
+  // Collect mentioned user URIs for addressing
+  const mentionUris = tags
+    .filter((t: any) => t.type === "Mention" && t.href)
+    .map((t: any) => t.href as string);
+
+  switch (noteData.visibility) {
+    case "public":
+      // Public: to=Public, cc=followers + mentions
+      to = [AS_PUBLIC];
+      cc = [followersUrl, ...mentionUris];
+      break;
+    case "home":
+      // Home/Unlisted: to=followers, cc=Public + mentions
+      // Visible on profile but not on public timelines
+      to = [followersUrl];
+      cc = [AS_PUBLIC, ...mentionUris];
+      break;
+    case "followers":
+      // Followers-only: to=followers, cc=mentions (no Public)
+      to = [followersUrl];
+      cc = mentionUris;
+      break;
+    case "specified":
+      // Direct message: to=mentioned users only (no Public, no followers)
+      to = mentionUris;
+      cc = [];
+      break;
+    default:
+      // Fallback to public for unknown visibility
+      to = [AS_PUBLIC];
+      cc = [followersUrl, ...mentionUris];
+  }
+
   // Build ActivityPub Note object (matching Misskey.io structure)
   const apNote: any = {
     "@context": [
@@ -222,8 +260,8 @@ note.get("/notes/:id", async (c: Context) => {
     url: `${baseUrl}/notes/${noteData.id}`,
     content: noteData.text ? textToHtml(noteData.text) : "",
     published: noteData.createdAt.toISOString(),
-    to: ["https://www.w3.org/ns/activitystreams#Public"],
-    cc: [followersUrl],
+    to,
+    cc,
     inReplyTo: inReplyTo,
     attachment: attachments,
     sensitive: noteData.cw ? true : false,
