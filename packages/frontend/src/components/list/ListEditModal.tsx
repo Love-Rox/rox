@@ -209,6 +209,7 @@ export function ListEditModal({
           selectedKey={notifyLevel}
           onSelectionChange={(key) => setNotifyLevel(key as ListNotifyLevel)}
           className="w-full"
+          aria-label="Notification level"
         >
           <AriaButton className="flex items-center justify-between w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--input-bg) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500">
             <SelectValue className="flex items-center gap-2" />
