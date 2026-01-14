@@ -65,6 +65,10 @@ export interface NoteComposerProps {
    * Initial visibility setting (e.g., "direct" for DM mode)
    */
   initialVisibility?: NoteVisibility;
+  /**
+   * Auto-focus the text input when component mounts
+   */
+  autoFocus?: boolean;
 }
 
 /**
@@ -79,7 +83,7 @@ export interface NoteComposerProps {
  * - Draft auto-save and recovery
  * - Submit with loading state
  */
-export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibility }: NoteComposerProps) {
+export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibility, autoFocus }: NoteComposerProps) {
   const [currentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
@@ -161,6 +165,16 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
       setShowDraftBanner(true);
     }
   }, [replyId, hasDraft]);
+
+  // Auto-focus textarea when requested
+  useEffect(() => {
+    if (!autoFocus) return;
+    // Use setTimeout to ensure modal animation completes
+    const timeoutId = setTimeout(() => {
+      textareaRef.current?.focus();
+    }, 100);
+    return () => clearTimeout(timeoutId);
+  }, [autoFocus]);
 
   // Search for DM recipients
   useEffect(() => {

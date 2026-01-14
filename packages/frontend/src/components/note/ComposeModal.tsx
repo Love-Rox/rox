@@ -102,6 +102,7 @@ export function ComposeModal() {
             replyId={modalState.replyId}
             replyTo={modalState.initialText}
             initialVisibility={modalState.initialVisibility}
+            autoFocus
           />
         </div>
       </div>
