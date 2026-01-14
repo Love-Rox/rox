@@ -1,4 +1,5 @@
 import { apiClient } from "./client";
+import { buildPaginationParams, buildUrlWithParams } from "./utils";
 import type { Note, CreateNoteParams, TimelineOptions, NoteVisibility } from "../types/note";
 
 // Re-export types for convenience
@@ -28,13 +29,8 @@ export class NotesApi {
    * ```
    */
   async getLocalTimeline(options: TimelineOptions = {}): Promise<Note[]> {
-    const params = new URLSearchParams();
-    if (options.limit) params.set("limit", options.limit.toString());
-    if (options.untilId) params.set("untilId", options.untilId);
-    if (options.sinceId) params.set("sinceId", options.sinceId);
-
-    const query = params.toString();
-    return apiClient.get<Note[]>(`/api/notes/local-timeline${query ? `?${query}` : ""}`);
+    const params = buildPaginationParams(options);
+    return apiClient.get<Note[]>(buildUrlWithParams("/api/notes/local-timeline", params));
   }
 
   /**
@@ -44,13 +40,8 @@ export class NotesApi {
    * @returns Array of notes
    */
   async getSocialTimeline(options: TimelineOptions = {}): Promise<Note[]> {
-    const params = new URLSearchParams();
-    if (options.limit) params.set("limit", options.limit.toString());
-    if (options.untilId) params.set("untilId", options.untilId);
-    if (options.sinceId) params.set("sinceId", options.sinceId);
-
-    const query = params.toString();
-    return apiClient.get<Note[]>(`/api/notes/social-timeline${query ? `?${query}` : ""}`);
+    const params = buildPaginationParams(options);
+    return apiClient.get<Note[]>(buildUrlWithParams("/api/notes/social-timeline", params));
   }
 
   /**
@@ -60,13 +51,8 @@ export class NotesApi {
    * @returns Array of notes
    */
   async getGlobalTimeline(options: TimelineOptions = {}): Promise<Note[]> {
-    const params = new URLSearchParams();
-    if (options.limit) params.set("limit", options.limit.toString());
-    if (options.untilId) params.set("untilId", options.untilId);
-    if (options.sinceId) params.set("sinceId", options.sinceId);
-
-    const query = params.toString();
-    return apiClient.get<Note[]>(`/api/notes/global-timeline${query ? `?${query}` : ""}`);
+    const params = buildPaginationParams(options);
+    return apiClient.get<Note[]>(buildUrlWithParams("/api/notes/global-timeline", params));
   }
 
   /**
@@ -76,13 +62,8 @@ export class NotesApi {
    * @returns Array of notes
    */
   async getHomeTimeline(options: TimelineOptions = {}): Promise<Note[]> {
-    const params = new URLSearchParams();
-    if (options.limit) params.set("limit", options.limit.toString());
-    if (options.untilId) params.set("untilId", options.untilId);
-    if (options.sinceId) params.set("sinceId", options.sinceId);
-
-    const query = params.toString();
-    return apiClient.get<Note[]>(`/api/notes/timeline${query ? `?${query}` : ""}`);
+    const params = buildPaginationParams(options);
+    return apiClient.get<Note[]>(buildUrlWithParams("/api/notes/timeline", params));
   }
 
   /**
@@ -172,12 +153,9 @@ export class NotesApi {
    * @returns Array of notes
    */
   async getUserNotes(userId: string, options: TimelineOptions = {}): Promise<Note[]> {
-    const params = new URLSearchParams({ userId });
-    if (options.limit) params.set("limit", options.limit.toString());
-    if (options.untilId) params.set("untilId", options.untilId);
-    if (options.sinceId) params.set("sinceId", options.sinceId);
-
-    return apiClient.get<Note[]>(`/api/notes/user-notes?${params.toString()}`);
+    const params = buildPaginationParams(options);
+    params.set("userId", userId);
+    return apiClient.get<Note[]>(buildUrlWithParams("/api/notes/user-notes", params));
   }
 
   /**
@@ -188,12 +166,9 @@ export class NotesApi {
    * @returns Array of reply notes
    */
   async getReplies(noteId: string, options: TimelineOptions = {}): Promise<Note[]> {
-    const params = new URLSearchParams({ noteId });
-    if (options.limit) params.set("limit", options.limit.toString());
-    if (options.untilId) params.set("untilId", options.untilId);
-    if (options.sinceId) params.set("sinceId", options.sinceId);
-
-    return apiClient.get<Note[]>(`/api/notes/replies?${params.toString()}`);
+    const params = buildPaginationParams(options);
+    params.set("noteId", noteId);
+    return apiClient.get<Note[]>(buildUrlWithParams("/api/notes/replies", params));
   }
 
   /**

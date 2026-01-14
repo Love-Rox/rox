@@ -11,12 +11,8 @@
 
 import { useState, useEffect } from "react";
 import { Trans } from "@lingui/react/macro";
-import { X, Loader2, Bell, BellOff, BellRing } from "lucide-react";
+import { Loader2, Bell, BellOff, BellRing } from "lucide-react";
 import {
-  Dialog,
-  Modal,
-  ModalOverlay,
-  Heading,
   Button as AriaButton,
   TextField,
   Label,
@@ -27,12 +23,14 @@ import {
   ListBox,
   ListBoxItem,
 } from "react-aria-components";
+import { FormModal } from "../ui/FormModal";
 import { Switch } from "../ui/Switch";
 import { Button } from "../ui/Button";
 import { listsApi, type List } from "../../lib/api/lists";
 import type { ListNotifyLevel } from "shared";
 import { useAtom } from "jotai";
 import { addToastAtom } from "../../lib/atoms/toast";
+import { getErrorMessage } from "../../lib/utils/errors";
 
 /**
  * Props for ListEditModal component
@@ -68,10 +66,17 @@ export interface ListEditModalProps {
  * />
  * ```
  */
-export function ListEditModal({ isOpen, onClose, list, onUpdated }: ListEditModalProps) {
+export function ListEditModal({
+  isOpen,
+  onClose,
+  list,
+  onUpdated,
+}: ListEditModalProps) {
   const [name, setName] = useState(list.name);
   const [isPublic, setIsPublic] = useState(list.isPublic);
-  const [notifyLevel, setNotifyLevel] = useState<ListNotifyLevel>(list.notifyLevel);
+  const [notifyLevel, setNotifyLevel] = useState<ListNotifyLevel>(
+    list.notifyLevel
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [, addToast] = useAtom(addToastAtom);
 
@@ -82,14 +87,21 @@ export function ListEditModal({ isOpen, onClose, list, onUpdated }: ListEditModa
     setNotifyLevel(list.notifyLevel);
   }, [list]);
 
-  const hasChanges = name !== list.name || isPublic !== list.isPublic || notifyLevel !== list.notifyLevel;
+  const hasChanges =
+    name !== list.name ||
+    isPublic !== list.isPublic ||
+    notifyLevel !== list.notifyLevel;
 
   const handleSubmit = async () => {
     if (!name.trim() || !hasChanges) return;
 
     setIsLoading(true);
     try {
-      const updates: { name?: string; isPublic?: boolean; notifyLevel?: ListNotifyLevel } = {};
+      const updates: {
+        name?: string;
+        isPublic?: boolean;
+        notifyLevel?: ListNotifyLevel;
+      } = {};
       if (name !== list.name) updates.name = name.trim();
       if (isPublic !== list.isPublic) updates.isPublic = isPublic;
       if (notifyLevel !== list.notifyLevel) updates.notifyLevel = notifyLevel;
@@ -104,7 +116,7 @@ export function ListEditModal({ isOpen, onClose, list, onUpdated }: ListEditModa
     } catch (error) {
       addToast({
         type: "error",
-        message: error instanceof Error ? error.message : "Failed to update list",
+        message: getErrorMessage(error, "Failed to update list"),
       });
     } finally {
       setIsLoading(false);
@@ -120,133 +132,115 @@ export function ListEditModal({ isOpen, onClose, list, onUpdated }: ListEditModa
   };
 
   return (
-    <ModalOverlay
+    <FormModal
       isOpen={isOpen}
-      onOpenChange={(open) => !open && handleClose()}
-      isDismissable
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+      onClose={handleClose}
+      title={<Trans>Edit List</Trans>}
+      footer={
+        <>
+          <Button
+            variant="secondary"
+            onPress={handleClose}
+            isDisabled={isLoading}
+          >
+            <Trans>Cancel</Trans>
+          </Button>
+          <Button
+            variant="primary"
+            onPress={handleSubmit}
+            isDisabled={!name.trim() || !hasChanges || isLoading}
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <Trans>Saving...</Trans>
+              </div>
+            ) : (
+              <Trans>Save</Trans>
+            )}
+          </Button>
+        </>
+      }
     >
-      <Modal className="w-full max-w-md bg-(--card-bg) rounded-xl shadow-xl overflow-hidden flex flex-col outline-none">
-        <Dialog className="flex flex-col outline-none">
-          {({ close }) => (
-            <>
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-(--border-color)">
-                <Heading slot="title" className="text-lg font-semibold text-(--text-primary)">
-                  <Trans>Edit List</Trans>
-                </Heading>
-                <AriaButton
-                  onPress={close}
-                  className="p-2 hover:bg-(--bg-secondary) rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-                  aria-label="Close"
-                >
-                  <X className="w-5 h-5 text-(--text-muted)" />
-                </AriaButton>
-              </div>
+      {/* List name input */}
+      <TextField
+        value={name}
+        onChange={setName}
+        maxLength={100}
+        isRequired
+        autoFocus
+        className="flex flex-col gap-1"
+      >
+        <Label className="text-sm font-medium text-(--text-secondary)">
+          <Trans>List Name</Trans>
+        </Label>
+        <Input
+          placeholder="My List"
+          className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--input-bg) text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        />
+      </TextField>
 
-              {/* Content */}
-              <div className="p-4 space-y-4">
-                {/* List name input */}
-                <TextField
-                  value={name}
-                  onChange={setName}
-                  maxLength={100}
-                  isRequired
-                  autoFocus
-                  className="flex flex-col gap-1"
-                >
-                  <Label className="text-sm font-medium text-(--text-secondary)">
-                    <Trans>List Name</Trans>
-                  </Label>
-                  <Input
-                    placeholder="My List"
-                    className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--input-bg) text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </TextField>
+      {/* Public/Private switch */}
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-(--text-secondary)">
+            <Trans>Public</Trans>
+          </p>
+          <p className="text-xs text-(--text-muted)">
+            <Trans>Anyone can see this list</Trans>
+          </p>
+        </div>
+        <Switch
+          isSelected={isPublic}
+          onChange={setIsPublic}
+          aria-label="Public list"
+        />
+      </div>
 
-                {/* Public/Private switch */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-(--text-secondary)">
-                      <Trans>Public</Trans>
-                    </p>
-                    <p className="text-xs text-(--text-muted)">
-                      <Trans>Anyone can see this list</Trans>
-                    </p>
-                  </div>
-                  <Switch isSelected={isPublic} onChange={setIsPublic} aria-label="Public list" />
-                </div>
-
-                {/* Notification level select */}
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-(--text-secondary)">
-                    <Trans>Notifications</Trans>
-                  </p>
-                  <p className="text-xs text-(--text-muted)">
-                    <Trans>Get notified when list members post</Trans>
-                  </p>
-                  <Select
-                    selectedKey={notifyLevel}
-                    onSelectionChange={(key) => setNotifyLevel(key as ListNotifyLevel)}
-                    className="w-full"
-                  >
-                    <AriaButton className="flex items-center justify-between w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--input-bg) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500">
-                      <SelectValue className="flex items-center gap-2" />
-                      <span className="text-(--text-muted)">▼</span>
-                    </AriaButton>
-                    <Popover className="w-[--trigger-width] bg-(--card-bg) border border-(--border-color) rounded-lg shadow-lg overflow-hidden">
-                      <ListBox className="outline-none">
-                        <ListBoxItem
-                          id="none"
-                          className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-(--bg-secondary) focus:bg-(--bg-secondary) outline-none"
-                        >
-                          <BellOff className="w-4 h-4" />
-                          <Trans>Off</Trans>
-                        </ListBoxItem>
-                        <ListBoxItem
-                          id="all"
-                          className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-(--bg-secondary) focus:bg-(--bg-secondary) outline-none"
-                        >
-                          <BellRing className="w-4 h-4" />
-                          <Trans>All posts</Trans>
-                        </ListBoxItem>
-                        <ListBoxItem
-                          id="original"
-                          className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-(--bg-secondary) focus:bg-(--bg-secondary) outline-none"
-                        >
-                          <Bell className="w-4 h-4" />
-                          <Trans>Original posts only</Trans>
-                        </ListBoxItem>
-                      </ListBox>
-                    </Popover>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="flex items-center justify-end gap-3 p-4 border-t border-(--border-color)">
-                <Button variant="secondary" onPress={handleClose} isDisabled={isLoading}>
-                  <Trans>Cancel</Trans>
-                </Button>
-                <Button
-                  variant="primary"
-                  onPress={handleSubmit}
-                  isDisabled={!name.trim() || !hasChanges || isLoading}
-                >
-                  {isLoading ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <Trans>Saving...</Trans>
-                    </div>
-                  ) : (
-                    <Trans>Save</Trans>
-                  )}
-                </Button>
-              </div>
-            </>
-          )}
-        </Dialog>
-      </Modal>
-    </ModalOverlay>
+      {/* Notification level select */}
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-(--text-secondary)">
+          <Trans>Notifications</Trans>
+        </p>
+        <p className="text-xs text-(--text-muted)">
+          <Trans>Get notified when list members post</Trans>
+        </p>
+        <Select
+          selectedKey={notifyLevel}
+          onSelectionChange={(key) => setNotifyLevel(key as ListNotifyLevel)}
+          className="w-full"
+        >
+          <AriaButton className="flex items-center justify-between w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--input-bg) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-primary-500">
+            <SelectValue className="flex items-center gap-2" />
+            <span className="text-(--text-muted)">▼</span>
+          </AriaButton>
+          <Popover className="w-[--trigger-width] bg-(--card-bg) border border-(--border-color) rounded-lg shadow-lg overflow-hidden">
+            <ListBox className="outline-none">
+              <ListBoxItem
+                id="none"
+                className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-(--bg-secondary) focus:bg-(--bg-secondary) outline-none"
+              >
+                <BellOff className="w-4 h-4" />
+                <Trans>Off</Trans>
+              </ListBoxItem>
+              <ListBoxItem
+                id="all"
+                className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-(--bg-secondary) focus:bg-(--bg-secondary) outline-none"
+              >
+                <BellRing className="w-4 h-4" />
+                <Trans>All posts</Trans>
+              </ListBoxItem>
+              <ListBoxItem
+                id="original"
+                className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-(--bg-secondary) focus:bg-(--bg-secondary) outline-none"
+              >
+                <Bell className="w-4 h-4" />
+                <Trans>Original posts only</Trans>
+              </ListBoxItem>
+            </ListBox>
+          </Popover>
+        </Select>
+      </div>
+    </FormModal>
   );
 }
