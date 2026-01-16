@@ -264,7 +264,7 @@ note.get("/notes/:id", async (c: Context) => {
     cc,
     inReplyTo: inReplyTo,
     attachment: attachments,
-    sensitive: noteData.cw ? true : false,
+    sensitive: Boolean(noteData.cw),
     tag: tags,
   };
 

@@ -184,9 +184,24 @@ export class NoteService {
     }
 
     // メンション抽出（簡易実装、Phase 1.1で拡張予定）
-    // For DMs, use visibleUserIds as mentions (recipient user IDs)
-    const extractedMentions = this.extractMentions(text || "");
-    const mentions = visibility === "specified" ? visibleUserIds : extractedMentions;
+    // Extract usernames from text and resolve to user IDs for consistent storage
+    const extractedMentionUsernames = this.extractMentions(text || "");
+    let mentions: string[];
+
+    if (visibility === "specified") {
+      // For DMs, use visibleUserIds directly (already user IDs)
+      mentions = visibleUserIds;
+    } else {
+      // For public notes, resolve usernames to user IDs
+      const resolvedUserIds: string[] = [];
+      for (const username of extractedMentionUsernames) {
+        const user = await this.userRepository.findByUsername(username);
+        if (user) {
+          resolvedUserIds.push(user.id);
+        }
+      }
+      mentions = resolvedUserIds;
+    }
 
     // Debug log for DM mentions (only log counts for privacy)
     if (visibility === "specified") {
@@ -941,9 +956,9 @@ export class NoteService {
 
     // Mention notifications
     if (mentions.length > 0) {
-      // Resolve usernames to user IDs
-      for (const username of mentions) {
-        const mentionedUser = await this.userRepository.findByUsername(username);
+      // mentions now contains user IDs (resolved in create method)
+      for (const mentionedUserId of mentions) {
+        const mentionedUser = await this.userRepository.findById(mentionedUserId);
         if (mentionedUser && !mentionedUser.host && mentionedUser.id !== authorId) {
           // Skip if this is also a reply target (to avoid duplicate notification)
           // Using cached replyTarget instead of re-fetching
