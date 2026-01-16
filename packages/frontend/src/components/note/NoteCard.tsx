@@ -82,6 +82,7 @@ function NoteCardComponent({
     note.reactionEmojis || {},
   );
   const [remoteInstance, setRemoteInstance] = useState<PublicRemoteInstance | null>(null);
+  const [remoteInstanceIconFailed, setRemoteInstanceIconFailed] = useState(false);
 
   // Refs for lazy loading with IntersectionObserver
   const cardRef = useRef<HTMLDivElement>(null);
@@ -441,22 +442,17 @@ function NoteCardComponent({
                       : `From ${note.user.host}`
                   }
                 >
-                  {remoteInstance?.iconUrl ? (
+                  {remoteInstance?.iconUrl && !remoteInstanceIconFailed ? (
                     <img
                       src={getProxiedImageUrl(remoteInstance.iconUrl) || ""}
                       alt=""
                       className="w-3.5 h-3.5 rounded-sm object-contain"
                       loading="lazy"
-                      onError={(e) => {
-                        // Hide broken image and show fallback
-                        e.currentTarget.style.display = "none";
-                        e.currentTarget.nextElementSibling?.classList.remove("hidden");
-                      }}
+                      onError={() => setRemoteInstanceIconFailed(true)}
                     />
-                  ) : null}
-                  <Globe
-                    className={`w-3 h-3 ${remoteInstance?.iconUrl ? "hidden" : ""}`}
-                  />
+                  ) : (
+                    <Globe className="w-3 h-3" />
+                  )}
                   <span className="truncate">
                     {remoteInstance?.name || note.user.host}
                   </span>
