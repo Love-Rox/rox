@@ -113,6 +113,9 @@ class PluginRegistry {
         loadedAt: new Date(),
         error: error instanceof Error ? error.message : "Unknown error",
       });
+
+      // Notify listeners so UI can reflect the failure state
+      this.notifyListeners();
     }
   }
 

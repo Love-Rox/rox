@@ -231,6 +231,15 @@ export class PluginLoader {
         return { success: false, pluginId: manifest.id, error: "Invalid plugin structure" };
       }
 
+      // Check manifest.id and plugin.id match to prevent handler/config key mismatches
+      if (manifest.id !== plugin.id) {
+        return {
+          success: false,
+          pluginId: manifest.id,
+          error: `Plugin ID mismatch: manifest has "${manifest.id}" but plugin exports "${plugin.id}"`,
+        };
+      }
+
       // Create plugin context
       const context = this.createPluginContext(plugin.id);
 

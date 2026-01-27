@@ -59,6 +59,7 @@
 - **Multiple Auth Methods** - Password, Passkey (WebAuthn), and OAuth (GitHub, Google, Discord, Mastodon)
 - **Full ActivityPub Support** - Federation with Mastodon, Misskey, GoToSocial, and more
 - **Role-Based Permissions** - Misskey-style policy system with granular access control
+- **Plugin System** - Extensible architecture with event hooks, custom routes, and frontend slots
 - **Internationalization** - English and Japanese support out of the box
 
 ## Screenshots
@@ -281,7 +282,7 @@ See [Implementation Guide](./docs/implementation/README.md) for detailed archite
 | Phase 4 | ✅ Complete | Refactoring & Optimization |
 | Phase 5 | ✅ Complete | Administration & Security |
 | Phase 6 | ✅ Complete | Production Readiness |
-| Phase 7 | 🚧 Planned | Plugin System |
+| Phase 7 | ✅ Complete | Plugin System |
 
 <details>
 <summary><b>View detailed implementation status</b></summary>
@@ -318,6 +319,15 @@ See [Implementation Guide](./docs/implementation/README.md) for detailed archite
 - ✅ User report system
 - ✅ Instance settings management
 
+### Phase 7: Plugin System
+- ✅ EventBus for typed event hooks
+- ✅ Plugin loader with lifecycle management
+- ✅ Database-backed configuration storage
+- ✅ Custom route registration (`/api/x/{pluginId}/`)
+- ✅ Frontend plugin slots (18 locations)
+- ✅ Admin plugin management UI
+- ✅ Sample hello-world plugin
+
 </details>
 
 ## Contributing
@@ -343,6 +353,7 @@ Contributions are welcome! Please read our [Contributing Guidelines](./CONTRIBUT
 | [DevContainer Guide](./docs/development/devcontainer.md) | VS Code/Cursor DevContainer setup |
 | [Project Specification](./docs/project/v1.md) | Original spec (Japanese) |
 | [Implementation Guide](./docs/implementation/README.md) | Architecture details |
+| [Plugin Development](./plugins/README.md) | How to create plugins |
 | [Testing Guide](./docs/development/testing.md) | Testing documentation |
 | [Deployment Guide](./docs/deployment/README.md) | Production deployment |
 

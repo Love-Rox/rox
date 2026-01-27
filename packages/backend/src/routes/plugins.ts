@@ -42,6 +42,7 @@ plugins.get("/", (c: Context) => {
       id: p.id,
       name: p.name,
       version: p.version,
+      description: p.description,
       enabled: p.enabled,
     })),
   });
@@ -76,7 +77,8 @@ plugins.get("/:id", (c: Context) => {
     description: loaded.plugin.description,
     enabled: loaded.enabled,
     loadedAt: loaded.loadedAt,
-    error: loaded.error,
+    // Only expose whether there's an error, not the error details (security)
+    hasError: !!loaded.error,
   });
 });
 
