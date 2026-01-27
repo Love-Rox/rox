@@ -250,11 +250,17 @@ export function UserProfile({ username, host }: UserProfileProps) {
       // Reset state before fetching new instance info
       setRemoteInstance(null);
       setRemoteInstanceIconFailed(false);
-      getRemoteInstanceInfo(user.host).then((info) => {
-        if (!cancelled) {
-          setRemoteInstance(info);
-        }
-      });
+      getRemoteInstanceInfo(user.host)
+        .then((info) => {
+          if (!cancelled) {
+            setRemoteInstance(info);
+          }
+        })
+        .catch((err) => {
+          if (!cancelled) {
+            console.error("Failed to load remote instance info:", err);
+          }
+        });
     } else {
       setRemoteInstance(null);
       setRemoteInstanceIconFailed(false);
