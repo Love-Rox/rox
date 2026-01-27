@@ -933,6 +933,27 @@ export const deckProfiles = pgTable(
   }),
 );
 
+// Plugin configuration storage table
+export const pluginConfigs = pgTable(
+  "plugin_configs",
+  {
+    /** Plugin ID + config key (composite primary key) */
+    id: text("id").primaryKey(), // Format: {pluginId}:{key}
+    /** Plugin identifier */
+    pluginId: text("plugin_id").notNull(),
+    /** Configuration key */
+    key: text("key").notNull(),
+    /** Configuration value (JSON) */
+    value: jsonb("value").notNull(),
+    /** Last update timestamp */
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    pluginIdIdx: index("plugin_configs_plugin_id_idx").on(table.pluginId),
+    pluginKeyIdx: uniqueIndex("plugin_configs_plugin_key_idx").on(table.pluginId, table.key),
+  }),
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -986,3 +1007,5 @@ export type UserListMember = typeof userListMembers.$inferSelect;
 export type NewUserListMember = typeof userListMembers.$inferInsert;
 export type DeckProfileRow = typeof deckProfiles.$inferSelect;
 export type NewDeckProfile = typeof deckProfiles.$inferInsert;
+export type PluginConfig = typeof pluginConfigs.$inferSelect;
+export type NewPluginConfig = typeof pluginConfigs.$inferInsert;
