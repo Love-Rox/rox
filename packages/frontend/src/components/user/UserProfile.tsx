@@ -244,15 +244,25 @@ export function UserProfile({ username, host }: UserProfileProps) {
 
   // Load remote instance info for remote users
   useEffect(() => {
+    let cancelled = false;
+
     if (user?.host) {
       // Reset state before fetching new instance info
       setRemoteInstance(null);
       setRemoteInstanceIconFailed(false);
-      getRemoteInstanceInfo(user.host).then(setRemoteInstance);
+      getRemoteInstanceInfo(user.host).then((info) => {
+        if (!cancelled) {
+          setRemoteInstance(info);
+        }
+      });
     } else {
       setRemoteInstance(null);
       setRemoteInstanceIconFailed(false);
     }
+
+    return () => {
+      cancelled = true;
+    };
   }, [user?.host]);
 
   // Load more notes
@@ -567,6 +577,12 @@ export function UserProfile({ username, host }: UserProfileProps) {
               {user.host && (() => {
                 // Validate theme color to prevent CSS injection
                 const validatedThemeColor = validateCssColor(remoteInstance?.themeColor);
+                // Only hex colors support appending alpha (e.g., #RRGGBB15)
+                // For non-hex colors (rgb/hsl), use fallback
+                const isHexColor = validatedThemeColor?.startsWith("#");
+                const badgeBgColor = isHexColor
+                  ? `${validatedThemeColor}15`
+                  : "var(--bg-tertiary)";
                 return (
                 <div className="mt-1">
                   <a
@@ -575,9 +591,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded hover:opacity-80 transition-opacity"
                     style={{
-                      backgroundColor: validatedThemeColor
-                        ? `${validatedThemeColor}15`
-                        : "var(--bg-tertiary)",
+                      backgroundColor: badgeBgColor,
                       borderLeft: validatedThemeColor
                         ? `3px solid ${validatedThemeColor}`
                         : "3px solid var(--border-color)",
