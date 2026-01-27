@@ -1,5 +1,6 @@
 import type { Context, Next } from "hono";
 import { getContainer, type AppContainer } from "../di/container.js";
+import type { PluginLoader } from "../plugins/loader.js";
 
 /**
  * DIミドルウェア
@@ -64,5 +65,6 @@ export function diMiddleware() {
 declare module "hono" {
   interface ContextVariableMap extends AppContainer {
     container: AppContainer;
+    pluginLoader?: PluginLoader;
   }
 }

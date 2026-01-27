@@ -50,6 +50,7 @@ import listsRoute from "./routes/lists.js";
 import deckRoute from "./routes/deck.js";
 import mastodonRoute from "./routes/mastodon.js";
 import wsRoute, { websocket } from "./routes/ws.js";
+import pluginsRoute from "./routes/plugins.js";
 import packageJson from "../../../package.json";
 import { ReceivedActivitiesCleanupService } from "./services/ReceivedActivitiesCleanupService.js";
 import { RemoteInstanceRefreshService } from "./services/RemoteInstanceRefreshService.js";
@@ -107,6 +108,7 @@ app.route("/api/mentions", mentionsRoute);
 app.route("/api/direct", directRoute);
 app.route("/api/users/lists", listsRoute);
 app.route("/api/deck", deckRoute);
+app.route("/api/plugins", pluginsRoute);
 
 // Mastodon compatible API
 app.route("/api/v1", mastodonRoute);
@@ -188,6 +190,14 @@ scheduledNotePublisher.start();
 // Initialize plugin system
 let pluginSystem: PluginSystem | null = null;
 const pluginsEnabled = process.env.PLUGINS_ENABLED !== "false";
+
+// Middleware to add plugin loader to context (must be after diMiddleware)
+app.use("*", async (c, next) => {
+  if (pluginSystem) {
+    c.set("pluginLoader", pluginSystem.loader);
+  }
+  await next();
+});
 
 if (pluginsEnabled) {
   initializePluginSystem({
