@@ -90,3 +90,5 @@ docker/certs/*-key.pem
 # cipher data
 cipherdata/
 cipher.yml
+# Jujutsu
+.jj/
