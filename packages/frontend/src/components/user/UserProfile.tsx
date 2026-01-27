@@ -8,7 +8,8 @@ import { notesApi } from "../../lib/api/notes";
 import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
 import { apiClient, ApiError } from "../../lib/api/client";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
-import { Flag, QrCode, ListPlus, ArrowLeft } from "lucide-react";
+import { Flag, QrCode, ListPlus, ArrowLeft, Globe } from "lucide-react";
+import { getRemoteInstanceInfo, type PublicRemoteInstance } from "../../lib/api/instance";
 import { Button } from "../ui/Button";
 import { NoteCard } from "../note/NoteCard";
 import { MfmRenderer } from "../mfm/MfmRenderer";
@@ -115,6 +116,8 @@ export function UserProfile({ username, host }: UserProfileProps) {
   const [showFollowList, setShowFollowList] = useState<"followers" | "following" | null>(null);
   const [showQRCode, setShowQRCode] = useState(false);
   const [showAddToList, setShowAddToList] = useState(false);
+  const [remoteInstance, setRemoteInstance] = useState<PublicRemoteInstance | null>(null);
+  const [remoteInstanceIconFailed, setRemoteInstanceIconFailed] = useState(false);
 
   // Generate unique ID for custom CSS scoping
   const profileContainerId = useId().replace(/:/g, "-");
@@ -205,6 +208,16 @@ export function UserProfile({ username, host }: UserProfileProps) {
 
     loadPublicRoles();
   }, [user]);
+
+  // Load remote instance info for remote users
+  useEffect(() => {
+    if (user?.host) {
+      getRemoteInstanceInfo(user.host).then(setRemoteInstance);
+    } else {
+      setRemoteInstance(null);
+      setRemoteInstanceIconFailed(false);
+    }
+  }, [user?.host]);
 
   // Load more notes
   const loadMoreNotes = useCallback(async () => {
@@ -329,7 +342,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
               variant="secondary"
               onPress={() => {
                 if (typeof window !== "undefined" && window.history.length > 1) {
-                  window.history.back();
+                  router.back();
                 } else {
                   router.push("/");
                 }
@@ -381,7 +394,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
               type="button"
               onClick={() => {
                 if (typeof window !== "undefined" && window.history.length > 1) {
-                  window.history.back();
+                  router.back();
                 } else {
                   router.push("/timeline");
                 }
@@ -511,7 +524,46 @@ export function UserProfile({ username, host }: UserProfileProps) {
                   </span>
                 )}
               </div>
-              <p className="text-gray-600 dark:text-gray-400">@{user.username}</p>
+              <p className="text-gray-600 dark:text-gray-400">
+                @{user.username}{user.host && `@${user.host}`}
+              </p>
+              {/* Remote Instance Badge */}
+              {user.host && (
+                <div className="mt-1">
+                  <a
+                    href={`https://${user.host}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded hover:opacity-80 transition-opacity"
+                    style={{
+                      backgroundColor: remoteInstance?.themeColor
+                        ? `${remoteInstance.themeColor}15`
+                        : "var(--bg-tertiary)",
+                      borderLeft: remoteInstance?.themeColor
+                        ? `3px solid ${remoteInstance.themeColor}`
+                        : "3px solid var(--border-color)",
+                    }}
+                    title={
+                      remoteInstance
+                        ? `${remoteInstance.name || user.host}${remoteInstance.softwareName ? ` (${remoteInstance.softwareName})` : ""}`
+                        : `From ${user.host}`
+                    }
+                  >
+                    {remoteInstance?.iconUrl && !remoteInstanceIconFailed ? (
+                      <img
+                        src={getProxiedImageUrl(remoteInstance.iconUrl) || ""}
+                        alt=""
+                        className="w-4 h-4 rounded-sm object-contain"
+                        loading="lazy"
+                        onError={() => setRemoteInstanceIconFailed(true)}
+                      />
+                    ) : (
+                      <Globe className="w-4 h-4" />
+                    )}
+                    <span>{remoteInstance?.name || user.host}</span>
+                  </a>
+                </div>
+              )}
               {/* Public Role Badges */}
               {publicRoles.length > 0 && (
                 <div className="mt-2">
