@@ -75,6 +75,7 @@ import { UserDataExportService } from "../services/UserDataExportService.js";
 import { BlockedUsernameService } from "../services/BlockedUsernameService.js";
 import { SystemAccountService } from "../services/SystemAccountService.js";
 import { logger } from "../lib/logger.js";
+import { EventBus } from "../lib/events.js";
 
 export interface AppContainer {
   userRepository: IUserRepository;
@@ -119,6 +120,7 @@ export interface AppContainer {
   userDataExportService: UserDataExportService;
   blockedUsernameService: BlockedUsernameService;
   systemAccountService: SystemAccountService;
+  eventBus: EventBus;
 }
 
 /**
@@ -235,6 +237,9 @@ export function createContainer(): AppContainer {
     repositories.userRepository,
   );
 
+  // Event Bus for plugin system
+  const eventBus = new EventBus();
+
   return {
     ...repositories,
     fileStorage,
@@ -253,6 +258,7 @@ export function createContainer(): AppContainer {
     userDataExportService,
     blockedUsernameService,
     systemAccountService,
+    eventBus,
   };
 }
 

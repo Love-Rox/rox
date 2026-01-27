@@ -22,6 +22,8 @@ import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.j
 import type { NotificationService } from "./NotificationService.js";
 import { getTimelineStreamService } from "./TimelineStreamService.js";
 import { logger } from "../lib/logger.js";
+import type { EventBus } from "../lib/events.js";
+import { toPluginUser, toPluginNote } from "../plugins/utils.js";
 
 /**
  * Note creation input data
@@ -103,6 +105,7 @@ export class NoteService {
     cacheService?: ICacheService,
     private readonly notificationService?: NotificationService,
     private readonly listRepository?: IListRepository,
+    private readonly eventBus?: EventBus,
   ) {
     this.cacheService = cacheService ?? null;
   }
@@ -136,15 +139,17 @@ export class NoteService {
   async create(input: NoteCreateInput): Promise<Note> {
     const {
       userId,
-      text = null,
-      cw = null,
-      visibility = "public",
-      localOnly = false,
       replyId = null,
       renoteId = null,
       fileIds = [],
       visibleUserIds = [],
     } = input;
+
+    // Modifiable fields (may be changed by plugins via beforeCreate event)
+    let text = input.text ?? null;
+    let cw = input.cw ?? null;
+    let visibility = input.visibility ?? "public";
+    let localOnly = input.localOnly ?? false;
 
     // バリデーション: テキストまたはファイルが必須（Renoteの場合は除く）
     if (!renoteId && !text && fileIds.length === 0) {
@@ -180,6 +185,39 @@ export class NoteService {
       renoteTarget = await this.noteRepository.findById(renoteId);
       if (!renoteTarget) {
         throw new Error("Renote target note not found");
+      }
+    }
+
+    // Get author for event emission and delivery
+    const author = await this.userRepository.findById(userId);
+    if (!author) {
+      throw new Error("Author not found");
+    }
+
+    // Emit note:beforeCreate event (plugins can cancel or modify)
+    if (this.eventBus) {
+      const beforeResult = await this.eventBus.emitBefore("note:beforeCreate", {
+        text,
+        cw,
+        visibility,
+        localOnly,
+        replyId,
+        renoteId,
+        fileIds,
+        author: toPluginUser(author),
+      });
+
+      if (beforeResult.cancelled) {
+        throw new Error(beforeResult.cancelReason || "Note creation cancelled by plugin");
+      }
+
+      // Apply modifications from plugins
+      if (beforeResult.modifiedPayload) {
+        text = beforeResult.modifiedPayload.text ?? text;
+        cw = beforeResult.modifiedPayload.cw ?? cw;
+        visibility = beforeResult.modifiedPayload.visibility ?? visibility;
+        localOnly = beforeResult.modifiedPayload.localOnly ?? localOnly;
+        // Note: replyId, renoteId, fileIds, author cannot be modified for security reasons
       }
     }
 
@@ -260,9 +298,6 @@ export class NoteService {
     // Pure renotes get Announce activity, quote renotes get Create activity
     const isPureRenote = renoteTarget && !text && !cw && !replyId && fileIds.length === 0;
 
-    // Deliver ActivityPub activity (async, non-blocking)
-    const author = await this.userRepository.findById(userId);
-
     // Log DM delivery decision for debugging (only counts for privacy)
     if (visibility === "specified") {
       logger.debug(
@@ -333,6 +368,18 @@ export class NoteService {
     this.pushToTimelineStreams(note, userId, visibility, localOnly).catch((error) => {
       logger.error({ err: error, noteId }, "Failed to push note to timeline streams");
     });
+
+    // Emit note:afterCreate event (async, non-blocking)
+    if (this.eventBus) {
+      this.eventBus
+        .emit("note:afterCreate", {
+          note: toPluginNote(note),
+          author: toPluginUser(author),
+        })
+        .catch((error) => {
+          logger.error({ err: error, noteId }, "Failed to emit note:afterCreate event");
+        });
+    }
 
     return note;
   }
@@ -508,6 +555,22 @@ export class NoteService {
 
     // Get author info before deletion for ActivityPub delivery
     const author = await this.userRepository.findById(userId);
+    if (!author) {
+      throw new Error("User not found");
+    }
+
+    // Emit note:beforeDelete event (plugins can cancel)
+    if (this.eventBus) {
+      const beforeResult = await this.eventBus.emitBefore("note:beforeDelete", {
+        note: toPluginNote(note),
+        deletedBy: toPluginUser(author),
+        reason: null,
+      });
+
+      if (beforeResult.cancelled) {
+        throw new Error(beforeResult.cancelReason || "Note deletion cancelled by plugin");
+      }
+    }
 
     // Decrement reply count on parent note (async, non-blocking)
     if (note.replyId) {
@@ -527,11 +590,24 @@ export class NoteService {
     await this.noteRepository.delete(noteId);
 
     // Deliver Delete activity to remote followers (async, non-blocking)
-    if (author && !author.host) {
+    if (!author.host) {
       // Only deliver if author is a local user
       this.deliveryService.deliverDelete(note, author).catch((error) => {
         logger.error({ err: error, noteId }, "Failed to deliver Delete activity");
       });
+    }
+
+    // Emit note:afterDelete event (async, non-blocking)
+    if (this.eventBus) {
+      this.eventBus
+        .emit("note:afterDelete", {
+          noteId,
+          deletedBy: toPluginUser(author),
+          reason: null,
+        })
+        .catch((error) => {
+          logger.error({ err: error, noteId }, "Failed to emit note:afterDelete event");
+        });
     }
   }
 
