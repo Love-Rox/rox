@@ -84,6 +84,39 @@ function sanitizeCustomCss(css: string, containerId: string): string {
 }
 
 /**
+ * Validate CSS color value to prevent CSS injection
+ * Only allows safe color formats: hex, rgb, rgba, hsl, hsla
+ *
+ * @param color - Color value to validate
+ * @returns The color if valid, or null if invalid/unsafe
+ */
+function validateCssColor(color: string | null | undefined): string | null {
+  if (!color || typeof color !== "string") return null;
+
+  // Trim and lowercase for consistent matching
+  const trimmed = color.trim();
+
+  // Hex color: #RGB, #RRGGBB, #RGBA, #RRGGBBAA
+  if (/^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // RGB/RGBA: rgb(r, g, b) or rgba(r, g, b, a)
+  // Only allow numbers, percentages, commas, spaces, and decimal points
+  if (/^rgba?\(\s*[\d.%,\s/]+\s*\)$/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // HSL/HSLA: hsl(h, s%, l%) or hsla(h, s%, l%, a)
+  if (/^hsla?\(\s*[\d.%,\s/deg]+\s*\)$/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // Invalid or potentially dangerous color value
+  return null;
+}
+
+/**
  * Props for the UserProfile component
  */
 export interface UserProfileProps {
@@ -212,6 +245,9 @@ export function UserProfile({ username, host }: UserProfileProps) {
   // Load remote instance info for remote users
   useEffect(() => {
     if (user?.host) {
+      // Reset state before fetching new instance info
+      setRemoteInstance(null);
+      setRemoteInstanceIconFailed(false);
       getRemoteInstanceInfo(user.host).then(setRemoteInstance);
     } else {
       setRemoteInstance(null);
@@ -528,7 +564,10 @@ export function UserProfile({ username, host }: UserProfileProps) {
                 @{user.username}{user.host && `@${user.host}`}
               </p>
               {/* Remote Instance Badge */}
-              {user.host && (
+              {user.host && (() => {
+                // Validate theme color to prevent CSS injection
+                const validatedThemeColor = validateCssColor(remoteInstance?.themeColor);
+                return (
                 <div className="mt-1">
                   <a
                     href={`https://${user.host}`}
@@ -536,11 +575,11 @@ export function UserProfile({ username, host }: UserProfileProps) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded hover:opacity-80 transition-opacity"
                     style={{
-                      backgroundColor: remoteInstance?.themeColor
-                        ? `${remoteInstance.themeColor}15`
+                      backgroundColor: validatedThemeColor
+                        ? `${validatedThemeColor}15`
                         : "var(--bg-tertiary)",
-                      borderLeft: remoteInstance?.themeColor
-                        ? `3px solid ${remoteInstance.themeColor}`
+                      borderLeft: validatedThemeColor
+                        ? `3px solid ${validatedThemeColor}`
                         : "3px solid var(--border-color)",
                     }}
                     title={
@@ -563,7 +602,8 @@ export function UserProfile({ username, host }: UserProfileProps) {
                     <span>{remoteInstance?.name || user.host}</span>
                   </a>
                 </div>
-              )}
+                );
+              })()}
               {/* Public Role Badges */}
               {publicRoles.length > 0 && (
                 <div className="mt-2">
