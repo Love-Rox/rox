@@ -28,6 +28,7 @@ function getListService(c: Context): ListService {
   const deliveryService = c.get("activityPubDeliveryService");
   const cacheService = c.get("cacheService");
   const systemAccountService = c.get("systemAccountService");
+  const eventBus = c.get("eventBus");
 
   // Create NoteService for hydrating notes in list timeline
   const noteService = new NoteService(
@@ -37,6 +38,9 @@ function getListService(c: Context): ListService {
     userRepository,
     deliveryService,
     cacheService,
+    undefined, // notificationService
+    undefined, // listRepository
+    eventBus,
   );
 
   return new ListService(listRepository, userRepository, noteRepository, noteService, systemAccountService);

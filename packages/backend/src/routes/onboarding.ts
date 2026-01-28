@@ -112,7 +112,8 @@ app.post("/complete", requireOnboardingMode, async (c) => {
     const sessionRepository = c.get("sessionRepository");
     const instanceSettingsService = c.get("instanceSettingsService");
     const blockedUsernameService = c.get("blockedUsernameService");
-    const authService = new AuthService(userRepository, sessionRepository, blockedUsernameService);
+    const eventBus = c.get("eventBus");
+    const authService = new AuthService(userRepository, sessionRepository, blockedUsernameService, eventBus);
 
     // Check if username or email already exists
     const existingUsername = await userRepository.findByUsername(admin.username);

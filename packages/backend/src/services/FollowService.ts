@@ -14,6 +14,9 @@ import { generateId } from "../../../shared/src/utils/id.js";
 import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
 import type { NotificationService } from "./NotificationService.js";
 import { logger } from "../lib/logger.js";
+import type { EventBus } from "../lib/events.js";
+import type { PluginFollow } from "../plugins/types.js";
+import { toPluginUser } from "../plugins/utils.js";
 
 /**
  * Follow Service
@@ -38,13 +41,27 @@ export class FollowService {
    * @param userRepository - User repository
    * @param deliveryService - ActivityPub delivery service (optional, for federation)
    * @param notificationService - Notification service (optional, for notifications)
+   * @param eventBus - Event bus for plugin events (optional)
    */
   constructor(
     private readonly followRepository: IFollowRepository,
     private readonly userRepository: IUserRepository,
     private readonly deliveryService?: ActivityPubDeliveryService,
     private readonly notificationService?: NotificationService,
+    private readonly eventBus?: EventBus,
   ) {}
+
+  /**
+   * Convert Follow to PluginFollow
+   */
+  private toPluginFollow(follow: Follow): PluginFollow {
+    return {
+      id: follow.id,
+      followerId: follow.followerId,
+      followeeId: follow.followeeId,
+      createdAt: follow.createdAt,
+    };
+  }
 
   /**
    * Create a follow relationship
@@ -116,6 +133,19 @@ export class FollowService {
       });
     }
 
+    // Emit follow:afterCreate event (async, non-blocking)
+    if (this.eventBus) {
+      this.eventBus
+        .emit("follow:afterCreate", {
+          follow: this.toPluginFollow(follow),
+          follower: toPluginUser(follower),
+          followee: toPluginUser(followee),
+        })
+        .catch((error) => {
+          logger.error({ err: error, followId: follow.id }, "Failed to emit follow:afterCreate event");
+        });
+    }
+
     return follow;
   }
 
@@ -163,6 +193,20 @@ export class FollowService {
       this.deliveryService.deliverUndoFollow(follower, followee).catch((error) => {
         logger.error({ err: error, followerId, followeeId }, "Failed to deliver Undo Follow activity");
       });
+    }
+
+    // Emit follow:afterDelete event (async, non-blocking)
+    // Only emit if the relationship existed and we have valid user info
+    if (this.eventBus && exists && follower && followee) {
+      this.eventBus
+        .emit("follow:afterDelete", {
+          followId: `${followerId}:${followeeId}`, // Composite ID since we don't have the original
+          follower: toPluginUser(follower),
+          followee: toPluginUser(followee),
+        })
+        .catch((error) => {
+          logger.error({ err: error, followerId, followeeId }, "Failed to emit follow:afterDelete event");
+        });
     }
   }
 

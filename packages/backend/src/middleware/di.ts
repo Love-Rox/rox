@@ -51,6 +51,7 @@ export function diMiddleware() {
     c.set("systemAccountService", container.systemAccountService);
     c.set("listRepository", container.listRepository);
     c.set("deckProfileRepository", container.deckProfileRepository);
+    c.set("eventBus", container.eventBus);
 
     // Also set the container itself for routes that need multiple services
     c.set("container", container);

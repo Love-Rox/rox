@@ -32,6 +32,7 @@ function createNoteService(c: Context, includeNotification = false): NoteService
   const userRepository = c.get("userRepository");
   const deliveryService = c.get("activityPubDeliveryService");
   const cacheService = c.get("cacheService");
+  const eventBus = c.get("eventBus");
 
   if (includeNotification) {
     const notificationService = c.get("notificationService");
@@ -45,6 +46,7 @@ function createNoteService(c: Context, includeNotification = false): NoteService
       cacheService,
       notificationService,
       listRepository,
+      eventBus,
     );
   }
 
@@ -55,6 +57,9 @@ function createNoteService(c: Context, includeNotification = false): NoteService
     userRepository,
     deliveryService,
     cacheService,
+    undefined, // notificationService
+    undefined, // listRepository
+    eventBus,
   );
 }
 
