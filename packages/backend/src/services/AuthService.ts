@@ -256,6 +256,9 @@ export class AuthService {
     const session = await this.createSession(user.id);
 
     // Emit user:afterLogin event (async, non-blocking)
+    // Note: IP address and user agent are intentionally included for security
+    // auditing use cases (e.g., detecting suspicious login patterns, geo-blocking).
+    // Plugins must handle this PII responsibly and comply with privacy regulations.
     if (this.eventBus) {
       this.eventBus
         .emit("user:afterLogin", {

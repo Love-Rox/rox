@@ -125,6 +125,13 @@ export async function initializePluginSystem(
   const pluginsWithRoutes = loader.getPluginsWithRoutes();
   for (const { pluginId, routes } of pluginsWithRoutes) {
     const subApp = new Hono();
+    // Add enabled check middleware - routes return 404 when plugin is disabled
+    subApp.use("*", async (c, next) => {
+      if (!loader.getPlugin(pluginId)?.enabled) {
+        return c.notFound();
+      }
+      return next();
+    });
     try {
       routes(subApp);
       pluginRoutes.route(`/${pluginId}`, subApp);
@@ -221,15 +228,19 @@ export function registerPluginActivityPubHandlers(
         context: { c: unknown; recipientId: string | null; baseUrl: string },
       ): Promise<{ success: boolean; message?: string; error?: Error }> {
         for (const { pluginId, handler } of pluginHandlers) {
+          // Skip disabled plugins
+          if (!loader.getPlugin(pluginId)?.enabled) {
+            continue;
+          }
           try {
             // Create plugin context with proper implementations
             const pluginContext = {
               events: eventBus,
               logger: {
-                debug: (msg: string) => pluginLogger.debug({ pluginId }, msg),
-                info: (msg: string) => pluginLogger.info({ pluginId }, msg),
-                warn: (msg: string) => pluginLogger.warn({ pluginId }, msg),
-                error: (msg: string) => pluginLogger.error({ pluginId }, msg),
+                debug: (msg: string, ...args: unknown[]) => pluginLogger.debug({ pluginId, args }, msg),
+                info: (msg: string, ...args: unknown[]) => pluginLogger.info({ pluginId, args }, msg),
+                warn: (msg: string, ...args: unknown[]) => pluginLogger.warn({ pluginId, args }, msg),
+                error: (msg: string, ...args: unknown[]) => pluginLogger.error({ pluginId, args }, msg),
               },
               config: {
                 get: <T>(key: string, defaultValue?: T) => configStorage.get<T>(pluginId, key, defaultValue),
@@ -271,6 +282,7 @@ export function getPluginSystemStatus(loader: PluginLoader): {
     id: string;
     name: string;
     version: string;
+    description?: string;
     enabled: boolean;
     loadedAt: Date;
     error?: string;
@@ -285,6 +297,7 @@ export function getPluginSystemStatus(loader: PluginLoader): {
       id: p.plugin.id,
       name: p.plugin.name,
       version: p.plugin.version,
+      description: p.plugin.description,
       enabled: p.enabled,
       loadedAt: p.loadedAt,
       error: p.error,
