@@ -22,8 +22,8 @@ import {
   CheckCircle,
   AlertTriangle,
 } from "lucide-react";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -61,7 +61,7 @@ interface UsersResponse {
 
 export default function AdminUsersPage() {
   const [, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -79,10 +79,9 @@ export default function AdminUsersPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const loadUsers = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
       const params = new URLSearchParams();
       params.set("limit", "100");
       if (userFilter === "local") {
@@ -90,7 +89,7 @@ export default function AdminUsersPage() {
       } else if (userFilter === "remote") {
         params.set("remoteOnly", "true");
       }
-      const response = await apiClient.get<UsersResponse>(
+      const response = await api.get<UsersResponse>(
         `/api/admin/users?${params}`,
       );
       setUsers(response.users);
@@ -101,21 +100,19 @@ export default function AdminUsersPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, userFilter]);
+  }, [api, userFilter]);
 
   // Check admin access and load users
   useEffect(() => {
     const checkAccess = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       try {
-        apiClient.setToken(token);
-
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: any }>("/api/auth/session");
+        const sessionResponse = await api.get<{ user: any }>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = "/timeline";
           return;
@@ -133,14 +130,13 @@ export default function AdminUsersPage() {
     };
 
     checkAccess();
-  }, [token, loadUsers, setCurrentUser]);
+  }, [api, loadUsers, setCurrentUser]);
 
   const handleToggleSuspend = async (user: AdminUser) => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      await apiClient.post(`/api/admin/users/${user.id}/suspend`, {
+      await api.post(`/api/admin/users/${user.id}/suspend`, {
         isSuspended: !user.isSuspended,
       });
 
@@ -161,11 +157,10 @@ export default function AdminUsersPage() {
   };
 
   const handleToggleAdmin = async (user: AdminUser) => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      await apiClient.post(`/api/admin/users/${user.id}/admin`, {
+      await api.post(`/api/admin/users/${user.id}/admin`, {
         isAdmin: !user.isAdmin,
       });
 
@@ -186,13 +181,12 @@ export default function AdminUsersPage() {
   };
 
   const handleDelete = async () => {
-    if (!token || !userToDelete) return;
+    if (!api.token || !userToDelete) return;
 
     setIsDeleting(true);
     try {
-      apiClient.setToken(token);
       const params = deleteNotes ? "?deleteNotes=true" : "";
-      const response = await apiClient.delete<{
+      const response = await api.delete<{
         success: boolean;
         message: string;
         activitiesSent?: number;
@@ -219,11 +213,10 @@ export default function AdminUsersPage() {
   };
 
   const handleRefreshUser = async (user: AdminUser) => {
-    if (!token || !user.host) return;
+    if (!api.token || !user.host) return;
 
     try {
-      apiClient.setToken(token);
-      await apiClient.post(`/api/admin/users/${user.id}/refresh`, {});
+      await api.post(`/api/admin/users/${user.id}/refresh`, {});
 
       addToast({
         type: "success",

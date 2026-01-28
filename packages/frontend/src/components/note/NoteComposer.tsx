@@ -14,10 +14,7 @@ import {
   ChevronDown,
   Eye,
   Save,
-  FileText,
-  Trash2,
   HardDrive,
-  Clock,
   AtSign,
   UserPlus,
   Search,
@@ -47,6 +44,9 @@ import { scheduledNotesApi } from "../../lib/api/scheduled-notes";
 import { DrivePickerDialog } from "../drive/DrivePickerDialog";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { usersApi, type User } from "../../lib/api/users";
+import { NoteComposerAttachments } from "./NoteComposerAttachments";
+import { NoteComposerDrafts } from "./NoteComposerDrafts";
+import { NoteComposerSchedulePicker } from "./NoteComposerSchedulePicker";
 
 export interface NoteComposerProps {
   /**
@@ -1048,50 +1048,12 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
             )}
 
             {/* File previews (new uploads + drive files) */}
-            {totalFileCount > 0 && (
-              <div className="grid grid-cols-2 gap-2">
-                {/* New upload files */}
-                {files.map((file, index) => (
-                  <div key={`new-${index}`} className="relative group">
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={`Upload ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-md"
-                    />
-                    <button
-                      onClick={() => removeFile(index)}
-                      className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                      type="button"
-                      aria-label={`Remove image ${index + 1}`}
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-                {/* Drive files */}
-                {driveFiles.map((file) => (
-                  <div key={`drive-${file.id}`} className="relative group">
-                    <img
-                      src={getProxiedImageUrl(file.thumbnailUrl || file.url) || ""}
-                      alt={file.name}
-                      className="w-full h-32 object-cover rounded-md"
-                    />
-                    {/* Drive badge */}
-                    <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-primary-500/80 rounded text-[10px] text-white font-medium flex items-center gap-0.5">
-                      <HardDrive className="w-3 h-3" />
-                    </div>
-                    <button
-                      onClick={() => removeDriveFile(file.id)}
-                      className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                      type="button"
-                      aria-label={`Remove ${file.name}`}
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+            <NoteComposerAttachments
+              files={files}
+              driveFiles={driveFiles}
+              onRemoveFile={removeFile}
+              onRemoveDriveFile={removeDriveFile}
+            />
 
             {/* Upload progress bar */}
             {isUploading && uploadProgress > 0 && (
@@ -1191,85 +1153,16 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
                 </button>
 
                 {/* Drafts list button */}
-                <div className="relative">
-                  <button
-                    onClick={() => setShowDraftList(!showDraftList)}
-                    disabled={isSubmitting}
-                    className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 ${
-                      showDraftList
-                        ? "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
-                        : "text-gray-600 dark:text-gray-400"
-                    }`}
-                    type="button"
-                    title={t`Drafts`}
-                    aria-label={t`Drafts`}
-                    aria-expanded={showDraftList}
-                  >
-                    <FileText className="w-5 h-5" />
-                    {drafts.length > 0 && (
-                      <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-4 h-4 px-1 text-[10px] font-bold text-white bg-primary-500 rounded-full">
-                        {drafts.length}
-                      </span>
-                    )}
-                  </button>
-
-                  {/* Drafts dropdown */}
-                  {showDraftList && (
-                    <div className="absolute bottom-full left-0 sm:left-auto sm:right-0 mb-2 w-[calc(100vw-2rem)] sm:w-72 max-w-72 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden z-50">
-                      <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 dark:border-gray-700">
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          <Trans>Drafts</Trans> ({drafts.length})
-                        </span>
-                        <button
-                          onClick={handleNewDraft}
-                          className="text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-                          type="button"
-                        >
-                          <Trans>New</Trans>
-                        </button>
-                      </div>
-                      <div className="max-h-60 overflow-y-auto">
-                        {drafts.length === 0 ? (
-                          <div className="px-3 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">
-                            <Trans>No drafts saved</Trans>
-                          </div>
-                        ) : (
-                          drafts.map((draft) => (
-                            <div
-                              key={draft.id}
-                              onClick={() => handleLoadDraft(draft.id)}
-                              onKeyDown={(e) => e.key === "Enter" && handleLoadDraft(draft.id)}
-                              className={`flex items-start justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 ${
-                                currentDraftId === draft.id
-                                  ? "bg-primary-50 dark:bg-primary-900/20"
-                                  : ""
-                              }`}
-                              role="button"
-                              tabIndex={0}
-                            >
-                              <div className="flex-1 min-w-0 mr-2">
-                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                                  {draft.title || draft.text.slice(0, 30) || t`Empty draft`}
-                                </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">
-                                  {new Date(draft.timestamp).toLocaleString()}
-                                </p>
-                              </div>
-                              <button
-                                onClick={(e) => handleDeleteDraft(draft.id, e)}
-                                className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-400 hover:text-red-500"
-                                type="button"
-                                aria-label={t`Delete draft`}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <NoteComposerDrafts
+                  drafts={drafts}
+                  currentDraftId={currentDraftId}
+                  isOpen={showDraftList}
+                  isDisabled={isSubmitting}
+                  onToggle={() => setShowDraftList(!showDraftList)}
+                  onLoadDraft={handleLoadDraft}
+                  onDeleteDraft={handleDeleteDraft}
+                  onNewDraft={handleNewDraft}
+                />
 
                 {/* Visibility selector */}
                 <Select
@@ -1302,79 +1195,24 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
 
                 {/* Schedule post button (not available for replies) */}
                 {!replyId && (
-                  <div className="relative">
-                    <button
-                      onClick={() => setShowSchedulePicker(!showSchedulePicker)}
-                      disabled={isSubmitting}
-                      className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 ${
-                        showSchedulePicker || scheduledAt
-                          ? "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
-                          : "text-gray-600 dark:text-gray-400"
-                      }`}
-                      type="button"
-                      title={t`Schedule post`}
-                      aria-label={t`Schedule post`}
-                      aria-expanded={showSchedulePicker}
-                    >
-                      <Clock className="w-5 h-5" />
-                    </button>
-
-                    {/* Schedule picker dropdown */}
-                    {showSchedulePicker && (
-                      <div className="absolute top-full left-0 sm:left-auto sm:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-80 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-60">
-                        <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
-                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            <Trans>Schedule post</Trans>
-                          </span>
-                        </div>
-                        <div className="p-3 space-y-3">
-                          <input
-                            type="datetime-local"
-                            value={scheduledAt || ""}
-                            onChange={(e) => setScheduledAt(e.target.value || null)}
-                            min={new Date(Date.now() + 60000).toISOString().slice(0, 16)}
-                            aria-label={t`Schedule date and time`}
-                            className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-                          />
-                          {scheduledAt && (
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                              <Trans>
-                                Will be posted at {new Date(scheduledAt).toLocaleString()}
-                              </Trans>
-                            </div>
-                          )}
-                          <div className="flex gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onPress={() => {
-                                setScheduledAt(null);
-                                setShowSchedulePicker(false);
-                              }}
-                              className="flex-1"
-                            >
-                              <Trans>Cancel</Trans>
-                            </Button>
-                            <Button
-                              variant="primary"
-                              size="sm"
-                              onPress={handleScheduleSubmit}
-                              isDisabled={
-                                !scheduledAt ||
-                                isSubmitting ||
-                                isUploading ||
-                                (!text.trim() && totalFileCount === 0) ||
-                                text.length > maxLength
-                              }
-                              className="flex-1"
-                            >
-                              <Trans>Schedule</Trans>
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <NoteComposerSchedulePicker
+                    scheduledAt={scheduledAt}
+                    isOpen={showSchedulePicker}
+                    isDisabled={isSubmitting}
+                    isSubmitDisabled={
+                      isSubmitting ||
+                      isUploading ||
+                      (!text.trim() && totalFileCount === 0) ||
+                      text.length > maxLength
+                    }
+                    onToggle={() => setShowSchedulePicker(!showSchedulePicker)}
+                    onScheduledAtChange={setScheduledAt}
+                    onScheduleSubmit={handleScheduleSubmit}
+                    onCancel={() => {
+                      setScheduledAt(null);
+                      setShowSchedulePicker(false);
+                    }}
+                  />
                 )}
               </div>
 

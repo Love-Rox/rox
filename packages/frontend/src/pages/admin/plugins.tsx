@@ -14,8 +14,8 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Plug, Power, PowerOff, RefreshCw, ExternalLink, AlertCircle, CheckCircle } from "lucide-react";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -39,8 +39,8 @@ interface PluginSystemStatus {
 }
 
 export default function AdminPluginsPage() {
+  const api = useApi();
   const [currentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
   const [status, setStatus] = useState<PluginSystemStatus | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,35 +48,33 @@ export default function AdminPluginsPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const fetchPlugins = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      apiClient.setToken(token);
-      const response = await apiClient.get<PluginSystemStatus>("/api/plugins");
+      const response = await api.get<PluginSystemStatus>("/api/plugins");
       setStatus(response);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch plugins");
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [api]);
 
   useEffect(() => {
     fetchPlugins();
   }, [fetchPlugins]);
 
   const togglePlugin = async (pluginId: string, enable: boolean) => {
-    if (!token) return;
+    if (!api.token) return;
 
     setActionLoading(pluginId);
 
     try {
-      apiClient.setToken(token);
       const action = enable ? "enable" : "disable";
-      await apiClient.post(`/api/plugins/${pluginId}/${action}`, {});
+      await api.post(`/api/plugins/${pluginId}/${action}`, {});
       addToast({
         type: "success",
         message: enable

@@ -5,8 +5,9 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { usersApi, type User } from "../../lib/api/users";
 import { notesApi } from "../../lib/api/notes";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient, ApiError } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { ApiError } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { Flag, QrCode, ListPlus, ArrowLeft, Globe } from "lucide-react";
 import { getRemoteInstanceInfo, type PublicRemoteInstance } from "../../lib/api/instance";
@@ -131,8 +132,8 @@ export interface UserProfileProps {
  * Displays user information, stats, and their notes
  */
 export function UserProfile({ username, host }: UserProfileProps) {
+  const api = useApi();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [notes, setNotes] = useState<any[]>([]);
@@ -155,17 +156,12 @@ export function UserProfile({ username, host }: UserProfileProps) {
   // Generate unique ID for custom CSS scoping
   const profileContainerId = useId().replace(/:/g, "-");
 
-  // Set API token and load current user session
+  // Load current user session if not already loaded
   useEffect(() => {
-    if (token) {
-      apiClient.setToken(token);
-    }
-
-    // Load current user if not already loaded
     const loadCurrentUser = async () => {
-      if (token && !currentUser) {
+      if (api.token && !currentUser) {
         try {
-          const response = await apiClient.get<{ user: User }>("/api/auth/session");
+          const response = await api.get<{ user: User }>("/api/auth/session");
           setCurrentUser(response.user);
         } catch (err) {
           console.error("Failed to load current user session:", err);
@@ -174,7 +170,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
     };
 
     loadCurrentUser();
-  }, [token, currentUser, setCurrentUser]);
+  }, [api, currentUser, setCurrentUser]);
 
   // Load user data (after token is set)
   useEffect(() => {
@@ -198,10 +194,10 @@ export function UserProfile({ username, host }: UserProfileProps) {
       }
     };
 
-    // Wait a tick for token to be set in apiClient
+    // Wait a tick for token to be set
     const timeoutId = setTimeout(loadUser, 0);
     return () => clearTimeout(timeoutId);
-  }, [username, host, token]);
+  }, [username, host, api.token]);
 
   // Load user's notes
   useEffect(() => {
@@ -229,7 +225,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
       if (!user) return;
 
       try {
-        const response = await apiClient.get<{ roles: PublicRole[] }>(
+        const response = await api.get<{ roles: PublicRole[] }>(
           `/api/users/${user.id}/public-roles`,
         );
         setPublicRoles(response.roles);
@@ -240,7 +236,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
     };
 
     loadPublicRoles();
-  }, [user]);
+  }, [user, api]);
 
   // Load remote instance info for remote users
   useEffect(() => {

@@ -23,8 +23,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { Dialog, Modal, ModalOverlay, Heading } from "react-aria-components";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -83,8 +83,8 @@ type FilterType = "all" | "local" | "remote" | "in-lists" | "not-in-lists";
  * @returns The React element for the Admin System Follows page
  */
 export default function AdminSystemFollowsPage() {
+  const api = useApi();
   const [, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
   const [follows, setFollows] = useState<SystemFollow[]>([]);
@@ -109,7 +109,7 @@ export default function AdminSystemFollowsPage() {
 
   const loadFollows = useCallback(
     async (currentOffset = 0) => {
-      if (!token) return;
+      if (!api.token) return;
 
       const isAppend = currentOffset > 0;
 
@@ -117,7 +117,6 @@ export default function AdminSystemFollowsPage() {
         if (isAppend) {
           setIsLoadingMore(true);
         }
-        apiClient.setToken(token);
         const params = new URLSearchParams();
         params.set("limit", String(PAGE_SIZE));
         params.set("offset", String(currentOffset));
@@ -127,7 +126,7 @@ export default function AdminSystemFollowsPage() {
         if (debouncedSearchQuery) {
           params.set("search", debouncedSearchQuery);
         }
-        const response = await apiClient.get<SystemFollowsResponse>(
+        const response = await api.get<SystemFollowsResponse>(
           `/api/admin/system-follows?${params}`,
         );
 
@@ -145,7 +144,7 @@ export default function AdminSystemFollowsPage() {
         setIsLoadingMore(false);
       }
     },
-    [token, userFilter, debouncedSearchQuery],
+    [api, userFilter, debouncedSearchQuery],
   );
 
   // Check admin access and perform initial load
@@ -154,16 +153,14 @@ export default function AdminSystemFollowsPage() {
     if (isInitialLoadDone.current) return;
 
     const checkAccess = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       try {
-        apiClient.setToken(token);
-
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<SessionResponse>("/api/auth/session");
+        const sessionResponse = await api.get<SessionResponse>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = "/timeline";
           return;
@@ -176,7 +173,7 @@ export default function AdminSystemFollowsPage() {
         const params = new URLSearchParams();
         params.set("limit", String(PAGE_SIZE));
         params.set("offset", "0");
-        const response = await apiClient.get<SystemFollowsResponse>(
+        const response = await api.get<SystemFollowsResponse>(
           `/api/admin/system-follows?${params}`,
         );
         setFollows(response.follows);
@@ -191,7 +188,7 @@ export default function AdminSystemFollowsPage() {
     };
 
     checkAccess();
-  }, [token, setCurrentUser]);
+  }, [api, setCurrentUser]);
 
   // Debounce search query
   useEffect(() => {
@@ -211,9 +208,9 @@ export default function AdminSystemFollowsPage() {
   // Reload when filter or debounced search changes (reset pagination)
   // Note: loadFollows is intentionally excluded from deps to prevent infinite loops.
   // The effect should only trigger on filter/search changes, not on loadFollows reference changes.
-  // isLoading and token are checked inside the effect to ensure safe execution.
+  // isLoading and api.token are checked inside the effect to ensure safe execution.
   useEffect(() => {
-    if (!isLoading && token) {
+    if (!isLoading && api.token) {
       loadFollows(0);
     }
   }, [userFilter, debouncedSearchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -226,12 +223,11 @@ export default function AdminSystemFollowsPage() {
   const currentCount = follows.length;
 
   const handleUnfollow = async () => {
-    if (!token || !userToUnfollow) return;
+    if (!api.token || !userToUnfollow) return;
 
     setIsUnfollowing(true);
     try {
-      apiClient.setToken(token);
-      await apiClient.delete<{ success: boolean; message: string }>(
+      await api.delete<{ success: boolean; message: string }>(
         `/api/admin/system-follows/${userToUnfollow.user.id}`,
       );
 

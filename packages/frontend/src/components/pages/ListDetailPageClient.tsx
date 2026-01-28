@@ -11,7 +11,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Trans } from "@lingui/react/macro";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { List as ListIcon, Users, Lock, Globe, Pencil, Trash2, ArrowLeft } from "lucide-react";
 import { Layout } from "../layout/Layout";
 import { PageHeader } from "../ui/PageHeader";
@@ -21,7 +21,8 @@ import { ListTimeline } from "../list/ListTimeline";
 import { ListEditModal } from "../list/ListEditModal";
 import { ListDeleteConfirmDialog } from "../list/ListDeleteConfirmDialog";
 import { ListMembersModal } from "../list/ListMembersModal";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { listsApi, type List, type ListWithMemberCount } from "../../lib/api/lists";
 import { apiClient } from "../../lib/api/client";
 
@@ -46,7 +47,7 @@ export interface ListDetailPageClientProps {
  */
 export function ListDetailPageClient({ listId }: ListDetailPageClientProps) {
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const token = useAtomValue(tokenAtom);
+  const { token, isAuthenticated } = useApi();
 
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [list, setList] = useState<ListWithMemberCount | null>(null);
@@ -60,7 +61,7 @@ export function ListDetailPageClient({ listId }: ListDetailPageClientProps) {
   // Restore user session on mount
   useEffect(() => {
     const restoreSession = async () => {
-      if (!token) {
+      if (!isAuthenticated) {
         // Allow unauthenticated access for public lists
         setIsAuthChecking(false);
         return;
@@ -68,17 +69,17 @@ export function ListDetailPageClient({ listId }: ListDetailPageClientProps) {
 
       if (!currentUser) {
         try {
-          apiClient.setToken(token);
+          apiClient.setToken(token!);
           const response = await apiClient.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
-        } catch (_error) {
+        } catch {
           // Continue without auth - may be viewing public list
         }
       }
       setIsAuthChecking(false);
     };
     restoreSession();
-  }, [token, currentUser, setCurrentUser]);
+  }, [isAuthenticated, token, currentUser, setCurrentUser]);
 
   // Fetch list details
   const fetchList = useCallback(async () => {
@@ -86,8 +87,8 @@ export function ListDetailPageClient({ listId }: ListDetailPageClientProps) {
     setError(null);
 
     // Ensure token is set before API calls
-    if (token) {
-      apiClient.setToken(token);
+    if (isAuthenticated) {
+      apiClient.setToken(token!);
     }
 
     try {
@@ -99,7 +100,7 @@ export function ListDetailPageClient({ listId }: ListDetailPageClientProps) {
     } finally {
       setLoading(false);
     }
-  }, [listId, token]);
+  }, [listId, isAuthenticated, token]);
 
   // Load list on mount (after auth check)
   useEffect(() => {

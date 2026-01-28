@@ -12,8 +12,8 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Trash2, Plus, RefreshCw, Shield, Globe, AlertTriangle } from "lucide-react";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -35,8 +35,8 @@ interface BlocksResponse {
 }
 
 export default function AdminBlocksPage() {
+  const api = useApi();
   const [, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
   const [blocks, setBlocks] = useState<InstanceBlock[]>([]);
@@ -50,11 +50,10 @@ export default function AdminBlocksPage() {
   const [reason, setReason] = useState("");
 
   const loadBlocks = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      const response = await apiClient.get<BlocksResponse>("/api/admin/instance-blocks");
+      const response = await api.get<BlocksResponse>("/api/admin/instance-blocks");
       setBlocks(response.blocks);
       setTotal(response.total);
     } catch (err) {
@@ -63,21 +62,19 @@ export default function AdminBlocksPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, [api]);
 
   // Check admin access and load blocks
   useEffect(() => {
     const checkAccess = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       try {
-        apiClient.setToken(token);
-
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: any }>("/api/auth/session");
+        const sessionResponse = await api.get<{ user: any }>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = "/timeline";
           return;
@@ -95,15 +92,13 @@ export default function AdminBlocksPage() {
     };
 
     checkAccess();
-  }, [token, loadBlocks, setCurrentUser]);
+  }, [api, loadBlocks, setCurrentUser]);
 
   const handleAddBlock = async () => {
-    if (!token || !host.trim()) return;
+    if (!api.token || !host.trim()) return;
 
     setIsAdding(true);
     try {
-      apiClient.setToken(token);
-
       // Normalize host (remove protocol, trailing slashes)
       const normalizedHost = host
         .trim()
@@ -111,7 +106,7 @@ export default function AdminBlocksPage() {
         .replace(/^https?:\/\//, "")
         .replace(/\/.*$/, "");
 
-      await apiClient.post<InstanceBlock>("/api/admin/instance-blocks", {
+      await api.post<InstanceBlock>("/api/admin/instance-blocks", {
         host: normalizedHost,
         reason: reason.trim() || undefined,
       });
@@ -138,11 +133,10 @@ export default function AdminBlocksPage() {
   };
 
   const handleUnblock = async (hostToUnblock: string) => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      await apiClient.delete(`/api/admin/instance-blocks/${encodeURIComponent(hostToUnblock)}`);
+      await api.delete(`/api/admin/instance-blocks/${encodeURIComponent(hostToUnblock)}`);
 
       addToast({
         type: "success",

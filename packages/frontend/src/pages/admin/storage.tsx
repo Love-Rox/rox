@@ -28,8 +28,8 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -91,7 +91,7 @@ function getFileIcon(mimeType: string) {
 
 export default function AdminStoragePage() {
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -108,15 +108,14 @@ export default function AdminStoragePage() {
   // Restore session and check admin
   useEffect(() => {
     const restoreSession = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       if (!currentUser) {
         try {
-          apiClient.setToken(token);
-          const response = await apiClient.get<{ user: any }>("/api/auth/session");
+          const response = await api.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
 
           if (!response.user.isAdmin) {
@@ -136,16 +135,15 @@ export default function AdminStoragePage() {
       setIsLoading(false);
     };
     restoreSession();
-  }, [token, currentUser, setCurrentUser]);
+  }, [api, currentUser, setCurrentUser]);
 
   const fetchStats = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
       const [statsData, systemFilesResponse] = await Promise.all([
-        apiClient.get<InstanceStorageStats>("/api/admin/storage/stats"),
-        apiClient.get<{ files: DriveFile[]; total: number }>("/api/admin/storage/system-files"),
+        api.get<InstanceStorageStats>("/api/admin/storage/stats"),
+        api.get<{ files: DriveFile[]; total: number }>("/api/admin/storage/system-files"),
       ]);
 
       setStats(statsData);
@@ -157,7 +155,7 @@ export default function AdminStoragePage() {
         message: err.message || t`Failed to load storage statistics`,
       });
     }
-  }, [token, addToast]);
+  }, [api, addToast]);
 
   useEffect(() => {
     if (!isLoading && currentUser?.isAdmin) {
@@ -166,12 +164,11 @@ export default function AdminStoragePage() {
   }, [isLoading, currentUser, fetchStats]);
 
   const fetchUserDetails = async (userId: string) => {
-    if (!token) return;
+    if (!api.token) return;
 
     setIsLoadingUser(true);
     try {
-      apiClient.setToken(token);
-      const data = await apiClient.get<UserStorageDetails>(`/api/admin/storage/users/${userId}`);
+      const data = await api.get<UserStorageDetails>(`/api/admin/storage/users/${userId}`);
       setSelectedUser(data);
     } catch (err: any) {
       addToast({
@@ -184,12 +181,11 @@ export default function AdminStoragePage() {
   };
 
   const handleDeleteFile = async (fileId: string) => {
-    if (!token) return;
+    if (!api.token) return;
 
     setIsDeleting(fileId);
     try {
-      apiClient.setToken(token);
-      await apiClient.delete(`/api/admin/storage/files/${fileId}`);
+      await api.delete(`/api/admin/storage/files/${fileId}`);
 
       // Remove from local state
       setSystemFiles((prev) => prev.filter((f) => f.id !== fileId));
@@ -219,13 +215,12 @@ export default function AdminStoragePage() {
   };
 
   const handleUpdateQuota = async (userId: string) => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
       const quotaValue = newQuota === "" || newQuota === "-1" ? -1 : parseInt(newQuota, 10);
 
-      await apiClient.patch(`/api/admin/storage/users/${userId}/quota`, {
+      await api.patch(`/api/admin/storage/users/${userId}/quota`, {
         quotaMb: quotaValue,
       });
 

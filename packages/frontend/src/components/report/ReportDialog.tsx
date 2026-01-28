@@ -11,8 +11,7 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { AlertTriangle, X } from "lucide-react";
-import { tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../ui/Button";
 import { Spinner } from "../ui/Spinner";
 import { addToastAtom } from "../../lib/atoms/toast";
@@ -37,6 +36,20 @@ const REPORT_REASONS = [
   { value: "other", label: "Other" },
 ] as const;
 
+/**
+ * Report dialog component.
+ *
+ * Modal dialog for reporting users or notes to moderators.
+ * Allows selecting a reason category and providing additional details.
+ *
+ * @param props - Component props
+ * @param props.isOpen - Whether the dialog is open
+ * @param props.onClose - Callback when dialog should close
+ * @param props.targetType - Type of target being reported ("user" or "note")
+ * @param props.targetUserId - ID of the user being reported (if targetType is "user")
+ * @param props.targetNoteId - ID of the note being reported (if targetType is "note")
+ * @param props.targetUsername - Display name for the report target
+ */
 export function ReportDialog({
   isOpen,
   onClose,
@@ -45,7 +58,7 @@ export function ReportDialog({
   targetNoteId,
   targetUsername,
 }: ReportDialogProps) {
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   const [reason, setReason] = useState<string>("");
@@ -53,12 +66,11 @@ export function ReportDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!token || !reason) return;
+    if (!api.isAuthenticated || !reason) return;
 
     setIsSubmitting(true);
     try {
-      apiClient.setToken(token);
-      await apiClient.post("/api/reports", {
+      await api.post("/api/reports", {
         targetUserId: targetUserId || undefined,
         targetNoteId: targetNoteId || undefined,
         reason,

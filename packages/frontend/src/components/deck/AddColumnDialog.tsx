@@ -23,7 +23,8 @@ import {
 import { Trans, useLingui } from "@lingui/react/macro";
 import { Button } from "../ui/Button";
 import { myListsAtom, myListsLoadingAtom, myListsErrorAtom } from "../../lib/atoms/lists";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { listsApi } from "../../lib/api/lists";
 import { apiClient } from "../../lib/api/client";
 import { useDeckProfiles } from "../../hooks/useDeckProfiles";
@@ -77,7 +78,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
   const [listsLoading, setListsLoading] = useAtom(myListsLoadingAtom);
   const [listsError, setListsError] = useAtom(myListsErrorAtom);
   const currentUser = useAtomValue(currentUserAtom);
-  const token = useAtomValue(tokenAtom);
+  const { token, isAuthenticated } = useApi();
   const columns = activeProfile?.columns ?? [];
   const [selectedType, setSelectedType] = useState<
     DeckColumnConfig["type"] | null
@@ -132,11 +133,11 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
 
   // Fetch lists function with optional abort signal support
   const fetchLists = useCallback(async (signal?: AbortSignal) => {
-    if (!currentUser || !token) return;
+    if (!currentUser || !isAuthenticated) return;
     if (isFetchingRef.current) return;
 
     isFetchingRef.current = true;
-    apiClient.setToken(token);
+    apiClient.setToken(token!);
     setListsLoading(true);
     setListsError(null);
 
@@ -154,7 +155,7 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
         setListsLoading(false);
       }
     }
-  }, [currentUser, token, setListsLoading, setListsError, setMyLists, t]);
+  }, [currentUser, isAuthenticated, token, setListsLoading, setListsError, setMyLists, t]);
 
   // Auto-fetch lists when dialog opens with list type selected
   useEffect(() => {

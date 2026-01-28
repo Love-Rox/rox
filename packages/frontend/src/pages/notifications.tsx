@@ -8,15 +8,15 @@
 
 import { useState, useEffect } from "react";
 import { Trans } from "@lingui/react/macro";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { Bell, CheckCheck, Filter, Loader2 } from "lucide-react";
 import { Layout } from "../components/layout/Layout";
 import { PageHeader } from "../components/ui/PageHeader";
 import { NotificationItem } from "../components/notification/NotificationItem";
 import { useNotifications } from "../hooks/useNotifications";
 import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
-import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
-import { apiClient } from "../lib/api/client";
+import { currentUserAtom } from "../lib/atoms/auth";
+import { useApi } from "../hooks/useApi";
 import type { Notification, NotificationType } from "../lib/types/notification";
 
 /**
@@ -40,8 +40,8 @@ const NOTIFICATION_TYPE_FILTERS: { type: NotificationType; labelKey: string }[] 
 ];
 
 export default function NotificationsPage() {
+  const api = useApi();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const token = useAtomValue(tokenAtom);
   const [isLoading, setIsLoading] = useState(true);
 
   const { notifications, loading, markAsRead, markAllAsRead, loadMore } = useNotifications();
@@ -56,15 +56,14 @@ export default function NotificationsPage() {
   // Restore user session on mount
   useEffect(() => {
     const restoreSession = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       if (!currentUser) {
         try {
-          apiClient.setToken(token);
-          const response = await apiClient.get<{ user: any }>("/api/auth/session");
+          const response = await api.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
           setIsLoading(false);
         } catch (error) {
@@ -77,7 +76,7 @@ export default function NotificationsPage() {
       }
     };
     restoreSession();
-  }, [token, currentUser, setCurrentUser]);
+  }, [api, currentUser, setCurrentUser]);
 
   const loadMoreRef = useInfiniteScroll({
     onLoadMore: async () => {

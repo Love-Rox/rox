@@ -3,17 +3,7 @@
  * Provides functions for interacting with the drive/file upload API endpoints
  */
 
-/**
- * Get the API base URL
- * In browser, uses same origin (proxy handles routing in dev)
- * In SSR, uses localhost
- */
-function getApiBase(): string {
-  if (typeof window !== "undefined") {
-    return window.location.origin;
-  }
-  return "http://localhost:3000";
-}
+import { withToken } from "./client";
 
 /**
  * Drive file data structure
@@ -83,20 +73,7 @@ export async function uploadFile(params: UploadFileParams, token: string): Promi
     formData.append("folderId", params.folderId);
   }
 
-  const response = await fetch(`${getApiBase()}/api/drive/files/create`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    body: formData,
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to upload file");
-  }
-
-  return response.json();
+  return withToken(token).upload<DriveFile>("/api/drive/files/create", formData);
 }
 
 /**
@@ -132,18 +109,7 @@ export async function listFiles(options: ListFilesOptions, token: string): Promi
     params.append("folderId", options.folderId === null ? "null" : options.folderId);
   }
 
-  const response = await fetch(`${getApiBase()}/api/drive/files?${params}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to list files");
-  }
-
-  return response.json();
+  return withToken(token).get<DriveFile[]>(`/api/drive/files?${params}`);
 }
 
 /**
@@ -155,19 +121,7 @@ export async function listFiles(options: ListFilesOptions, token: string): Promi
  */
 export async function getFile(fileId: string, token: string): Promise<DriveFile> {
   const params = new URLSearchParams({ fileId });
-
-  const response = await fetch(`${getApiBase()}/api/drive/files/show?${params}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to get file");
-  }
-
-  return response.json();
+  return withToken(token).get<DriveFile>(`/api/drive/files/show?${params}`);
 }
 
 /**
@@ -177,19 +131,7 @@ export async function getFile(fileId: string, token: string): Promise<DriveFile>
  * @param token - Authentication token
  */
 export async function deleteFile(fileId: string, token: string): Promise<void> {
-  const response = await fetch(`${getApiBase()}/api/drive/files/delete`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ fileId }),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to delete file");
-  }
+  await withToken(token).post<void>("/api/drive/files/delete", { fileId });
 }
 
 /**
@@ -199,18 +141,7 @@ export async function deleteFile(fileId: string, token: string): Promise<void> {
  * @returns Storage usage in bytes and MB
  */
 export async function getStorageUsage(token: string): Promise<{ usage: number; usageMB: number }> {
-  const response = await fetch(`${getApiBase()}/api/drive/usage`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to get storage usage");
-  }
-
-  return response.json();
+  return withToken(token).get<{ usage: number; usageMB: number }>("/api/drive/usage");
 }
 
 // ===== Folder API =====
@@ -243,18 +174,7 @@ export async function listFolders(
     params.append("parentId", options.parentId === null ? "null" : options.parentId);
   }
 
-  const response = await fetch(`${getApiBase()}/api/drive/folders?${params}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to list folders");
-  }
-
-  return response.json();
+  return withToken(token).get<DriveFolder[]>(`/api/drive/folders?${params}`);
 }
 
 /**
@@ -270,21 +190,7 @@ export async function createFolder(
   parentId: string | null,
   token: string,
 ): Promise<DriveFolder> {
-  const response = await fetch(`${getApiBase()}/api/drive/folders/create`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ name, parentId }),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to create folder");
-  }
-
-  return response.json();
+  return withToken(token).post<DriveFolder>("/api/drive/folders/create", { name, parentId });
 }
 
 /**
@@ -299,19 +205,9 @@ export async function getFolder(
   token: string,
 ): Promise<DriveFolder & { childFolderCount: number; fileCount: number }> {
   const params = new URLSearchParams({ folderId });
-
-  const response = await fetch(`${getApiBase()}/api/drive/folders/show?${params}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to get folder");
-  }
-
-  return response.json();
+  return withToken(token).get<DriveFolder & { childFolderCount: number; fileCount: number }>(
+    `/api/drive/folders/show?${params}`,
+  );
 }
 
 /**
@@ -327,21 +223,7 @@ export async function updateFolder(
   updates: { name?: string; parentId?: string | null },
   token: string,
 ): Promise<DriveFolder> {
-  const response = await fetch(`${getApiBase()}/api/drive/folders/update`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ folderId, ...updates }),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to update folder");
-  }
-
-  return response.json();
+  return withToken(token).post<DriveFolder>("/api/drive/folders/update", { folderId, ...updates });
 }
 
 /**
@@ -351,19 +233,7 @@ export async function updateFolder(
  * @param token - Authentication token
  */
 export async function deleteFolder(folderId: string, token: string): Promise<void> {
-  const response = await fetch(`${getApiBase()}/api/drive/folders/delete`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ folderId }),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to delete folder");
-  }
+  await withToken(token).post<void>("/api/drive/folders/delete", { folderId });
 }
 
 /**
@@ -375,19 +245,7 @@ export async function deleteFolder(folderId: string, token: string): Promise<voi
  */
 export async function getFolderPath(folderId: string, token: string): Promise<DriveFolder[]> {
   const params = new URLSearchParams({ folderId });
-
-  const response = await fetch(`${getApiBase()}/api/drive/folders/path?${params}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to get folder path");
-  }
-
-  return response.json();
+  return withToken(token).get<DriveFolder[]>(`/api/drive/folders/path?${params}`);
 }
 
 /**
@@ -403,19 +261,5 @@ export async function moveFile(
   folderId: string | null,
   token: string,
 ): Promise<DriveFile> {
-  const response = await fetch(`${getApiBase()}/api/drive/files/move`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ fileId, folderId }),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to move file");
-  }
-
-  return response.json();
+  return withToken(token).post<DriveFile>("/api/drive/files/move", { fileId, folderId });
 }

@@ -11,8 +11,8 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Copy, Trash2, Plus, RefreshCw } from "lucide-react";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -39,8 +39,8 @@ interface InvitationsResponse {
 }
 
 export default function AdminInvitationsPage() {
+  const api = useApi();
   const [, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
   const [invitations, setInvitations] = useState<InvitationCode[]>([]);
@@ -56,11 +56,10 @@ export default function AdminInvitationsPage() {
   const [expiresIn, setExpiresIn] = useState<"never" | "1d" | "7d" | "30d">("never");
 
   const loadInvitations = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      const response = await apiClient.get<InvitationsResponse>("/api/admin/invitations");
+      const response = await api.get<InvitationsResponse>("/api/admin/invitations");
       setInvitations(response.codes);
       setTotal(response.total);
       setUnused(response.unused);
@@ -70,21 +69,19 @@ export default function AdminInvitationsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, [api]);
 
   // Check admin access and load invitations
   useEffect(() => {
     const checkAccess = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       try {
-        apiClient.setToken(token);
-
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: any }>("/api/auth/session");
+        const sessionResponse = await api.get<{ user: any }>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = "/timeline";
           return;
@@ -102,15 +99,13 @@ export default function AdminInvitationsPage() {
     };
 
     checkAccess();
-  }, [token, loadInvitations, setCurrentUser]);
+  }, [api, loadInvitations, setCurrentUser]);
 
   const handleCreateInvitation = async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     setIsCreating(true);
     try {
-      apiClient.setToken(token);
-
       let expiresAt: string | undefined;
       if (expiresIn !== "never") {
         const now = new Date();
@@ -119,7 +114,7 @@ export default function AdminInvitationsPage() {
         expiresAt = now.toISOString();
       }
 
-      await apiClient.post<InvitationCode>("/api/admin/invitations", {
+      await api.post<InvitationCode>("/api/admin/invitations", {
         code: customCode || undefined,
         maxUses,
         expiresAt,
@@ -148,11 +143,10 @@ export default function AdminInvitationsPage() {
   };
 
   const handleDeleteInvitation = async (id: string) => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      await apiClient.delete(`/api/admin/invitations/${id}`);
+      await api.delete(`/api/admin/invitations/${id}`);
 
       addToast({
         type: "success",

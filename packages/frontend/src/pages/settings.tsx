@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { currentUserAtom, tokenAtom, logoutAtom } from "../lib/atoms/auth";
+import { currentUserAtom, logoutAtom } from "../lib/atoms/auth";
+import { useApi } from "../hooks/useApi";
 import { usersApi } from "../lib/api/users";
 import { Button } from "../components/ui/Button";
 import { Card, CardContent } from "../components/ui/Card";
@@ -39,8 +40,8 @@ type SettingsTab = "profile" | "security" | "notifications" | "storage" | "accou
  * Allows users to edit their profile information
  */
 export default function SettingsPage() {
+  const api = useApi();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
   const [, logout] = useAtom(logoutAtom);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -57,7 +58,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const restoreSession = async () => {
       // No token at all, redirect to login
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
@@ -65,9 +66,7 @@ export default function SettingsPage() {
       // Token exists but no user data, try to restore session
       if (!currentUser) {
         try {
-          const { apiClient } = await import("../lib/api/client");
-          apiClient.setToken(token);
-          const response = await apiClient.get<{ user: any }>("/api/auth/session");
+          const response = await api.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
           setIsLoading(false);
         } catch (error) {
@@ -82,7 +81,7 @@ export default function SettingsPage() {
       }
     };
     restoreSession();
-  }, [token, currentUser, setCurrentUser]);
+  }, [api, currentUser, setCurrentUser]);
 
   // Initialize form with current user data
   useEffect(() => {
@@ -96,7 +95,7 @@ export default function SettingsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!token) {
+    if (!api.token) {
       setError(t`Please log in to update your profile`);
       return;
     }

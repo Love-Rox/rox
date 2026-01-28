@@ -27,7 +27,7 @@ import { useAtom } from "jotai";
 import { usersApi } from "../../lib/api/users";
 import { listsApi, type List, type ListMembership } from "../../lib/api/lists";
 import { addToastAtom } from "../../lib/atoms/toast";
-import { tokenAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { apiClient } from "../../lib/api/client";
 import { Avatar } from "../ui/Avatar";
 import { UserDisplayName } from "../user/UserDisplayName";
@@ -138,7 +138,7 @@ export function AddMemberModal({
   onMemberCountChanged,
 }: AddMemberModalProps) {
   const [, addToast] = useAtom(addToastAtom);
-  const [token] = useAtom(tokenAtom);
+  const { token, isAuthenticated } = useApi();
 
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<User[]>([]);
@@ -152,14 +152,14 @@ export function AddMemberModal({
   // Fetch current members when modal opens
   useEffect(() => {
     const fetchMembers = async () => {
-      if (!isOpen || !token) return;
+      if (!isOpen || !isAuthenticated) return;
 
-      apiClient.setToken(token);
+      apiClient.setToken(token!);
       try {
         // Fetch all members to know who is already added
         const memberships = await listsApi.getMemberships(list.id, 100, 0);
         setMemberUserIds(new Set(memberships.filter((m) => m.user).map((m) => m.user!.id)));
-      } catch (_err) {
+      } catch {
         // Ignore errors, just start with empty set
       }
     };
@@ -169,7 +169,7 @@ export function AddMemberModal({
       // Focus input when modal opens
       setTimeout(() => inputRef.current?.focus(), 100);
     }
-  }, [isOpen, list.id, token]);
+  }, [isOpen, list.id, isAuthenticated, token]);
 
   // Reset state when modal closes
   useEffect(() => {
@@ -209,10 +209,10 @@ export function AddMemberModal({
 
       // Debounce API call
       debounceTimerRef.current = setTimeout(async () => {
-        if (!token) return;
+        if (!isAuthenticated) return;
 
         setSearching(true);
-        apiClient.setToken(token);
+        apiClient.setToken(token!);
 
         try {
           const users = await usersApi.search(newQuery.trim(), { limit: 10 });
@@ -228,15 +228,15 @@ export function AddMemberModal({
         }
       }, 150);
     },
-    [token, addToast],
+    [isAuthenticated, token, addToast],
   );
 
   // Add user to list
   const handleAddUser = async (user: User) => {
-    if (!token || memberUserIds.has(user.id)) return;
+    if (!isAuthenticated || memberUserIds.has(user.id)) return;
 
     setLoadingUserIds((prev) => new Set(prev).add(user.id));
-    apiClient.setToken(token);
+    apiClient.setToken(token!);
 
     try {
       const membership = await listsApi.push(list.id, user.id);

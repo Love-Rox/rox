@@ -14,15 +14,21 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { AlertTriangle, Trash2 } from "lucide-react";
-import { tokenAtom, logoutAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { logoutAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { Spinner } from "../ui/Spinner";
 import { addToastAtom } from "../../lib/atoms/toast";
 
+/**
+ * Account deletion section component.
+ *
+ * Provides a danger zone UI for permanently deleting the user's account.
+ * Requires typing "DELETE" and password confirmation for security.
+ */
 export function AccountDeletionSection() {
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
   const [, logout] = useAtom(logoutAtom);
 
@@ -35,7 +41,7 @@ export function AccountDeletionSection() {
   const CONFIRM_TEXT = "DELETE";
 
   const handleDelete = async () => {
-    if (!token) return;
+    if (!api.isAuthenticated) return;
     if (confirmText !== CONFIRM_TEXT) {
       setError(t`Please type "${CONFIRM_TEXT}" to confirm`);
       return;
@@ -49,8 +55,7 @@ export function AccountDeletionSection() {
     setError(null);
 
     try {
-      apiClient.setToken(token);
-      await apiClient.post("/api/users/@me/delete", { password });
+      await api.post("/api/users/@me/delete", { password });
 
       addToast({
         type: "success",

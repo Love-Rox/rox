@@ -3,17 +3,7 @@
  * Provides functions for interacting with the reaction API endpoints
  */
 
-/**
- * Get the API base URL
- * In browser, uses same origin (proxy handles routing in dev)
- * In SSR, uses localhost
- */
-function getApiBase(): string {
-  if (typeof window !== "undefined") {
-    return window.location.origin;
-  }
-  return "http://localhost:3000";
-}
+import { apiClient, withToken } from "./client";
 
 /**
  * Reaction data structure
@@ -40,21 +30,7 @@ export async function createReaction(
   reaction: string,
   token: string,
 ): Promise<Reaction> {
-  const response = await fetch(`${getApiBase()}/api/notes/reactions/create`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ noteId, reaction }),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to create reaction");
-  }
-
-  return response.json();
+  return withToken(token).post<Reaction>("/api/notes/reactions/create", { noteId, reaction });
 }
 
 /**
@@ -69,19 +45,7 @@ export async function deleteReaction(
   reaction: string,
   token: string,
 ): Promise<void> {
-  const response = await fetch(`${getApiBase()}/api/notes/reactions/delete`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ noteId, reaction }),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to delete reaction");
-  }
+  await withToken(token).post<void>("/api/notes/reactions/delete", { noteId, reaction });
 }
 
 /**
@@ -96,15 +60,7 @@ export async function getReactions(noteId: string, limit?: number): Promise<Reac
   if (limit) {
     params.append("limit", limit.toString());
   }
-
-  const response = await fetch(`${getApiBase()}/api/notes/reactions?${params}`);
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to get reactions");
-  }
-
-  return response.json();
+  return apiClient.get<Reaction[]>(`/api/notes/reactions?${params}`);
 }
 
 /**
@@ -115,14 +71,7 @@ export async function getReactions(noteId: string, limit?: number): Promise<Reac
  */
 export async function getReactionCounts(noteId: string): Promise<Record<string, number>> {
   const params = new URLSearchParams({ noteId });
-  const response = await fetch(`${getApiBase()}/api/notes/reactions/counts?${params}`);
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to get reaction counts");
-  }
-
-  return response.json();
+  return apiClient.get<Record<string, number>>(`/api/notes/reactions/counts?${params}`);
 }
 
 /**
@@ -148,14 +97,7 @@ export async function getReactionCountsWithEmojis(
   if (fetchRemote) {
     params.append("fetchRemote", "true");
   }
-  const response = await fetch(`${getApiBase()}/api/notes/reactions/counts-with-emojis?${params}`);
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to get reaction counts");
-  }
-
-  return response.json();
+  return apiClient.get<ReactionCountsWithEmojis>(`/api/notes/reactions/counts-with-emojis?${params}`);
 }
 
 /**
@@ -167,16 +109,5 @@ export async function getReactionCountsWithEmojis(
  */
 export async function getMyReactions(noteId: string, token: string): Promise<Reaction[]> {
   const params = new URLSearchParams({ noteId });
-  const response = await fetch(`${getApiBase()}/api/notes/reactions/my-reactions?${params}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to get user reactions");
-  }
-
-  return response.json();
+  return withToken(token).get<Reaction[]>(`/api/notes/reactions/my-reactions?${params}`);
 }

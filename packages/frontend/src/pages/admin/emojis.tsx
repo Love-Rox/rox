@@ -12,8 +12,8 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Trash2, Plus, RefreshCw, Smile, Edit2, X, Upload, Download, Globe, Archive, CheckSquare, Square, FolderInput } from "lucide-react";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
@@ -65,7 +65,7 @@ type TabType = "local" | "remote" | "import";
 
 export default function AdminEmojisPage() {
   const [, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   const [emojis, setEmojis] = useState<CustomEmoji[]>([]);
@@ -126,18 +126,17 @@ export default function AdminEmojisPage() {
   const [bulkCategory, setBulkCategory] = useState("");
 
   const loadEmojis = useCallback(async (loadAll = false) => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
       // First, get initial batch and total count
-      const response = await apiClient.get<EmojisResponse>("/api/emojis?limit=100");
+      const response = await api.get<EmojisResponse>("/api/emojis?limit=100");
       setTotalEmojis(response.total);
 
       if (loadAll && response.total > response.emojis.length) {
         // Load all emojis if requested and there are more
         setIsLoadingMore(true);
-        const allResponse = await apiClient.get<EmojisResponse>(`/api/emojis?limit=${response.total}`);
+        const allResponse = await api.get<EmojisResponse>(`/api/emojis?limit=${response.total}`);
         setEmojis(allResponse.emojis);
         setIsLoadingMore(false);
       } else {
@@ -148,28 +147,26 @@ export default function AdminEmojisPage() {
       setError("Failed to load custom emojis");
       setIsLoadingMore(false);
     }
-  }, [token]);
+  }, [api]);
 
   const loadCategories = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      const response = await apiClient.get<CategoriesResponse>("/api/emojis/categories");
+      const response = await api.get<CategoriesResponse>("/api/emojis/categories");
       setCategories(response.categories);
     } catch (err) {
       console.error("Failed to load categories:", err);
     }
-  }, [token]);
+  }, [api]);
 
   const loadRemoteEmojis = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     setIsLoadingRemote(true);
     try {
-      apiClient.setToken(token);
       const params = filterHost ? `?host=${encodeURIComponent(filterHost)}` : "";
-      const response = await apiClient.get<RemoteEmojisResponse>(`/api/emojis/remote${params}`);
+      const response = await api.get<RemoteEmojisResponse>(`/api/emojis/remote${params}`);
       setRemoteEmojis(response.emojis);
       setRemoteHosts(response.hosts);
     } catch (err) {
@@ -181,15 +178,14 @@ export default function AdminEmojisPage() {
     } finally {
       setIsLoadingRemote(false);
     }
-  }, [token, filterHost, addToast]);
+  }, [api, filterHost, addToast]);
 
   const handleAdoptEmoji = async (emoji: CustomEmoji) => {
-    if (!token || !emoji.id) return;
+    if (!api.token || !emoji.id) return;
 
     setAdoptingEmoji(emoji.id);
     try {
-      apiClient.setToken(token);
-      await apiClient.post("/api/emojis/adopt", {
+      await api.post("/api/emojis/adopt", {
         emojiId: emoji.id,
       });
 
@@ -212,7 +208,7 @@ export default function AdminEmojisPage() {
   };
 
   const processZipFile = async (file: File) => {
-    if (!token) return;
+    if (!api.token) return;
 
     // Validate file type
     if (!file.name.endsWith(".zip")) {
@@ -246,7 +242,7 @@ export default function AdminEmojisPage() {
       const response = await fetch("/api/emojis/import", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${api.token}`,
         },
         body: formData,
         signal: controller.signal,
@@ -329,16 +325,14 @@ export default function AdminEmojisPage() {
   // Check admin access and load emojis
   useEffect(() => {
     const checkAccess = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       try {
-        apiClient.setToken(token);
-
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: { isAdmin?: boolean } }>(
+        const sessionResponse = await api.get<{ user: { isAdmin?: boolean } }>(
           "/api/auth/session",
         );
         if (!sessionResponse.user?.isAdmin) {
@@ -359,7 +353,7 @@ export default function AdminEmojisPage() {
     };
 
     checkAccess();
-  }, [token, loadEmojis, loadCategories, setCurrentUser]);
+  }, [api, loadEmojis, loadCategories, setCurrentUser]);
 
   // Load remote emojis when switching to remote tab
   useEffect(() => {
@@ -382,7 +376,7 @@ export default function AdminEmojisPage() {
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !token) return;
+    if (!file || !api.token) return;
 
     // Validate file type
     const allowedTypes = ["image/png", "image/gif", "image/webp", "image/apng"];
@@ -407,8 +401,6 @@ export default function AdminEmojisPage() {
     setIsUploading(true);
 
     try {
-      apiClient.setToken(token);
-
       // Upload file using FormData
       const formData = new FormData();
       formData.append("file", file);
@@ -416,7 +408,7 @@ export default function AdminEmojisPage() {
       const response = await fetch("/api/emojis/upload", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${api.token}`,
         },
         body: formData,
       });
@@ -446,12 +438,11 @@ export default function AdminEmojisPage() {
   };
 
   const handleAddEmoji = async () => {
-    if (!token || !name.trim() || !url.trim()) return;
+    if (!api.token || !name.trim() || !url.trim()) return;
 
     setIsAdding(true);
     try {
-      apiClient.setToken(token);
-      await apiClient.post("/api/emojis/create", {
+      await api.post("/api/emojis/create", {
         name: name.trim().toLowerCase(),
         url: url.trim(),
         category: category.trim() || null,
@@ -479,12 +470,11 @@ export default function AdminEmojisPage() {
   };
 
   const handleUpdateEmoji = async () => {
-    if (!token || !editingEmoji || !name.trim()) return;
+    if (!api.token || !editingEmoji || !name.trim()) return;
 
     setIsAdding(true);
     try {
-      apiClient.setToken(token);
-      await apiClient.patch(`/api/emojis/${editingEmoji.id}`, {
+      await api.patch(`/api/emojis/${editingEmoji.id}`, {
         name: name.trim().toLowerCase(),
         category: category.trim() || null,
         aliases: aliases.trim() ? aliases.split(",").map((a) => a.trim()) : [],
@@ -511,12 +501,11 @@ export default function AdminEmojisPage() {
   };
 
   const handleDeleteEmoji = async (emoji: CustomEmoji) => {
-    if (!token) return;
+    if (!api.token) return;
     if (!confirm(t`Are you sure you want to delete ":${emoji.name}:"?`)) return;
 
     try {
-      apiClient.setToken(token);
-      await apiClient.delete(`/api/emojis/${emoji.id}`);
+      await api.delete(`/api/emojis/${emoji.id}`);
 
       addToast({
         type: "success",
@@ -573,8 +562,7 @@ export default function AdminEmojisPage() {
     if (emojis.length < totalEmojis) {
       setIsLoadingMore(true);
       try {
-        apiClient.setToken(token!);
-        const allResponse = await apiClient.get<EmojisResponse>(`/api/emojis?limit=${totalEmojis}`);
+        const allResponse = await api.get<EmojisResponse>(`/api/emojis?limit=${totalEmojis}`);
         const allEmojis = allResponse.emojis;
         setEmojis(allEmojis);
         // Apply filters and select all matching
@@ -619,7 +607,6 @@ export default function AdminEmojisPage() {
 
     setIsBulkDeleting(true);
     try {
-      apiClient.setToken(token!);
       const idsToDelete = Array.from(selectedEmojis);
       const BATCH_SIZE = 1000;
       let totalDeleted = 0;
@@ -628,7 +615,7 @@ export default function AdminEmojisPage() {
       // Process in batches of 1000
       for (let i = 0; i < idsToDelete.length; i += BATCH_SIZE) {
         const batch = idsToDelete.slice(i, i + BATCH_SIZE);
-        const result = await apiClient.post<{
+        const result = await api.post<{
           success: number;
           notFound: number;
           details: { deleted: string[]; notFound: string[] };
@@ -665,7 +652,6 @@ export default function AdminEmojisPage() {
 
     setIsBulkUpdating(true);
     try {
-      apiClient.setToken(token!);
       const idsToUpdate = Array.from(selectedEmojis);
       const BATCH_SIZE = 1000;
       let totalUpdated = 0;
@@ -674,7 +660,7 @@ export default function AdminEmojisPage() {
       // Process in batches of 1000
       for (let i = 0; i < idsToUpdate.length; i += BATCH_SIZE) {
         const batch = idsToUpdate.slice(i, i + BATCH_SIZE);
-        const result = await apiClient.post<{
+        const result = await api.post<{
           success: number;
           notFound: number;
           details: { updated: string[]; notFound: string[] };

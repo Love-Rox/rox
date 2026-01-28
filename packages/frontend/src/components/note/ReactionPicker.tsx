@@ -107,6 +107,12 @@ export interface ReactionButtonProps {
   isDisabled?: boolean;
 }
 
+/**
+ * Reaction button component with emoji picker popover.
+ *
+ * Displays a heart icon button that opens an emoji picker for adding
+ * reactions to notes.
+ */
 export function ReactionButton({
   onReactionSelect,
   selectedReactions: _selectedReactions = [],

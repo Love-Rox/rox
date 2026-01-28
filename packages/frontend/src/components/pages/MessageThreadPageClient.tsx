@@ -9,7 +9,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { Send, Loader2, MessageCircle } from "lucide-react";
 import { Layout } from "../layout/Layout";
 import { PageHeader } from "../ui/PageHeader";
@@ -20,8 +20,9 @@ import { MfmRenderer } from "../mfm/MfmRenderer";
 import { UserDisplayName } from "../user/UserDisplayName";
 import { useDirectMessageThread } from "../../hooks/useDirectMessages";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { currentUserAtom } from "../../lib/atoms/auth";
 import { addToastAtom } from "../../lib/atoms/toast";
+import { useApi } from "../../hooks/useApi";
 import { apiClient } from "../../lib/api/client";
 import { notesApi } from "../../lib/api/notes";
 import { usersApi, type User } from "../../lib/api/users";
@@ -118,7 +119,7 @@ function MessageComposer({
   currentUser: { id: string; username: string; name?: string | null; avatarUrl?: string | null };
   onMessageSent: (message: Note) => void;
 }) {
-  const token = useAtomValue(tokenAtom);
+  const { token, isAuthenticated } = useApi();
   const [, addToast] = useAtom(addToastAtom);
   const [text, setText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -130,8 +131,8 @@ function MessageComposer({
 
     setIsSubmitting(true);
     try {
-      if (token) {
-        apiClient.setToken(token);
+      if (isAuthenticated) {
+        apiClient.setToken(token!);
       }
       const newNote = await notesApi.createNote({
         text: text.trim(),
@@ -223,9 +224,19 @@ function MessageComposer({
   );
 }
 
+/**
+ * Message thread page client component.
+ *
+ * Displays a direct message conversation with a specific user.
+ * Features include:
+ * - Real-time message polling (every 5 seconds)
+ * - Infinite scroll for loading older messages
+ * - Chat-style message bubbles with avatars
+ * - Message composer with auto-resize and character limit
+ */
 export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const token = useAtomValue(tokenAtom);
+  const { token, isAuthenticated } = useApi();
   const [isLoading, setIsLoading] = useState(true);
   const [partner, setPartner] = useState<User | null>(null);
   const [partnerError, setPartnerError] = useState<string | null>(null);
@@ -239,14 +250,14 @@ export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
   // Restore user session on mount
   useEffect(() => {
     const restoreSession = async () => {
-      if (!token) {
+      if (!isAuthenticated) {
         window.location.href = "/login";
         return;
       }
 
       if (!currentUser) {
         try {
-          apiClient.setToken(token);
+          apiClient.setToken(token!);
           const response = await apiClient.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
           setIsLoading(false);
@@ -260,7 +271,7 @@ export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
       }
     };
     restoreSession();
-  }, [token, currentUser, setCurrentUser]);
+  }, [isAuthenticated, token, currentUser, setCurrentUser]);
 
   // Fetch partner info
   useEffect(() => {
