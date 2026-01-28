@@ -50,6 +50,7 @@ import listsRoute from "./routes/lists.js";
 import deckRoute from "./routes/deck.js";
 import mastodonRoute from "./routes/mastodon.js";
 import wsRoute, { websocket } from "./routes/ws.js";
+import pluginsRoute from "./routes/plugins.js";
 import packageJson from "../../../package.json";
 import { ReceivedActivitiesCleanupService } from "./services/ReceivedActivitiesCleanupService.js";
 import { RemoteInstanceRefreshService } from "./services/RemoteInstanceRefreshService.js";
@@ -57,8 +58,14 @@ import { ScheduledNotePublisher } from "./services/ScheduledNotePublisher.js";
 import { ScheduledNoteService } from "./services/ScheduledNoteService.js";
 import { NoteService } from "./services/NoteService.js";
 import { getContainer } from "./di/container.js";
+import { initializePluginSystem, type PluginSystem } from "./plugins/init.js";
+import { getDatabase } from "./db/index.js";
 
 const app = new Hono();
+
+// Initialize plugin system (early, before routes)
+let pluginSystem: PluginSystem | null = null;
+const pluginsEnabled = process.env.PLUGINS_ENABLED !== "false";
 
 // Global middleware
 app.use("*", metricsMiddleware());
@@ -67,6 +74,14 @@ app.use("*", errorHandler);
 app.use("*", securityHeaders());
 app.use("*", cors());
 app.use("*", diMiddleware());
+
+// Plugin loader middleware (must be after diMiddleware, before routes)
+app.use("*", async (c, next) => {
+  if (pluginSystem) {
+    c.set("pluginLoader", pluginSystem.loader);
+  }
+  await next();
+});
 
 // Health check and metrics routes
 app.route("/health", healthRoute);
@@ -106,6 +121,7 @@ app.route("/api/mentions", mentionsRoute);
 app.route("/api/direct", directRoute);
 app.route("/api/users/lists", listsRoute);
 app.route("/api/deck", deckRoute);
+app.route("/api/plugins", pluginsRoute);
 
 // Mastodon compatible API
 app.route("/api/v1", mastodonRoute);
@@ -184,6 +200,29 @@ const scheduledNotePublisher = new ScheduledNotePublisher(scheduledNoteService, 
 });
 scheduledNotePublisher.start();
 
+// Initialize plugin system synchronously to avoid race conditions
+if (pluginsEnabled) {
+  try {
+    pluginSystem = await initializePluginSystem({
+      app,
+      eventBus: container.eventBus,
+      db: getDatabase(),
+      baseUrl: process.env.URL || "http://localhost:3000",
+      instanceName: process.env.INSTANCE_NAME || "Rox",
+      pluginsDir: process.env.PLUGINS_DIR || "./plugins",
+      enabled: pluginsEnabled,
+    });
+    if (pluginSystem) {
+      logger.info(
+        { plugins: pluginSystem.loader.getLoadedPlugins().length },
+        "Plugin system initialized",
+      );
+    }
+  } catch (error) {
+    logger.error({ err: error }, "Failed to initialize plugin system");
+  }
+}
+
 // Print startup banner (plain text for systemd/console compatibility)
 const env = process.env.NODE_ENV || "development";
 const queueMode = container.activityDeliveryQueue.isQueueEnabled() ? "redis" : "sync";
@@ -199,6 +238,7 @@ console.log(`Database:     ${process.env.DB_TYPE || "postgres"}`);
 console.log(`Storage:      ${process.env.STORAGE_TYPE || "local"}`);
 console.log(`Queue:        ${queueMode}`);
 console.log(`Cache:        ${cacheMode}`);
+console.log(`Plugins:      ${pluginsEnabled ? "enabled" : "disabled"}`);
 console.log(`System:       @system (server account)`);
 console.log("══════════════════════════════════════════════════");
 
@@ -229,6 +269,12 @@ async function gracefulShutdown(signal: string): Promise<void> {
 
     logger.info("Stopping scheduled note publisher");
     scheduledNotePublisher.stop();
+
+    // Shutdown plugin system
+    if (pluginSystem) {
+      logger.info("Shutting down plugin system");
+      await pluginSystem.shutdown();
+    }
 
     // Shutdown activity delivery queue (drains pending jobs)
     logger.info("Shutting down activity delivery queue");
