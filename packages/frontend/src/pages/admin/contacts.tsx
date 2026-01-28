@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { currentUserAtom } from "../../lib/atoms/auth";
 import { useApi } from "../../hooks/useApi";
+import { apiClient } from "../../lib/api/client";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -112,6 +113,7 @@ export default function AdminContactsPage() {
     setError(null);
 
     try {
+      apiClient.setToken(api.token);
       const params: any = { limit, offset };
       if (statusFilter !== "all") {
         params.status = statusFilter;
@@ -135,7 +137,7 @@ export default function AdminContactsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [api, statusFilter, offset, limit]);
+  }, [api.token, statusFilter, offset, limit]);
 
   const loadThreadDetail = useCallback(
     async (threadId: string) => {
@@ -143,6 +145,7 @@ export default function AdminContactsPage() {
 
       setIsLoadingDetail(true);
       try {
+        apiClient.setToken(api.token);
         const response = await getContactThreadAdmin(threadId);
         setSelectedThread(response.thread);
         setMessages(response.messages);
@@ -156,7 +159,7 @@ export default function AdminContactsPage() {
         setIsLoadingDetail(false);
       }
     },
-    [api, addToast],
+    [api.token, addToast],
   );
 
   useEffect(() => {
@@ -173,6 +176,7 @@ export default function AdminContactsPage() {
 
     setIsSending(true);
     try {
+      apiClient.setToken(api.token);
       const newMessage = await replyToContactThread(selectedThread.id, replyText.trim());
       setMessages((prev) => [
         ...prev,
@@ -201,6 +205,7 @@ export default function AdminContactsPage() {
     if (!selectedThread || !api.token) return;
 
     try {
+      apiClient.setToken(api.token);
       await updateContactThreadStatus(selectedThread.id, status);
       setSelectedThread((prev) => (prev ? { ...prev, status: status as any } : null));
       addToast({ type: "success", message: "Status updated" });
@@ -214,6 +219,7 @@ export default function AdminContactsPage() {
     if (!selectedThread || !api.token) return;
 
     try {
+      apiClient.setToken(api.token);
       await updateContactThreadPriority(selectedThread.id, priority);
       setSelectedThread((prev) => (prev ? { ...prev, priority } : null));
       addToast({ type: "success", message: "Priority updated" });
@@ -227,6 +233,7 @@ export default function AdminContactsPage() {
     if (!selectedThread || !api.token) return;
 
     try {
+      apiClient.setToken(api.token);
       await updateContactThreadNotes(selectedThread.id, internalNotes);
       addToast({ type: "success", message: "Notes saved" });
     } catch (err: any) {

@@ -119,7 +119,7 @@ function MessageComposer({
   currentUser: { id: string; username: string; name?: string | null; avatarUrl?: string | null };
   onMessageSent: (message: Note) => void;
 }) {
-  const { token, isAuthenticated } = useApi();
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
   const [text, setText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -131,8 +131,8 @@ function MessageComposer({
 
     setIsSubmitting(true);
     try {
-      if (isAuthenticated) {
-        apiClient.setToken(token!);
+      if (api.isAuthenticated) {
+        apiClient.setToken(api.token!);
       }
       const newNote = await notesApi.createNote({
         text: text.trim(),
@@ -236,7 +236,7 @@ function MessageComposer({
  */
 export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const { token, isAuthenticated } = useApi();
+  const api = useApi();
   const [isLoading, setIsLoading] = useState(true);
   const [partner, setPartner] = useState<User | null>(null);
   const [partnerError, setPartnerError] = useState<string | null>(null);
@@ -250,15 +250,14 @@ export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
   // Restore user session on mount
   useEffect(() => {
     const restoreSession = async () => {
-      if (!isAuthenticated) {
+      if (!api.isAuthenticated) {
         window.location.href = "/login";
         return;
       }
 
       if (!currentUser) {
         try {
-          apiClient.setToken(token!);
-          const response = await apiClient.get<{ user: any }>("/api/auth/session");
+          const response = await api.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
           setIsLoading(false);
         } catch (error) {
@@ -271,7 +270,7 @@ export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
       }
     };
     restoreSession();
-  }, [isAuthenticated, token, currentUser, setCurrentUser]);
+  }, [api, currentUser, setCurrentUser]);
 
   // Fetch partner info
   useEffect(() => {

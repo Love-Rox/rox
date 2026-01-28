@@ -42,21 +42,20 @@ export function NoteComposerSchedulePicker({
 }: NoteComposerSchedulePickerProps) {
   return (
     <div className="relative">
-      <button
-        onClick={onToggle}
-        disabled={isDisabled}
+      <Button
+        variant="ghost"
+        onPress={onToggle}
+        isDisabled={isDisabled}
         className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 ${
           isOpen || scheduledAt
             ? "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
             : "text-gray-600 dark:text-gray-400"
         }`}
-        type="button"
-        title={t`Schedule post`}
         aria-label={t`Schedule post`}
         aria-expanded={isOpen}
       >
         <Clock className="w-5 h-5" />
-      </button>
+      </Button>
 
       {/* Schedule picker dropdown */}
       {isOpen && (

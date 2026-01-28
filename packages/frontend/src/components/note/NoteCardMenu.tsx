@@ -148,9 +148,12 @@ export function NoteCardMenu({
         <div className="absolute right-0 top-full mt-1 w-48 rounded-lg border border-(--border-color) bg-(--bg-primary) shadow-lg z-10">
           {/* Share submenu trigger */}
           <div className="relative">
-            <button
-              onClick={() => setShowShareMenu(!showShareMenu)}
+            <Button
+              variant="ghost"
+              onPress={() => setShowShareMenu(!showShareMenu)}
               className="flex items-center justify-between gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-(--bg-secondary) rounded-t-lg"
+              aria-expanded={showShareMenu}
+              aria-haspopup="menu"
             >
               <span className="flex items-center gap-2">
                 <Share className="w-4 h-4" />
@@ -161,32 +164,38 @@ export function NoteCardMenu({
               >
                 ›
               </span>
-            </button>
+            </Button>
             {/* Share submenu */}
             {showShareMenu && (
-              <div className="border-t border-(--border-color)">
-                <button
-                  onClick={handleCopyLink}
+              <div className="border-t border-(--border-color)" role="menu">
+                <Button
+                  variant="ghost"
+                  onPress={handleCopyLink}
                   className="flex items-center gap-2 w-full px-3 py-2 pl-7 text-sm text-gray-700 dark:text-gray-300 hover:bg-(--bg-secondary)"
+                  aria-label={t`Copy link`}
                 >
                   <Copy className="w-4 h-4" />
                   <Trans>Copy link</Trans>
-                </button>
-                <button
-                  onClick={handleOpenInNewTab}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onPress={handleOpenInNewTab}
                   className="flex items-center gap-2 w-full px-3 py-2 pl-7 text-sm text-gray-700 dark:text-gray-300 hover:bg-(--bg-secondary)"
+                  aria-label={t`Open in new tab`}
                 >
                   <ExternalLink className="w-4 h-4" />
                   <Trans>Open in new tab</Trans>
-                </button>
+                </Button>
                 {canUseNativeShare && (
-                  <button
-                    onClick={handleNativeShare}
+                  <Button
+                    variant="ghost"
+                    onPress={handleNativeShare}
                     className="flex items-center gap-2 w-full px-3 py-2 pl-7 text-sm text-gray-700 dark:text-gray-300 hover:bg-(--bg-secondary)"
+                    aria-label={t`Share via`}
                   >
                     <Share className="w-4 h-4" />
                     <Trans>Share via...</Trans>
-                  </button>
+                  </Button>
                 )}
               </div>
             )}
@@ -197,32 +206,36 @@ export function NoteCardMenu({
 
           {/* Delete option (own notes) */}
           {isLoggedIn && isOwnNote && (
-            <button
-              onClick={() => {
+            <Button
+              variant="ghost"
+              onPress={() => {
                 setShowMoreMenu(false);
                 setShowShareMenu(false);
                 onDeleteRequest();
               }}
               className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-(--bg-secondary) rounded-b-lg"
+              aria-label={t`Delete note`}
             >
               <Trash2 className="w-4 h-4" />
               <Trans>Delete</Trans>
-            </button>
+            </Button>
           )}
 
           {/* Report option (other's notes) */}
           {isLoggedIn && !isOwnNote && (
-            <button
-              onClick={() => {
+            <Button
+              variant="ghost"
+              onPress={() => {
                 setShowMoreMenu(false);
                 setShowShareMenu(false);
                 onReportRequest();
               }}
               className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-(--bg-secondary) rounded-b-lg"
+              aria-label={t`Report note`}
             >
               <Flag className="w-4 h-4" />
               <Trans>Report</Trans>
-            </button>
+            </Button>
           )}
         </div>
       )}

@@ -110,7 +110,7 @@ export interface ReactionButtonProps {
 /**
  * Reaction button component with emoji picker popover.
  *
- * Displays a heart icon button that opens an emoji picker for adding
+ * Displays a smile-plus icon button that opens an emoji picker for adding
  * reactions to notes.
  */
 export function ReactionButton({

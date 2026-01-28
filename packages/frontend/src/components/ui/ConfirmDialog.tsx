@@ -1,6 +1,12 @@
 "use client";
 
 import { Trans } from "@lingui/react/macro";
+import {
+  Dialog as AriaDialog,
+  Modal,
+  ModalOverlay,
+  Heading,
+} from "react-aria-components";
 import { Button } from "./Button";
 
 /**
@@ -30,7 +36,13 @@ export interface ConfirmDialogProps {
 }
 
 /**
- * A reusable confirmation dialog component
+ * A reusable confirmation dialog component with React Aria accessibility support.
+ *
+ * Features:
+ * - WAI-ARIA compliant modal dialog
+ * - Focus trapping within the dialog
+ * - Keyboard navigation (Escape to close)
+ * - Screen reader announcements
  *
  * @example
  * ```tsx
@@ -62,25 +74,32 @@ export function ConfirmDialog({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl p-6">
-        <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-gray-100">
-          {title}
-        </h2>
-        <p className="mb-6 text-gray-700 dark:text-gray-300">{message}</p>
-        <div className="flex justify-end gap-2">
-          <Button variant="secondary" onPress={onClose} isDisabled={isLoading}>
-            {cancelText}
-          </Button>
-          <Button
-            variant={confirmVariant}
-            onPress={onConfirm}
-            isDisabled={isLoading}
-          >
-            {isLoading && loadingText ? loadingText : confirmText}
-          </Button>
-        </div>
-      </div>
-    </div>
+    <ModalOverlay
+      isOpen={isOpen}
+      onOpenChange={(open) => !open && onClose()}
+      isDismissable={!isLoading}
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+    >
+      <Modal className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl">
+        <AriaDialog className="p-6 outline-none" role="alertdialog">
+          <Heading slot="title" className="mb-4 text-xl font-bold text-gray-900 dark:text-gray-100">
+            {title}
+          </Heading>
+          <p className="mb-6 text-gray-700 dark:text-gray-300">{message}</p>
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onPress={onClose} isDisabled={isLoading}>
+              {cancelText}
+            </Button>
+            <Button
+              variant={confirmVariant}
+              onPress={onConfirm}
+              isDisabled={isLoading}
+            >
+              {isLoading && loadingText ? loadingText : confirmText}
+            </Button>
+          </div>
+        </AriaDialog>
+      </Modal>
+    </ModalOverlay>
   );
 }

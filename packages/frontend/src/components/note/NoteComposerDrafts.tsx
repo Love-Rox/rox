@@ -3,6 +3,7 @@
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { FileText, Trash2 } from "lucide-react";
+import { Button } from "../ui/Button";
 import type { DraftData } from "../../hooks/useDraft";
 
 /**
@@ -42,16 +43,15 @@ export function NoteComposerDrafts({
 }: NoteComposerDraftsProps) {
   return (
     <div className="relative">
-      <button
-        onClick={onToggle}
-        disabled={isDisabled}
+      <Button
+        variant="ghost"
+        onPress={onToggle}
+        isDisabled={isDisabled}
         className={`p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 ${
           isOpen
             ? "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
             : "text-gray-600 dark:text-gray-400"
         }`}
-        type="button"
-        title={t`Drafts`}
         aria-label={t`Drafts`}
         aria-expanded={isOpen}
       >
@@ -61,7 +61,7 @@ export function NoteComposerDrafts({
             {drafts.length}
           </span>
         )}
-      </button>
+      </Button>
 
       {/* Drafts dropdown */}
       {isOpen && (
@@ -70,13 +70,14 @@ export function NoteComposerDrafts({
             <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
               <Trans>Drafts</Trans> ({drafts.length})
             </span>
-            <button
-              onClick={onNewDraft}
+            <Button
+              variant="ghost"
+              size="sm"
+              onPress={onNewDraft}
               className="text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-              type="button"
             >
               <Trans>New</Trans>
-            </button>
+            </Button>
           </div>
           <div className="max-h-60 overflow-y-auto">
             {drafts.length === 0 ? (
@@ -105,14 +106,15 @@ export function NoteComposerDrafts({
                       {new Date(draft.timestamp).toLocaleString()}
                     </p>
                   </div>
-                  <button
-                    onClick={(e) => onDeleteDraft(draft.id, e)}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onPress={(e) => onDeleteDraft(draft.id, e as unknown as React.MouseEvent)}
                     className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-400 hover:text-red-500"
-                    type="button"
                     aria-label={t`Delete draft`}
                   >
                     <Trash2 className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               ))
             )}
