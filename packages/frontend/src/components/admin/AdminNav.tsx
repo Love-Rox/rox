@@ -6,7 +6,7 @@
  * Provides navigation between admin pages.
  */
 
-import { Settings, Users, UserCog, Ticket, Shield, AlertTriangle, Smile, HardDrive, Globe, Activity, MessageCircle, Ghost } from "lucide-react";
+import { Settings, Users, UserCog, Ticket, Shield, AlertTriangle, Smile, HardDrive, Globe, Activity, MessageCircle, Ghost, Plug } from "lucide-react";
 
 /**
  * Admin navigation items
@@ -24,6 +24,7 @@ const ADMIN_NAV_ITEMS = [
   { href: "/admin/gone-users", icon: Ghost, label: "Gone Users" },
   { href: "/admin/reports", icon: AlertTriangle, label: "Reports" },
   { href: "/admin/contacts", icon: MessageCircle, label: "Contacts" },
+  { href: "/admin/plugins", icon: Plug, label: "Plugins" },
 ];
 
 interface AdminNavProps {
