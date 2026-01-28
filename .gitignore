@@ -41,7 +41,10 @@ bun.lockb
 .DS_Store
 
 # AI assistant directories
-.claude/
+.claude/*
+!.claude/instruction.md
+!.claude/rules/
+!.claude/workflows/
 *.suo
 *.ntvs*
 *.njsproj
