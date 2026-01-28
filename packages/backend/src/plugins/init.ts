@@ -150,7 +150,7 @@ export async function initializePluginSystem(
   for (const { pluginId, middleware } of pluginsWithMiddleware) {
     try {
       for (const mw of middleware) {
-        app.use("*", mw as never);
+        app.use("*", mw);
       }
       pluginLogger.debug({ pluginId, count: middleware.length }, "Registered plugin middleware");
     } catch (error) {
@@ -227,6 +227,8 @@ export function registerPluginActivityPubHandlers(
         activity: unknown,
         context: { c: unknown; recipientId: string | null; baseUrl: string },
       ): Promise<{ success: boolean; message?: string; error?: Error }> {
+        const errors: Array<{ pluginId: string; error: string }> = [];
+
         for (const { pluginId, handler } of pluginHandlers) {
           // Skip disabled plugins
           if (!loader.getPlugin(pluginId)?.enabled) {
@@ -257,8 +259,17 @@ export function registerPluginActivityPubHandlers(
               { pluginId, activityType, error: message },
               "Plugin ActivityPub handler error",
             );
+            errors.push({ pluginId, error: message });
             // Continue with other handlers even if one fails
           }
+        }
+
+        // Return success only if no plugin handlers failed
+        if (errors.length > 0) {
+          return {
+            success: false,
+            message: `${errors.length} plugin handler(s) failed: ${errors.map((e) => `${e.pluginId}: ${e.error}`).join("; ")}`,
+          };
         }
         return { success: true };
       },

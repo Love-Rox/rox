@@ -200,28 +200,27 @@ const scheduledNotePublisher = new ScheduledNotePublisher(scheduledNoteService, 
 });
 scheduledNotePublisher.start();
 
+// Initialize plugin system synchronously to avoid race conditions
 if (pluginsEnabled) {
-  initializePluginSystem({
-    app,
-    eventBus: container.eventBus,
-    db: getDatabase(),
-    baseUrl: process.env.URL || "http://localhost:3000",
-    instanceName: process.env.INSTANCE_NAME || "Rox",
-    pluginsDir: process.env.PLUGINS_DIR || "./plugins",
-    enabled: pluginsEnabled,
-  })
-    .then((system) => {
-      pluginSystem = system;
-      if (system) {
-        logger.info(
-          { plugins: system.loader.getLoadedPlugins().length },
-          "Plugin system initialized",
-        );
-      }
-    })
-    .catch((error) => {
-      logger.error({ err: error }, "Failed to initialize plugin system");
+  try {
+    pluginSystem = await initializePluginSystem({
+      app,
+      eventBus: container.eventBus,
+      db: getDatabase(),
+      baseUrl: process.env.URL || "http://localhost:3000",
+      instanceName: process.env.INSTANCE_NAME || "Rox",
+      pluginsDir: process.env.PLUGINS_DIR || "./plugins",
+      enabled: pluginsEnabled,
     });
+    if (pluginSystem) {
+      logger.info(
+        { plugins: pluginSystem.loader.getLoadedPlugins().length },
+        "Plugin system initialized",
+      );
+    }
+  } catch (error) {
+    logger.error({ err: error }, "Failed to initialize plugin system");
+  }
 }
 
 // Print startup banner (plain text for systemd/console compatibility)

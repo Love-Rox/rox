@@ -12,6 +12,7 @@ import { join, resolve } from "node:path";
 import type { Hono } from "hono";
 import { EventBus } from "../lib/events.js";
 import { logger as rootLogger } from "../lib/logger.js";
+import type { MiddlewareHandler } from "hono";
 import type {
   RoxPlugin,
   PluginManifest,
@@ -382,8 +383,8 @@ export class PluginLoader {
   /**
    * Get plugins that provide middleware
    */
-  getPluginsWithMiddleware(): Array<{ pluginId: string; middleware: unknown[] }> {
-    const result: Array<{ pluginId: string; middleware: unknown[] }> = [];
+  getPluginsWithMiddleware(): Array<{ pluginId: string; middleware: MiddlewareHandler[] }> {
+    const result: Array<{ pluginId: string; middleware: MiddlewareHandler[] }> = [];
 
     for (const [pluginId, loaded] of this.plugins) {
       if (loaded.enabled && loaded.plugin.middleware && loaded.plugin.middleware.length > 0) {
