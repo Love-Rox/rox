@@ -8,9 +8,9 @@
  */
 
 import { eq, and } from "drizzle-orm";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { pluginConfigs } from "../db/schema/pg.js";
 import type { IPluginConfigStorage } from "./loader.js";
+import type { Database } from "../db/index.js";
 
 /**
  * Database-backed plugin configuration storage
@@ -23,7 +23,7 @@ import type { IPluginConfigStorage } from "./loader.js";
  * ```
  */
 export class DatabasePluginConfigStorage implements IPluginConfigStorage {
-  constructor(private readonly db: PostgresJsDatabase) {}
+  constructor(private readonly db: Database) {}
 
   /**
    * Get a configuration value for a plugin
@@ -81,53 +81,5 @@ export class DatabasePluginConfigStorage implements IPluginConfigStorage {
    */
   async deleteAll(pluginId: string): Promise<void> {
     await this.db.delete(pluginConfigs).where(eq(pluginConfigs.pluginId, pluginId));
-  }
-
-  /**
-   * Get all configuration values for a plugin
-   */
-  async getAll(pluginId: string): Promise<Record<string, unknown>> {
-    const result = await this.db
-      .select({ key: pluginConfigs.key, value: pluginConfigs.value })
-      .from(pluginConfigs)
-      .where(eq(pluginConfigs.pluginId, pluginId));
-
-    const config: Record<string, unknown> = {};
-    for (const row of result) {
-      config[row.key] = row.value;
-    }
-    return config;
-  }
-
-  /**
-   * Set multiple configuration values for a plugin
-   */
-  async setMultiple(pluginId: string, values: Record<string, unknown>): Promise<void> {
-    const entries = Object.entries(values);
-    if (entries.length === 0) return;
-
-    const inserts = entries.map(([key, value]) => ({
-      id: `${pluginId}:${key}`,
-      pluginId,
-      key,
-      value,
-      updatedAt: new Date(),
-    }));
-
-    // Use a transaction for atomicity
-    await this.db.transaction(async (tx) => {
-      for (const insert of inserts) {
-        await tx
-          .insert(pluginConfigs)
-          .values(insert)
-          .onConflictDoUpdate({
-            target: pluginConfigs.id,
-            set: {
-              value: insert.value,
-              updatedAt: insert.updatedAt,
-            },
-          });
-      }
-    });
   }
 }

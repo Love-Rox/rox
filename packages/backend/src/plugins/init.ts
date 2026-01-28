@@ -7,10 +7,10 @@
  */
 
 import { Hono } from "hono";
-import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { PluginLoader, InMemoryPluginConfigStorage, type IPluginConfigStorage } from "./loader.js";
 import { DatabasePluginConfigStorage } from "./config-storage.js";
 import type { EventBus } from "../lib/events.js";
+import type { Database } from "../db/index.js";
 import { logger } from "../lib/logger.js";
 import type { PluginActivity } from "./types.js";
 import packageJson from "../../../../package.json";
@@ -26,7 +26,7 @@ export interface PluginSystemOptions {
   /** Event bus instance */
   eventBus: EventBus;
   /** Database connection (optional, for persistent config storage) */
-  db?: PostgresJsDatabase;
+  db?: Database;
   /** Directory containing plugins */
   pluginsDir?: string;
   /** Base URL of the instance */

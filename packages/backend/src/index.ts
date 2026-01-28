@@ -59,8 +59,13 @@ import { ScheduledNoteService } from "./services/ScheduledNoteService.js";
 import { NoteService } from "./services/NoteService.js";
 import { getContainer } from "./di/container.js";
 import { initializePluginSystem, type PluginSystem } from "./plugins/init.js";
+import { getDatabase } from "./db/index.js";
 
 const app = new Hono();
+
+// Initialize plugin system (early, before routes)
+let pluginSystem: PluginSystem | null = null;
+const pluginsEnabled = process.env.PLUGINS_ENABLED !== "false";
 
 // Global middleware
 app.use("*", metricsMiddleware());
@@ -69,6 +74,14 @@ app.use("*", errorHandler);
 app.use("*", securityHeaders());
 app.use("*", cors());
 app.use("*", diMiddleware());
+
+// Plugin loader middleware (must be after diMiddleware, before routes)
+app.use("*", async (c, next) => {
+  if (pluginSystem) {
+    c.set("pluginLoader", pluginSystem.loader);
+  }
+  await next();
+});
 
 // Health check and metrics routes
 app.route("/health", healthRoute);
@@ -187,22 +200,11 @@ const scheduledNotePublisher = new ScheduledNotePublisher(scheduledNoteService, 
 });
 scheduledNotePublisher.start();
 
-// Initialize plugin system
-let pluginSystem: PluginSystem | null = null;
-const pluginsEnabled = process.env.PLUGINS_ENABLED !== "false";
-
-// Middleware to add plugin loader to context (must be after diMiddleware)
-app.use("*", async (c, next) => {
-  if (pluginSystem) {
-    c.set("pluginLoader", pluginSystem.loader);
-  }
-  await next();
-});
-
 if (pluginsEnabled) {
   initializePluginSystem({
     app,
     eventBus: container.eventBus,
+    db: getDatabase(),
     baseUrl: process.env.URL || "http://localhost:3000",
     instanceName: process.env.INSTANCE_NAME || "Rox",
     pluginsDir: process.env.PLUGINS_DIR || "./plugins",
