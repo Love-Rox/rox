@@ -57,6 +57,7 @@ import { ScheduledNotePublisher } from "./services/ScheduledNotePublisher.js";
 import { ScheduledNoteService } from "./services/ScheduledNoteService.js";
 import { NoteService } from "./services/NoteService.js";
 import { getContainer } from "./di/container.js";
+import { initializePluginSystem, type PluginSystem } from "./plugins/init.js";
 
 const app = new Hono();
 
@@ -184,6 +185,33 @@ const scheduledNotePublisher = new ScheduledNotePublisher(scheduledNoteService, 
 });
 scheduledNotePublisher.start();
 
+// Initialize plugin system
+let pluginSystem: PluginSystem | null = null;
+const pluginsEnabled = process.env.PLUGINS_ENABLED !== "false";
+
+if (pluginsEnabled) {
+  initializePluginSystem({
+    app,
+    eventBus: container.eventBus,
+    baseUrl: process.env.URL || "http://localhost:3000",
+    instanceName: process.env.INSTANCE_NAME || "Rox",
+    pluginsDir: process.env.PLUGINS_DIR || "./plugins",
+    enabled: pluginsEnabled,
+  })
+    .then((system) => {
+      pluginSystem = system;
+      if (system) {
+        logger.info(
+          { plugins: system.loader.getLoadedPlugins().length },
+          "Plugin system initialized",
+        );
+      }
+    })
+    .catch((error) => {
+      logger.error({ err: error }, "Failed to initialize plugin system");
+    });
+}
+
 // Print startup banner (plain text for systemd/console compatibility)
 const env = process.env.NODE_ENV || "development";
 const queueMode = container.activityDeliveryQueue.isQueueEnabled() ? "redis" : "sync";
@@ -199,6 +227,7 @@ console.log(`Database:     ${process.env.DB_TYPE || "postgres"}`);
 console.log(`Storage:      ${process.env.STORAGE_TYPE || "local"}`);
 console.log(`Queue:        ${queueMode}`);
 console.log(`Cache:        ${cacheMode}`);
+console.log(`Plugins:      ${pluginsEnabled ? "enabled" : "disabled"}`);
 console.log(`System:       @system (server account)`);
 console.log("══════════════════════════════════════════════════");
 
@@ -229,6 +258,12 @@ async function gracefulShutdown(signal: string): Promise<void> {
 
     logger.info("Stopping scheduled note publisher");
     scheduledNotePublisher.stop();
+
+    // Shutdown plugin system
+    if (pluginSystem) {
+      logger.info("Shutting down plugin system");
+      await pluginSystem.shutdown();
+    }
 
     // Shutdown activity delivery queue (drains pending jobs)
     logger.info("Shutting down activity delivery queue");
