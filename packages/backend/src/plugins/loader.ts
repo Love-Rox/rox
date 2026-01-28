@@ -436,14 +436,31 @@ export class PluginLoader {
     // Try plugin.json first, then package.json
     const manifestPaths = [join(pluginPath, "plugin.json"), join(pluginPath, "package.json")];
 
-    for (const path of manifestPaths) {
+    for (const manifestPath of manifestPaths) {
       try {
-        const content = await readFile(path, "utf-8");
+        const content = await readFile(manifestPath, "utf-8");
         const json = JSON.parse(content);
 
         // Validate required fields
         if (!json.id || !json.name || !json.version) {
           throw new Error("Manifest missing required fields: id, name, version");
+        }
+
+        // Handle dependencies based on manifest type
+        // - plugin.json: accepts array of plugin IDs
+        // - package.json: only accepts array-form dependencies (ignore npm object-form)
+        const isPluginJson = manifestPath.endsWith("plugin.json");
+        let dependencies: string[] | undefined;
+
+        if (json.dependencies) {
+          if (Array.isArray(json.dependencies)) {
+            // Array form is accepted for both plugin.json and package.json
+            dependencies = json.dependencies;
+          } else if (isPluginJson) {
+            // Object form only accepted for plugin.json (convert keys to array)
+            dependencies = Object.keys(json.dependencies);
+          }
+          // Object form in package.json is ignored (npm packages, not plugin IDs)
         }
 
         return {
@@ -454,11 +471,7 @@ export class PluginLoader {
           author: json.author,
           homepage: json.homepage || json.repository,
           minRoxVersion: json.minRoxVersion,
-          dependencies: json.dependencies
-            ? Array.isArray(json.dependencies)
-              ? json.dependencies
-              : Object.keys(json.dependencies)
-            : undefined,
+          dependencies,
           permissions: json.permissions as PluginPermission[],
         };
       } catch {

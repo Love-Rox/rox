@@ -145,12 +145,18 @@ export async function initializePluginSystem(
   // Mount plugin routes on main app
   app.route("/api/x", pluginRoutes);
 
-  // Register plugin middleware
+  // Register plugin middleware with runtime enabled check
   const pluginsWithMiddleware = loader.getPluginsWithMiddleware();
   for (const { pluginId, middleware } of pluginsWithMiddleware) {
     try {
       for (const mw of middleware) {
-        app.use("*", mw);
+        // Wrap middleware with enabled check to skip when plugin is disabled
+        app.use("*", async (c, next) => {
+          if (!loader.getPlugin(pluginId)?.enabled) {
+            return next();
+          }
+          return mw(c, next);
+        });
       }
       pluginLogger.debug({ pluginId, count: middleware.length }, "Registered plugin middleware");
     } catch (error) {
