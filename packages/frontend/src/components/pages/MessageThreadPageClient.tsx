@@ -23,8 +23,6 @@ import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import { currentUserAtom } from "../../lib/atoms/auth";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { useApi } from "../../hooks/useApi";
-import { apiClient } from "../../lib/api/client";
-import { notesApi } from "../../lib/api/notes";
 import { usersApi, type User } from "../../lib/api/users";
 import type { Note } from "../../lib/types/note";
 import { NOTE_TEXT_MAX_LENGTH } from "shared";
@@ -131,10 +129,7 @@ function MessageComposer({
 
     setIsSubmitting(true);
     try {
-      if (api.isAuthenticated) {
-        apiClient.setToken(api.token!);
-      }
-      const newNote = await notesApi.createNote({
+      const newNote = await api.post<Note>("/api/notes/create", {
         text: text.trim(),
         visibility: "specified",
         visibleUserIds: [partnerId],

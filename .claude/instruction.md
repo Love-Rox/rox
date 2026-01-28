@@ -31,7 +31,7 @@ gh issue create --title "タイトル" --body "説明"
 gh issue view <番号>
 
 # PR管理
-gh pr create --base dev --title "feat: 説明" --body "Closes #番号"
+gh pr create --base main --title "feat: 説明" --body "Closes #番号"
 gh pr checks
 gh pr view
 ```
@@ -39,7 +39,7 @@ gh pr view
 ## プロジェクト固有設定
 
 - デフォルトブランチ: main
-- 開発ブランチ: dev
+- PRターゲット: main
 - featureブランチプレフィックス: `feature/issue-{番号}-`
 
 ## ブランチ命名規則

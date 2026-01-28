@@ -311,8 +311,8 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
     }
   };
 
-  const handleDeleteDraft = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleDeleteDraft = (id: string) => {
+    // React Aria Button stops propagation by default
     deleteDraft(id);
     addToast({
       type: "info",

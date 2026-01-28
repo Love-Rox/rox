@@ -97,11 +97,6 @@ export interface ReactionButtonProps {
   onReactionSelect: (reaction: string) => void;
 
   /**
-   * Currently selected reactions (for highlighting in picker)
-   */
-  selectedReactions?: string[];
-
-  /**
    * Whether the button is disabled
    */
   isDisabled?: boolean;
@@ -115,7 +110,6 @@ export interface ReactionButtonProps {
  */
 export function ReactionButton({
   onReactionSelect,
-  selectedReactions: _selectedReactions = [],
   isDisabled = false,
 }: ReactionButtonProps) {
   return (

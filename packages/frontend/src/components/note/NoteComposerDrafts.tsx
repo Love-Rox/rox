@@ -23,7 +23,7 @@ export interface NoteComposerDraftsProps {
   /** Load a draft by ID */
   onLoadDraft: (id: string) => void;
   /** Delete a draft by ID */
-  onDeleteDraft: (id: string, e: React.MouseEvent) => void;
+  onDeleteDraft: (id: string) => void;
   /** Create a new draft */
   onNewDraft: () => void;
 }
@@ -109,7 +109,7 @@ export function NoteComposerDrafts({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onPress={(e) => onDeleteDraft(draft.id, e as unknown as React.MouseEvent)}
+                    onPress={() => onDeleteDraft(draft.id)}
                     className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-400 hover:text-red-500"
                     aria-label={t`Delete draft`}
                   >

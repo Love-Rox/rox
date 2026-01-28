@@ -630,7 +630,6 @@ function NoteCardComponent({
           {/* Reaction button - always shown, allows adding new reactions */}
           <ReactionButton
             onReactionSelect={handleReaction}
-            selectedReactions={myReactions}
             isDisabled={isReacting}
           />
           {localReactions && Object.keys(localReactions).length > 0 && (

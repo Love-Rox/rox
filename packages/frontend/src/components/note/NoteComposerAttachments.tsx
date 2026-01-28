@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
 import { X, HardDrive } from "lucide-react";
 import { t } from "@lingui/core/macro";
 import { Button } from "../ui/Button";
@@ -32,6 +33,19 @@ export function NoteComposerAttachments({
 }: NoteComposerAttachmentsProps) {
   const totalFileCount = files.length + driveFiles.length;
 
+  // Memoize object URLs to prevent recreation on every render
+  const filePreviews = useMemo(
+    () => files.map((file) => ({ file, url: URL.createObjectURL(file) })),
+    [files]
+  );
+
+  // Cleanup object URLs when component unmounts or files change
+  useEffect(() => {
+    return () => {
+      filePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
+    };
+  }, [filePreviews]);
+
   if (totalFileCount === 0) {
     return null;
   }
@@ -39,10 +53,10 @@ export function NoteComposerAttachments({
   return (
     <div className="grid grid-cols-2 gap-2">
       {/* New upload files */}
-      {files.map((file, index) => (
+      {filePreviews.map(({ url }, index) => (
         <div key={`new-${index}`} className="relative group">
           <img
-            src={URL.createObjectURL(file)}
+            src={url}
             alt={`Upload ${index + 1}`}
             className="w-full h-32 object-cover rounded-md"
           />
