@@ -93,8 +93,8 @@ function AccordionSection({
 
   return (
     <div className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
-      <button
-        onClick={onToggle}
+      <Button
+        onPress={onToggle}
         className="flex items-center justify-between w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
         aria-expanded={isExpanded}
         aria-controls={`emoji-section-${categoryKey}`}
@@ -107,20 +107,20 @@ function AccordionSection({
         <ChevronDown
           className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? "rotate-180" : ""}`}
         />
-      </button>
+      </Button>
       {isExpanded && (
         <div id={`emoji-section-${categoryKey}`} className="px-4 pb-3">
           <div className="grid grid-cols-8 gap-1">
             {displayedEmojis.map((emoji, index) => (
-              <button
+              <Button
                 key={`${emoji}-${index}`}
-                onClick={() => onEmojiClick(emoji)}
+                onPress={() => onEmojiClick(emoji)}
                 className="text-2xl p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                title={emoji}
+
                 aria-label={`Select ${emoji}`}
               >
                 {emoji}
-              </button>
+              </Button>
             ))}
           </div>
           {hasMore && (
@@ -176,8 +176,8 @@ function CustomAccordionSection({
 
   return (
     <div className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
-      <button
-        onClick={onToggle}
+      <Button
+        onPress={onToggle}
         className="flex items-center justify-between w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
         aria-expanded={isExpanded}
         aria-controls={`emoji-section-${categoryKey}`}
@@ -190,16 +190,16 @@ function CustomAccordionSection({
         <ChevronDown
           className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? "rotate-180" : ""}`}
         />
-      </button>
+      </Button>
       {isExpanded && (
         <div id={`emoji-section-${categoryKey}`} className="px-4 pb-3">
           <div className="grid grid-cols-8 gap-1">
             {displayedEmojis.map((emoji) => (
-              <button
+              <Button
                 key={emoji.id}
-                onClick={() => onEmojiClick(emoji)}
+                onPress={() => onEmojiClick(emoji)}
                 className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                title={`:${emoji.name}:`}
+
                 aria-label={`Select :${emoji.name}:`}
               >
                 <img
@@ -208,7 +208,7 @@ function CustomAccordionSection({
                   className="w-6 h-6 object-contain"
                   loading="lazy"
                 />
-              </button>
+              </Button>
             ))}
           </div>
           {hasMore && (
@@ -451,11 +451,11 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                           </h3>
                           <div className="grid grid-cols-8 gap-1">
                             {searchResults.customResults.slice(0, getVisibleCount("search-custom")).map((emoji) => (
-                              <button
+                              <Button
                                 key={emoji.id}
-                                onClick={() => handleCustomEmojiClick(emoji)}
+                                onPress={() => handleCustomEmojiClick(emoji)}
                                 className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                title={`:${emoji.name}:`}
+                
                                 aria-label={`Select :${emoji.name}:`}
                               >
                                 <img
@@ -464,7 +464,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                                   className="w-6 h-6 object-contain"
                                   loading="lazy"
                                 />
-                              </button>
+                              </Button>
                             ))}
                           </div>
                         </div>
@@ -479,15 +479,15 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                           </h3>
                           <div className="grid grid-cols-8 gap-1">
                             {searchResults.unicodeResults.slice(0, getVisibleCount("search-unicode")).map((emoji, index) => (
-                              <button
+                              <Button
                                 key={`${emoji}-${index}`}
-                                onClick={() => handleEmojiClick(emoji)}
+                                onPress={() => handleEmojiClick(emoji)}
                                 className="text-2xl p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                title={emoji}
+                
                                 aria-label={`Select ${emoji}`}
                               >
                                 {emoji}
-                              </button>
+                              </Button>
                             ))}
                           </div>
                         </div>

@@ -5,6 +5,7 @@ import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Clock } from "lucide-react";
 import { Button } from "../ui/Button";
+import { TextField } from "../ui/TextField";
 
 /**
  * Props for NoteComposerSchedulePicker component
@@ -42,11 +43,12 @@ export function NoteComposerSchedulePicker({
   onCancel,
 }: NoteComposerSchedulePickerProps) {
   // Compute min datetime in local timezone (datetime-local expects local time, not UTC)
+  // Recalculate when picker is opened to ensure the minimum time is always current
   const minDateTime = useMemo(() => {
     const date = new Date(Date.now() + 60000);
     date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
     return date.toISOString().slice(0, 16);
-  }, []);
+  }, [isOpen]);
 
   return (
     <div className="relative">
@@ -74,13 +76,13 @@ export function NoteComposerSchedulePicker({
             </span>
           </div>
           <div className="p-3 space-y-3">
-            <input
+            <TextField
               type="datetime-local"
               value={scheduledAt || ""}
-              onChange={(e) => onScheduledAtChange(e.target.value || null)}
+              onChange={(value) => onScheduledAtChange(value || null)}
               min={minDateTime}
               aria-label={t`Schedule date and time`}
-              className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full"
             />
             {scheduledAt && (
               <div className="text-xs text-gray-500 dark:text-gray-400">
