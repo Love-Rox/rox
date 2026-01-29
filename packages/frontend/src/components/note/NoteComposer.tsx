@@ -35,6 +35,7 @@ import { addToastAtom } from "../../lib/atoms/toast";
 import { notificationSoundAtom, notificationVolumeAtom } from "../../lib/atoms/uiSettings";
 import { notesApi } from "../../lib/api/notes";
 import { playPostSound } from "../../lib/utils/notificationSound";
+import { getModalContainer } from "../../lib/utils/modalContainer";
 import type { NoteVisibility } from "../../lib/api/notes";
 import { uploadFile, type DriveFile } from "../../lib/api/drive";
 import { useDraft } from "../../hooks/useDraft";
@@ -1177,7 +1178,10 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
                     </span>
                     <ChevronDown className="w-3 h-3 text-gray-500 dark:text-gray-400 ml-1" />
                   </RACButton>
-                  <Popover className="mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden min-w-35">
+                  <Popover
+                    UNSTABLE_portalContainer={getModalContainer()}
+                    className="mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden min-w-35"
+                  >
                     <ListBox className="outline-none py-1">
                       {visibilityOptions.map((option) => (
                         <ListBoxItem

@@ -14,10 +14,10 @@ import { X } from "lucide-react";
 import {
   Dialog,
   Modal,
-  ModalOverlay,
   Heading,
   Button as AriaButton,
 } from "react-aria-components";
+import { SafeModalOverlay } from "./SafeModalOverlay";
 
 /**
  * Props for FormModal component
@@ -84,9 +84,9 @@ export function FormModal({
   isDismissable = true,
 }: FormModalProps) {
   return (
-    <ModalOverlay
+    <SafeModalOverlay
       isOpen={isOpen}
-      onOpenChange={(open) => !open && onClose()}
+      onClose={onClose}
       isDismissable={isDismissable}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
     >
@@ -126,6 +126,6 @@ export function FormModal({
           )}
         </Dialog>
       </Modal>
-    </ModalOverlay>
+    </SafeModalOverlay>
   );
 }

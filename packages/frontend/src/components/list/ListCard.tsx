@@ -15,6 +15,7 @@ import { Card } from "../ui/Card";
 import { SpaLink } from "../ui/SpaLink";
 import { Button } from "../ui/Button";
 import { Menu, MenuItem, MenuTrigger, Popover } from "react-aria-components";
+import { getModalContainer } from "../../lib/utils/modalContainer";
 import type { ListWithMemberCount } from "../../lib/api/lists";
 
 /**
@@ -129,7 +130,10 @@ export function ListCard({ list, isOwner, onEdit, onDelete, showActions }: ListC
             >
               <MoreHorizontal className="w-5 h-5" />
             </Button>
-            <Popover placement="bottom end">
+            <Popover
+              UNSTABLE_portalContainer={getModalContainer()}
+              placement="bottom end"
+            >
               <Menu
                 className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 min-w-35"
                 onAction={(key) => {
