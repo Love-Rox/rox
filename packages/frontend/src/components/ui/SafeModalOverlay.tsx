@@ -62,11 +62,14 @@ export function SafeModalOverlay({
   useEffect(() => {
     if (isOpen) {
       registerModal({ id: modalId, close: onClose });
-      return () => {
-        unregisterModal(modalId);
-      };
+    } else {
+      // Explicitly unregister when modal closes
+      unregisterModal(modalId);
     }
-    return undefined;
+    // Cleanup on unmount
+    return () => {
+      unregisterModal(modalId);
+    };
   }, [isOpen, modalId, onClose, registerModal, unregisterModal]);
 
   // Handle open change from React Aria

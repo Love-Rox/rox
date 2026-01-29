@@ -775,7 +775,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
       {/* Followers/Following List Modal - only render when open */}
       {showFollowList !== null && (
         <FollowListModal
-          isOpen={true}
+          isOpen
           onClose={() => setShowFollowList(null)}
           userId={user.id}
           type={showFollowList}
@@ -795,7 +795,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
       {/* Add to List Modal - only render when open */}
       {currentUser && !isOwnProfile && showAddToList && (
         <AddToListModal
-          isOpen={true}
+          isOpen
           onClose={() => setShowAddToList(false)}
           userId={user.id}
           username={user.username}

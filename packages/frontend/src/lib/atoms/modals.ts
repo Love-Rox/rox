@@ -3,7 +3,7 @@ import { atom } from "jotai";
 /**
  * Registration data for a modal in the registry.
  */
-interface ModalRegistration {
+export interface ModalRegistration {
   /** Unique identifier for the modal */
   id: string;
   /** Function to close the modal */
