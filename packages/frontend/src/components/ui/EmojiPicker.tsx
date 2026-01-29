@@ -34,10 +34,11 @@ import {
 const EMOJIS_PER_PAGE = 50;
 
 /**
- * Sanitize a category key for use in HTML id and aria-controls attributes
+ * Sanitize a category key for use in HTML id and aria-controls attributes.
+ * Uses encodeURIComponent to preserve uniqueness for non-ASCII category names.
  */
 function sanitizeId(key: string): string {
-  return key.replace(/[^a-zA-Z0-9-_]/g, "-").replace(/-+/g, "-");
+  return encodeURIComponent(key).replace(/%/g, "_");
 }
 
 /**
