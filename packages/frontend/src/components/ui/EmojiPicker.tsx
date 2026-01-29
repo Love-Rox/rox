@@ -34,6 +34,23 @@ import {
 const EMOJIS_PER_PAGE = 50;
 
 /**
+ * Sanitize a category key for use in HTML id and aria-controls attributes
+ */
+function sanitizeId(key: string): string {
+  return key.replace(/[^a-zA-Z0-9-_]/g, "-").replace(/-+/g, "-");
+}
+
+/**
+ * Normalize category name for display, replacing sentinel values
+ */
+function normalizeCategoryName(name: string): string {
+  if (name === "__uncategorized__" || name === "") {
+    return "Uncategorized";
+  }
+  return name;
+}
+
+/**
  * Props for the EmojiPicker component
  */
 export interface EmojiPickerProps {
@@ -90,6 +107,7 @@ function AccordionSection({
   hasMore,
 }: AccordionSectionProps) {
   const displayedEmojis = emojis.slice(0, visibleCount);
+  const sectionId = `emoji-section-${sanitizeId(categoryKey)}`;
 
   return (
     <div className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
@@ -97,7 +115,7 @@ function AccordionSection({
         onPress={onToggle}
         className="flex items-center justify-between w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
         aria-expanded={isExpanded}
-        aria-controls={`emoji-section-${categoryKey}`}
+        aria-controls={sectionId}
       >
         <span className="flex items-center gap-2">
           <span className="text-lg">{icon}</span>
@@ -109,7 +127,7 @@ function AccordionSection({
         />
       </Button>
       {isExpanded && (
-        <div id={`emoji-section-${categoryKey}`} className="px-4 pb-3">
+        <div id={sectionId} className="px-4 pb-3">
           <div className="grid grid-cols-8 gap-1">
             {displayedEmojis.map((emoji, index) => (
               <Button
@@ -173,6 +191,7 @@ function CustomAccordionSection({
   hasMore,
 }: CustomAccordionSectionProps) {
   const displayedEmojis = emojis.slice(0, visibleCount);
+  const sectionId = `emoji-section-${sanitizeId(categoryKey)}`;
 
   return (
     <div className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
@@ -180,7 +199,7 @@ function CustomAccordionSection({
         onPress={onToggle}
         className="flex items-center justify-between w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
         aria-expanded={isExpanded}
-        aria-controls={`emoji-section-${categoryKey}`}
+        aria-controls={sectionId}
       >
         <span className="flex items-center gap-2">
           <span className="text-lg">{icon}</span>
@@ -192,7 +211,7 @@ function CustomAccordionSection({
         />
       </Button>
       {isExpanded && (
-        <div id={`emoji-section-${categoryKey}`} className="px-4 pb-3">
+        <div id={sectionId} className="px-4 pb-3">
           <div className="grid grid-cols-8 gap-1">
             {displayedEmojis.map((emoji) => (
               <Button
@@ -293,10 +312,18 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
 
   // Handle scroll to load more
   const handleScroll = useCallback(() => {
-    if (!scrollContainerRef.current || !expandedCategory) return;
+    if (!scrollContainerRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
     if (scrollHeight - scrollTop - clientHeight < 100) {
-      // Find which category to load more for
+      // Load more search results if in search mode
+      if (searchQuery.trim()) {
+        // Load more for both search result categories
+        loadMore("search-custom", customEmojis.length);
+        loadMore("search-unicode", Object.values(EMOJI_CATEGORIES).reduce((sum, cat) => sum + cat.emojis.length, 0));
+        return;
+      }
+      // Otherwise load more for expanded category
+      if (!expandedCategory) return;
       if (expandedCategory === "custom") {
         loadMore("custom", customEmojis.length);
       } else if (expandedCategory.startsWith("custom-")) {
@@ -309,7 +336,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
         loadMore(expandedCategory, EMOJI_CATEGORIES[expandedCategory as EmojiCategory].emojis.length);
       }
     }
-  }, [expandedCategory, customEmojis.length, emojisByCategory, recentEmojis.length, loadMore]);
+  }, [expandedCategory, customEmojis.length, emojisByCategory, recentEmojis.length, loadMore, searchQuery]);
 
   // Save emoji to recent emojis
   const saveToRecent = useCallback((emoji: string) => {
@@ -535,12 +562,13 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                         customCategories.map((catName) => {
                           const catEmojis = emojisByCategory.get(catName) || [];
                           const categoryKey = `custom-${catName}`;
+                          const displayName = normalizeCategoryName(catName);
                           const firstEmoji = catEmojis[0];
                           return (
                             <CustomAccordionSection
                               key={categoryKey}
                               categoryKey={categoryKey}
-                              title={catName || t`Uncategorized`}
+                              title={displayName}
                               icon={
                                 firstEmoji ? (
                                   <img

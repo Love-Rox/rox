@@ -4,6 +4,12 @@ import { useMemo } from "react";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Clock } from "lucide-react";
+import {
+  DialogTrigger,
+  Popover,
+  Dialog,
+  Heading,
+} from "react-aria-components";
 import { Button } from "../ui/Button";
 import { TextField } from "../ui/TextField";
 
@@ -11,7 +17,7 @@ import { TextField } from "../ui/TextField";
  * Props for NoteComposerSchedulePicker component
  */
 export interface NoteComposerSchedulePickerProps {
-  /** Scheduled date/time in ISO format */
+  /** Scheduled local date/time string (YYYY-MM-DDTHH:mm) for datetime-local input */
   scheduledAt: string | null;
   /** Whether the picker is open */
   isOpen: boolean;
@@ -30,7 +36,8 @@ export interface NoteComposerSchedulePickerProps {
 }
 
 /**
- * Component for scheduling posts in the note composer
+ * Component for scheduling posts in the note composer.
+ * Uses React Aria DialogTrigger + Popover for accessible dropdown.
  */
 export function NoteComposerSchedulePicker({
   scheduledAt,
@@ -51,7 +58,7 @@ export function NoteComposerSchedulePicker({
   }, [isOpen]);
 
   return (
-    <div className="relative">
+    <DialogTrigger isOpen={isOpen} onOpenChange={(open) => !open && onCancel()}>
       <Button
         variant="ghost"
         onPress={onToggle}
@@ -62,18 +69,21 @@ export function NoteComposerSchedulePicker({
             : "text-gray-600 dark:text-gray-400"
         }`}
         aria-label={t`Schedule post`}
-        aria-expanded={isOpen}
       >
         <Clock className="w-5 h-5" />
       </Button>
-
-      {/* Schedule picker dropdown */}
-      {isOpen && (
-        <div className="absolute top-full left-0 sm:left-auto sm:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-80 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-60">
+      <Popover
+        placement="bottom end"
+        className="w-[calc(100vw-2rem)] sm:w-80 max-w-80 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-60"
+      >
+        <Dialog className="outline-none">
           <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
-            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+            <Heading
+              slot="title"
+              className="text-sm font-medium text-gray-900 dark:text-gray-100"
+            >
               <Trans>Schedule post</Trans>
-            </span>
+            </Heading>
           </div>
           <div className="p-3 space-y-3">
             <TextField
@@ -111,8 +121,8 @@ export function NoteComposerSchedulePicker({
               </Button>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        </Dialog>
+      </Popover>
+    </DialogTrigger>
   );
 }
