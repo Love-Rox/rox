@@ -45,7 +45,7 @@ function sanitizeId(key: string): string {
  */
 function normalizeCategoryName(name: string): string {
   if (name === "__uncategorized__" || name === "") {
-    return "Uncategorized";
+    return t`Uncategorized`;
   }
   return name;
 }
