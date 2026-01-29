@@ -12,6 +12,7 @@ import {
 } from "react-aria-components";
 import { Button } from "../ui/Button";
 import { TextField } from "../ui/TextField";
+import { getModalContainer } from "../../lib/utils/modalContainer";
 
 /**
  * Props for NoteComposerSchedulePicker component
@@ -73,6 +74,7 @@ export function NoteComposerSchedulePicker({
         <Clock className="w-5 h-5" />
       </Button>
       <Popover
+        UNSTABLE_portalContainer={getModalContainer()}
         placement="bottom end"
         className="w-[calc(100vw-2rem)] sm:w-80 max-w-80 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-60"
       >

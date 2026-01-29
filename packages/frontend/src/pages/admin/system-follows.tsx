@@ -22,7 +22,8 @@ import {
   List,
   Loader2,
 } from "lucide-react";
-import { Dialog, Modal, ModalOverlay, Heading } from "react-aria-components";
+import { Dialog, Modal, Heading } from "react-aria-components";
+import { SafeModalOverlay } from "../../components/ui/SafeModalOverlay";
 import { currentUserAtom } from "../../lib/atoms/auth";
 import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
@@ -581,9 +582,9 @@ export default function AdminSystemFollowsPage() {
         </Card>
 
         {/* Unfollow Confirmation Modal */}
-        <ModalOverlay
+        <SafeModalOverlay
           isOpen={userToUnfollow !== null}
-          onOpenChange={(open) => !open && setUserToUnfollow(null)}
+          onClose={() => setUserToUnfollow(null)}
           isDismissable={!isUnfollowing}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
         >
@@ -664,7 +665,7 @@ export default function AdminSystemFollowsPage() {
               )}
             </Dialog>
           </Modal>
-        </ModalOverlay>
+        </SafeModalOverlay>
       </div>
     </AdminLayout>
   );

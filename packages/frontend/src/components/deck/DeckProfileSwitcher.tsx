@@ -9,16 +9,17 @@ import {
   Button as AriaButton,
   Modal,
   Dialog,
-  ModalOverlay,
   Heading,
   TextField,
   Input,
   Separator,
 } from "react-aria-components";
+import { SafeModalOverlay } from "../ui/SafeModalOverlay";
 import { ChevronDown, Plus, Trash2, Check, Loader2, Pencil } from "lucide-react";
 import { Trans, useLingui } from "@lingui/react/macro";
 import { Button } from "../ui/Button";
 import { useDeckProfiles } from "../../hooks/useDeckProfiles";
+import { getModalContainer } from "../../lib/utils/modalContainer";
 
 /**
  * Profile switcher component for the deck header
@@ -205,7 +206,7 @@ export function DeckProfileSwitcher() {
           </span>
           <ChevronDown className="w-4 h-4 text-gray-500" />
         </AriaButton>
-        <Popover className="z-50">
+        <Popover UNSTABLE_portalContainer={getModalContainer()} className="z-50">
           <Menu className="min-w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden py-1">
             {profiles.map((profile) => (
               <MenuItem
@@ -305,13 +306,11 @@ export function DeckProfileSwitcher() {
 
       {/* Delete Confirmation Dialog */}
       {profileToDelete && (
-        <ModalOverlay
+        <SafeModalOverlay
           isOpen
-          onOpenChange={(isOpen) => {
-            if (!isOpen) {
-              setDeleteConfirmId(null);
-              setDeleteError(null);
-            }
+          onClose={() => {
+            setDeleteConfirmId(null);
+            setDeleteError(null);
           }}
           isDismissable={!isDeleting}
           className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
@@ -370,7 +369,7 @@ export function DeckProfileSwitcher() {
               </div>
             </Dialog>
           </Modal>
-        </ModalOverlay>
+        </SafeModalOverlay>
       )}
     </div>
   );
@@ -414,11 +413,9 @@ function ProfileFormDialog({
   const titleId = useId();
 
   return (
-    <ModalOverlay
+    <SafeModalOverlay
       isOpen
-      onOpenChange={(isOpen) => {
-        if (!isOpen) onCancel();
-      }}
+      onClose={onCancel}
       isDismissable={!isSubmitting}
       className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
     >
@@ -474,6 +471,6 @@ function ProfileFormDialog({
           </div>
         </Dialog>
       </Modal>
-    </ModalOverlay>
+    </SafeModalOverlay>
   );
 }

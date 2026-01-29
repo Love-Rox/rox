@@ -12,6 +12,7 @@ import {
   Modal,
   ModalOverlay,
 } from "react-aria-components";
+import { getModalContainer } from "../../lib/utils/modalContainer";
 import {
   emojiListAtom,
   emojiCategoriesAtom,
@@ -427,7 +428,10 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
           <Smile className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         </Button>
       )}
-      <ModalOverlay className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+      <ModalOverlay
+        UNSTABLE_portalContainer={getModalContainer()}
+        className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center"
+      >
         <Modal className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden mx-4">
           <Dialog className="flex flex-col h-full min-h-0 outline-none">
             {({ close }) => (

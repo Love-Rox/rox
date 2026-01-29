@@ -24,6 +24,7 @@ import {
   ListBoxItem,
 } from "react-aria-components";
 import { FormModal } from "../ui/FormModal";
+import { getModalContainer } from "../../lib/utils/modalContainer";
 import { Switch } from "../ui/Switch";
 import { Button } from "../ui/Button";
 import { listsApi, type List } from "../../lib/api/lists";
@@ -215,7 +216,10 @@ export function ListEditModal({
             <SelectValue className="flex items-center gap-2" />
             <span className="text-(--text-muted)">▼</span>
           </AriaButton>
-          <Popover className="w-[--trigger-width] bg-(--card-bg) border border-(--border-color) rounded-lg shadow-lg overflow-hidden">
+          <Popover
+            UNSTABLE_portalContainer={getModalContainer()}
+            className="w-[--trigger-width] bg-(--card-bg) border border-(--border-color) rounded-lg shadow-lg overflow-hidden"
+          >
             <ListBox className="outline-none">
               <ListBoxItem
                 id="none"

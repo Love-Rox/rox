@@ -15,9 +15,9 @@ import { t } from "@lingui/core/macro";
 import {
   Dialog as AriaDialog,
   Modal,
-  ModalOverlay,
   Heading,
 } from "react-aria-components";
+import { SafeModalOverlay } from "../ui/SafeModalOverlay";
 import {
   X,
   Check,
@@ -255,9 +255,9 @@ export function DrivePickerDialog({
   if (!isOpen) return null;
 
   return (
-    <ModalOverlay
+    <SafeModalOverlay
       isOpen={isOpen}
-      onOpenChange={(open) => !open && onClose()}
+      onClose={onClose}
       className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
     >
       <Modal className="w-full max-w-2xl max-h-[80vh] rounded-lg bg-white dark:bg-gray-800 shadow-xl flex flex-col">
@@ -514,6 +514,6 @@ export function DrivePickerDialog({
           </div>
         </AriaDialog>
       </Modal>
-    </ModalOverlay>
+    </SafeModalOverlay>
   );
 }

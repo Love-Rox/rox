@@ -8,6 +8,7 @@ import { notesApi } from "../../lib/api/notes";
 import { currentUserAtom } from "../../lib/atoms/auth";
 import { ApiError } from "../../lib/api/client";
 import { useApi } from "../../hooks/useApi";
+import { useSafeNavigation } from "../../hooks/useSafeNavigation";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
 import { Flag, QrCode, ListPlus, ArrowLeft, Globe } from "lucide-react";
 import { getRemoteInstanceInfo, type PublicRemoteInstance } from "../../lib/api/instance";
@@ -24,7 +25,6 @@ import { RoleBadgeList } from "./RoleBadge";
 import { FollowListModal } from "./FollowListModal";
 import { UserQRCodeModal } from "./UserQRCodeModal";
 import { AddToListModal } from "../list/AddToListModal";
-import { useRouter } from "../ui/SpaLink";
 
 /**
  * Public role type returned from the API
@@ -134,7 +134,7 @@ export interface UserProfileProps {
 export function UserProfile({ username, host }: UserProfileProps) {
   const api = useApi();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const router = useRouter();
+  const { isNavigating, navigate, goBack } = useSafeNavigation();
   const [user, setUser] = useState<User | null>(null);
   const [notes, setNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -158,69 +158,100 @@ export function UserProfile({ username, host }: UserProfileProps) {
 
   // Load current user session if not already loaded
   useEffect(() => {
+    let cancelled = false;
+
     const loadCurrentUser = async () => {
       if (api.token && !currentUser) {
         try {
           const response = await api.get<{ user: User }>("/api/auth/session");
-          setCurrentUser(response.user);
+          if (!cancelled) {
+            setCurrentUser(response.user);
+          }
         } catch (err) {
-          console.error("Failed to load current user session:", err);
+          if (!cancelled) {
+            console.error("Failed to load current user session:", err);
+          }
         }
       }
     };
 
     loadCurrentUser();
+
+    return () => {
+      cancelled = true;
+    };
   }, [api, currentUser, setCurrentUser]);
 
   // Load user data (after token is set)
   useEffect(() => {
+    let cancelled = false;
+
     const loadUser = async () => {
       try {
-        setLoading(true);
-        setError(null);
-        setIsNotFound(false);
+        if (!cancelled) setLoading(true);
+        if (!cancelled) setError(null);
+        if (!cancelled) setIsNotFound(false);
         const userData = await usersApi.getByUsername(username, host);
-        setUser(userData);
-        setIsFollowing(userData.isFollowed ?? false);
+        if (!cancelled) {
+          setUser(userData);
+          setIsFollowing(userData.isFollowed ?? false);
+        }
       } catch (err) {
-        // Check if it's a 404 error
-        if (err instanceof ApiError && err.statusCode === 404) {
-          setIsNotFound(true);
-        } else {
-          setError(err instanceof Error ? err.message : "Failed to load user");
+        if (!cancelled) {
+          // Check if it's a 404 error
+          if (err instanceof ApiError && err.statusCode === 404) {
+            setIsNotFound(true);
+          } else {
+            setError(err instanceof Error ? err.message : "Failed to load user");
+          }
         }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     // Wait a tick for token to be set
     const timeoutId = setTimeout(loadUser, 0);
-    return () => clearTimeout(timeoutId);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
   }, [username, host, api.token]);
 
   // Load user's notes
   useEffect(() => {
+    let cancelled = false;
+
     const loadNotes = async () => {
       if (!user) return;
 
       try {
-        setNotesLoading(true);
+        if (!cancelled) setNotesLoading(true);
         const userNotes = await notesApi.getUserNotes(user.id, { limit: 20 });
-        setNotes(userNotes);
-        setHasMore(userNotes.length >= 20);
+        if (!cancelled) {
+          setNotes(userNotes);
+          setHasMore(userNotes.length >= 20);
+        }
       } catch (err) {
-        console.error("Failed to load notes:", err);
+        if (!cancelled) {
+          console.error("Failed to load notes:", err);
+        }
       } finally {
-        setNotesLoading(false);
+        if (!cancelled) setNotesLoading(false);
       }
     };
 
     loadNotes();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   // Load user's public roles
   useEffect(() => {
+    let cancelled = false;
+
     const loadPublicRoles = async () => {
       if (!user) return;
 
@@ -228,14 +259,22 @@ export function UserProfile({ username, host }: UserProfileProps) {
         const response = await api.get<{ roles: PublicRole[] }>(
           `/api/users/${user.id}/public-roles`,
         );
-        setPublicRoles(response.roles);
+        if (!cancelled) {
+          setPublicRoles(response.roles);
+        }
       } catch (err) {
-        // Non-critical - just log and continue
-        console.error("Failed to load public roles:", err);
+        if (!cancelled) {
+          // Non-critical - just log and continue
+          console.error("Failed to load public roles:", err);
+        }
       }
     };
 
     loadPublicRoles();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user, api]);
 
   // Load remote instance info for remote users
@@ -291,6 +330,11 @@ export function UserProfile({ username, host }: UserProfileProps) {
       setLoadingMore(false);
     }
   }, [user, notes, hasMore, loadingMore]);
+
+  // Handle back navigation - uses useSafeNavigation to close modals first
+  const handleBack = useCallback(() => {
+    goBack();
+  }, [goBack]);
 
   // Handle follow/unfollow
   const handleFollowToggle = useCallback(async () => {
@@ -388,17 +432,11 @@ export function UserProfile({ username, host }: UserProfileProps) {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button
               variant="secondary"
-              onPress={() => {
-                if (typeof window !== "undefined" && window.history.length > 1) {
-                  router.back();
-                } else {
-                  router.push("/");
-                }
-              }}
+              onPress={() => navigate("/timeline")}
             >
               <Trans>Go Back</Trans>
             </Button>
-            <Button variant="primary" onPress={() => router.push("/")}>
+            <Button variant="primary" onPress={() => navigate("/")}>
               <Trans>Go Home</Trans>
             </Button>
           </div>
@@ -431,30 +469,23 @@ export function UserProfile({ username, host }: UserProfileProps) {
       {/* User Custom CSS */}
       {customCss && <style dangerouslySetInnerHTML={{ __html: customCss }} />}
 
+      {/* Back button - outside card for better accessibility */}
+      <Button
+        variant="ghost"
+        onPress={handleBack}
+        isDisabled={isNavigating}
+        className="mb-3 flex items-center gap-1 px-3 py-1.5 text-(--text-secondary) hover:text-(--text-primary) rounded-full text-sm font-medium transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <Trans>Back</Trans>
+      </Button>
+
       {/* Profile Container with ID for CSS scoping */}
       <div id={profileContainerId} className="user-profile-container">
         {/* Profile Header */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
-          {/* Banner with back button */}
+          {/* Banner */}
           <div className="relative">
-            {/* Back button - positioned on top of banner */}
-            <button
-              type="button"
-              onClick={() => {
-                if (typeof window !== "undefined" && window.history.length > 1) {
-                  router.back();
-                } else {
-                  router.push("/timeline");
-                }
-              }}
-              className="absolute top-3 left-3 z-10 flex items-center gap-1 px-3 py-1.5 bg-black/40 hover:bg-black/60 text-white rounded-full text-sm font-medium transition-colors backdrop-blur-sm"
-              aria-label="Go back"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline"><Trans>Back</Trans></span>
-            </button>
-
-            {/* Banner */}
             {user.bannerUrl && (
               <div className="h-32 sm:h-48 bg-linear-to-r from-primary-500 to-primary-600">
                 <img
@@ -496,9 +527,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
                   <>
                     <Button
                       variant="secondary"
-                      onPress={() => {
-                        router.push("/settings");
-                      }}
+                      onPress={() => navigate("/settings")}
                     >
                       <Trans>Edit Profile</Trans>
                     </Button>
@@ -732,35 +761,41 @@ export function UserProfile({ username, host }: UserProfileProps) {
         </div>
       </div>
 
-      {/* Report Dialog */}
-      <ReportDialog
-        isOpen={showReportDialog}
-        onClose={() => setShowReportDialog(false)}
-        targetType="user"
-        targetUserId={user.id}
-        targetUsername={user.username}
-      />
+      {/* Report Dialog - only render when open to avoid portal cleanup issues */}
+      {showReportDialog && (
+        <ReportDialog
+          isOpen={showReportDialog}
+          onClose={() => setShowReportDialog(false)}
+          targetType="user"
+          targetUserId={user.id}
+          targetUsername={user.username}
+        />
+      )}
 
-      {/* Followers/Following List Modal */}
-      <FollowListModal
-        isOpen={showFollowList !== null}
-        onClose={() => setShowFollowList(null)}
-        userId={user.id}
-        type={showFollowList || "followers"}
-        username={user.username}
-      />
+      {/* Followers/Following List Modal - only render when open */}
+      {showFollowList !== null && (
+        <FollowListModal
+          isOpen={true}
+          onClose={() => setShowFollowList(null)}
+          userId={user.id}
+          type={showFollowList}
+          username={user.username}
+        />
+      )}
 
-      {/* QR Code Modal */}
-      <UserQRCodeModal
-        isOpen={showQRCode}
-        onClose={() => setShowQRCode(false)}
-        user={user}
-      />
+      {/* QR Code Modal - only render when open */}
+      {showQRCode && (
+        <UserQRCodeModal
+          isOpen={showQRCode}
+          onClose={() => setShowQRCode(false)}
+          user={user}
+        />
+      )}
 
-      {/* Add to List Modal */}
-      {currentUser && !isOwnProfile && (
+      {/* Add to List Modal - only render when open */}
+      {currentUser && !isOwnProfile && showAddToList && (
         <AddToListModal
-          isOpen={showAddToList}
+          isOpen={true}
           onClose={() => setShowAddToList(false)}
           userId={user.id}
           username={user.username}

@@ -5,9 +5,9 @@ import { useAtom, useAtomValue } from "jotai";
 import {
   Dialog,
   Modal,
-  ModalOverlay,
   Heading,
 } from "react-aria-components";
+import { SafeModalOverlay } from "../ui/SafeModalOverlay";
 import {
   LayoutGrid,
   Bell,
@@ -246,9 +246,9 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
   const selectedTypeLabel = columnTypes.find((ct) => ct.type === selectedType)?.label ?? t`Column`;
 
   return (
-    <ModalOverlay
+    <SafeModalOverlay
       isOpen={isOpen}
-      onOpenChange={(open) => !open && handleClose()}
+      onClose={handleClose}
       isDismissable
       className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
     >
@@ -432,6 +432,6 @@ export function AddColumnDialog({ isOpen, onClose }: AddColumnDialogProps) {
           )}
         </Dialog>
       </Modal>
-    </ModalOverlay>
+    </SafeModalOverlay>
   );
 }

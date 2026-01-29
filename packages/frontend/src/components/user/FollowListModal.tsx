@@ -13,10 +13,10 @@ import { X, Loader2 } from "lucide-react";
 import {
   Dialog,
   Modal,
-  ModalOverlay,
   Heading,
   Button as AriaButton,
 } from "react-aria-components";
+import { SafeModalOverlay } from "../ui/SafeModalOverlay";
 import { usersApi, type User, type Follow } from "../../lib/api/users";
 import { Avatar } from "../ui/Avatar";
 import { SpaLink } from "../ui/SpaLink";
@@ -149,9 +149,9 @@ export function FollowListModal({
   }, [isOpen, fetchUsers]);
 
   return (
-    <ModalOverlay
+    <SafeModalOverlay
       isOpen={isOpen}
-      onOpenChange={(open) => !open && onClose()}
+      onClose={onClose}
       isDismissable
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
     >
@@ -230,6 +230,6 @@ export function FollowListModal({
           )}
         </Dialog>
       </Modal>
-    </ModalOverlay>
+    </SafeModalOverlay>
   );
 }

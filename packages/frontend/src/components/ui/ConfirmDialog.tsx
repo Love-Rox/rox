@@ -4,10 +4,10 @@ import { Trans } from "@lingui/react/macro";
 import {
   Dialog as AriaDialog,
   Modal,
-  ModalOverlay,
   Heading,
 } from "react-aria-components";
 import { Button } from "./Button";
+import { SafeModalOverlay } from "./SafeModalOverlay";
 
 /**
  * Props for the ConfirmDialog component
@@ -71,12 +71,12 @@ export function ConfirmDialog({
   isLoading = false,
   loadingText,
 }: ConfirmDialogProps) {
-  if (!isOpen) return null;
-
+  // Note: We always render ModalOverlay and control visibility via isOpen prop
+  // This allows React Aria to properly animate and cleanup the portal
   return (
-    <ModalOverlay
+    <SafeModalOverlay
       isOpen={isOpen}
-      onOpenChange={(open) => !open && onClose()}
+      onClose={onClose}
       isDismissable={!isLoading}
       className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
     >
@@ -100,6 +100,6 @@ export function ConfirmDialog({
           </div>
         </AriaDialog>
       </Modal>
-    </ModalOverlay>
+    </SafeModalOverlay>
   );
 }

@@ -16,13 +16,13 @@ import { X, Search, Loader2, UserPlus, Check, Users } from "lucide-react";
 import {
   Dialog,
   Modal,
-  ModalOverlay,
   Heading,
   Button as AriaButton,
   Input,
   Label,
   TextField,
 } from "react-aria-components";
+import { SafeModalOverlay } from "../ui/SafeModalOverlay";
 import { useAtom } from "jotai";
 import { usersApi } from "../../lib/api/users";
 import { listsApi, type List, type ListMembership } from "../../lib/api/lists";
@@ -262,9 +262,9 @@ export function AddMemberModal({
   };
 
   return (
-    <ModalOverlay
+    <SafeModalOverlay
       isOpen={isOpen}
-      onOpenChange={(open) => !open && onClose()}
+      onClose={onClose}
       isDismissable
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
     >
@@ -352,6 +352,6 @@ export function AddMemberModal({
           )}
         </Dialog>
       </Modal>
-    </ModalOverlay>
+    </SafeModalOverlay>
   );
 }

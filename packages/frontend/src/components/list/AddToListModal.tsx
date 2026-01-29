@@ -16,10 +16,10 @@ import { X, List as ListIcon, Loader2, Plus, Check } from "lucide-react";
 import {
   Dialog,
   Modal,
-  ModalOverlay,
   Heading,
   Button as AriaButton,
 } from "react-aria-components";
+import { SafeModalOverlay } from "../ui/SafeModalOverlay";
 import { useAtom, useSetAtom } from "jotai";
 import { listsApi, type ListWithMemberCount, type List } from "../../lib/api/lists";
 import { myListsAtom, addListAtom, updateListMemberCountAtom } from "../../lib/atoms/lists";
@@ -261,9 +261,9 @@ export function AddToListModal({
 
   return (
     <>
-      <ModalOverlay
+      <SafeModalOverlay
         isOpen={isOpen && !showCreateModal}
-        onOpenChange={(open) => !open && onClose()}
+        onClose={onClose}
         isDismissable
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
       >
@@ -344,7 +344,7 @@ export function AddToListModal({
             )}
           </Dialog>
         </Modal>
-      </ModalOverlay>
+      </SafeModalOverlay>
 
       {/* Create List Modal */}
       <ListCreateModal
