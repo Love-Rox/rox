@@ -11,8 +11,8 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Trash2, Plus, RefreshCw, Edit2, Users, Shield, ShieldCheck } from "lucide-react";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -63,8 +63,8 @@ interface RolesResponse {
 }
 
 export default function AdminRolesPage() {
+  const api = useApi();
   const [, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
   const [roles, setRoles] = useState<Role[]>([]);
@@ -92,11 +92,10 @@ export default function AdminRolesPage() {
   });
 
   const loadRoles = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      const response = await apiClient.get<RolesResponse>("/api/admin/roles");
+      const response = await api.get<RolesResponse>("/api/admin/roles");
       setRoles(response.roles);
       setTotal(response.total);
     } catch (err) {
@@ -105,21 +104,19 @@ export default function AdminRolesPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, [api]);
 
   // Check admin access and load roles
   useEffect(() => {
     const checkAccess = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       try {
-        apiClient.setToken(token);
-
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: any }>("/api/auth/session");
+        const sessionResponse = await api.get<{ user: any }>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = "/timeline";
           return;
@@ -137,15 +134,13 @@ export default function AdminRolesPage() {
     };
 
     checkAccess();
-  }, [token, loadRoles, setCurrentUser]);
+  }, [api, loadRoles, setCurrentUser]);
 
   const handleCreateRole = async () => {
-    if (!token || !formData.name) return;
+    if (!api.token || !formData.name) return;
 
     setIsCreating(true);
     try {
-      apiClient.setToken(token);
-
       const policies: RolePolicies = {
         canViewGlobalTimeline: true,
         canViewLocalTimeline: true,
@@ -160,7 +155,7 @@ export default function AdminRolesPage() {
       };
 
       if (editingRole) {
-        await apiClient.patch<Role>(`/api/admin/roles/${editingRole.id}`, {
+        await api.patch<Role>(`/api/admin/roles/${editingRole.id}`, {
           name: formData.name,
           description: formData.description || undefined,
           color: formData.color,
@@ -176,7 +171,7 @@ export default function AdminRolesPage() {
           message: t`Role updated`,
         });
       } else {
-        await apiClient.post<Role>("/api/admin/roles", {
+        await api.post<Role>("/api/admin/roles", {
           name: formData.name,
           description: formData.description || undefined,
           color: formData.color,
@@ -262,11 +257,10 @@ export default function AdminRolesPage() {
   };
 
   const handleDeleteRole = async (id: string) => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      await apiClient.delete(`/api/admin/roles/${id}`);
+      await api.delete(`/api/admin/roles/${id}`);
 
       addToast({
         type: "success",

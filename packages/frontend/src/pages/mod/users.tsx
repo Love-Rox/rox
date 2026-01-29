@@ -21,8 +21,7 @@ import {
   Trash2,
   Clock,
 } from "lucide-react";
-import { tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -67,7 +66,7 @@ interface UserDetailResponse {
 }
 
 export default function ModeratorUsersPage() {
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   const [error, setError] = useState<string | null>(null);
@@ -85,27 +84,26 @@ export default function ModeratorUsersPage() {
   const [isDeletingWarning, setIsDeletingWarning] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!token) {
+    if (!api.token) {
       window.location.href = "/login";
     }
-  }, [token]);
+  }, [api.token]);
 
   const searchUser = async () => {
-    if (!token || !searchQuery.trim()) return;
+    if (!api.token || !searchQuery.trim()) return;
 
     setIsLoadingUser(true);
     setError(null);
     setSelectedUser(null);
 
     try {
-      apiClient.setToken(token);
       // First resolve the user
-      const resolveResponse = await apiClient.get<{ id: string }>(
+      const resolveResponse = await api.get<{ id: string }>(
         `/api/users/resolve?acct=${encodeURIComponent(searchQuery.trim())}`,
       );
 
       // Then get the user details from moderation endpoint
-      const userDetail = await apiClient.get<UserDetailResponse>(
+      const userDetail = await api.get<UserDetailResponse>(
         `/api/mod/users/${resolveResponse.id}`,
       );
       setSelectedUser(userDetail);
@@ -124,12 +122,11 @@ export default function ModeratorUsersPage() {
   };
 
   const handleSuspend = async () => {
-    if (!token || !selectedUser) return;
+    if (!api.token || !selectedUser) return;
 
     setIsProcessing(true);
     try {
-      apiClient.setToken(token);
-      await apiClient.post(`/api/mod/users/${selectedUser.user.id}/suspend`, {
+      await api.post(`/api/mod/users/${selectedUser.user.id}/suspend`, {
         reason: suspendReason.trim() || undefined,
       });
 
@@ -139,7 +136,7 @@ export default function ModeratorUsersPage() {
       });
 
       // Refresh user data
-      const userDetail = await apiClient.get<UserDetailResponse>(
+      const userDetail = await api.get<UserDetailResponse>(
         `/api/mod/users/${selectedUser.user.id}`,
       );
       setSelectedUser(userDetail);
@@ -155,12 +152,11 @@ export default function ModeratorUsersPage() {
   };
 
   const handleUnsuspend = async () => {
-    if (!token || !selectedUser) return;
+    if (!api.token || !selectedUser) return;
 
     setIsProcessing(true);
     try {
-      apiClient.setToken(token);
-      await apiClient.post(`/api/mod/users/${selectedUser.user.id}/unsuspend`, {
+      await api.post(`/api/mod/users/${selectedUser.user.id}/unsuspend`, {
         reason: suspendReason.trim() || undefined,
       });
 
@@ -170,7 +166,7 @@ export default function ModeratorUsersPage() {
       });
 
       // Refresh user data
-      const userDetail = await apiClient.get<UserDetailResponse>(
+      const userDetail = await api.get<UserDetailResponse>(
         `/api/mod/users/${selectedUser.user.id}`,
       );
       setSelectedUser(userDetail);
@@ -186,12 +182,11 @@ export default function ModeratorUsersPage() {
   };
 
   const handleWarnUser = async () => {
-    if (!token || !selectedUser || !warningReason.trim()) return;
+    if (!api.token || !selectedUser || !warningReason.trim()) return;
 
     setIsWarning(true);
     try {
-      apiClient.setToken(token);
-      await apiClient.post(`/api/mod/users/${selectedUser.user.id}/warn`, {
+      await api.post(`/api/mod/users/${selectedUser.user.id}/warn`, {
         reason: warningReason.trim(),
         expiresAt: warningExpiresAt || undefined,
       });
@@ -202,7 +197,7 @@ export default function ModeratorUsersPage() {
       });
 
       // Refresh user data
-      const userDetail = await apiClient.get<UserDetailResponse>(
+      const userDetail = await api.get<UserDetailResponse>(
         `/api/mod/users/${selectedUser.user.id}`,
       );
       setSelectedUser(userDetail);
@@ -220,12 +215,11 @@ export default function ModeratorUsersPage() {
   };
 
   const handleDeleteWarning = async (warningId: string) => {
-    if (!token || !selectedUser) return;
+    if (!api.token || !selectedUser) return;
 
     setIsDeletingWarning(warningId);
     try {
-      apiClient.setToken(token);
-      await apiClient.delete(`/api/mod/warnings/${warningId}`);
+      await api.delete(`/api/mod/warnings/${warningId}`);
 
       addToast({
         type: "success",
@@ -233,7 +227,7 @@ export default function ModeratorUsersPage() {
       });
 
       // Refresh user data
-      const userDetail = await apiClient.get<UserDetailResponse>(
+      const userDetail = await api.get<UserDetailResponse>(
         `/api/mod/users/${selectedUser.user.id}`,
       );
       setSelectedUser(userDetail);

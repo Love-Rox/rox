@@ -97,19 +97,19 @@ export interface ReactionButtonProps {
   onReactionSelect: (reaction: string) => void;
 
   /**
-   * Currently selected reactions (for highlighting in picker)
-   */
-  selectedReactions?: string[];
-
-  /**
    * Whether the button is disabled
    */
   isDisabled?: boolean;
 }
 
+/**
+ * Reaction button component with emoji picker popover.
+ *
+ * Displays a smile-plus icon button that opens an emoji picker for adding
+ * reactions to notes.
+ */
 export function ReactionButton({
   onReactionSelect,
-  selectedReactions: _selectedReactions = [],
   isDisabled = false,
 }: ReactionButtonProps) {
   return (

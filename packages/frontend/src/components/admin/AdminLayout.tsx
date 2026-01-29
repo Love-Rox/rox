@@ -190,14 +190,25 @@ function isNavItemActive(itemHref: string, currentPath: string): boolean {
   return false;
 }
 
+/**
+ * Props for the AdminLayout component.
+ */
 interface AdminLayoutProps {
+  /** Content to render in the main area */
   children: React.ReactNode;
+  /** Current page path for navigation highlighting */
   currentPath: string;
+  /** Page title displayed in the header */
   title: React.ReactNode;
+  /** Optional subtitle displayed below the title */
   subtitle?: React.ReactNode;
+  /** Optional action buttons for the page header */
   actions?: React.ComponentProps<typeof PageHeader>["actions"];
+  /** Whether to show a reload button */
   showReload?: boolean;
+  /** Callback when reload is requested */
   onReload?: () => void;
+  /** Whether a reload is currently in progress */
   isReloading?: boolean;
 }
 
@@ -348,6 +359,12 @@ function MobileAdminNav({
   );
 }
 
+/**
+ * Admin layout component with responsive sidebar navigation.
+ *
+ * Provides a two-column layout on desktop (sidebar + content) and
+ * a collapsible menu on mobile/tablet devices.
+ */
 export function AdminLayout({
   children,
   currentPath,

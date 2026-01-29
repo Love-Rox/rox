@@ -19,8 +19,8 @@ import {
   AlertTriangle,
   Zap,
 } from "lucide-react";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
 import { InlineError } from "../../components/ui/ErrorMessage";
@@ -60,8 +60,8 @@ interface QueueMetrics {
 }
 
 export default function AdminQueuePage() {
+  const api = useApi();
   const [, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
 
   const [stats, setStats] = useState<QueueStats | null>(null);
   const [metrics, setMetrics] = useState<QueueMetrics | null>(null);
@@ -83,13 +83,12 @@ export default function AdminQueuePage() {
   const activeTab = getActiveTab();
 
   const loadData = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
       const [statsResponse, metricsResponse] = await Promise.all([
-        apiClient.get<QueueStats>("/api/admin/queue/stats"),
-        apiClient.get<QueueMetrics>("/api/admin/queue/metrics"),
+        api.get<QueueStats>("/api/admin/queue/stats"),
+        api.get<QueueMetrics>("/api/admin/queue/metrics"),
       ]);
       setStats(statsResponse);
       setMetrics(metricsResponse);
@@ -100,21 +99,19 @@ export default function AdminQueuePage() {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  }, [token]);
+  }, [api]);
 
   // Check admin access and load data
   useEffect(() => {
     const checkAccess = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       try {
-        apiClient.setToken(token);
-
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: any }>("/api/auth/session");
+        const sessionResponse = await api.get<{ user: any }>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = "/timeline";
           return;
@@ -132,7 +129,7 @@ export default function AdminQueuePage() {
     };
 
     checkAccess();
-  }, [token, loadData, setCurrentUser]);
+  }, [api, loadData, setCurrentUser]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);

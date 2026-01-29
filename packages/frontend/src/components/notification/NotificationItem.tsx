@@ -22,9 +22,15 @@ import { Avatar } from "../ui/Avatar";
 import { MfmRenderer } from "../mfm/MfmRenderer";
 import type { Notification, NotificationType } from "../../lib/types/notification";
 
+/**
+ * Props for the NotificationItem component.
+ */
 interface NotificationItemProps {
+  /** The notification data to display */
   notification: Notification;
+  /** Callback when the notification should be marked as read */
   onMarkAsRead?: (id: string) => void;
+  /** Callback when the notification is clicked */
   onClick?: (notification: Notification) => void;
 }
 
@@ -179,6 +185,13 @@ function formatRelativeTime(dateString: string): string {
   return date.toLocaleDateString();
 }
 
+/**
+ * Single notification item component.
+ *
+ * Displays a notification with its icon, notifier avatar, message,
+ * timestamp, and unread indicator. Supports keyboard navigation
+ * and click handling.
+ */
 export function NotificationItem({ notification, onMarkAsRead, onClick }: NotificationItemProps) {
   const handleClick = () => {
     if (!notification.isRead && onMarkAsRead) {

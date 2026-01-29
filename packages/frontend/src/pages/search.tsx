@@ -10,7 +10,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import {
   Search,
   Users,
@@ -27,8 +27,8 @@ import { PageHeader } from "../components/ui/PageHeader";
 import { Avatar } from "../components/ui/Avatar";
 import { MfmRenderer } from "../components/mfm/MfmRenderer";
 import { UserDisplayName } from "../components/user/UserDisplayName";
-import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
-import { apiClient } from "../lib/api/client";
+import { currentUserAtom } from "../lib/atoms/auth";
+import { useApi } from "../hooks/useApi";
 
 /**
  * Profile emoji (custom emoji used in user profile)
@@ -74,8 +74,8 @@ interface ResolveResponse {
 }
 
 export default function SearchPage() {
+  const api = useApi();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const token = useAtomValue(tokenAtom);
   const [isLoading, setIsLoading] = useState(true);
 
   // Search state
@@ -97,15 +97,14 @@ export default function SearchPage() {
   // Restore user session on mount
   useEffect(() => {
     const restoreSession = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       if (!currentUser) {
         try {
-          apiClient.setToken(token);
-          const response = await apiClient.get<{ user: any }>("/api/auth/session");
+          const response = await api.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
           setIsLoading(false);
         } catch (error) {
@@ -118,7 +117,7 @@ export default function SearchPage() {
       }
     };
     restoreSession();
-  }, [token, currentUser, setCurrentUser]);
+  }, [api, currentUser, setCurrentUser]);
 
   /**
    * Check if query looks like a remote user address (user@domain)
@@ -134,7 +133,7 @@ export default function SearchPage() {
    */
   const performSearch = useCallback(async () => {
     const trimmedQuery = query.trim();
-    if (!trimmedQuery || !token) return;
+    if (!trimmedQuery || !api.token) return;
 
     setIsSearching(true);
     setSearchError(null);
@@ -142,8 +141,6 @@ export default function SearchPage() {
     setResolvedRemoteUser(null);
 
     try {
-      apiClient.setToken(token);
-
       // Search local database
       const params = new URLSearchParams({
         q: trimmedQuery,
@@ -151,7 +148,7 @@ export default function SearchPage() {
         localOnly: searchScope === "local" ? "true" : "false",
       });
 
-      const response = await apiClient.get<SearchResponse>(`/api/users/search?${params}`);
+      const response = await api.get<SearchResponse>(`/api/users/search?${params}`);
       setResults(response.users);
 
       // If query looks like a remote user and we're searching all, try to resolve
@@ -159,7 +156,7 @@ export default function SearchPage() {
         setIsResolvingRemote(true);
         try {
           const acct = trimmedQuery.startsWith("@") ? trimmedQuery.slice(1) : trimmedQuery;
-          const remoteUser = await apiClient.get<ResolveResponse>(
+          const remoteUser = await api.get<ResolveResponse>(
             `/api/users/resolve?acct=${encodeURIComponent(acct)}`,
           );
 
@@ -181,7 +178,7 @@ export default function SearchPage() {
     } finally {
       setIsSearching(false);
     }
-  }, [query, token, searchScope, isRemoteUserQuery]);
+  }, [query, api, searchScope, isRemoteUserQuery]);
 
   /**
    * Handle form submission
@@ -264,7 +261,7 @@ export default function SearchPage() {
     async (e: React.MouseEvent, user: SearchUser) => {
       e.stopPropagation(); // Prevent navigation to user profile
 
-      if (!token || followLoadingUsers.has(user.id)) return;
+      if (!api.token || followLoadingUsers.has(user.id)) return;
 
       setFollowLoadingUsers((prev) => new Set(prev).add(user.id));
 
@@ -292,7 +289,7 @@ export default function SearchPage() {
         });
       }
     },
-    [token, followingUsers, followLoadingUsers],
+    [api.token, followingUsers, followLoadingUsers],
   );
 
   /**

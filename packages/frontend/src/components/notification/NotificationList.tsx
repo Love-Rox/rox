@@ -15,10 +15,23 @@ import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import { useRouter } from "../ui/SpaLink";
 import type { Notification } from "../../lib/types/notification";
 
+/**
+ * Props for the NotificationList component.
+ */
 interface NotificationListProps {
+  /** Optional callback when a notification is clicked (overrides default navigation) */
   onNotificationClick?: (notification: Notification) => void;
 }
 
+/**
+ * Notification list component with infinite scroll.
+ *
+ * Displays a scrollable list of notifications with support for:
+ * - Marking individual notifications as read
+ * - Marking all notifications as read
+ * - Infinite scroll loading for older notifications
+ * - Default navigation to note or user profile on click
+ */
 export function NotificationList({ onNotificationClick }: NotificationListProps) {
   const { notifications, loading, markAsRead, markAllAsRead, loadMore } = useNotifications();
   const router = useRouter();

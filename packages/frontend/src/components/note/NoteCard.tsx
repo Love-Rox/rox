@@ -1,19 +1,30 @@
 "use client";
 
+/**
+ * Note Card Component
+ *
+ * Displays a single note with author info, content, media attachments,
+ * reactions, and action buttons (reply, boost, react, menu).
+ *
+ * @module components/note/NoteCard
+ */
+
 import { useState, useEffect, memo, useRef, useCallback } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import type { Note, NoteFile } from "../../lib/types/note";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { MessageCircle, Repeat2, MoreHorizontal, Flag, Globe, Lock, Trash2, Share, Copy, ExternalLink } from "lucide-react";
+import { MessageCircle, Repeat2, Globe, Lock } from "lucide-react";
 import { getRemoteInstanceInfo, type PublicRemoteInstance } from "../../lib/api/instance";
 import { Card, CardContent } from "../ui/Card";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { SpaLink } from "../ui/SpaLink";
 import { ImageModal } from "../ui/ImageModal";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { notesApi } from "../../lib/api/notes";
 import { NoteComposer } from "./NoteComposer";
+import { NoteCardMenu } from "./NoteCardMenu";
 import { ReactionButton } from "./ReactionPicker";
 import { UserDisplayName } from "../user/UserDisplayName";
 import { ReportDialog } from "../report/ReportDialog";
@@ -66,8 +77,6 @@ function NoteCardComponent({
   const [showReplyComposer, setShowReplyComposer] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
-  const [showShareMenu, setShowShareMenu] = useState(false);
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -86,7 +95,6 @@ function NoteCardComponent({
 
   // Refs for lazy loading with IntersectionObserver
   const cardRef = useRef<HTMLDivElement>(null);
-  const moreMenuRef = useRef<HTMLDivElement>(null);
   const hasLoadedReactionData = useRef(false);
   const hasLoadedInstanceInfo = useRef(false);
 
@@ -138,23 +146,6 @@ function NoteCardComponent({
     }
   }, [note.user.host]);
 
-
-  // Close menu when clicking outside
-  useEffect(() => {
-    if (!showMoreMenu) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
-        setShowMoreMenu(false);
-        setShowShareMenu(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showMoreMenu]);
 
   // Sync reactions from props when they change (e.g., from SSE updates)
   useEffect(() => {
@@ -288,83 +279,6 @@ function NoteCardComponent({
       setIsDeleting(false);
     }
   };
-
-  /**
-   * Get the public URL for this note
-   */
-  const getNoteUrl = (): string => {
-    // For remote notes, use the original URI if available
-    if (note.uri) {
-      return note.uri;
-    }
-    // For local notes, construct the URL
-    const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-    return `${baseUrl}/notes/${note.id}`;
-  };
-
-  /**
-   * Copy note URL to clipboard
-   */
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(getNoteUrl());
-      addToast({
-        type: "success",
-        message: t`Link copied to clipboard`,
-      });
-    } catch {
-      addToast({
-        type: "error",
-        message: t`Failed to copy link`,
-      });
-    }
-    setShowShareMenu(false);
-    setShowMoreMenu(false);
-  };
-
-  /**
-   * Open note in new tab
-   */
-  const handleOpenInNewTab = () => {
-    window.open(getNoteUrl(), "_blank", "noopener,noreferrer");
-    setShowShareMenu(false);
-    setShowMoreMenu(false);
-  };
-
-  /**
-   * Share using Web Share API (if available)
-   */
-  const handleNativeShare = async () => {
-    const url = getNoteUrl();
-    const text = note.text || "";
-    const title = t`Note by @${note.user.username}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title,
-          text: text.length > 100 ? `${text.slice(0, 100)}...` : text,
-          url,
-        });
-      } catch (err) {
-        // User cancelled share or share failed
-        if ((err as Error).name !== "AbortError") {
-          console.error("Share failed:", err);
-        }
-      }
-    } else {
-      // Fallback: copy to clipboard
-      await handleCopyLink();
-      return;
-    }
-    setShowShareMenu(false);
-    setShowMoreMenu(false);
-  };
-
-  /**
-   * Check if Web Share API is available
-   */
-  const canUseNativeShare = typeof navigator !== "undefined" && "share" in navigator;
 
   // Get user initials for avatar fallback
   const userInitials = note.user.name
@@ -716,7 +630,6 @@ function NoteCardComponent({
           {/* Reaction button - always shown, allows adding new reactions */}
           <ReactionButton
             onReactionSelect={handleReaction}
-            selectedReactions={myReactions}
             isDisabled={isReacting}
           />
           {localReactions && Object.keys(localReactions).length > 0 && (
@@ -770,101 +683,17 @@ function NoteCardComponent({
             </div>
           )}
           {/* More menu with share/delete/report options */}
-          <div ref={moreMenuRef} className="relative ml-auto">
-            <Button
-              variant="ghost"
-              size="sm"
-              onPress={() => {
-                setShowMoreMenu(!showMoreMenu);
-                setShowShareMenu(false);
-              }}
-              className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-              aria-label={t`More options`}
-              aria-expanded={showMoreMenu}
-            >
-              <MoreHorizontal className="w-4 h-4" />
-            </Button>
-            {showMoreMenu && (
-              <div className="absolute right-0 top-full mt-1 w-48 rounded-lg border border-(--border-color) bg-(--bg-primary) shadow-lg z-10">
-                {/* Share submenu trigger */}
-                <div className="relative">
-                  <button
-                    onClick={() => setShowShareMenu(!showShareMenu)}
-                    className="flex items-center justify-between gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-(--bg-secondary) rounded-t-lg"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Share className="w-4 h-4" />
-                      <Trans>Share</Trans>
-                    </span>
-                    <span className={`text-gray-400 transition-transform ${showShareMenu ? "rotate-90" : ""}`}>›</span>
-                  </button>
-                  {/* Share submenu - shown below the parent item */}
-                  {showShareMenu && (
-                    <div className="border-t border-(--border-color)">
-                      <button
-                        onClick={handleCopyLink}
-                        className="flex items-center gap-2 w-full px-3 py-2 pl-7 text-sm text-gray-700 dark:text-gray-300 hover:bg-(--bg-secondary)"
-                      >
-                        <Copy className="w-4 h-4" />
-                        <Trans>Copy link</Trans>
-                      </button>
-                      <button
-                        onClick={handleOpenInNewTab}
-                        className="flex items-center gap-2 w-full px-3 py-2 pl-7 text-sm text-gray-700 dark:text-gray-300 hover:bg-(--bg-secondary)"
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        <Trans>Open in new tab</Trans>
-                      </button>
-                      {canUseNativeShare && (
-                        <button
-                          onClick={handleNativeShare}
-                          className="flex items-center gap-2 w-full px-3 py-2 pl-7 text-sm text-gray-700 dark:text-gray-300 hover:bg-(--bg-secondary)"
-                        >
-                          <Share className="w-4 h-4" />
-                          <Trans>Share via...</Trans>
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {/* Divider if user actions available */}
-                {currentUser && (
-                  <div className="border-t border-(--border-color)" />
-                )}
-
-                {/* Delete option (own notes) */}
-                {currentUser && currentUser.id === note.user.id && (
-                  <button
-                    onClick={() => {
-                      setShowMoreMenu(false);
-                      setShowShareMenu(false);
-                      setShowDeleteConfirm(true);
-                    }}
-                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-(--bg-secondary) rounded-b-lg"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    <Trans>Delete</Trans>
-                  </button>
-                )}
-
-                {/* Report option (other's notes) */}
-                {currentUser && currentUser.id !== note.user.id && (
-                  <button
-                    onClick={() => {
-                      setShowMoreMenu(false);
-                      setShowShareMenu(false);
-                      setShowReportDialog(true);
-                    }}
-                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-(--bg-secondary) rounded-b-lg"
-                  >
-                    <Flag className="w-4 h-4" />
-                    <Trans>Report</Trans>
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
+          <NoteCardMenu
+            noteId={note.id}
+            noteUri={note.uri}
+            noteText={note.text}
+            authorUsername={note.user.username}
+            isOwnNote={currentUser?.id === note.user.id}
+            isLoggedIn={Boolean(currentUser)}
+            onDeleteRequest={() => setShowDeleteConfirm(true)}
+            onReportRequest={() => setShowReportDialog(true)}
+            onToast={(type, message) => addToast({ type, message })}
+          />
         </div>
 
         {/* Reply Composer */}
@@ -892,38 +721,23 @@ function NoteCardComponent({
         />
 
         {/* Delete Confirmation Dialog */}
-        {showDeleteConfirm && (
-          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-            <div className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl p-6">
-              <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-gray-100">
-                <Trans>Delete Note</Trans>
-              </h2>
-              <p className="mb-6 text-gray-700 dark:text-gray-300">
-                <Trans>Are you sure you want to delete this note? This action cannot be undone.</Trans>
-              </p>
-              <div className="flex justify-end gap-2">
-                <Button
-                  variant="secondary"
-                  onPress={() => setShowDeleteConfirm(false)}
-                  isDisabled={isDeleting}
-                >
-                  <Trans>Cancel</Trans>
-                </Button>
-                <Button
-                  variant="danger"
-                  onPress={handleDelete}
-                  isDisabled={isDeleting}
-                >
-                  {isDeleting ? <Trans>Deleting...</Trans> : <Trans>Delete</Trans>}
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConfirmDialog
+          isOpen={showDeleteConfirm}
+          onClose={() => setShowDeleteConfirm(false)}
+          onConfirm={handleDelete}
+          title={<Trans>Delete Note</Trans>}
+          message={<Trans>Are you sure you want to delete this note? This action cannot be undone.</Trans>}
+          confirmText={<Trans>Delete</Trans>}
+          confirmVariant="danger"
+          isLoading={isDeleting}
+          loadingText={<Trans>Deleting...</Trans>}
+        />
       </CardContent>
     </Card>
   );
 }
 
-// Memoize NoteCard to prevent unnecessary re-renders in timeline
+/**
+ * Memoized NoteCard component to prevent unnecessary re-renders in timeline.
+ */
 export const NoteCard = memo(NoteCardComponent);

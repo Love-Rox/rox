@@ -8,16 +8,16 @@
 
 import { useState, useEffect } from "react";
 import { Trans } from "@lingui/react/macro";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { Mail, Loader2, PenSquare } from "lucide-react";
 import { Layout } from "../../components/layout/Layout";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { Avatar } from "../../components/ui/Avatar";
 import { UserDisplayName } from "../../components/user/UserDisplayName";
 import { useConversations } from "../../hooks/useDirectMessages";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { currentUserAtom } from "../../lib/atoms/auth";
 import { openComposeModalAtom } from "../../lib/atoms/compose";
-import { apiClient } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 import type { ConversationPartner } from "../../lib/api/direct";
 
 /**
@@ -86,8 +86,8 @@ function ConversationItem({ conversation }: { conversation: ConversationPartner 
 }
 
 export default function MessagesPage() {
+  const api = useApi();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const token = useAtomValue(tokenAtom);
   const [isLoading, setIsLoading] = useState(true);
   const openComposeModal = useSetAtom(openComposeModalAtom);
 
@@ -96,15 +96,14 @@ export default function MessagesPage() {
   // Restore user session on mount
   useEffect(() => {
     const restoreSession = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       if (!currentUser) {
         try {
-          apiClient.setToken(token);
-          const response = await apiClient.get<{ user: any }>("/api/auth/session");
+          const response = await api.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
           setIsLoading(false);
         } catch (error) {
@@ -117,7 +116,7 @@ export default function MessagesPage() {
       }
     };
     restoreSession();
-  }, [token, currentUser, setCurrentUser]);
+  }, [api, currentUser, setCurrentUser]);
 
   // Fetch conversations on load
   useEffect(() => {

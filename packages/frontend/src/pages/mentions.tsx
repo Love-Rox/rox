@@ -8,22 +8,22 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Trans } from "@lingui/react/macro";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { AtSign, Loader2 } from "lucide-react";
 import { Layout } from "../components/layout/Layout";
 import { PageHeader } from "../components/ui/PageHeader";
 import { NoteCard } from "../components/note/NoteCard";
 import { useMentions } from "../hooks/useMentions";
 import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
-import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
-import { apiClient } from "../lib/api/client";
+import { currentUserAtom } from "../lib/atoms/auth";
+import { useApi } from "../hooks/useApi";
 import { TimelineSkeleton } from "../components/ui/Skeleton";
 import { ScrollToTop } from "../components/ui/ScrollToTop";
 import { AnimatedList } from "../components/ui/AnimatedList";
 
 export default function MentionsPage() {
+  const api = useApi();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const token = useAtomValue(tokenAtom);
   const [isLoading, setIsLoading] = useState(true);
 
   const { mentions, loading, hasMore, fetchMentions, loadMore } = useMentions();
@@ -33,15 +33,14 @@ export default function MentionsPage() {
   // Restore user session on mount
   useEffect(() => {
     const restoreSession = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       if (!currentUser) {
         try {
-          apiClient.setToken(token);
-          const response = await apiClient.get<{ user: any }>("/api/auth/session");
+          const response = await api.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
           setIsLoading(false);
         } catch (error) {
@@ -54,7 +53,7 @@ export default function MentionsPage() {
       }
     };
     restoreSession();
-  }, [token, currentUser, setCurrentUser]);
+  }, [api, currentUser, setCurrentUser]);
 
   // Fetch mentions on load
   useEffect(() => {

@@ -55,10 +55,23 @@ const statusConfig: Record<
   },
 };
 
+/**
+ * Props for the ContactThreadPageClient component.
+ */
 interface ContactThreadPageClientProps {
+  /** The ID of the contact thread to display */
   threadId: string;
 }
 
+/**
+ * Contact thread page client component.
+ *
+ * Displays a contact/support thread in a chat-style interface.
+ * Features include:
+ * - Viewing message history between user and admin/moderator
+ * - Sending new replies (when thread is not closed)
+ * - Status display (open, in progress, resolved, closed)
+ */
 export function ContactThreadPageClient({ threadId }: ContactThreadPageClientProps) {
   const { t } = useLingui();
   const currentUser = useAtomValue(currentUserAtom);

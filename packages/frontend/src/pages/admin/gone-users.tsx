@@ -11,8 +11,7 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Ghost, Trash2, RotateCcw, CheckSquare, Square, AlertTriangle } from "lucide-react";
-import { tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -40,7 +39,7 @@ interface GoneUsersResponse {
 }
 
 export default function AdminGoneUsersPage() {
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   const [users, setUsers] = useState<GoneUser[]>([]);
@@ -56,11 +55,10 @@ export default function AdminGoneUsersPage() {
   const [isClearing, setIsClearing] = useState(false);
 
   const loadUsers = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      const response = await apiClient.get<GoneUsersResponse>("/api/admin/gone-users?limit=100");
+      const response = await api.get<GoneUsersResponse>("/api/admin/gone-users?limit=100");
       setUsers(response.users);
       setTotal(response.total);
       setError(null);
@@ -70,7 +68,7 @@ export default function AdminGoneUsersPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, [api]);
 
   useEffect(() => {
     loadUsers();
@@ -97,15 +95,14 @@ export default function AdminGoneUsersPage() {
   };
 
   const handleMarkDeleted = async (userIds?: string[]) => {
-    if (!token) return;
+    if (!api.token) return;
 
     const idsToDelete = userIds || Array.from(selectedIds);
     if (idsToDelete.length === 0) return;
 
     setIsDeleting(true);
     try {
-      apiClient.setToken(token);
-      await apiClient.post("/api/admin/gone-users/mark-deleted", { userIds: idsToDelete });
+      await api.post("/api/admin/gone-users/mark-deleted", { userIds: idsToDelete });
       addToast({
         type: "success",
         message: t`Marked ${idsToDelete.length} users as deleted`,
@@ -124,15 +121,14 @@ export default function AdminGoneUsersPage() {
   };
 
   const handleClearFailures = async (userIds?: string[]) => {
-    if (!token) return;
+    if (!api.token) return;
 
     const idsToClear = userIds || Array.from(selectedIds);
     if (idsToClear.length === 0) return;
 
     setIsClearing(true);
     try {
-      apiClient.setToken(token);
-      await apiClient.post("/api/admin/gone-users/clear", { userIds: idsToClear });
+      await api.post("/api/admin/gone-users/clear", { userIds: idsToClear });
       addToast({
         type: "success",
         message: t`Cleared failure status for ${idsToClear.length} users`,

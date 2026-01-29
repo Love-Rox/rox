@@ -4,29 +4,13 @@ import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import {
-  Smile,
-  X,
-  Clock,
-  Hand,
-  Dog,
-  Pizza,
-  Plane,
-  Lightbulb,
-  Heart,
-  Flag,
-  Sparkles,
-  Loader2,
-} from "lucide-react";
+import { Smile, X, Sparkles, Loader2, ChevronDown } from "lucide-react";
 import { Button } from "./Button";
 import {
   Dialog,
   DialogTrigger,
   Modal,
   ModalOverlay,
-  Tabs as AriaTabs,
-  TabList as AriaTabList,
-  Tab as AriaTab,
 } from "react-aria-components";
 import {
   emojiListAtom,
@@ -37,664 +21,35 @@ import {
   type CustomEmoji,
 } from "../../lib/atoms/customEmoji";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
+import {
+  EMOJI_CATEGORIES,
+  RECENT_EMOJIS_KEY,
+  MAX_RECENT_EMOJIS,
+  type EmojiCategory,
+} from "./emojiData";
 
 /**
  * Number of emojis to render per page for virtualization
  */
-const EMOJIS_PER_PAGE = 100;
+const EMOJIS_PER_PAGE = 50;
 
 /**
- * Emoji categories with their emojis
+ * Sanitize a category key for use in HTML id and aria-controls attributes.
+ * Uses encodeURIComponent to preserve uniqueness for non-ASCII category names.
  */
-const EMOJI_CATEGORIES = {
-  recent: {
-    name: "Recently Used",
-    icon: <Clock className="w-5 h-5" />,
-    emojis: [] as string[], // Will be populated from localStorage
-  },
-  smileys: {
-    name: "Smileys & Emotion",
-    icon: <Smile className="w-5 h-5" />,
-    emojis: [
-      "😀",
-      "😃",
-      "😄",
-      "😁",
-      "😆",
-      "😅",
-      "🤣",
-      "😂",
-      "🙂",
-      "🙃",
-      "😉",
-      "😊",
-      "😇",
-      "🥰",
-      "😍",
-      "🤩",
-      "😘",
-      "😗",
-      "😚",
-      "😙",
-      "😋",
-      "😛",
-      "😜",
-      "🤪",
-      "😝",
-      "🤑",
-      "🤗",
-      "🤭",
-      "🤫",
-      "🤔",
-      "🤐",
-      "🤨",
-      "😐",
-      "😑",
-      "😶",
-      "😏",
-      "😒",
-      "🙄",
-      "😬",
-      "🤥",
-      "😌",
-      "😔",
-      "😪",
-      "🤤",
-      "😴",
-      "😷",
-      "🤒",
-      "🤕",
-      "🤢",
-      "🤮",
-      "🤧",
-      "🥵",
-      "🥶",
-      "😵",
-      "🤯",
-      "🤠",
-      "🥳",
-      "😎",
-      "🤓",
-      "🧐",
-    ],
-  },
-  people: {
-    name: "People & Body",
-    icon: <Hand className="w-5 h-5" />,
-    emojis: [
-      "👋",
-      "🤚",
-      "🖐️",
-      "✋",
-      "🖖",
-      "👌",
-      "🤏",
-      "✌️",
-      "🤞",
-      "🤟",
-      "🤘",
-      "🤙",
-      "👈",
-      "👉",
-      "👆",
-      "🖕",
-      "👇",
-      "☝️",
-      "👍",
-      "👎",
-      "✊",
-      "👊",
-      "🤛",
-      "🤜",
-      "👏",
-      "🙌",
-      "👐",
-      "🤲",
-      "🤝",
-      "🙏",
-      "💪",
-      "🦵",
-      "🦶",
-      "👂",
-      "🦻",
-      "👃",
-      "🧠",
-      "🦷",
-      "🦴",
-      "👀",
-      "👁️",
-      "👅",
-      "👄",
-      "💋",
-      "🩸",
-    ],
-  },
-  animals: {
-    name: "Animals & Nature",
-    icon: <Dog className="w-5 h-5" />,
-    emojis: [
-      "🐶",
-      "🐱",
-      "🐭",
-      "🐹",
-      "🐰",
-      "🦊",
-      "🐻",
-      "🐼",
-      "🐨",
-      "🐯",
-      "🦁",
-      "🐮",
-      "🐷",
-      "🐸",
-      "🐵",
-      "🐔",
-      "🐧",
-      "🐦",
-      "🐤",
-      "🦆",
-      "🦅",
-      "🦉",
-      "🦇",
-      "🐺",
-      "🐗",
-      "🐴",
-      "🦄",
-      "🐝",
-      "🐛",
-      "🦋",
-      "🐌",
-      "🐞",
-      "🐜",
-      "🦟",
-      "🦗",
-      "🕷️",
-      "🦂",
-      "🐢",
-      "🐍",
-      "🦎",
-      "🦖",
-      "🦕",
-      "🐙",
-      "🦑",
-      "🦐",
-      "🦞",
-      "🦀",
-      "🐡",
-      "🐠",
-      "🐟",
-      "🐬",
-      "🐳",
-      "🐋",
-      "🦈",
-      "🐊",
-      "🐅",
-      "🐆",
-      "🦓",
-      "🦍",
-      "🦧",
-    ],
-  },
-  food: {
-    name: "Food & Drink",
-    icon: <Pizza className="w-5 h-5" />,
-    emojis: [
-      "🍎",
-      "🍐",
-      "🍊",
-      "🍋",
-      "🍌",
-      "🍉",
-      "🍇",
-      "🍓",
-      "🍈",
-      "🍒",
-      "🍑",
-      "🥭",
-      "🍍",
-      "🥥",
-      "🥝",
-      "🍅",
-      "🍆",
-      "🥑",
-      "🥦",
-      "🥬",
-      "🥒",
-      "🌶️",
-      "🌽",
-      "🥕",
-      "🧄",
-      "🧅",
-      "🥔",
-      "🍠",
-      "🥐",
-      "🥯",
-      "🍞",
-      "🥖",
-      "🥨",
-      "🧀",
-      "🥚",
-      "🍳",
-      "🧈",
-      "🥞",
-      "🧇",
-      "🥓",
-      "🥩",
-      "🍗",
-      "🍖",
-      "🌭",
-      "🍔",
-      "🍟",
-      "🍕",
-      "🥪",
-      "🥙",
-      "🧆",
-      "🌮",
-      "🌯",
-      "🥗",
-      "🥘",
-      "🍝",
-      "🍜",
-      "🍲",
-      "🍛",
-      "🍣",
-      "🍱",
-    ],
-  },
-  activities: {
-    name: "Activities",
-    icon: <Lightbulb className="w-5 h-5" />,
-    emojis: [
-      "⚽",
-      "🏀",
-      "🏈",
-      "⚾",
-      "🥎",
-      "🎾",
-      "🏐",
-      "🏉",
-      "🥏",
-      "🎱",
-      "🪀",
-      "🏓",
-      "🏸",
-      "🏒",
-      "🏑",
-      "🥍",
-      "🏏",
-      "🥅",
-      "⛳",
-      "🪁",
-      "🏹",
-      "🎣",
-      "🤿",
-      "🥊",
-      "🥋",
-      "🎽",
-      "🛹",
-      "🛷",
-      "⛸️",
-      "🥌",
-      "🎿",
-      "⛷️",
-      "🏂",
-      "🪂",
-      "🏋️",
-      "🤼",
-      "🤸",
-      "🤾",
-      "🏌️",
-      "🏇",
-      "🧘",
-      "🏊",
-      "🤽",
-      "🚣",
-      "🧗",
-      "🚴",
-      "🚵",
-      "🤹",
-      "🎪",
-      "🎨",
-    ],
-  },
-  travel: {
-    name: "Travel & Places",
-    icon: <Plane className="w-5 h-5" />,
-    emojis: [
-      "🚗",
-      "🚕",
-      "🚙",
-      "🚌",
-      "🚎",
-      "🏎️",
-      "🚓",
-      "🚑",
-      "🚒",
-      "🚐",
-      "🚚",
-      "🚛",
-      "🚜",
-      "🛴",
-      "🚲",
-      "🛵",
-      "🏍️",
-      "🛺",
-      "🚨",
-      "🚔",
-      "🚍",
-      "🚘",
-      "🚖",
-      "🚡",
-      "🚠",
-      "🚟",
-      "🚃",
-      "🚋",
-      "🚞",
-      "🚝",
-      "🚄",
-      "🚅",
-      "🚈",
-      "🚂",
-      "🚆",
-      "🚇",
-      "🚊",
-      "🚉",
-      "✈️",
-      "🛫",
-      "🛬",
-      "🛩️",
-      "💺",
-      "🛰️",
-      "🚀",
-      "🛸",
-      "🚁",
-      "🛶",
-      "⛵",
-      "🚤",
-      "🛳️",
-      "⛴️",
-      "🛥️",
-      "🚢",
-      "⚓",
-      "⛽",
-      "🚧",
-      "🚦",
-      "🚥",
-      "🗺️",
-    ],
-  },
-  objects: {
-    name: "Objects",
-    icon: <Lightbulb className="w-5 h-5" />,
-    emojis: [
-      "⌚",
-      "📱",
-      "📲",
-      "💻",
-      "⌨️",
-      "🖥️",
-      "🖨️",
-      "🖱️",
-      "🖲️",
-      "🕹️",
-      "🗜️",
-      "💽",
-      "💾",
-      "💿",
-      "📀",
-      "📼",
-      "📷",
-      "📸",
-      "📹",
-      "🎥",
-      "📽️",
-      "🎞️",
-      "📞",
-      "☎️",
-      "📟",
-      "📠",
-      "📺",
-      "📻",
-      "🎙️",
-      "🎚️",
-      "🎛️",
-      "🧭",
-      "⏱️",
-      "⏲️",
-      "⏰",
-      "🕰️",
-      "⌛",
-      "⏳",
-      "📡",
-      "🔋",
-      "🔌",
-      "💡",
-      "🔦",
-      "🕯️",
-      "🪔",
-      "🧯",
-      "🛢️",
-      "💸",
-      "💵",
-      "💴",
-      "💶",
-      "💷",
-      "💰",
-      "💳",
-      "🪙",
-      "💎",
-      "⚖️",
-      "🪜",
-      "🧰",
-      "🪛",
-    ],
-  },
-  symbols: {
-    name: "Symbols",
-    icon: <Heart className="w-5 h-5" />,
-    emojis: [
-      "❤️",
-      "🧡",
-      "💛",
-      "💚",
-      "💙",
-      "💜",
-      "🖤",
-      "🤍",
-      "🤎",
-      "💔",
-      "❣️",
-      "💕",
-      "💞",
-      "💓",
-      "💗",
-      "💖",
-      "💘",
-      "💝",
-      "💟",
-      "☮️",
-      "✝️",
-      "☪️",
-      "🕉️",
-      "☸️",
-      "✡️",
-      "🔯",
-      "🕎",
-      "☯️",
-      "☦️",
-      "🛐",
-      "⛎",
-      "♈",
-      "♉",
-      "♊",
-      "♋",
-      "♌",
-      "♍",
-      "♎",
-      "♏",
-      "♐",
-      "♑",
-      "♒",
-      "♓",
-      "🆔",
-      "⚛️",
-      "🉑",
-      "☢️",
-      "☣️",
-      "📴",
-      "📳",
-      "🈶",
-      "🈚",
-      "🈸",
-      "🈺",
-      "🈷️",
-      "✴️",
-      "🆚",
-      "💮",
-      "🉐",
-      "㊙️",
-    ],
-  },
-  flags: {
-    name: "Flags",
-    icon: <Flag className="w-5 h-5" />,
-    emojis: [
-      "🏁",
-      "🚩",
-      "🎌",
-      "🏴",
-      "🏳️",
-      "🏳️‍🌈",
-      "🏳️‍⚧️",
-      "🏴‍☠️",
-      "🇦🇨",
-      "🇦🇩",
-      "🇦🇪",
-      "🇦🇫",
-      "🇦🇬",
-      "🇦🇮",
-      "🇦🇱",
-      "🇦🇲",
-      "🇦🇴",
-      "🇦🇶",
-      "🇦🇷",
-      "🇦🇸",
-      "🇦🇹",
-      "🇦🇺",
-      "🇦🇼",
-      "🇦🇽",
-      "🇦🇿",
-      "🇧🇦",
-      "🇧🇧",
-      "🇧🇩",
-      "🇧🇪",
-      "🇧🇫",
-      "🇧🇬",
-      "🇧🇭",
-      "🇧🇮",
-      "🇧🇯",
-      "🇧🇱",
-      "🇧🇲",
-      "🇧🇳",
-      "🇧🇴",
-      "🇧🇶",
-      "🇧🇷",
-      "🇧🇸",
-      "🇧🇹",
-      "🇧🇻",
-      "🇧🇼",
-      "🇧🇾",
-      "🇧🇿",
-      "🇨🇦",
-      "🇨🇨",
-      "🇨🇩",
-      "🇨🇫",
-      "🇨🇬",
-      "🇨🇭",
-      "🇨🇮",
-      "🇨🇰",
-      "🇨🇱",
-      "🇨🇲",
-      "🇨🇳",
-      "🇨🇴",
-      "🇨🇵",
-      "🇨🇷",
-      "🇨🇺",
-      "🇨🇻",
-      "🇨🇼",
-      "🇨🇽",
-      "🇨🇾",
-      "🇨🇿",
-      "🇩🇪",
-      "🇩🇬",
-      "🇩🇯",
-      "🇩🇰",
-      "🇩🇲",
-      "🇩🇴",
-      "🇩🇿",
-      "🇪🇦",
-      "🇪🇨",
-      "🇪🇪",
-      "🇪🇬",
-      "🇪🇭",
-      "🇪🇷",
-      "🇪🇸",
-      "🇪🇹",
-      "🇪🇺",
-      "🇫🇮",
-      "🇫🇯",
-      "🇫🇰",
-      "🇫🇲",
-      "🇫🇴",
-      "🇫🇷",
-      "🇬🇦",
-      "🇬🇧",
-      "🇬🇩",
-      "🇬🇪",
-      "🇬🇫",
-      "🇬🇬",
-      "🇬🇭",
-      "🇬🇮",
-      "🇬🇱",
-      "🇬🇲",
-      "🇬🇳",
-      "🇬🇵",
-      "🇬🇶",
-      "🇬🇷",
-      "🇬🇸",
-      "🇬🇹",
-      "🇬🇺",
-      "🇬🇼",
-      "🇬🇾",
-      "🇭🇰",
-      "🇭🇲",
-      "🇭🇳",
-      "🇭🇷",
-      "🇭🇹",
-      "🇭🇺",
-      "🇮🇨",
-      "🇮🇩",
-      "🇮🇪",
-      "🇮🇱",
-      "🇮🇲",
-      "🇮🇳",
-      "🇮🇴",
-      "🇮🇶",
-      "🇮🇷",
-      "🇮🇸",
-      "🇮🇹",
-      "🇯🇪",
-      "🇯🇲",
-      "🇯🇴",
-      "🇯🇵",
-    ],
-  },
-} as const;
+function sanitizeId(key: string): string {
+  return encodeURIComponent(key).replace(/%/g, "_");
+}
 
-type EmojiCategory = keyof typeof EMOJI_CATEGORIES;
-
-const RECENT_EMOJIS_KEY = "rox-recent-emojis";
-const MAX_RECENT_EMOJIS = 30;
+/**
+ * Normalize category name for display, replacing sentinel values
+ */
+function normalizeCategoryName(name: string): string {
+  if (name === "__uncategorized__" || name === "") {
+    return t`Uncategorized`;
+  }
+  return name;
+}
 
 /**
  * Props for the EmojiPicker component
@@ -715,14 +70,187 @@ export interface EmojiPickerProps {
 }
 
 /**
- * Emoji picker component with categories and search
+ * Props for the accordion section component
+ */
+interface AccordionSectionProps {
+  /** Category key */
+  categoryKey: string;
+  /** Section title */
+  title: string;
+  /** Section icon */
+  icon: React.ReactNode;
+  /** Whether the section is expanded */
+  isExpanded: boolean;
+  /** Toggle expand callback */
+  onToggle: () => void;
+  /** Emojis to display */
+  emojis: readonly string[];
+  /** Callback when emoji is clicked */
+  onEmojiClick: (emoji: string) => void;
+  /** Number of visible emojis */
+  visibleCount: number;
+  /** Whether there are more emojis */
+  hasMore: boolean;
+}
+
+/**
+ * Accordion section for emoji category
+ */
+function AccordionSection({
+  categoryKey,
+  title,
+  icon,
+  isExpanded,
+  onToggle,
+  emojis,
+  onEmojiClick,
+  visibleCount,
+  hasMore,
+}: AccordionSectionProps) {
+  const displayedEmojis = emojis.slice(0, visibleCount);
+  const sectionId = `emoji-section-${sanitizeId(categoryKey)}`;
+
+  return (
+    <div className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+      <Button
+        onPress={onToggle}
+        className="flex items-center justify-between w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+        aria-expanded={isExpanded}
+        aria-controls={sectionId}
+      >
+        <span className="flex items-center gap-2">
+          <span className="text-lg">{icon}</span>
+          <span className="font-medium text-gray-900 dark:text-gray-100">{title}</span>
+          <span className="text-xs text-gray-400">({emojis.length})</span>
+        </span>
+        <ChevronDown
+          className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+        />
+      </Button>
+      {isExpanded && (
+        <div id={sectionId} className="px-4 pb-3">
+          <div className="grid grid-cols-8 gap-1">
+            {displayedEmojis.map((emoji, index) => (
+              <Button
+                key={`${emoji}-${index}`}
+                onPress={() => onEmojiClick(emoji)}
+                className="text-2xl p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+
+                aria-label={`Select ${emoji}`}
+              >
+                {emoji}
+              </Button>
+            ))}
+          </div>
+          {hasMore && (
+            <div className="text-center py-2 text-xs text-gray-400">
+              {displayedEmojis.length}/{emojis.length}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Props for the custom emoji accordion section
+ */
+interface CustomAccordionSectionProps {
+  /** Category key */
+  categoryKey: string;
+  /** Section title */
+  title: string;
+  /** Section icon */
+  icon: React.ReactNode;
+  /** Whether the section is expanded */
+  isExpanded: boolean;
+  /** Toggle expand callback */
+  onToggle: () => void;
+  /** Custom emojis to display */
+  emojis: CustomEmoji[];
+  /** Callback when emoji is clicked */
+  onEmojiClick: (emoji: CustomEmoji) => void;
+  /** Number of visible emojis */
+  visibleCount: number;
+  /** Whether there are more emojis */
+  hasMore: boolean;
+}
+
+/**
+ * Accordion section for custom emoji category
+ */
+function CustomAccordionSection({
+  categoryKey,
+  title,
+  icon,
+  isExpanded,
+  onToggle,
+  emojis,
+  onEmojiClick,
+  visibleCount,
+  hasMore,
+}: CustomAccordionSectionProps) {
+  const displayedEmojis = emojis.slice(0, visibleCount);
+  const sectionId = `emoji-section-${sanitizeId(categoryKey)}`;
+
+  return (
+    <div className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+      <Button
+        onPress={onToggle}
+        className="flex items-center justify-between w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+        aria-expanded={isExpanded}
+        aria-controls={sectionId}
+      >
+        <span className="flex items-center gap-2">
+          <span className="text-lg">{icon}</span>
+          <span className="font-medium text-gray-900 dark:text-gray-100">{title}</span>
+          <span className="text-xs text-gray-400">({emojis.length})</span>
+        </span>
+        <ChevronDown
+          className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+        />
+      </Button>
+      {isExpanded && (
+        <div id={sectionId} className="px-4 pb-3">
+          <div className="grid grid-cols-8 gap-1">
+            {displayedEmojis.map((emoji) => (
+              <Button
+                key={emoji.id}
+                onPress={() => onEmojiClick(emoji)}
+                className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+
+                aria-label={`Select :${emoji.name}:`}
+              >
+                <img
+                  src={getProxiedImageUrl(emoji.url) || ""}
+                  alt={`:${emoji.name}:`}
+                  className="w-6 h-6 object-contain"
+                  loading="lazy"
+                />
+              </Button>
+            ))}
+          </div>
+          {hasMore && (
+            <div className="text-center py-2 text-xs text-gray-400">
+              {displayedEmojis.length}/{emojis.length}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Emoji picker component with accordion-style categories
  *
  * Features:
- * - Multiple emoji categories
+ * - Accordion-based category navigation (mobile-friendly, no horizontal scroll)
  * - Recently used emojis
  * - Search functionality
  * - Keyboard navigation
- * - Custom emoji support (future)
+ * - Custom emoji support
  *
  * @example
  * ```tsx
@@ -732,14 +260,13 @@ export interface EmojiPickerProps {
  * ```
  */
 export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerProps) {
-  const [selectedCategory, setSelectedCategory] = useState<EmojiCategory | string>("smileys");
-  const [selectedCustomCategory, setSelectedCustomCategory] = useState<string | null>(null);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>("smileys");
   const [searchQuery, setSearchQuery] = useState("");
   const [recentEmojis, setRecentEmojis] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(EMOJIS_PER_PAGE);
+  const [visibleCounts, setVisibleCounts] = useState<Record<string, number>>({});
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const emojiGridRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Custom emoji state
   const customEmojis = useAtomValue(emojiListAtom);
@@ -765,19 +292,52 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
     fetchEmojis();
   }, [fetchEmojis]);
 
-  // Reset visible count when category changes
+  // Reset visible counts when search changes
   useEffect(() => {
-    setVisibleCount(EMOJIS_PER_PAGE);
-  }, [selectedCategory, selectedCustomCategory, searchQuery]);
+    setVisibleCounts({});
+  }, [searchQuery]);
 
-  // Handle scroll to load more emojis
-  const handleScroll = useCallback(() => {
-    if (!emojiGridRef.current) return;
-    const { scrollTop, scrollHeight, clientHeight } = emojiGridRef.current;
-    if (scrollHeight - scrollTop - clientHeight < 200) {
-      setVisibleCount((prev) => prev + EMOJIS_PER_PAGE);
-    }
+  // Get visible count for a category
+  const getVisibleCount = useCallback(
+    (categoryKey: string) => visibleCounts[categoryKey] || EMOJIS_PER_PAGE,
+    [visibleCounts],
+  );
+
+  // Increment visible count for a category
+  const loadMore = useCallback((categoryKey: string, total: number) => {
+    setVisibleCounts((prev) => ({
+      ...prev,
+      [categoryKey]: Math.min((prev[categoryKey] || EMOJIS_PER_PAGE) + EMOJIS_PER_PAGE, total),
+    }));
   }, []);
+
+  // Handle scroll to load more
+  const handleScroll = useCallback(() => {
+    if (!scrollContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    if (scrollHeight - scrollTop - clientHeight < 100) {
+      // Load more search results if in search mode
+      if (searchQuery.trim()) {
+        // Load more for both search result categories
+        loadMore("search-custom", customEmojis.length);
+        loadMore("search-unicode", Object.values(EMOJI_CATEGORIES).reduce((sum, cat) => sum + cat.emojis.length, 0));
+        return;
+      }
+      // Otherwise load more for expanded category
+      if (!expandedCategory) return;
+      if (expandedCategory === "custom") {
+        loadMore("custom", customEmojis.length);
+      } else if (expandedCategory.startsWith("custom-")) {
+        const catName = expandedCategory.replace("custom-", "");
+        const emojis = emojisByCategory.get(catName === "__uncategorized__" ? "" : catName) || [];
+        loadMore(expandedCategory, emojis.length);
+      } else if (expandedCategory === "recent") {
+        loadMore("recent", recentEmojis.length);
+      } else if (expandedCategory in EMOJI_CATEGORIES) {
+        loadMore(expandedCategory, EMOJI_CATEGORIES[expandedCategory as EmojiCategory].emojis.length);
+      }
+    }
+  }, [expandedCategory, customEmojis.length, emojisByCategory, recentEmojis.length, loadMore, searchQuery]);
 
   // Save emoji to recent emojis
   const saveToRecent = useCallback((emoji: string) => {
@@ -812,68 +372,40 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
     [saveToRecent, onEmojiSelect],
   );
 
-  // Check if currently viewing custom emojis
-  const isCustomCategory = selectedCategory === "custom";
-
-  // Get emojis for the selected category
-  const getEmojisForCategory = useMemo((): string[] => {
-    if (selectedCategory === "recent") {
-      return recentEmojis;
-    }
-    if (isCustomCategory) {
-      return []; // Custom emojis are handled separately
-    }
-    if (selectedCategory in EMOJI_CATEGORIES) {
-      return [...EMOJI_CATEGORIES[selectedCategory as EmojiCategory].emojis];
-    }
-    return [];
-  }, [selectedCategory, recentEmojis, isCustomCategory]);
-
-  // Get custom emojis for current view (filtered by selected custom category)
-  const getCustomEmojisForCategory = useMemo((): CustomEmoji[] => {
-    if (!isCustomCategory) {
-      return [];
-    }
-    if (selectedCustomCategory === null) {
-      // Show all custom emojis
-      return customEmojis;
-    }
-    // Show emojis for specific category
-    return emojisByCategory.get(selectedCustomCategory) || [];
-  }, [isCustomCategory, selectedCustomCategory, customEmojis, emojisByCategory]);
+  // Toggle category expansion
+  const toggleCategory = useCallback((categoryKey: string) => {
+    setExpandedCategory((prev) => (prev === categoryKey ? null : categoryKey));
+  }, []);
 
   // Filter emojis by search query
-  const filteredEmojis = useMemo(() => {
-    if (searchQuery) {
-      return Object.values(EMOJI_CATEGORIES)
-        .flatMap((cat) => cat.emojis)
-        .filter((emoji) => emoji.includes(searchQuery));
+  const searchResults = useMemo(() => {
+    if (!searchQuery) return null;
+
+    const query = searchQuery.toLowerCase();
+    const unicodeResults: string[] = [];
+    const customResults: CustomEmoji[] = [];
+
+    // Search in all Unicode categories
+    for (const category of Object.values(EMOJI_CATEGORIES)) {
+      for (const emoji of category.emojis) {
+        if (emoji.includes(searchQuery)) {
+          unicodeResults.push(emoji);
+        }
+      }
     }
-    return getEmojisForCategory;
-  }, [searchQuery, getEmojisForCategory]);
 
-  // Filter custom emojis by search query
-  const filteredCustomEmojis = useMemo(() => {
-    if (searchQuery) {
-      return customEmojis.filter(
-        (emoji) =>
-          emoji.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          emoji.aliases.some((alias) => alias.toLowerCase().includes(searchQuery.toLowerCase())),
-      );
+    // Search in custom emojis
+    for (const emoji of customEmojis) {
+      if (
+        emoji.name.toLowerCase().includes(query) ||
+        emoji.aliases.some((alias) => alias.toLowerCase().includes(query))
+      ) {
+        customResults.push(emoji);
+      }
     }
-    return getCustomEmojisForCategory;
-  }, [searchQuery, customEmojis, getCustomEmojisForCategory]);
 
-  // Paginated emojis for display
-  const displayedEmojis = useMemo(
-    () => filteredEmojis.slice(0, visibleCount),
-    [filteredEmojis, visibleCount],
-  );
-
-  const displayedCustomEmojis = useMemo(
-    () => filteredCustomEmojis.slice(0, visibleCount),
-    [filteredCustomEmojis, visibleCount],
-  );
+    return { unicodeResults, customResults };
+  }, [searchQuery, customEmojis]);
 
   // Focus search input when modal opens
   useEffect(() => {
@@ -896,7 +428,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
         </Button>
       )}
       <ModalOverlay className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-        <Modal className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md h-125 flex flex-col overflow-hidden">
+        <Modal className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden mx-4">
           <Dialog className="flex flex-col h-full min-h-0 outline-none">
             {({ close }) => (
               <>
@@ -906,13 +438,15 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                       <Trans>Emoji Picker</Trans>
                     </h2>
-                    <button
-                      onClick={close}
-                      className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      aria-label="Close"
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onPress={close}
+                      className="p-1 rounded-md"
+                      aria-label={t`Close`}
                     >
                       <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                    </button>
+                    </Button>
                   </div>
 
                   {/* Search */}
@@ -927,259 +461,168 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                   />
                 </div>
 
-                {/* Category tabs */}
-                {!searchQuery && (
-                  <div className="shrink-0 border-b border-gray-200 dark:border-gray-700">
-                    <AriaTabs
-                      selectedKey={selectedCategory}
-                      onSelectionChange={(key) => setSelectedCategory(key as EmojiCategory | string)}
-                    >
-                      <AriaTabList
-                        aria-label="Emoji categories"
-                        className="flex gap-1 px-4 py-2 overflow-x-auto"
-                      >
-                        {/* Custom emojis tab (if available) */}
-                        {customEmojis.length > 0 && (
-                          <AriaTab
-                            id="custom"
-                            className={({ isSelected, isFocusVisible }) =>
-                              `px-3 py-2 rounded-md text-lg transition-colors cursor-pointer outline-none ${
-                                isSelected
-                                  ? "bg-primary-100 dark:bg-primary-900/30"
-                                  : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                              } ${isFocusVisible ? "ring-2 ring-primary-500" : ""}`
-                            }
-                            aria-label="Custom Emojis"
-                          >
-                            <Sparkles className="w-5 h-5" />
-                          </AriaTab>
-                        )}
-                        {recentEmojis.length > 0 && (
-                          <AriaTab
-                            id="recent"
-                            className={({ isSelected, isFocusVisible }) =>
-                              `px-3 py-2 rounded-md text-lg transition-colors cursor-pointer outline-none ${
-                                isSelected
-                                  ? "bg-primary-100 dark:bg-primary-900/30"
-                                  : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                              } ${isFocusVisible ? "ring-2 ring-primary-500" : ""}`
-                            }
-                            aria-label={EMOJI_CATEGORIES.recent.name}
-                          >
-                            {EMOJI_CATEGORIES.recent.icon}
-                          </AriaTab>
-                        )}
-                        {(Object.keys(EMOJI_CATEGORIES) as EmojiCategory[])
-                          .filter((cat) => cat !== "recent")
-                          .map((category) => (
-                            <AriaTab
-                              key={category}
-                              id={category}
-                              className={({ isSelected, isFocusVisible }) =>
-                                `px-3 py-2 rounded-md text-lg transition-colors cursor-pointer outline-none ${
-                                  isSelected
-                                    ? "bg-primary-100 dark:bg-primary-900/30"
-                                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                                } ${isFocusVisible ? "ring-2 ring-primary-500" : ""}`
-                              }
-                              aria-label={EMOJI_CATEGORIES[category].name}
-                            >
-                              {EMOJI_CATEGORIES[category].icon}
-                            </AriaTab>
-                          ))}
-                      </AriaTabList>
-                    </AriaTabs>
-                  </div>
-                )}
-
-                {/* Custom emoji category tabs (when custom category is selected) */}
-                {!searchQuery && isCustomCategory && customCategories.length > 0 && (
-                  <div className="shrink-0 border-b border-gray-200 dark:border-gray-700">
-                    <AriaTabs
-                      selectedKey={
-                        selectedCustomCategory === null
-                          ? "__all__"
-                          : selectedCustomCategory === ""
-                            ? "__uncategorized__"
-                            : selectedCustomCategory
-                      }
-                      onSelectionChange={(key) => {
-                        if (key === "__all__") {
-                          setSelectedCustomCategory(null);
-                        } else if (key === "__uncategorized__") {
-                          setSelectedCustomCategory("");
-                        } else {
-                          setSelectedCustomCategory(key as string);
-                        }
-                      }}
-                    >
-                      <AriaTabList
-                        aria-label="Custom emoji categories"
-                        className="flex gap-1 px-4 py-2 overflow-x-auto"
-                      >
-                        <AriaTab
-                          id="__all__"
-                          className={({ isSelected, isFocusVisible }) =>
-                            `px-3 py-2 rounded-md transition-colors cursor-pointer outline-none ${
-                              isSelected
-                                ? "bg-primary-100 dark:bg-primary-900/30"
-                                : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                            } ${isFocusVisible ? "ring-2 ring-primary-500" : ""}`
-                          }
-                          aria-label={t`All custom emojis`}
-                        >
-                          <Sparkles className="w-5 h-5" />
-                        </AriaTab>
-                        {customCategories.map((category) => {
-                          const categoryEmojis = emojisByCategory.get(category);
-                          const firstEmoji = categoryEmojis?.[0];
-                          return (
-                            <AriaTab
-                              key={category}
-                              id={category}
-                              className={({ isSelected, isFocusVisible }) =>
-                                `px-3 py-2 rounded-md transition-colors cursor-pointer outline-none ${
-                                  isSelected
-                                    ? "bg-primary-100 dark:bg-primary-900/30"
-                                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                                } ${isFocusVisible ? "ring-2 ring-primary-500" : ""}`
-                              }
-                              aria-label={category}
-                            >
-                              {firstEmoji ? (
-                                <img
-                                  src={getProxiedImageUrl(firstEmoji.url) || ""}
-                                  alt={category}
-                                  className="w-5 h-5 object-contain"
-                                />
-                              ) : (
-                                <span className="text-xs">{category.slice(0, 2)}</span>
-                              )}
-                            </AriaTab>
-                          );
-                        })}
-                        {/* Show uncategorized if exists */}
-                        {emojisByCategory.has("") && (
-                          <AriaTab
-                            id="__uncategorized__"
-                            className={({ isSelected, isFocusVisible }) =>
-                              `px-3 py-2 rounded-md transition-colors cursor-pointer outline-none ${
-                                isSelected
-                                  ? "bg-primary-100 dark:bg-primary-900/30"
-                                  : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                              } ${isFocusVisible ? "ring-2 ring-primary-500" : ""}`
-                            }
-                            aria-label={t`Uncategorized emojis`}
-                          >
-                            {(() => {
-                              const uncategorized = emojisByCategory.get("");
-                              const firstEmoji = uncategorized?.[0];
-                              return firstEmoji ? (
-                                <img
-                                  src={getProxiedImageUrl(firstEmoji.url) || ""}
-                                  alt={t`Uncategorized`}
-                                  className="w-5 h-5 object-contain"
-                                />
-                              ) : (
-                                <span className="text-lg">📦</span>
-                              );
-                            })()}
-                          </AriaTab>
-                        )}
-                      </AriaTabList>
-                    </AriaTabs>
-                  </div>
-                )}
-
-                {/* Emoji grid */}
+                {/* Content */}
                 <div
-                  ref={emojiGridRef}
-                  className="flex-1 min-h-0 overflow-y-auto p-4"
+                  ref={scrollContainerRef}
+                  className="flex-1 min-h-0 overflow-y-auto"
                   onScroll={handleScroll}
                 >
-                  {/* Loading state */}
-                  {isLoadingEmojis && isCustomCategory && (
-                    <div className="flex items-center justify-center py-8">
-                      <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                  {/* Search Results */}
+                  {searchResults && (
+                    <div className="p-4">
+                      {/* Custom emoji search results */}
+                      {searchResults.customResults.length > 0 && (
+                        <div className="mb-4">
+                          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                            <Trans>Custom Emojis</Trans>
+                            <span className="ml-1 text-xs">({searchResults.customResults.length})</span>
+                          </h3>
+                          <div className="grid grid-cols-8 gap-1">
+                            {searchResults.customResults.slice(0, getVisibleCount("search-custom")).map((emoji) => (
+                              <Button
+                                key={emoji.id}
+                                onPress={() => handleCustomEmojiClick(emoji)}
+                                className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                
+                                aria-label={`Select :${emoji.name}:`}
+                              >
+                                <img
+                                  src={getProxiedImageUrl(emoji.url) || ""}
+                                  alt={`:${emoji.name}:`}
+                                  className="w-6 h-6 object-contain"
+                                  loading="lazy"
+                                />
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Unicode emoji search results */}
+                      {searchResults.unicodeResults.length > 0 && (
+                        <div>
+                          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                            <Trans>Standard Emojis</Trans>
+                            <span className="ml-1 text-xs">({searchResults.unicodeResults.length})</span>
+                          </h3>
+                          <div className="grid grid-cols-8 gap-1">
+                            {searchResults.unicodeResults.slice(0, getVisibleCount("search-unicode")).map((emoji, index) => (
+                              <Button
+                                key={`${emoji}-${index}`}
+                                onPress={() => handleEmojiClick(emoji)}
+                                className="text-2xl p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                
+                                aria-label={`Select ${emoji}`}
+                              >
+                                {emoji}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Empty search state */}
+                      {searchResults.customResults.length === 0 && searchResults.unicodeResults.length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
+                          <Smile className="w-12 h-12 mb-2" />
+                          <p className="text-sm">
+                            <Trans>No emojis found</Trans>
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
 
-                  {/* Custom emojis when searching or custom category selected */}
-                  {displayedCustomEmojis.length > 0 && (
-                    <>
-                      {searchQuery && (
-                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                          <Trans>Custom Emojis</Trans>
-                          <span className="ml-1 text-xs">({filteredCustomEmojis.length})</span>
-                        </h3>
+                  {/* Accordion Categories */}
+                  {!searchResults && (
+                    <div>
+                      {/* Loading state for custom emojis */}
+                      {isLoadingEmojis && (
+                        <div className="flex items-center justify-center py-4">
+                          <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                        </div>
                       )}
-                      <div className="grid grid-cols-8 gap-2 mb-4">
-                        {displayedCustomEmojis.map((emoji) => (
-                          <button
-                            key={emoji.id}
-                            onClick={() => handleCustomEmojiClick(emoji)}
-                            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                            title={`:${emoji.name}:`}
-                            aria-label={`Select :${emoji.name}:`}
-                          >
-                            <img
-                              src={getProxiedImageUrl(emoji.url) || ""}
-                              alt={`:${emoji.name}:`}
-                              className="w-6 h-6 object-contain"
-                              loading="lazy"
+
+                      {/* Custom emojis section */}
+                      {customEmojis.length > 0 && (
+                        <CustomAccordionSection
+                          categoryKey="custom"
+                          title={t`Custom Emojis`}
+                          icon={<Sparkles className="w-5 h-5" />}
+                          isExpanded={expandedCategory === "custom"}
+                          onToggle={() => toggleCategory("custom")}
+                          emojis={customEmojis}
+                          onEmojiClick={handleCustomEmojiClick}
+                          visibleCount={getVisibleCount("custom")}
+                          hasMore={getVisibleCount("custom") < customEmojis.length}
+                        />
+                      )}
+
+                      {/* Custom emoji sub-categories */}
+                      {customCategories.length > 0 &&
+                        customCategories.map((catName) => {
+                          const catEmojis = emojisByCategory.get(catName) || [];
+                          const categoryKey = `custom-${catName}`;
+                          const displayName = normalizeCategoryName(catName);
+                          const firstEmoji = catEmojis[0];
+                          return (
+                            <CustomAccordionSection
+                              key={categoryKey}
+                              categoryKey={categoryKey}
+                              title={displayName}
+                              icon={
+                                firstEmoji ? (
+                                  <img
+                                    src={getProxiedImageUrl(firstEmoji.url) || ""}
+                                    alt={catName}
+                                    className="w-5 h-5 object-contain"
+                                  />
+                                ) : (
+                                  <span className="text-lg">📦</span>
+                                )
+                              }
+                              isExpanded={expandedCategory === categoryKey}
+                              onToggle={() => toggleCategory(categoryKey)}
+                              emojis={catEmojis}
+                              onEmojiClick={handleCustomEmojiClick}
+                              visibleCount={getVisibleCount(categoryKey)}
+                              hasMore={getVisibleCount(categoryKey) < catEmojis.length}
                             />
-                          </button>
-                        ))}
-                      </div>
-                      {/* Show load more indicator */}
-                      {displayedCustomEmojis.length < filteredCustomEmojis.length && (
-                        <div className="text-center py-2 text-xs text-gray-400">
-                          <Trans>Scroll for more...</Trans> ({displayedCustomEmojis.length}/
-                          {filteredCustomEmojis.length})
-                        </div>
-                      )}
-                    </>
-                  )}
+                          );
+                        })}
 
-                  {/* Unicode emojis */}
-                  {displayedEmojis.length > 0 && (
-                    <>
-                      {searchQuery && displayedCustomEmojis.length > 0 && (
-                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                          <Trans>Standard Emojis</Trans>
-                          <span className="ml-1 text-xs">({filteredEmojis.length})</span>
-                        </h3>
+                      {/* Recent emojis section */}
+                      {recentEmojis.length > 0 && (
+                        <AccordionSection
+                          categoryKey="recent"
+                          title={EMOJI_CATEGORIES.recent.name}
+                          icon={EMOJI_CATEGORIES.recent.icon}
+                          isExpanded={expandedCategory === "recent"}
+                          onToggle={() => toggleCategory("recent")}
+                          emojis={recentEmojis}
+                          onEmojiClick={handleEmojiClick}
+                          visibleCount={getVisibleCount("recent")}
+                          hasMore={getVisibleCount("recent") < recentEmojis.length}
+                        />
                       )}
-                      <div className="grid grid-cols-8 gap-2">
-                        {displayedEmojis.map((emoji, index) => (
-                          <button
-                            key={`${emoji}-${index}`}
-                            onClick={() => handleEmojiClick(emoji)}
-                            className="text-2xl p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                            title={emoji}
-                            aria-label={`Select ${emoji}`}
-                          >
-                            {emoji}
-                          </button>
-                        ))}
-                      </div>
-                      {/* Show load more indicator */}
-                      {displayedEmojis.length < filteredEmojis.length && (
-                        <div className="text-center py-2 text-xs text-gray-400">
-                          <Trans>Scroll for more...</Trans> ({displayedEmojis.length}/
-                          {filteredEmojis.length})
-                        </div>
-                      )}
-                    </>
-                  )}
 
-                  {/* Empty state */}
-                  {displayedEmojis.length === 0 && displayedCustomEmojis.length === 0 && !isLoadingEmojis && (
-                    <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
-                      <Smile className="w-12 h-12 mb-2" />
-                      <p className="text-sm">
-                        <Trans>No emojis found</Trans>
-                      </p>
+                      {/* Standard emoji categories */}
+                      {(Object.keys(EMOJI_CATEGORIES) as EmojiCategory[])
+                        .filter((cat) => cat !== "recent")
+                        .map((category) => (
+                          <AccordionSection
+                            key={category}
+                            categoryKey={category}
+                            title={EMOJI_CATEGORIES[category].name}
+                            icon={EMOJI_CATEGORIES[category].icon}
+                            isExpanded={expandedCategory === category}
+                            onToggle={() => toggleCategory(category)}
+                            emojis={EMOJI_CATEGORIES[category].emojis}
+                            onEmojiClick={handleEmojiClick}
+                            visibleCount={getVisibleCount(category)}
+                            hasMore={getVisibleCount(category) < EMOJI_CATEGORIES[category].emojis.length}
+                          />
+                        ))}
                     </div>
                   )}
                 </div>

@@ -27,10 +27,20 @@ const ADMIN_NAV_ITEMS = [
   { href: "/admin/plugins", icon: Plug, label: "Plugins" },
 ];
 
+/**
+ * Props for the AdminNav component.
+ */
 interface AdminNavProps {
+  /** Current page path for active state highlighting */
   currentPath: string;
 }
 
+/**
+ * Admin navigation component.
+ *
+ * Displays horizontal navigation tabs for admin pages with
+ * icons and active state highlighting.
+ */
 export function AdminNav({ currentPath }: AdminNavProps) {
   return (
     <div className="flex gap-2 mb-6 flex-wrap">

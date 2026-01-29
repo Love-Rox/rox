@@ -20,8 +20,8 @@ import {
   Clock,
   Trash2,
 } from "lucide-react";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -55,8 +55,8 @@ interface InstancesResponse {
 }
 
 export default function AdminFederationPage() {
+  const api = useApi();
   const [, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
   const [instances, setInstances] = useState<RemoteInstance[]>([]);
@@ -69,11 +69,10 @@ export default function AdminFederationPage() {
   const pageSize = 20;
 
   const loadInstances = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      const response = await apiClient.get<InstancesResponse>(
+      const response = await api.get<InstancesResponse>(
         `/api/admin/remote-instances?limit=${pageSize}&offset=${page * pageSize}`,
       );
       setInstances(response.instances);
@@ -84,21 +83,19 @@ export default function AdminFederationPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, page]);
+  }, [api, page]);
 
   // Check admin access and load instances
   useEffect(() => {
     const checkAccess = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       try {
-        apiClient.setToken(token);
-
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: any }>("/api/auth/session");
+        const sessionResponse = await api.get<{ user: any }>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = "/timeline";
           return;
@@ -116,15 +113,14 @@ export default function AdminFederationPage() {
     };
 
     checkAccess();
-  }, [token, loadInstances, setCurrentUser]);
+  }, [api, loadInstances, setCurrentUser]);
 
   const handleRefresh = async (host: string) => {
-    if (!token) return;
+    if (!api.token) return;
 
     setRefreshingHost(host);
     try {
-      apiClient.setToken(token);
-      const response = await apiClient.post<{ success: boolean; message: string; instance: RemoteInstance }>(
+      const response = await api.post<{ success: boolean; message: string; instance: RemoteInstance }>(
         `/api/admin/remote-instances/${encodeURIComponent(host)}/refresh`,
       );
 
@@ -148,15 +144,14 @@ export default function AdminFederationPage() {
   };
 
   const handleDelete = async (host: string) => {
-    if (!token) return;
+    if (!api.token) return;
 
     if (!window.confirm(t`Are you sure you want to remove this instance from the cache?`)) {
       return;
     }
 
     try {
-      apiClient.setToken(token);
-      await apiClient.delete(`/api/admin/remote-instances/${encodeURIComponent(host)}`);
+      await api.delete(`/api/admin/remote-instances/${encodeURIComponent(host)}`);
 
       addToast({
         type: "success",

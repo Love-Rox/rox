@@ -24,7 +24,7 @@ import { useAtom, useSetAtom } from "jotai";
 import { listsApi, type ListWithMemberCount, type List } from "../../lib/api/lists";
 import { myListsAtom, addListAtom, updateListMemberCountAtom } from "../../lib/atoms/lists";
 import { addToastAtom } from "../../lib/atoms/toast";
-import { tokenAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { apiClient } from "../../lib/api/client";
 import { Button } from "../ui/Button";
 import { ListCreateModal } from "./ListCreateModal";
@@ -113,7 +113,7 @@ export function AddToListModal({
   const addList = useSetAtom(addListAtom);
   const updateMemberCount = useSetAtom(updateListMemberCountAtom);
   const [, addToast] = useAtom(addToastAtom);
-  const [token] = useAtom(tokenAtom);
+  const { token, isAuthenticated } = useApi();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -126,11 +126,11 @@ export function AddToListModal({
   useEffect(() => {
     const fetchLists = async () => {
       // Skip if modal is closed, no token, or already fetched for this user
-      if (!isOpen || !token || fetchedForUserId === userId) return;
+      if (!isOpen || !isAuthenticated || fetchedForUserId === userId) return;
 
       setLoading(true);
       setError(null);
-      apiClient.setToken(token);
+      apiClient.setToken(token!);
 
       try {
         // Fetch user's lists
@@ -149,7 +149,7 @@ export function AddToListModal({
     };
 
     fetchLists();
-  }, [isOpen, token, userId, fetchedForUserId, setLists]);
+  }, [isOpen, isAuthenticated, token, userId, fetchedForUserId, setLists]);
 
   // Reset fetch state when modal closes
   useEffect(() => {
@@ -160,11 +160,11 @@ export function AddToListModal({
 
   // Manual retry function
   const handleRetry = async () => {
-    if (!token) return;
+    if (!isAuthenticated) return;
 
     setLoading(true);
     setError(null);
-    apiClient.setToken(token);
+    apiClient.setToken(token!);
 
     try {
       const userLists = await listsApi.list();
@@ -181,11 +181,11 @@ export function AddToListModal({
 
   // Handle toggle list membership
   const handleToggle = async (listId: string) => {
-    if (!token) return;
+    if (!isAuthenticated) return;
 
     const isInList = containingListIds.has(listId);
     setLoadingListIds((prev) => new Set(prev).add(listId));
-    apiClient.setToken(token);
+    apiClient.setToken(token!);
 
     try {
       if (isInList) {
@@ -227,7 +227,7 @@ export function AddToListModal({
 
   // Handle list created
   const handleListCreated = async (newList: List) => {
-    if (!token) return;
+    if (!isAuthenticated) return;
 
     // Add to local state with memberCount: 0
     addList({ ...newList, memberCount: 0 });
@@ -235,7 +235,7 @@ export function AddToListModal({
 
     // Automatically add the user to the new list
     setLoadingListIds((prev) => new Set(prev).add(newList.id));
-    apiClient.setToken(token);
+    apiClient.setToken(token!);
 
     try {
       await listsApi.push(newList.id, userId);

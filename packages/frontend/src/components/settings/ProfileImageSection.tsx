@@ -11,18 +11,23 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Camera, X, Upload, ImageIcon } from "lucide-react";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { usersApi } from "../../lib/api/users";
-import { apiClient } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { Spinner } from "../ui/Spinner";
 import { addToastAtom } from "../../lib/atoms/toast";
 import { Avatar } from "../ui/Avatar";
 
+/**
+ * Profile image management section component.
+ *
+ * Allows users to upload, preview, and remove their avatar and banner images.
+ * Includes file type and size validation.
+ */
 export function ProfileImageSection() {
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -33,7 +38,7 @@ export function ProfileImageSection() {
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
 
-  if (!currentUser || !token) {
+  if (!currentUser || !api.isAuthenticated) {
     return null;
   }
 
@@ -61,8 +66,9 @@ export function ProfileImageSection() {
 
     setIsUploadingAvatar(true);
     try {
-      apiClient.setToken(token);
-      const result = await usersApi.uploadAvatar(file);
+      const formData = new FormData();
+      formData.append("file", file);
+      const result = await api.upload<{ avatarUrl: string }>("/api/users/@me/avatar", formData);
 
       // Update current user with new avatar URL
       setCurrentUser({
@@ -112,8 +118,9 @@ export function ProfileImageSection() {
 
     setIsUploadingBanner(true);
     try {
-      apiClient.setToken(token);
-      const result = await usersApi.uploadBanner(file);
+      const formData = new FormData();
+      formData.append("file", file);
+      const result = await api.upload<{ bannerUrl: string }>("/api/users/@me/banner", formData);
 
       // Update current user with new banner URL
       setCurrentUser({
@@ -142,8 +149,7 @@ export function ProfileImageSection() {
   const handleDeleteAvatar = async () => {
     setIsDeletingAvatar(true);
     try {
-      apiClient.setToken(token);
-      await usersApi.deleteAvatar();
+      await api.delete("/api/users/@me/avatar");
 
       // Update current user
       setCurrentUser({
@@ -168,8 +174,7 @@ export function ProfileImageSection() {
   const handleDeleteBanner = async () => {
     setIsDeletingBanner(true);
     try {
-      apiClient.setToken(token);
-      await usersApi.deleteBanner();
+      await api.delete("/api/users/@me/banner");
 
       // Update current user
       setCurrentUser({

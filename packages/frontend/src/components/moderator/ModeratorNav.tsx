@@ -19,10 +19,20 @@ const MODERATOR_NAV_ITEMS = [
   { href: "/mod/audit-logs", icon: History, label: "Audit Logs" },
 ];
 
+/**
+ * Props for the ModeratorNav component.
+ */
 interface ModeratorNavProps {
+  /** Current page path for active state highlighting */
   currentPath: string;
 }
 
+/**
+ * Moderator navigation component.
+ *
+ * Displays horizontal navigation tabs for moderator pages with
+ * icons and active state highlighting.
+ */
 export function ModeratorNav({ currentPath }: ModeratorNavProps) {
   return (
     <div className="flex gap-2 mb-6 flex-wrap">

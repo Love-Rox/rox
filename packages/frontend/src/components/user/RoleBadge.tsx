@@ -6,15 +6,27 @@
  * Displays a user's public role as a styled badge.
  */
 
+/**
+ * Public role information for display.
+ */
 interface PublicRole {
+  /** Unique role identifier */
   id: string;
+  /** Role display name */
   name: string;
+  /** Role badge background color (hex format) */
   color: string | null;
+  /** Optional role icon URL */
   iconUrl: string | null;
 }
 
+/**
+ * Props for the RoleBadge component.
+ */
 interface RoleBadgeProps {
+  /** Role data to display */
   role: PublicRole;
+  /** Badge size variant */
   size?: "sm" | "md";
 }
 
@@ -36,6 +48,12 @@ function isLightColor(hexColor: string): boolean {
   return luminance > 0.5;
 }
 
+/**
+ * Single role badge component.
+ *
+ * Displays a role name in a colored badge with optional icon.
+ * Automatically adjusts text color for contrast based on background.
+ */
 export function RoleBadge({ role, size = "sm" }: RoleBadgeProps) {
   const bgColor = role.color || "#6366f1"; // Default to indigo if no color
   const textColor = isLightColor(bgColor) ? "#000000" : "#ffffff";
@@ -61,11 +79,22 @@ export function RoleBadge({ role, size = "sm" }: RoleBadgeProps) {
   );
 }
 
+/**
+ * Props for the RoleBadgeList component.
+ */
 interface RoleBadgeListProps {
+  /** Array of roles to display */
   roles: PublicRole[];
+  /** Badge size variant for all badges */
   size?: "sm" | "md";
 }
 
+/**
+ * List of role badges component.
+ *
+ * Renders multiple role badges in a flex-wrapped container.
+ * Returns null if the roles array is empty.
+ */
 export function RoleBadgeList({ roles, size = "sm" }: RoleBadgeListProps) {
   if (roles.length === 0) return null;
 

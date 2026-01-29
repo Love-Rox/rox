@@ -16,9 +16,9 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Settings, Type, AlignJustify, Maximize2, Palette, Code, Volume2, LayoutGrid } from "lucide-react";
-import { tokenAtom, currentUserAtom } from "../../lib/atoms/auth";
+import { currentUserAtom } from "../../lib/atoms/auth";
 import { uiSettingsAtom } from "../../lib/atoms/uiSettings";
-import { apiClient } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { Spinner } from "../ui/Spinner";
@@ -57,6 +57,9 @@ interface SelectGroupProps<T extends string> {
   disabled?: boolean;
 }
 
+/**
+ * Reusable select group component for settings options.
+ */
 function SelectGroup<T extends string>({
   label,
   icon,
@@ -92,8 +95,15 @@ function SelectGroup<T extends string>({
   );
 }
 
+/**
+ * UI settings section component.
+ *
+ * Allows users to customize their viewing experience including font size,
+ * line height, content width, theme, deck mode, notification sounds,
+ * and custom CSS.
+ */
 export function UISettingsSection() {
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, setCurrentUser] = useAtom(currentUserAtom);
   const [, addToast] = useAtom(addToastAtom);
   const [uiSettings, setUiSettings] = useAtom(uiSettingsAtom);
@@ -177,19 +187,17 @@ export function UISettingsSection() {
   };
 
   const handleSave = async () => {
-    if (!token) return;
+    if (!api.isAuthenticated) return;
 
     setIsSaving(true);
     try {
-      apiClient.setToken(token);
-
       const newSettings: UISettings = {
         ...localSettings,
         appCustomCss: appCustomCss.trim() || undefined,
       };
 
       // Save to server
-      const updatedUser = await apiClient.patch<any>("/api/users/@me", {
+      const updatedUser = await api.patch<any>("/api/users/@me", {
         uiSettings: newSettings,
       });
 

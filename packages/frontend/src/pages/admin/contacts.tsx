@@ -22,7 +22,8 @@ import {
   ChevronRight,
   ArrowLeft,
 } from "lucide-react";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { apiClient } from "../../lib/api/client";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
@@ -78,7 +79,7 @@ interface AdminThreadSummary extends ContactThreadSummary {
 export default function AdminContactsPage() {
   const { t } = useLingui();
   const [currentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   // List state
@@ -106,14 +107,13 @@ export default function AdminContactsPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const loadThreads = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
-      apiClient.setToken(token);
-
+      apiClient.setToken(api.token);
       const params: any = { limit, offset };
       if (statusFilter !== "all") {
         params.status = statusFilter;
@@ -137,15 +137,15 @@ export default function AdminContactsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, statusFilter, offset, limit]);
+  }, [api.token, statusFilter, offset, limit]);
 
   const loadThreadDetail = useCallback(
     async (threadId: string) => {
-      if (!token) return;
+      if (!api.token) return;
 
       setIsLoadingDetail(true);
       try {
-        apiClient.setToken(token);
+        apiClient.setToken(api.token);
         const response = await getContactThreadAdmin(threadId);
         setSelectedThread(response.thread);
         setMessages(response.messages);
@@ -159,7 +159,7 @@ export default function AdminContactsPage() {
         setIsLoadingDetail(false);
       }
     },
-    [token, addToast],
+    [api.token, addToast],
   );
 
   useEffect(() => {
@@ -172,11 +172,11 @@ export default function AdminContactsPage() {
 
   async function handleSendReply(e: React.FormEvent) {
     e.preventDefault();
-    if (!replyText.trim() || isSending || !selectedThread || !token) return;
+    if (!replyText.trim() || isSending || !selectedThread || !api.token) return;
 
     setIsSending(true);
     try {
-      apiClient.setToken(token);
+      apiClient.setToken(api.token);
       const newMessage = await replyToContactThread(selectedThread.id, replyText.trim());
       setMessages((prev) => [
         ...prev,
@@ -202,10 +202,10 @@ export default function AdminContactsPage() {
   }
 
   async function handleStatusChange(status: string) {
-    if (!selectedThread || !token) return;
+    if (!selectedThread || !api.token) return;
 
     try {
-      apiClient.setToken(token);
+      apiClient.setToken(api.token);
       await updateContactThreadStatus(selectedThread.id, status);
       setSelectedThread((prev) => (prev ? { ...prev, status: status as any } : null));
       addToast({ type: "success", message: "Status updated" });
@@ -216,10 +216,10 @@ export default function AdminContactsPage() {
   }
 
   async function handlePriorityChange(priority: number) {
-    if (!selectedThread || !token) return;
+    if (!selectedThread || !api.token) return;
 
     try {
-      apiClient.setToken(token);
+      apiClient.setToken(api.token);
       await updateContactThreadPriority(selectedThread.id, priority);
       setSelectedThread((prev) => (prev ? { ...prev, priority } : null));
       addToast({ type: "success", message: "Priority updated" });
@@ -230,10 +230,10 @@ export default function AdminContactsPage() {
   }
 
   async function handleSaveNotes() {
-    if (!selectedThread || !token) return;
+    if (!selectedThread || !api.token) return;
 
     try {
-      apiClient.setToken(token);
+      apiClient.setToken(api.token);
       await updateContactThreadNotes(selectedThread.id, internalNotes);
       addToast({ type: "success", message: "Notes saved" });
     } catch (err: any) {

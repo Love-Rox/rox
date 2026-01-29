@@ -19,7 +19,7 @@ import { ListCard } from "../../components/list/ListCard";
 import { ListCreateModal } from "../../components/list/ListCreateModal";
 import { ListEditModal } from "../../components/list/ListEditModal";
 import { ListDeleteConfirmDialog } from "../../components/list/ListDeleteConfirmDialog";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
+import { currentUserAtom } from "../../lib/atoms/auth";
 import {
   myListsAtom,
   myListsLoadingAtom,
@@ -29,14 +29,14 @@ import {
   removeListAtom,
 } from "../../lib/atoms/lists";
 import { listsApi, type List, type ListWithMemberCount } from "../../lib/api/lists";
-import { apiClient } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 
 /**
  * Lists page - displays all lists owned by the current user
  */
 export default function ListsPage() {
+  const api = useApi();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
   const [lists, setLists] = useAtom(myListsAtom);
   const [loading, setLoading] = useAtom(myListsLoadingAtom);
   const [error, setError] = useAtom(myListsErrorAtom);
@@ -54,7 +54,7 @@ export default function ListsPage() {
   useEffect(() => {
     const restoreSession = async () => {
       // No token at all, redirect to login
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
@@ -62,8 +62,7 @@ export default function ListsPage() {
       // Token exists but no user data, try to restore session
       if (!currentUser) {
         try {
-          apiClient.setToken(token);
-          const response = await apiClient.get<{ user: any }>("/api/auth/session");
+          const response = await api.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
           setIsLoading(false);
         } catch (error) {
@@ -78,14 +77,13 @@ export default function ListsPage() {
       }
     };
     restoreSession();
-  }, [token, currentUser, setCurrentUser]);
+  }, [api, currentUser, setCurrentUser]);
 
   // Fetch lists when user is loaded (only once)
   useEffect(() => {
     const fetchLists = async () => {
-      if (!currentUser || !token || hasFetchedLists) return;
+      if (!currentUser || !api.token || hasFetchedLists) return;
 
-      apiClient.setToken(token);
       setLoading(true);
       setError(null);
 
@@ -100,10 +98,10 @@ export default function ListsPage() {
       }
     };
 
-    if (currentUser && token && !hasFetchedLists) {
+    if (currentUser && api.token && !hasFetchedLists) {
       fetchLists();
     }
-  }, [currentUser, token, hasFetchedLists, setLists, setLoading, setError]);
+  }, [currentUser, api, hasFetchedLists, setLists, setLoading, setError]);
 
   // Handle list created
   const handleListCreated = (list: List) => {
@@ -164,8 +162,7 @@ export default function ListsPage() {
             <Button
               variant="ghost"
               onPress={() => {
-                if (token) {
-                  apiClient.setToken(token);
+                if (api.token) {
                   setLoading(true);
                   setError(null);
                   listsApi.list()
