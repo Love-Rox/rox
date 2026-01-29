@@ -44,7 +44,11 @@ function getNavigationHistory(): string[] {
  */
 function getPreviousPath(fallback: string): string {
   const history = getNavigationHistory();
-  const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
+  // Use full path including search params and hash for accurate matching
+  const currentPath =
+    typeof window !== "undefined"
+      ? window.location.pathname + window.location.search + window.location.hash
+      : "";
 
   // Find current page in history and get the one before it
   const currentIndex = history.lastIndexOf(currentPath);

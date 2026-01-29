@@ -4,6 +4,14 @@ import { useRouter } from "waku";
 const HISTORY_KEY = "rox-navigation-history";
 
 /**
+ * Get full path including search params and hash
+ */
+function getFullPath(): string {
+  if (typeof window === "undefined") return "";
+  return window.location.pathname + window.location.search + window.location.hash;
+}
+
+/**
  * Hook to provide proper "back" functionality using tracked navigation history.
  *
  * Since Waku's useRouter doesn't have a back() method and using
@@ -34,7 +42,7 @@ export function useNavigationHistory(fallbackPath = "/timeline") {
 
   const goBack = useCallback(() => {
     const history = getHistory();
-    const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
+    const currentPath = getFullPath();
 
     // Find current page in history and get the one before it
     const currentIndex = history.lastIndexOf(currentPath);
@@ -57,7 +65,7 @@ export function useNavigationHistory(fallbackPath = "/timeline") {
 
   const canGoBack = useCallback(() => {
     const history = getHistory();
-    const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
+    const currentPath = getFullPath();
     const currentIndex = history.lastIndexOf(currentPath);
     return currentIndex > 0 || (history.length > 0 && history[history.length - 1] !== currentPath);
   }, []);

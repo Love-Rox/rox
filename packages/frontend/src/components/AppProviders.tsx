@@ -101,12 +101,16 @@ export function AppProviders({ children }: AppProvidersProps) {
 
   // Track navigation history for proper back button functionality
   useEffect(() => {
+    // Get full path including search params and hash
+    const getFullPath = () =>
+      window.location.pathname + window.location.search + window.location.hash;
+
     // Record initial path
-    recordNavigation(window.location.pathname);
+    recordNavigation(getFullPath());
 
     // Listen for popstate events (browser back/forward)
     const handlePopState = () => {
-      recordNavigation(window.location.pathname);
+      recordNavigation(getFullPath());
     };
 
     // Listen for pushstate/replacestate by patching history methods
@@ -115,7 +119,7 @@ export function AppProviders({ children }: AppProvidersProps) {
 
     history.pushState = (...args) => {
       originalPushState(...args);
-      recordNavigation(window.location.pathname);
+      recordNavigation(getFullPath());
     };
 
     history.replaceState = (...args) => {
