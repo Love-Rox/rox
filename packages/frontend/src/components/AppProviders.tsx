@@ -17,6 +17,16 @@ import type { ThemeSettings } from "../lib/types/instance";
 import { recordNavigation } from "../hooks/useNavigationHistory";
 
 /**
+ * Check if an error message indicates a portal cleanup error.
+ * These errors are caused by Waku's RSC handling during navigation.
+ */
+const isPortalCleanupErrorMessage = (message?: string): boolean =>
+  Boolean(
+    message?.includes("Cannot read properties of null (reading 'removeChild')") ||
+      (message?.includes("removeChild") && message?.includes("null"))
+  );
+
+/**
  * Global error boundary to catch React errors during navigation.
  * This prevents errors in portal cleanup from breaking the entire app.
  */
@@ -36,11 +46,7 @@ class GlobalErrorBoundary extends Component<{ children: ReactNode }, { hasError:
 
     // Check if this is the specific removeChild error during navigation
     // Only suppress known portal cleanup errors, rethrow others
-    const isPortalCleanupError =
-      error.message?.includes("Cannot read properties of null (reading 'removeChild')") ||
-      (error.message?.includes("removeChild") && error.message?.includes("null"));
-
-    if (isPortalCleanupError) {
+    if (isPortalCleanupErrorMessage(error.message)) {
       // This is a portal cleanup issue caused by Waku RSC - reset and continue
       console.warn("Portal cleanup error detected, attempting recovery...");
       this.setState({ hasError: false });
@@ -85,11 +91,7 @@ export function AppProviders({ children }: AppProvidersProps) {
     const handleError = (event: ErrorEvent): void => {
       // Only suppress specific Waku/React portal cleanup errors
       // Avoid suppressing generic null errors that could hide real bugs
-      const isPortalCleanupError =
-        event.message?.includes("Cannot read properties of null (reading 'removeChild')") ||
-        (event.message?.includes("removeChild") && event.message?.includes("null"));
-
-      if (isPortalCleanupError) {
+      if (isPortalCleanupErrorMessage(event.message)) {
         event.preventDefault();
         event.stopPropagation();
       }

@@ -330,6 +330,7 @@ export function DrivePickerDialog({
                 value={newFolderName}
                 onChange={(e) => setNewFolderName(e.target.value)}
                 placeholder={t`Folder name`}
+                aria-label={t`New folder name`}
                 className="flex-1 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 autoFocus
                 onKeyDown={(e) => {

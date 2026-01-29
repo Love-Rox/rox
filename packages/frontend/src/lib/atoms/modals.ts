@@ -45,6 +45,8 @@ export const unregisterModalAtom = atom(null, (get, set, id: string) => {
  */
 export const closeAllModalsAtom = atom(null, (get, set) => {
   const registry = get(modalRegistryAtom);
-  registry.forEach((modal) => modal.close());
+  registry.forEach((modal) => {
+    modal.close();
+  });
   set(modalRegistryAtom, new Map());
 });

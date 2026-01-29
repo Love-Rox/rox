@@ -764,7 +764,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
       {/* Report Dialog - only render when open to avoid portal cleanup issues */}
       {showReportDialog && (
         <ReportDialog
-          isOpen={showReportDialog}
+          isOpen
           onClose={() => setShowReportDialog(false)}
           targetType="user"
           targetUserId={user.id}
@@ -786,7 +786,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
       {/* QR Code Modal - only render when open */}
       {showQRCode && (
         <UserQRCodeModal
-          isOpen={showQRCode}
+          isOpen
           onClose={() => setShowQRCode(false)}
           user={user}
         />
