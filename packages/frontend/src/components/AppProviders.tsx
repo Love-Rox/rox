@@ -34,11 +34,19 @@ class GlobalErrorBoundary extends Component<{ children: ReactNode }, { hasError:
     // Log error but don't crash the app
     console.error("Global error boundary caught error:", error.message);
 
-    // Check if this is the removeChild error during navigation
-    if (error.message?.includes("removeChild") || error.message?.includes("null")) {
-      // This is likely a portal cleanup issue - reset and continue
+    // Check if this is the specific removeChild error during navigation
+    // Only suppress known portal cleanup errors, rethrow others
+    const isPortalCleanupError =
+      error.message?.includes("Cannot read properties of null (reading 'removeChild')") ||
+      (error.message?.includes("removeChild") && error.message?.includes("null"));
+
+    if (isPortalCleanupError) {
+      // This is a portal cleanup issue caused by Waku RSC - reset and continue
       console.warn("Portal cleanup error detected, attempting recovery...");
       this.setState({ hasError: false });
+    } else {
+      // Rethrow non-portal errors to propagate to higher-level handlers
+      throw error;
     }
   }
 
@@ -75,11 +83,13 @@ export function AppProviders({ children }: AppProvidersProps) {
   // These errors are caused by Waku's RSC handling and are harmless
   useEffect(() => {
     const handleError = (event: ErrorEvent): void => {
-      // Suppress Waku/React portal cleanup errors
-      if (
-        event.message?.includes("removeChild") ||
-        event.message?.includes("Cannot read properties of null")
-      ) {
+      // Only suppress specific Waku/React portal cleanup errors
+      // Avoid suppressing generic null errors that could hide real bugs
+      const isPortalCleanupError =
+        event.message?.includes("Cannot read properties of null (reading 'removeChild')") ||
+        (event.message?.includes("removeChild") && event.message?.includes("null"));
+
+      if (isPortalCleanupError) {
         event.preventDefault();
         event.stopPropagation();
       }

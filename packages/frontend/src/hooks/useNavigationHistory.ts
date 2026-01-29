@@ -125,9 +125,10 @@ export function recordNavigation(path: string): void {
  * Clear navigation history (useful for logout or session reset)
  */
 export function clearNavigationHistory(): void {
+  if (typeof window === "undefined") return;
   try {
     sessionStorage.removeItem(HISTORY_KEY);
   } catch {
-    // Ignore errors
+    // Ignore errors (e.g., private browsing mode)
   }
 }
