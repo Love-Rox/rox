@@ -167,6 +167,7 @@ app.post("/register", rateLimit(RateLimitPresets.register), async (c) => {
       c.get("userRepository"),
       c.get("sessionRepository"),
       c.get("blockedUsernameService"),
+      c.get("eventBus"),
     );
     const { user, session } = await authService.register({
       username: body.username,
@@ -241,11 +242,25 @@ app.post("/session", rateLimit(RateLimitPresets.login), async (c) => {
   }
 
   try {
-    const authService = new AuthService(c.get("userRepository"), c.get("sessionRepository"));
-    const { user, session } = await authService.login({
-      username: body.username,
-      password: body.password,
-    });
+    const authService = new AuthService(
+      c.get("userRepository"),
+      c.get("sessionRepository"),
+      undefined, // blockedUsernameService not needed for login
+      c.get("eventBus"),
+    );
+    const { user, session } = await authService.login(
+      {
+        username: body.username,
+        password: body.password,
+      },
+      {
+        ipAddress:
+          c.req.header("x-forwarded-for")?.split(",")[0]?.trim() ||
+          c.req.header("x-real-ip") ||
+          undefined,
+        userAgent: c.req.header("user-agent") || undefined,
+      },
+    );
 
     // パスワードハッシュとメールアドレスを除外してレスポンス
     const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;

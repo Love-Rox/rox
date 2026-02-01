@@ -11,8 +11,7 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Copy, Trash2, Plus, RefreshCw, Ticket } from "lucide-react";
-import { tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { Spinner } from "../ui/Spinner";
@@ -36,8 +35,14 @@ interface InvitePermissions {
   inviteLimitCycle: number; // hours
 }
 
+/**
+ * Invitation code management section component.
+ *
+ * Allows users with invitation permissions to create, view, copy, and delete
+ * invitation codes. Displays usage limits and code status (available/used/expired).
+ */
 export function InvitationCodeSection() {
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   const [permissions, setPermissions] = useState<InvitePermissions | null>(null);
@@ -47,18 +52,16 @@ export function InvitationCodeSection() {
 
   // Load permissions and codes
   const loadData = useCallback(async () => {
-    if (!token) return;
+    if (!api.isAuthenticated) return;
 
     try {
-      apiClient.setToken(token);
-
       // Load permissions
-      const permsResponse = await apiClient.get<InvitePermissions>("/api/invitations/permissions");
+      const permsResponse = await api.get<InvitePermissions>("/api/invitations/permissions");
       setPermissions(permsResponse);
 
       // Only load codes if user can invite
       if (permsResponse.canInvite) {
-        const codesResponse = await apiClient.get<{ codes: InvitationCode[] }>("/api/invitations");
+        const codesResponse = await api.get<{ codes: InvitationCode[] }>("/api/invitations");
         setCodes(codesResponse.codes);
       }
     } catch (err) {
@@ -66,19 +69,18 @@ export function InvitationCodeSection() {
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, [api]);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
   const handleCreateCode = async () => {
-    if (!token) return;
+    if (!api.isAuthenticated) return;
 
     setIsCreating(true);
     try {
-      apiClient.setToken(token);
-      const newCode = await apiClient.post<InvitationCode>("/api/invitations", {
+      const newCode = await api.post<InvitationCode>("/api/invitations", {
         maxUses: 1,
       });
 
@@ -105,11 +107,10 @@ export function InvitationCodeSection() {
   };
 
   const handleDeleteCode = async (id: string) => {
-    if (!token) return;
+    if (!api.isAuthenticated) return;
 
     try {
-      apiClient.setToken(token);
-      await apiClient.delete(`/api/invitations/${id}`);
+      await api.delete(`/api/invitations/${id}`);
 
       setCodes((prev) => prev.filter((c) => c.id !== id));
       addToast({

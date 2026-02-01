@@ -59,6 +59,7 @@
 - **複数認証方式** - パスワード、Passkey（WebAuthn）、OAuth（GitHub、Google、Discord、Mastodon）
 - **完全なActivityPubサポート** - Mastodon、Misskey、GoToSocialなどと連携
 - **ロールベース権限** - Misskeyスタイルのポリシーシステムできめ細かいアクセス制御
+- **プラグインシステム** - イベントフック、カスタムルート、フロントエンドスロットによる拡張可能なアーキテクチャ
 - **国際化対応** - 英語と日本語をすぐに利用可能
 
 ## スクリーンショット
@@ -281,7 +282,7 @@ Roxは**リポジトリパターン**と**アダプターパターン**を使用
 | Phase 4 | ✅ 完了 | リファクタリング＆最適化 |
 | Phase 5 | ✅ 完了 | 管理機能＆セキュリティ強化 |
 | Phase 6 | ✅ 完了 | 本番環境対応 |
-| Phase 7 | 🚧 計画中 | プラグインシステム |
+| Phase 7 | ✅ 完了 | プラグインシステム |
 
 <details>
 <summary><b>詳細な実装状況を表示</b></summary>
@@ -318,6 +319,15 @@ Roxは**リポジトリパターン**と**アダプターパターン**を使用
 - ✅ ユーザー通報システム
 - ✅ インスタンス設定管理
 
+### Phase 7: プラグインシステム
+- ✅ 型付きイベントフック用EventBus
+- ✅ ライフサイクル管理付きプラグインローダー
+- ✅ データベースベースの設定ストレージ
+- ✅ カスタムルート登録（`/api/x/{pluginId}/`）
+- ✅ フロントエンドプラグインスロット（19箇所）
+- ✅ 管理者用プラグイン管理UI
+- ✅ サンプルhello-worldプラグイン
+
 </details>
 
 ## コントリビューション
@@ -343,6 +353,7 @@ Roxは**リポジトリパターン**と**アダプターパターン**を使用
 | [DevContainerガイド](./docs/development/devcontainer.ja.md) | VS Code/Cursor DevContainerセットアップ |
 | [プロジェクト仕様書](./docs/project/v1.md) | 元の仕様書（日本語） |
 | [実装ガイド](./docs/implementation/README.md) | アーキテクチャ詳細 |
+| [プラグイン開発](./plugins/README.md) | プラグインの作成方法 |
 | [テストガイド](./docs/development/testing.ja.md) | テストドキュメント |
 | [デプロイガイド](./docs/deployment/README.md) | 本番デプロイ |
 

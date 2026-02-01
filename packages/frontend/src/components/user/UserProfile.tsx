@@ -5,10 +5,13 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { usersApi, type User } from "../../lib/api/users";
 import { notesApi } from "../../lib/api/notes";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient, ApiError } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { ApiError } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
+import { useSafeNavigation } from "../../hooks/useSafeNavigation";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
-import { Flag, QrCode, ListPlus, ArrowLeft } from "lucide-react";
+import { Flag, QrCode, ListPlus, ArrowLeft, Globe } from "lucide-react";
+import { getRemoteInstanceInfo, type PublicRemoteInstance } from "../../lib/api/instance";
 import { Button } from "../ui/Button";
 import { NoteCard } from "../note/NoteCard";
 import { MfmRenderer } from "../mfm/MfmRenderer";
@@ -22,7 +25,6 @@ import { RoleBadgeList } from "./RoleBadge";
 import { FollowListModal } from "./FollowListModal";
 import { UserQRCodeModal } from "./UserQRCodeModal";
 import { AddToListModal } from "../list/AddToListModal";
-import { useRouter } from "../ui/SpaLink";
 
 /**
  * Public role type returned from the API
@@ -83,6 +85,39 @@ function sanitizeCustomCss(css: string, containerId: string): string {
 }
 
 /**
+ * Validate CSS color value to prevent CSS injection
+ * Only allows safe color formats: hex, rgb, rgba, hsl, hsla
+ *
+ * @param color - Color value to validate
+ * @returns The color if valid, or null if invalid/unsafe
+ */
+function validateCssColor(color: string | null | undefined): string | null {
+  if (!color || typeof color !== "string") return null;
+
+  // Trim and lowercase for consistent matching
+  const trimmed = color.trim();
+
+  // Hex color: #RGB, #RRGGBB, #RGBA, #RRGGBBAA
+  if (/^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // RGB/RGBA: rgb(r, g, b) or rgba(r, g, b, a)
+  // Only allow numbers, percentages, commas, spaces, and decimal points
+  if (/^rgba?\(\s*[\d.%,\s/]+\s*\)$/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // HSL/HSLA: hsl(h, s%, l%) or hsla(h, s%, l%, a)
+  if (/^hsla?\(\s*[\d.%,\s/deg]+\s*\)$/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // Invalid or potentially dangerous color value
+  return null;
+}
+
+/**
  * Props for the UserProfile component
  */
 export interface UserProfileProps {
@@ -97,9 +132,9 @@ export interface UserProfileProps {
  * Displays user information, stats, and their notes
  */
 export function UserProfile({ username, host }: UserProfileProps) {
+  const api = useApi();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
-  const router = useRouter();
+  const { isNavigating, navigate, goBack } = useSafeNavigation();
   const [user, setUser] = useState<User | null>(null);
   const [notes, setNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -115,96 +150,161 @@ export function UserProfile({ username, host }: UserProfileProps) {
   const [showFollowList, setShowFollowList] = useState<"followers" | "following" | null>(null);
   const [showQRCode, setShowQRCode] = useState(false);
   const [showAddToList, setShowAddToList] = useState(false);
+  const [remoteInstance, setRemoteInstance] = useState<PublicRemoteInstance | null>(null);
+  const [remoteInstanceIconFailed, setRemoteInstanceIconFailed] = useState(false);
 
   // Generate unique ID for custom CSS scoping
   const profileContainerId = useId().replace(/:/g, "-");
 
-  // Set API token and load current user session
+  // Load current user session if not already loaded
   useEffect(() => {
-    if (token) {
-      apiClient.setToken(token);
-    }
+    let cancelled = false;
 
-    // Load current user if not already loaded
     const loadCurrentUser = async () => {
-      if (token && !currentUser) {
+      if (api.token && !currentUser) {
         try {
-          const response = await apiClient.get<{ user: User }>("/api/auth/session");
-          setCurrentUser(response.user);
+          const response = await api.get<{ user: User }>("/api/auth/session");
+          if (!cancelled) {
+            setCurrentUser(response.user);
+          }
         } catch (err) {
-          console.error("Failed to load current user session:", err);
+          if (!cancelled) {
+            console.error("Failed to load current user session:", err);
+          }
         }
       }
     };
 
     loadCurrentUser();
-  }, [token, currentUser, setCurrentUser]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [api, currentUser, setCurrentUser]);
 
   // Load user data (after token is set)
   useEffect(() => {
+    let cancelled = false;
+
     const loadUser = async () => {
       try {
-        setLoading(true);
-        setError(null);
-        setIsNotFound(false);
+        if (!cancelled) setLoading(true);
+        if (!cancelled) setError(null);
+        if (!cancelled) setIsNotFound(false);
         const userData = await usersApi.getByUsername(username, host);
-        setUser(userData);
-        setIsFollowing(userData.isFollowed ?? false);
+        if (!cancelled) {
+          setUser(userData);
+          setIsFollowing(userData.isFollowed ?? false);
+        }
       } catch (err) {
-        // Check if it's a 404 error
-        if (err instanceof ApiError && err.statusCode === 404) {
-          setIsNotFound(true);
-        } else {
-          setError(err instanceof Error ? err.message : "Failed to load user");
+        if (!cancelled) {
+          // Check if it's a 404 error
+          if (err instanceof ApiError && err.statusCode === 404) {
+            setIsNotFound(true);
+          } else {
+            setError(err instanceof Error ? err.message : "Failed to load user");
+          }
         }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
-    // Wait a tick for token to be set in apiClient
+    // Wait a tick for token to be set
     const timeoutId = setTimeout(loadUser, 0);
-    return () => clearTimeout(timeoutId);
-  }, [username, host, token]);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+    };
+  }, [username, host, api.token]);
 
   // Load user's notes
   useEffect(() => {
+    let cancelled = false;
+
     const loadNotes = async () => {
       if (!user) return;
 
       try {
-        setNotesLoading(true);
+        if (!cancelled) setNotesLoading(true);
         const userNotes = await notesApi.getUserNotes(user.id, { limit: 20 });
-        setNotes(userNotes);
-        setHasMore(userNotes.length >= 20);
+        if (!cancelled) {
+          setNotes(userNotes);
+          setHasMore(userNotes.length >= 20);
+        }
       } catch (err) {
-        console.error("Failed to load notes:", err);
+        if (!cancelled) {
+          console.error("Failed to load notes:", err);
+        }
       } finally {
-        setNotesLoading(false);
+        if (!cancelled) setNotesLoading(false);
       }
     };
 
     loadNotes();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   // Load user's public roles
   useEffect(() => {
+    let cancelled = false;
+
     const loadPublicRoles = async () => {
       if (!user) return;
 
       try {
-        const response = await apiClient.get<{ roles: PublicRole[] }>(
+        const response = await api.get<{ roles: PublicRole[] }>(
           `/api/users/${user.id}/public-roles`,
         );
-        setPublicRoles(response.roles);
+        if (!cancelled) {
+          setPublicRoles(response.roles);
+        }
       } catch (err) {
-        // Non-critical - just log and continue
-        console.error("Failed to load public roles:", err);
+        if (!cancelled) {
+          // Non-critical - just log and continue
+          console.error("Failed to load public roles:", err);
+        }
       }
     };
 
     loadPublicRoles();
-  }, [user]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, api]);
+
+  // Load remote instance info for remote users
+  useEffect(() => {
+    let cancelled = false;
+
+    if (user?.host) {
+      // Reset state before fetching new instance info
+      setRemoteInstance(null);
+      setRemoteInstanceIconFailed(false);
+      getRemoteInstanceInfo(user.host)
+        .then((info) => {
+          if (!cancelled) {
+            setRemoteInstance(info);
+          }
+        })
+        .catch((err) => {
+          if (!cancelled) {
+            console.error("Failed to load remote instance info:", err);
+          }
+        });
+    } else {
+      setRemoteInstance(null);
+      setRemoteInstanceIconFailed(false);
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.host]);
 
   // Load more notes
   const loadMoreNotes = useCallback(async () => {
@@ -230,6 +330,11 @@ export function UserProfile({ username, host }: UserProfileProps) {
       setLoadingMore(false);
     }
   }, [user, notes, hasMore, loadingMore]);
+
+  // Handle back navigation - uses useSafeNavigation to close modals first
+  const handleBack = useCallback(() => {
+    goBack();
+  }, [goBack]);
 
   // Handle follow/unfollow
   const handleFollowToggle = useCallback(async () => {
@@ -327,17 +432,11 @@ export function UserProfile({ username, host }: UserProfileProps) {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button
               variant="secondary"
-              onPress={() => {
-                if (typeof window !== "undefined" && window.history.length > 1) {
-                  window.history.back();
-                } else {
-                  router.push("/");
-                }
-              }}
+              onPress={() => navigate("/timeline")}
             >
               <Trans>Go Back</Trans>
             </Button>
-            <Button variant="primary" onPress={() => router.push("/")}>
+            <Button variant="primary" onPress={() => navigate("/")}>
               <Trans>Go Home</Trans>
             </Button>
           </div>
@@ -370,30 +469,23 @@ export function UserProfile({ username, host }: UserProfileProps) {
       {/* User Custom CSS */}
       {customCss && <style dangerouslySetInnerHTML={{ __html: customCss }} />}
 
+      {/* Back button - outside card for better accessibility */}
+      <Button
+        variant="ghost"
+        onPress={handleBack}
+        isDisabled={isNavigating}
+        className="mb-3 flex items-center gap-1 px-3 py-1.5 text-(--text-secondary) hover:text-(--text-primary) rounded-full text-sm font-medium transition-colors"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <Trans>Back</Trans>
+      </Button>
+
       {/* Profile Container with ID for CSS scoping */}
       <div id={profileContainerId} className="user-profile-container">
         {/* Profile Header */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mb-6">
-          {/* Banner with back button */}
+          {/* Banner */}
           <div className="relative">
-            {/* Back button - positioned on top of banner */}
-            <button
-              type="button"
-              onClick={() => {
-                if (typeof window !== "undefined" && window.history.length > 1) {
-                  window.history.back();
-                } else {
-                  router.push("/timeline");
-                }
-              }}
-              className="absolute top-3 left-3 z-10 flex items-center gap-1 px-3 py-1.5 bg-black/40 hover:bg-black/60 text-white rounded-full text-sm font-medium transition-colors backdrop-blur-sm"
-              aria-label="Go back"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline"><Trans>Back</Trans></span>
-            </button>
-
-            {/* Banner */}
             {user.bannerUrl && (
               <div className="h-32 sm:h-48 bg-linear-to-r from-primary-500 to-primary-600">
                 <img
@@ -435,9 +527,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
                   <>
                     <Button
                       variant="secondary"
-                      onPress={() => {
-                        router.push("/settings");
-                      }}
+                      onPress={() => navigate("/settings")}
                     >
                       <Trans>Edit Profile</Trans>
                     </Button>
@@ -511,7 +601,54 @@ export function UserProfile({ username, host }: UserProfileProps) {
                   </span>
                 )}
               </div>
-              <p className="text-gray-600 dark:text-gray-400">@{user.username}</p>
+              <p className="text-gray-600 dark:text-gray-400">
+                @{user.username}{user.host && `@${user.host}`}
+              </p>
+              {/* Remote Instance Badge */}
+              {user.host && (() => {
+                // Validate theme color to prevent CSS injection
+                const validatedThemeColor = validateCssColor(remoteInstance?.themeColor);
+                // Only 6-digit hex colors support appending alpha (e.g., #RRGGBB15)
+                // Short hex (#RGB, #RGBA) or 8-digit hex (#RRGGBBAA) would be invalid
+                const isSixDigitHex = /^#[0-9a-f]{6}$/i.test(validatedThemeColor ?? "");
+                const badgeBgColor = isSixDigitHex
+                  ? `${validatedThemeColor}15`
+                  : "var(--bg-tertiary)";
+                return (
+                <div className="mt-1">
+                  <a
+                    href={`https://${user.host}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded hover:opacity-80 transition-opacity"
+                    style={{
+                      backgroundColor: badgeBgColor,
+                      borderLeft: validatedThemeColor
+                        ? `3px solid ${validatedThemeColor}`
+                        : "3px solid var(--border-color)",
+                    }}
+                    title={
+                      remoteInstance
+                        ? `${remoteInstance.name || user.host}${remoteInstance.softwareName ? ` (${remoteInstance.softwareName})` : ""}`
+                        : `From ${user.host}`
+                    }
+                  >
+                    {remoteInstance?.iconUrl && !remoteInstanceIconFailed ? (
+                      <img
+                        src={getProxiedImageUrl(remoteInstance.iconUrl) || ""}
+                        alt=""
+                        className="w-4 h-4 rounded-sm object-contain"
+                        loading="lazy"
+                        onError={() => setRemoteInstanceIconFailed(true)}
+                      />
+                    ) : (
+                      <Globe className="w-4 h-4" />
+                    )}
+                    <span>{remoteInstance?.name || user.host}</span>
+                  </a>
+                </div>
+                );
+              })()}
               {/* Public Role Badges */}
               {publicRoles.length > 0 && (
                 <div className="mt-2">
@@ -624,35 +761,41 @@ export function UserProfile({ username, host }: UserProfileProps) {
         </div>
       </div>
 
-      {/* Report Dialog */}
-      <ReportDialog
-        isOpen={showReportDialog}
-        onClose={() => setShowReportDialog(false)}
-        targetType="user"
-        targetUserId={user.id}
-        targetUsername={user.username}
-      />
+      {/* Report Dialog - only render when open to avoid portal cleanup issues */}
+      {showReportDialog && (
+        <ReportDialog
+          isOpen
+          onClose={() => setShowReportDialog(false)}
+          targetType="user"
+          targetUserId={user.id}
+          targetUsername={user.username}
+        />
+      )}
 
-      {/* Followers/Following List Modal */}
-      <FollowListModal
-        isOpen={showFollowList !== null}
-        onClose={() => setShowFollowList(null)}
-        userId={user.id}
-        type={showFollowList || "followers"}
-        username={user.username}
-      />
+      {/* Followers/Following List Modal - only render when open */}
+      {showFollowList !== null && (
+        <FollowListModal
+          isOpen
+          onClose={() => setShowFollowList(null)}
+          userId={user.id}
+          type={showFollowList}
+          username={user.username}
+        />
+      )}
 
-      {/* QR Code Modal */}
-      <UserQRCodeModal
-        isOpen={showQRCode}
-        onClose={() => setShowQRCode(false)}
-        user={user}
-      />
+      {/* QR Code Modal - only render when open */}
+      {showQRCode && (
+        <UserQRCodeModal
+          isOpen
+          onClose={() => setShowQRCode(false)}
+          user={user}
+        />
+      )}
 
-      {/* Add to List Modal */}
-      {currentUser && !isOwnProfile && (
+      {/* Add to List Modal - only render when open */}
+      {currentUser && !isOwnProfile && showAddToList && (
         <AddToListModal
-          isOpen={showAddToList}
+          isOpen
           onClose={() => setShowAddToList(false)}
           userId={user.id}
           username={user.username}

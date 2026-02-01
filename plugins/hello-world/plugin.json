@@ -1,0 +1,9 @@
+{
+  "id": "hello-world",
+  "name": "Hello World",
+  "version": "1.0.0",
+  "description": "A sample plugin demonstrating the Rox plugin system",
+  "author": "Rox Team",
+  "minRoxVersion": "2026.2.0",
+  "permissions": ["notes:read"]
+}

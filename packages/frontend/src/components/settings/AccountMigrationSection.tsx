@@ -20,8 +20,7 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
-import { tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { Spinner } from "../ui/Spinner";
@@ -47,8 +46,16 @@ interface ValidationResult {
   };
 }
 
+/**
+ * Account migration settings section component.
+ *
+ * Provides functionality to:
+ * - Add/remove account aliases (for incoming migrations)
+ * - Validate and initiate outgoing migrations
+ * - View migration status and cooldown periods
+ */
 export function AccountMigrationSection() {
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   const [status, setStatus] = useState<MigrationStatus | null>(null);
@@ -62,30 +69,28 @@ export function AccountMigrationSection() {
 
   // Load migration status
   const loadStatus = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      const response = await apiClient.get<MigrationStatus>("/api/i/migration");
+      const response = await api.get<MigrationStatus>("/api/i/migration");
       setStatus(response);
     } catch (err) {
       console.error("Failed to load migration status:", err);
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, [api]);
 
   useEffect(() => {
     loadStatus();
   }, [loadStatus]);
 
   const handleAddAlias = async () => {
-    if (!token || !newAliasUri.trim()) return;
+    if (!api.token || !newAliasUri.trim()) return;
 
     setIsAddingAlias(true);
     try {
-      apiClient.setToken(token);
-      await apiClient.post("/api/i/migration/aliases", {
+      await api.post("/api/i/migration/aliases", {
         uri: newAliasUri.trim(),
       });
 
@@ -106,11 +111,10 @@ export function AccountMigrationSection() {
   };
 
   const handleRemoveAlias = async (uri: string) => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      await apiClient.delete("/api/i/migration/aliases", { uri });
+      await api.delete("/api/i/migration/aliases", { uri });
 
       await loadStatus();
       addToast({
@@ -126,13 +130,12 @@ export function AccountMigrationSection() {
   };
 
   const handleValidateTarget = async () => {
-    if (!token || !targetAccountUri.trim()) return;
+    if (!api.token || !targetAccountUri.trim()) return;
 
     setIsValidating(true);
     setValidation(null);
     try {
-      apiClient.setToken(token);
-      const result = await apiClient.post<ValidationResult>("/api/i/migration/validate", {
+      const result = await api.post<ValidationResult>("/api/i/migration/validate", {
         targetUri: targetAccountUri.trim(),
       });
 
@@ -148,7 +151,7 @@ export function AccountMigrationSection() {
   };
 
   const handleInitiateMigration = async () => {
-    if (!token || !targetAccountUri.trim() || !validation?.valid) return;
+    if (!api.token || !targetAccountUri.trim() || !validation?.valid) return;
 
     const confirmed = window.confirm(
       t`Are you sure you want to migrate your account? This action cannot be undone. Your followers will be notified and transferred to the new account.`,
@@ -158,8 +161,7 @@ export function AccountMigrationSection() {
 
     setIsMigrating(true);
     try {
-      apiClient.setToken(token);
-      await apiClient.post("/api/i/migration/initiate", {
+      await api.post("/api/i/migration/initiate", {
         targetUri: targetAccountUri.trim(),
       });
 

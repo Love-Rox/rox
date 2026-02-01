@@ -13,8 +13,8 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -64,8 +64,8 @@ const COLOR_PRESETS = [
 ];
 
 export default function AdminSettingsPage() {
+  const api = useApi();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
   const [settings, setSettings] = useState<AdminSettings | null>(null);
@@ -108,16 +108,14 @@ export default function AdminSettingsPage() {
   // Check admin access and load settings
   useEffect(() => {
     const loadSettings = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       try {
-        apiClient.setToken(token);
-
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: any }>("/api/auth/session");
+        const sessionResponse = await api.get<{ user: any }>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = "/timeline";
           return;
@@ -128,8 +126,8 @@ export default function AdminSettingsPage() {
 
         // Load admin settings and assets
         const [settingsResponse, assetsResponse] = await Promise.all([
-          apiClient.get<AdminSettings>("/api/admin/settings"),
-          apiClient.get<{
+          api.get<AdminSettings>("/api/admin/settings"),
+          api.get<{
             icon: string | null;
             darkIcon: string | null;
             banner: string | null;
@@ -151,7 +149,7 @@ export default function AdminSettingsPage() {
     };
 
     loadSettings();
-  }, [token, setCurrentUser]);
+  }, [api, setCurrentUser]);
 
   const handleSaveInstance = async () => {
     if (!settings) return;
@@ -160,7 +158,7 @@ export default function AdminSettingsPage() {
     setError(null);
 
     try {
-      await apiClient.patch("/api/admin/settings/instance", settings.instance);
+      await api.patch("/api/admin/settings/instance", settings.instance);
       clearInstanceInfoCache();
       addToast({ type: "success", message: t`Instance settings saved` });
     } catch (err) {
@@ -179,7 +177,7 @@ export default function AdminSettingsPage() {
     setError(null);
 
     try {
-      await apiClient.patch("/api/admin/settings/registration", settings.registration);
+      await api.patch("/api/admin/settings/registration", settings.registration);
       clearInstanceInfoCache();
       addToast({ type: "success", message: t`Registration settings saved` });
     } catch (err) {
@@ -198,7 +196,7 @@ export default function AdminSettingsPage() {
     setError(null);
 
     try {
-      await apiClient.patch("/api/admin/settings/theme", settings.theme);
+      await api.patch("/api/admin/settings/theme", settings.theme);
       clearInstanceInfoCache();
       addToast({ type: "success", message: t`Theme settings saved` });
       // Reload page to apply new theme
@@ -224,7 +222,7 @@ export default function AdminSettingsPage() {
       const response = await fetch("/api/admin/assets/upload", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${api.token}`,
         },
         body: formData,
       });
@@ -252,7 +250,7 @@ export default function AdminSettingsPage() {
     setError(null);
 
     try {
-      await apiClient.delete(`/api/admin/assets/${assetType}`);
+      await api.delete(`/api/admin/assets/${assetType}`);
       setAssets((prev) => ({ ...prev, [assetType]: null }));
       clearInstanceInfoCache();
       addToast({ type: "success", message: t`${assetType} removed` });

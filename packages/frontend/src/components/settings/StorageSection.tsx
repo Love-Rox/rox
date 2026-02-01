@@ -14,8 +14,7 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { HardDrive, Trash2, FileImage, FileVideo, FileAudio, FileText, File, RefreshCw } from "lucide-react";
-import { tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { Spinner } from "../ui/Spinner";
@@ -65,8 +64,14 @@ function formatBytes(bytes: number): string {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
+/**
+ * Storage management section component.
+ *
+ * Displays user's storage usage with quota visualization, file type breakdown,
+ * and a list of uploaded files with delete functionality.
+ */
 export function StorageSection() {
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   const [usage, setUsage] = useState<StorageUsage | null>(null);
@@ -77,16 +82,14 @@ export function StorageSection() {
   const [showAllFiles, setShowAllFiles] = useState(false);
 
   const fetchData = useCallback(async () => {
-    if (!token) return;
+    if (!api.isAuthenticated) return;
 
     setIsLoading(true);
     try {
-      apiClient.setToken(token);
-
       const [usageData, statsData, filesData] = await Promise.all([
-        apiClient.get<StorageUsage>("/api/drive/usage"),
-        apiClient.get<StorageStats>("/api/drive/stats"),
-        apiClient.get<DriveFile[]>("/api/drive/files?limit=100"),
+        api.get<StorageUsage>("/api/drive/usage"),
+        api.get<StorageStats>("/api/drive/stats"),
+        api.get<DriveFile[]>("/api/drive/files?limit=100"),
       ]);
 
       setUsage(usageData);
@@ -101,25 +104,24 @@ export function StorageSection() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, addToast]);
+  }, [api, addToast]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   const handleDeleteFile = async (fileId: string) => {
-    if (!token) return;
+    if (!api.isAuthenticated) return;
 
     setIsDeleting(fileId);
     try {
-      apiClient.setToken(token);
-      await apiClient.post("/api/drive/files/delete", { fileId });
+      await api.post("/api/drive/files/delete", { fileId });
 
       // Remove from local state
       setFiles((prev) => prev.filter((f) => f.id !== fileId));
 
       // Refresh usage data
-      const usageData = await apiClient.get<StorageUsage>("/api/drive/usage");
+      const usageData = await api.get<StorageUsage>("/api/drive/usage");
       setUsage(usageData);
 
       addToast({

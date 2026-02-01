@@ -12,8 +12,9 @@
 import { useState } from "react";
 import { Trans } from "@lingui/react/macro";
 import { AlertTriangle, Loader2 } from "lucide-react";
-import { Dialog, Modal, ModalOverlay, Heading } from "react-aria-components";
+import { Dialog, Modal, Heading } from "react-aria-components";
 import { Button } from "../ui/Button";
+import { SafeModalOverlay } from "../ui/SafeModalOverlay";
 import { listsApi, type List } from "../../lib/api/lists";
 import { useAtom } from "jotai";
 import { addToastAtom } from "../../lib/atoms/toast";
@@ -81,9 +82,9 @@ export function ListDeleteConfirmDialog({
   };
 
   return (
-    <ModalOverlay
+    <SafeModalOverlay
       isOpen={isOpen}
-      onOpenChange={(open) => !open && onClose()}
+      onClose={onClose}
       isDismissable={!isLoading}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
     >
@@ -144,6 +145,6 @@ export function ListDeleteConfirmDialog({
           )}
         </Dialog>
       </Modal>
-    </ModalOverlay>
+    </SafeModalOverlay>
   );
 }

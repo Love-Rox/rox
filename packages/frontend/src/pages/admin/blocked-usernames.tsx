@@ -15,8 +15,8 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Plus, Trash2, TestTube, AlertCircle, CheckCircle, Info } from "lucide-react";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -42,8 +42,8 @@ interface TestResult {
 }
 
 export default function AdminBlockedUsernamesPage() {
+  const api = useApi();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
   const [patterns, setPatterns] = useState<BlockedUsername[]>([]);
@@ -66,7 +66,7 @@ export default function AdminBlockedUsernamesPage() {
 
   const loadPatterns = useCallback(async () => {
     try {
-      const response = await apiClient.get<{ patterns: BlockedUsername[] }>(
+      const response = await api.get<{ patterns: BlockedUsername[] }>(
         "/api/admin/blocked-usernames"
       );
       setPatterns(response.patterns);
@@ -74,21 +74,19 @@ export default function AdminBlockedUsernamesPage() {
       console.error("Failed to load blocked usernames:", err);
       setError("Failed to load blocked usernames");
     }
-  }, []);
+  }, [api]);
 
   // Check admin access and load patterns
   useEffect(() => {
     const init = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       try {
-        apiClient.setToken(token);
-
         // Check if user is admin
-        const sessionResponse = await apiClient.get<{ user: any }>("/api/auth/session");
+        const sessionResponse = await api.get<{ user: any }>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = "/timeline";
           return;
@@ -105,7 +103,7 @@ export default function AdminBlockedUsernamesPage() {
     };
 
     init();
-  }, [token, setCurrentUser, loadPatterns]);
+  }, [api, setCurrentUser, loadPatterns]);
 
   const handleAddPattern = async () => {
     if (!newPattern.trim()) {
@@ -117,7 +115,7 @@ export default function AdminBlockedUsernamesPage() {
     setError(null);
 
     try {
-      const response = await apiClient.post<BlockedUsername>("/api/admin/blocked-usernames", {
+      const response = await api.post<BlockedUsername>("/api/admin/blocked-usernames", {
         pattern: newPattern.trim(),
         isRegex,
         reason: reason.trim() || undefined,
@@ -142,7 +140,7 @@ export default function AdminBlockedUsernamesPage() {
     setError(null);
 
     try {
-      await apiClient.delete(`/api/admin/blocked-usernames/${id}`);
+      await api.delete(`/api/admin/blocked-usernames/${id}`);
       setPatterns((prev) => prev.filter((p) => p.id !== id));
       addToast({ type: "success", message: t`Pattern deleted` });
     } catch (err) {
@@ -165,7 +163,7 @@ export default function AdminBlockedUsernamesPage() {
     setError(null);
 
     try {
-      const result = await apiClient.post<TestResult>("/api/admin/blocked-usernames/test", {
+      const result = await api.post<TestResult>("/api/admin/blocked-usernames/test", {
         username: testUsername.trim(),
       });
       setTestResult(result);

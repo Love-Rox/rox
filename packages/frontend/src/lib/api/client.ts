@@ -1,4 +1,16 @@
 /**
+ * Get the API base URL
+ * In browser, uses same origin (proxy handles routing in dev)
+ * In SSR, uses internal Docker network or localhost
+ */
+export function getApiBase(): string {
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  return process.env.INTERNAL_API_URL || "http://localhost:3000";
+}
+
+/**
  * Custom error class for API errors with additional context
  */
 export class ApiError extends Error {
@@ -282,3 +294,32 @@ export const apiClient = new ApiClient(
     ? window.location.origin // Browser: Use same origin (proxy handles routing in dev)
     : process.env.INTERNAL_API_URL || "http://localhost:3000", // SSR: Use internal Docker network or localhost
 );
+
+/**
+ * Helper to set token and make a request in one call
+ * Useful in API module functions that receive token as parameter
+ *
+ * @param token - Authentication token
+ * @returns Object with authenticated request methods
+ *
+ * @example
+ * ```ts
+ * // In an API module function
+ * export async function getUser(userId: string, token: string): Promise<User> {
+ *   return withToken(token).get<User>(`/api/users/${userId}`);
+ * }
+ * ```
+ */
+export function withToken(token: string | null) {
+  // Create a new client instance to avoid race conditions
+  const client = new ApiClient(getApiBase());
+  client.setToken(token);
+  return {
+    get: <T>(path: string) => client.get<T>(path),
+    post: <T>(path: string, data?: unknown) => client.post<T>(path, data),
+    patch: <T>(path: string, data?: unknown) => client.patch<T>(path, data),
+    delete: <T>(path: string, body?: unknown) => client.delete<T>(path, body),
+    upload: <T>(path: string, formData: FormData, timeout?: number) =>
+      client.upload<T>(path, formData, timeout),
+  };
+}

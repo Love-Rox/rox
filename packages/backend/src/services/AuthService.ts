@@ -15,6 +15,9 @@ import { hashPassword, verifyPassword } from "../utils/password.js";
 import { generateSessionToken, calculateSessionExpiry } from "../utils/session.js";
 import { generateId } from "shared";
 import { generateKeyPair } from "../utils/crypto.js";
+import type { EventBus } from "../lib/events.js";
+import { toPluginUser } from "../plugins/utils.js";
+import { logger } from "../lib/logger.js";
 
 /**
  * User Registration Input Data
@@ -51,11 +54,14 @@ export class AuthService {
    *
    * @param userRepository - User repository
    * @param sessionRepository - Session repository
+   * @param blockedUsernameService - Optional blocked username service
+   * @param eventBus - Optional event bus for plugin events
    */
   constructor(
     private userRepository: IUserRepository,
     private sessionRepository: ISessionRepository,
     private blockedUsernameService?: BlockedUsernameService,
+    private eventBus?: EventBus,
   ) {}
 
   /**
@@ -99,6 +105,27 @@ export class AuthService {
       throw new Error("Email already exists");
     }
 
+    // Emit user:beforeRegister event (plugins can cancel or modify)
+    // Note: email is intentionally excluded as it is PII
+    // Note: username cannot be modified as it affects duplicate checks and ActivityPub URIs
+    let displayName = input.name || null;
+
+    if (this.eventBus) {
+      const beforeResult = await this.eventBus.emitBefore("user:beforeRegister", {
+        username: input.username,
+        displayName,
+      });
+
+      if (beforeResult.cancelled) {
+        throw new Error(beforeResult.cancelReason || "Registration cancelled by plugin");
+      }
+
+      // Apply modifications from plugins (only displayName can be modified)
+      if (beforeResult.modifiedPayload) {
+        displayName = beforeResult.modifiedPayload.displayName ?? displayName;
+      }
+    }
+
     // パスワードをハッシュ化
     const passwordHash = await hashPassword(input.password);
 
@@ -116,7 +143,7 @@ export class AuthService {
       username: input.username,
       email: input.email,
       passwordHash,
-      displayName: input.name || input.username,
+      displayName: displayName || input.username,
       host: null, // ローカルユーザー
       avatarUrl: null,
       bannerUrl: null,
@@ -158,6 +185,17 @@ export class AuthService {
     // セッション作成
     const session = await this.createSession(user.id);
 
+    // Emit user:afterRegister event (async, non-blocking)
+    if (this.eventBus) {
+      this.eventBus
+        .emit("user:afterRegister", {
+          user: toPluginUser(user),
+        })
+        .catch((error) => {
+          logger.error({ err: error, userId: user.id }, "Failed to emit user:afterRegister event");
+        });
+    }
+
     return { user, session };
   }
 
@@ -179,7 +217,19 @@ export class AuthService {
    * });
    * ```
    */
-  async login(input: LoginInput): Promise<{ user: User; session: Session }> {
+  async login(input: LoginInput, context?: { ipAddress?: string; userAgent?: string }): Promise<{ user: User; session: Session }> {
+    // Emit user:beforeLogin event (plugins can cancel)
+    // Note: ipAddress and userAgent are excluded as PII
+    if (this.eventBus) {
+      const beforeResult = await this.eventBus.emitBefore("user:beforeLogin", {
+        username: input.username,
+      });
+
+      if (beforeResult.cancelled) {
+        throw new Error(beforeResult.cancelReason || "Login cancelled by plugin");
+      }
+    }
+
     // ユーザー検索
     const user = await this.userRepository.findByUsername(input.username);
     if (!user) {
@@ -205,13 +255,29 @@ export class AuthService {
     // セッション作成
     const session = await this.createSession(user.id);
 
+    // Emit user:afterLogin event (async, non-blocking)
+    // Note: IP address and user agent are intentionally included for security
+    // auditing use cases (e.g., detecting suspicious login patterns, geo-blocking).
+    // Plugins must handle this PII responsibly and comply with privacy regulations.
+    if (this.eventBus) {
+      this.eventBus
+        .emit("user:afterLogin", {
+          user: toPluginUser(user),
+          ipAddress: context?.ipAddress || null,
+          userAgent: context?.userAgent || null,
+        })
+        .catch((error) => {
+          logger.error({ err: error, userId: user.id }, "Failed to emit user:afterLogin event");
+        });
+    }
+
     return { user, session };
   }
 
   /**
    * User Logout
    *
-   * Deletes the session for the specified token.
+   * Deletes the session for the specified token and emits a logout event.
    *
    * @param token - Token of the session to delete
    *
@@ -221,7 +287,27 @@ export class AuthService {
    * ```
    */
   async logout(token: string): Promise<void> {
+    // Get session and user info before deletion for event emission
+    let user: User | null = null;
+    if (this.eventBus) {
+      const session = await this.sessionRepository.findByToken(token);
+      if (session) {
+        user = await this.userRepository.findById(session.userId);
+      }
+    }
+
     await this.sessionRepository.deleteByToken(token);
+
+    // Emit user:afterLogout event (async, non-blocking)
+    if (this.eventBus && user) {
+      this.eventBus
+        .emit("user:afterLogout", {
+          user: toPluginUser(user),
+        })
+        .catch((error) => {
+          logger.error({ err: error, userId: user!.id }, "Failed to emit user:afterLogout event");
+        });
+    }
   }
 
   /**

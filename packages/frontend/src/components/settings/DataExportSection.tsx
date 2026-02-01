@@ -14,27 +14,32 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Download, FileJson, Info } from "lucide-react";
-import { tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { Spinner } from "../ui/Spinner";
 import { addToastAtom } from "../../lib/atoms/toast";
 
+/**
+ * Data export section component.
+ *
+ * Allows users to download their personal data as a JSON file.
+ * Implements GDPR Article 20 (Right to Data Portability) by providing
+ * access to profile info, notes, relationships, and settings.
+ */
 export function DataExportSection() {
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   const [isExporting, setIsExporting] = useState(false);
 
   const handleExport = async () => {
-    if (!token) return;
+    if (!api.isAuthenticated) return;
 
     setIsExporting(true);
 
     try {
-      apiClient.setToken(token);
-      const response = await apiClient.get("/api/users/@me/export");
+      const response = await api.get("/api/users/@me/export");
 
       // Create a blob and download link
       const blob = new Blob([JSON.stringify(response, null, 2)], {

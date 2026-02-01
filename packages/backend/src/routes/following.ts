@@ -33,12 +33,14 @@ following.post(
     const userRepository = c.get("userRepository");
     const deliveryService = c.get("activityPubDeliveryService");
     const notificationService = c.get("notificationService");
+    const eventBus = c.get("eventBus");
 
     const followService = new FollowService(
       followRepository,
       userRepository,
       deliveryService,
       notificationService,
+      eventBus,
     );
 
     const body = await c.req.json();
@@ -75,8 +77,15 @@ following.post(
     const followRepository = c.get("followRepository");
     const userRepository = c.get("userRepository");
     const deliveryService = c.get("activityPubDeliveryService");
+    const eventBus = c.get("eventBus");
 
-    const followService = new FollowService(followRepository, userRepository, deliveryService);
+    const followService = new FollowService(
+      followRepository,
+      userRepository,
+      deliveryService,
+      undefined, // notificationService not needed for unfollow
+      eventBus,
+    );
 
     const body = await c.req.json();
 

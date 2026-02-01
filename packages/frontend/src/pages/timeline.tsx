@@ -8,9 +8,9 @@ import { NoteComposer } from "../components/note/NoteComposer";
 import { Layout } from "../components/layout/Layout";
 import { PageHeader } from "../components/ui/PageHeader";
 import { DeckModeWrapper } from "../components/deck/DeckModeWrapper";
-import { currentUserAtom, tokenAtom } from "../lib/atoms/auth";
+import { currentUserAtom } from "../lib/atoms/auth";
 import { timelineNotesAtom } from "../lib/atoms/timeline";
-import { apiClient } from "../lib/api/client";
+import { useApi } from "../hooks/useApi";
 
 /**
  * Timeline page component
@@ -21,8 +21,8 @@ type TimelineType = "local" | "social" | "global" | "home";
 const TIMELINE_TYPE_STORAGE_KEY = "rox:timelineType";
 
 export default function TimelinePage() {
+  const api = useApi();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
   const [, setTimelineNotes] = useAtom(timelineNotesAtom);
   // Start with default value to avoid hydration mismatch
   // localStorage value is loaded in useEffect after hydration
@@ -52,7 +52,7 @@ export default function TimelinePage() {
   useEffect(() => {
     const restoreSession = async () => {
       // No token at all, redirect to login
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
@@ -60,8 +60,7 @@ export default function TimelinePage() {
       // Token exists but no user data, try to restore session
       if (!currentUser) {
         try {
-          apiClient.setToken(token);
-          const response = await apiClient.get<{ user: any }>("/api/auth/session");
+          const response = await api.get<{ user: any }>("/api/auth/session");
           setCurrentUser(response.user);
           setIsLoading(false);
         } catch (error) {
@@ -76,7 +75,7 @@ export default function TimelinePage() {
       }
     };
     restoreSession();
-  }, [token, currentUser, setCurrentUser]);
+  }, [api, currentUser, setCurrentUser]);
 
   const refreshTimeline = useCallback(async () => {
     const endpoint =
@@ -89,12 +88,12 @@ export default function TimelinePage() {
             : "/api/notes/local-timeline";
 
     try {
-      const newNotes = await apiClient.get<any[]>(`${endpoint}?limit=20`);
+      const newNotes = await api.get<any[]>(`${endpoint}?limit=20`);
       setTimelineNotes(newNotes);
     } catch (error) {
       console.error("Failed to refresh timeline:", error);
     }
-  }, [timelineType, setTimelineNotes]);
+  }, [timelineType, setTimelineNotes, api]);
 
   const handleNoteCreated = useCallback(async () => {
     await refreshTimeline();

@@ -1,5 +1,5 @@
 import type { PageProps } from "waku/router";
-import { UserProfile } from "../../components/user/UserProfile";
+import { UserProfileWrapper } from "../../components/user/UserProfileWrapper";
 
 /**
  * Parse username parameter to extract username and host
@@ -112,7 +112,7 @@ export default async function UserPage({ username: usernameParam }: PageProps<"/
       {avatarUrl && <meta property="og:image" content={avatarUrl} />}
       <meta property="twitter:card" content="summary" />
 
-      <UserProfile username={username} host={host} />
+      <UserProfileWrapper username={username} host={host} />
     </>
   );
 }

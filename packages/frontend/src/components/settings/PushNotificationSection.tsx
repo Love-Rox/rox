@@ -140,6 +140,15 @@ function getDeviceName(userAgent?: string): string {
   return "Browser";
 }
 
+/**
+ * Push notification settings section component.
+ *
+ * Allows users to:
+ * - Enable/disable push notifications for this device
+ * - Send test notifications to verify setup
+ * - View registered devices
+ * - Configure which notification types to receive
+ */
 export function PushNotificationSection() {
   const { t } = useLingui();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);

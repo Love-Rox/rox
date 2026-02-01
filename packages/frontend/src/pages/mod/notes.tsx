@@ -11,8 +11,7 @@ import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { RefreshCw, FileText, Trash2, RotateCcw, User, AlertTriangle } from "lucide-react";
-import { tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -47,7 +46,7 @@ interface DeletedNotesResponse {
 }
 
 export default function ModeratorNotesPage() {
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   const [notes, setNotes] = useState<DeletedNote[]>([]);
@@ -56,29 +55,29 @@ export default function ModeratorNotesPage() {
   const [isRestoring, setIsRestoring] = useState<string | null>(null);
 
   const loadDeletedNotes = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      const response = await apiClient.get<DeletedNotesResponse>("/api/mod/notes/deleted");
+      const response = await api.get<DeletedNotesResponse>("/api/mod/notes/deleted");
       setNotes(response.notes);
+      setError(null);
     } catch (err) {
       console.error("Failed to load deleted notes:", err);
       setError("Failed to load deleted notes");
+      throw err; // Re-throw for access check to handle 403
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, [api]);
 
   useEffect(() => {
     const checkAccess = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       try {
-        apiClient.setToken(token);
         await loadDeletedNotes();
       } catch (err: any) {
         console.error("Access check failed:", err);
@@ -92,15 +91,14 @@ export default function ModeratorNotesPage() {
     };
 
     checkAccess();
-  }, [token, loadDeletedNotes]);
+  }, [api, loadDeletedNotes]);
 
   const handleRestore = async (noteId: string) => {
-    if (!token) return;
+    if (!api.token) return;
 
     setIsRestoring(noteId);
     try {
-      apiClient.setToken(token);
-      await apiClient.post(`/api/mod/notes/${noteId}/restore`, {});
+      await api.post(`/api/mod/notes/${noteId}/restore`, {});
 
       addToast({
         type: "success",

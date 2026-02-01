@@ -16,8 +16,7 @@ import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Key, Plus, Trash2, Pencil, Check, X, Smartphone, Monitor } from "lucide-react";
 import { startRegistration } from "@simplewebauthn/browser";
-import { tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { Spinner } from "../ui/Spinner";
@@ -35,8 +34,15 @@ interface PasskeyCredential {
   lastUsedAt: string | null;
 }
 
+/**
+ * Passkey settings section component.
+ *
+ * Provides UI for managing WebAuthn passkeys including viewing registered
+ * passkeys, registering new ones, renaming, and deleting existing passkeys.
+ * Requires browser WebAuthn support.
+ */
 export function PasskeySection() {
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   const [passkeys, setPasskeys] = useState<PasskeyCredential[]>([]);
@@ -50,11 +56,10 @@ export function PasskeySection() {
    * Fetch user's passkeys
    */
   const fetchPasskeys = useCallback(async () => {
-    if (!token) return;
+    if (!api.isAuthenticated) return;
 
     try {
-      apiClient.setToken(token);
-      const response = await apiClient.get<{ passkeys: PasskeyCredential[] }>("/api/auth/passkey");
+      const response = await api.get<{ passkeys: PasskeyCredential[] }>("/api/auth/passkey");
       setPasskeys(response.passkeys);
     } catch (err) {
       console.error("Failed to fetch passkeys:", err);
@@ -65,7 +70,7 @@ export function PasskeySection() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, addToast]);
+  }, [api, addToast]);
 
   useEffect(() => {
     fetchPasskeys();
@@ -75,14 +80,12 @@ export function PasskeySection() {
    * Register a new passkey
    */
   const handleRegister = async () => {
-    if (!token) return;
+    if (!api.isAuthenticated) return;
 
     setIsRegistering(true);
     try {
-      apiClient.setToken(token);
-
       // 1. Get registration options from server
-      const options = await apiClient.post<any>("/api/auth/passkey/register/begin", {});
+      const options = await api.post<any>("/api/auth/passkey/register/begin", {});
 
       // 2. Start browser WebAuthn registration
       const attestationResponse = await startRegistration({
@@ -90,7 +93,7 @@ export function PasskeySection() {
       });
 
       // 3. Send attestation to server for verification
-      await apiClient.post("/api/auth/passkey/register/finish", {
+      await api.post("/api/auth/passkey/register/finish", {
         credential: attestationResponse,
         name: t`Passkey ${new Date().toLocaleDateString()}`,
       });
@@ -147,11 +150,10 @@ export function PasskeySection() {
    * Save the edited passkey name
    */
   const handleSaveEdit = async () => {
-    if (!token || !editingId || !editingName.trim()) return;
+    if (!api.isAuthenticated || !editingId || !editingName.trim()) return;
 
     try {
-      apiClient.setToken(token);
-      await apiClient.patch(`/api/auth/passkey/${editingId}`, {
+      await api.patch(`/api/auth/passkey/${editingId}`, {
         name: editingName.trim(),
       });
 
@@ -175,12 +177,11 @@ export function PasskeySection() {
    * Delete a passkey
    */
   const handleDelete = async (passkeyId: string) => {
-    if (!token) return;
+    if (!api.isAuthenticated) return;
 
     setDeletingId(passkeyId);
     try {
-      apiClient.setToken(token);
-      await apiClient.delete(`/api/auth/passkey/${passkeyId}`);
+      await api.delete(`/api/auth/passkey/${passkeyId}`);
 
       addToast({
         type: "success",

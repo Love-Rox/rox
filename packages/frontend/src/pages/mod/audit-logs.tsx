@@ -7,7 +7,6 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
-import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import {
@@ -24,8 +23,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -82,7 +80,7 @@ const TARGET_TYPE_ICONS: Record<string, any> = {
 };
 
 export default function ModeratorAuditLogsPage() {
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
 
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [total, setTotal] = useState(0);
@@ -95,18 +93,17 @@ export default function ModeratorAuditLogsPage() {
   const limit = 50;
 
   const loadLogs = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     setIsLoading(true);
     try {
-      apiClient.setToken(token);
       const params = new URLSearchParams();
       params.set("limit", String(limit));
       params.set("offset", String(offset));
       if (actionFilter) params.set("action", actionFilter);
       if (targetTypeFilter) params.set("targetType", targetTypeFilter);
 
-      const response = await apiClient.get<AuditLogsResponse>(`/api/mod/audit-logs?${params}`);
+      const response = await api.get<AuditLogsResponse>(`/api/mod/audit-logs?${params}`);
       setLogs(response.logs);
       setTotal(response.total);
     } catch (err) {
@@ -115,11 +112,11 @@ export default function ModeratorAuditLogsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, offset, actionFilter, targetTypeFilter]);
+  }, [api, offset, actionFilter, targetTypeFilter]);
 
   useEffect(() => {
     const checkAccess = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
@@ -138,7 +135,7 @@ export default function ModeratorAuditLogsPage() {
     };
 
     checkAccess();
-  }, [token, loadLogs]);
+  }, [api, loadLogs]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();

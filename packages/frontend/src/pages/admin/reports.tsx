@@ -20,8 +20,8 @@ import {
   FileText,
   ExternalLink,
 } from "lucide-react";
-import { currentUserAtom, tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { currentUserAtom } from "../../lib/atoms/auth";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -65,8 +65,8 @@ const REASON_LABELS: Record<string, string> = {
 };
 
 export default function AdminReportsPage() {
+  const api = useApi();
   const [, setCurrentUser] = useAtom(currentUserAtom);
-  const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
 
   const [reports, setReports] = useState<UserReport[]>([]);
@@ -87,15 +87,14 @@ export default function AdminReportsPage() {
   const [resolutionText, setResolutionText] = useState("");
 
   const loadReports = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
       const params = new URLSearchParams();
       if (statusFilter !== "all") {
         params.set("status", statusFilter);
       }
-      const response = await apiClient.get<ReportsResponse>(
+      const response = await api.get<ReportsResponse>(
         `/api/admin/reports${params.toString() ? `?${params}` : ""}`,
       );
       setReports(response.reports);
@@ -107,21 +106,19 @@ export default function AdminReportsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, statusFilter]);
+  }, [api, statusFilter]);
 
   // Check admin access and load reports
   useEffect(() => {
     const checkAccess = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
 
       try {
-        apiClient.setToken(token);
-
         // Check if user is admin and restore session
-        const sessionResponse = await apiClient.get<{ user: any }>("/api/auth/session");
+        const sessionResponse = await api.get<{ user: any }>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = "/timeline";
           return;
@@ -139,15 +136,14 @@ export default function AdminReportsPage() {
     };
 
     checkAccess();
-  }, [token, loadReports, setCurrentUser]);
+  }, [api, loadReports, setCurrentUser]);
 
   const loadReportDetail = async (id: string) => {
-    if (!token) return;
+    if (!api.token) return;
 
     setIsLoadingDetail(true);
     try {
-      apiClient.setToken(token);
-      const detail = await apiClient.get<UserReport>(`/api/admin/reports/${id}`);
+      const detail = await api.get<UserReport>(`/api/admin/reports/${id}`);
       setSelectedReport(detail);
       setResolutionText("");
     } catch (err: any) {
@@ -161,12 +157,11 @@ export default function AdminReportsPage() {
   };
 
   const handleResolve = async (status: "resolved" | "rejected") => {
-    if (!token || !selectedReport) return;
+    if (!api.token || !selectedReport) return;
 
     setIsResolving(true);
     try {
-      apiClient.setToken(token);
-      await apiClient.post(`/api/admin/reports/${selectedReport.id}/resolve`, {
+      await api.post(`/api/admin/reports/${selectedReport.id}/resolve`, {
         status,
         resolution: resolutionText.trim() || undefined,
       });

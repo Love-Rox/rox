@@ -15,10 +15,10 @@ import { X, Users, Loader2, UserPlus } from "lucide-react";
 import {
   Dialog,
   Modal,
-  ModalOverlay,
   Heading,
   Button as AriaButton,
 } from "react-aria-components";
+import { SafeModalOverlay } from "../ui/SafeModalOverlay";
 import { listsApi, type List, type ListMembership } from "../../lib/api/lists";
 import { Button } from "../ui/Button";
 import { ListMemberCard } from "./ListMemberCard";
@@ -139,9 +139,9 @@ export function ListMembersModal({
   };
 
   return (
-    <ModalOverlay
+    <SafeModalOverlay
       isOpen={isOpen}
-      onOpenChange={(open) => !open && onClose()}
+      onClose={onClose}
       isDismissable
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
     >
@@ -260,6 +260,6 @@ export function ListMembersModal({
           onMemberCountChanged={onMemberCountChanged}
         />
       )}
-    </ModalOverlay>
+    </SafeModalOverlay>
   );
 }

@@ -12,6 +12,13 @@ import { Bell, X } from "lucide-react";
 import { useNotifications } from "../../hooks/useNotifications";
 import { NotificationList } from "./NotificationList";
 
+/**
+ * Notification bell component with unread count badge.
+ *
+ * Displays a bell icon that shows the number of unread notifications
+ * and opens a notification panel when clicked. The panel includes
+ * a list of recent notifications and a link to view all.
+ */
 export function NotificationBell() {
   const { unreadCount } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);

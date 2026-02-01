@@ -8,6 +8,7 @@ import {
 import type { ReactNode } from "react";
 import { X } from "lucide-react";
 import { Button } from "./Button";
+import { getModalContainer } from "../../lib/utils/modalContainer";
 
 /**
  * Props for the Dialog component
@@ -58,7 +59,10 @@ export function Dialog({ title, children, trigger, actions, onClose }: DialogPro
     <DialogTrigger>
       {trigger}
       <ModalOverlay className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-        <Modal className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl">
+        <Modal
+          UNSTABLE_portalContainer={getModalContainer()}
+          className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl"
+        >
           <AriaDialog className="p-6 outline-none">
             {({ close }) => (
               <>
@@ -142,7 +146,10 @@ export function ConfirmDialog({
     <DialogTrigger>
       {trigger}
       <ModalOverlay className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-        <Modal className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl">
+        <Modal
+          UNSTABLE_portalContainer={getModalContainer()}
+          className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl"
+        >
           <AriaDialog className="p-6 outline-none">
             {({ close }) => (
               <>

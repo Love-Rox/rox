@@ -21,8 +21,7 @@ import {
   ChevronRight,
   X,
 } from "lucide-react";
-import { tokenAtom } from "../../lib/atoms/auth";
-import { apiClient } from "../../lib/api/client";
+import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Spinner } from "../../components/ui/Spinner";
@@ -51,7 +50,7 @@ interface CheckBlockResponse {
 }
 
 export default function ModeratorInstanceBlocksPage() {
-  const [token] = useAtom(tokenAtom);
+  const api = useApi();
   const [, addToast] = useAtom(addToastAtom);
 
   const [blocks, setBlocks] = useState<InstanceBlock[]>([]);
@@ -74,16 +73,15 @@ export default function ModeratorInstanceBlocksPage() {
   const [isChecking, setIsChecking] = useState(false);
 
   const loadBlocks = useCallback(async () => {
-    if (!token) return;
+    if (!api.token) return;
 
     setIsLoading(true);
     try {
-      apiClient.setToken(token);
       const params = new URLSearchParams();
       params.set("limit", String(limit));
       params.set("offset", String(offset));
 
-      const response = await apiClient.get<InstanceBlocksResponse>(
+      const response = await api.get<InstanceBlocksResponse>(
         `/api/mod/instance-blocks?${params}`,
       );
       setBlocks(response.blocks);
@@ -94,11 +92,11 @@ export default function ModeratorInstanceBlocksPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, offset]);
+  }, [api, offset]);
 
   useEffect(() => {
     const checkAccess = async () => {
-      if (!token) {
+      if (!api.token) {
         window.location.href = "/login";
         return;
       }
@@ -117,19 +115,18 @@ export default function ModeratorInstanceBlocksPage() {
     };
 
     checkAccess();
-  }, [token, loadBlocks]);
+  }, [api, loadBlocks]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
   };
 
   const handleAddBlock = async () => {
-    if (!token || !newHost.trim()) return;
+    if (!api.token || !newHost.trim()) return;
 
     setIsSubmitting(true);
     try {
-      apiClient.setToken(token);
-      await apiClient.post("/api/mod/instance-blocks", {
+      await api.post("/api/mod/instance-blocks", {
         host: newHost.trim(),
         reason: newReason.trim() || undefined,
       });
@@ -155,11 +152,10 @@ export default function ModeratorInstanceBlocksPage() {
   };
 
   const handleUnblock = async (host: string) => {
-    if (!token) return;
+    if (!api.token) return;
 
     try {
-      apiClient.setToken(token);
-      await apiClient.delete(`/api/mod/instance-blocks/${encodeURIComponent(host)}`);
+      await api.delete(`/api/mod/instance-blocks/${encodeURIComponent(host)}`);
 
       addToast({
         type: "success",
@@ -176,13 +172,12 @@ export default function ModeratorInstanceBlocksPage() {
   };
 
   const handleCheckBlock = async () => {
-    if (!token || !checkHost.trim()) return;
+    if (!api.token || !checkHost.trim()) return;
 
     setIsChecking(true);
     setCheckResult(null);
     try {
-      apiClient.setToken(token);
-      const result = await apiClient.get<CheckBlockResponse>(
+      const result = await api.get<CheckBlockResponse>(
         `/api/mod/instance-blocks/check?host=${encodeURIComponent(checkHost.trim())}`,
       );
       setCheckResult(result);
