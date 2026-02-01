@@ -48,7 +48,7 @@ This project leverages Model Context Protocol (MCP) servers for enhanced develop
 ## Integration Guidelines
 
 | Task | Use |
-|------|-----|
+| ---- | --- |
 | Library documentation | context7 |
 | External project research | deepwiki |
 | Codebase navigation/refactoring | serena |

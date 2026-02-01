@@ -60,9 +60,11 @@ export default function ModeratorNotesPage() {
     try {
       const response = await api.get<DeletedNotesResponse>("/api/mod/notes/deleted");
       setNotes(response.notes);
+      setError(null);
     } catch (err) {
       console.error("Failed to load deleted notes:", err);
       setError("Failed to load deleted notes");
+      throw err; // Re-throw for access check to handle 403
     } finally {
       setIsLoading(false);
     }

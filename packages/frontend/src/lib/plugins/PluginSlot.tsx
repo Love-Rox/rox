@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Plugin Slot Component
  *
@@ -6,8 +8,6 @@
  *
  * @module lib/plugins/PluginSlot
  */
-
-"use client";
 
 import React, { Component, Suspense, useSyncExternalStore, type ReactNode } from "react";
 import type { SlotName } from "./slots";

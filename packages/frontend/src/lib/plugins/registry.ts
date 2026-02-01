@@ -46,6 +46,7 @@ class PluginRegistry {
   private plugins: Map<string, LoadedFrontendPlugin> = new Map();
   private slotComponents: Map<SlotName, SlotEntry[]> = new Map();
   private listeners: Set<() => void> = new Set();
+  private registering: Set<string> = new Set();
 
   private constructor() {}
 
@@ -66,12 +67,13 @@ class PluginRegistry {
    * @param priority - Priority for slot components (higher = rendered first)
    */
   async register(plugin: FrontendPlugin, priority = 0): Promise<void> {
-    // Check if already registered
-    if (this.plugins.has(plugin.id)) {
+    // Check if already registered or currently registering
+    if (this.plugins.has(plugin.id) || this.registering.has(plugin.id)) {
       console.warn(`Plugin ${plugin.id} is already registered`);
       return;
     }
 
+    this.registering.add(plugin.id);
     try {
       // Call onLoad if defined
       if (plugin.onLoad) {
@@ -116,6 +118,8 @@ class PluginRegistry {
 
       // Notify listeners so UI can reflect the failure state
       this.notifyListeners();
+    } finally {
+      this.registering.delete(plugin.id);
     }
   }
 

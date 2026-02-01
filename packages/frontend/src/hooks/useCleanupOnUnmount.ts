@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 
 /**
  * Hook to track component mount state and prevent state updates after unmount.
@@ -37,8 +37,8 @@ export function useIsMounted() {
 /**
  * Hook to run cleanup function synchronously before component unmounts.
  *
- * Unlike useEffect cleanup which runs after unmount, this runs during
- * the unmount phase to ensure proper cleanup order.
+ * Uses a layout effect cleanup to run before DOM removal during unmount,
+ * ensuring deterministic cleanup order.
  *
  * @param cleanup - Cleanup function to run before unmount
  */
@@ -46,7 +46,7 @@ export function useBeforeUnmount(cleanup: () => void) {
   const cleanupRef = useRef(cleanup);
   cleanupRef.current = cleanup;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     return () => {
       cleanupRef.current();
     };

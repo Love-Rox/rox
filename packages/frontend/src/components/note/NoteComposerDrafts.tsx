@@ -89,7 +89,12 @@ export function NoteComposerDrafts({
                 <div
                   key={draft.id}
                   onClick={() => onLoadDraft(draft.id)}
-                  onKeyDown={(e) => e.key === "Enter" && onLoadDraft(draft.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onLoadDraft(draft.id);
+                    }
+                  }}
                   className={`flex items-start justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 ${
                     currentDraftId === draft.id
                       ? "bg-primary-50 dark:bg-primary-900/20"
@@ -106,15 +111,17 @@ export function NoteComposerDrafts({
                       {new Date(draft.timestamp).toLocaleString()}
                     </p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onPress={() => onDeleteDraft(draft.id)}
-                    className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-400 hover:text-red-500"
-                    aria-label={t`Delete draft`}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onPress={() => onDeleteDraft(draft.id)}
+                      className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-400 hover:text-red-500"
+                      aria-label={t`Delete draft`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               ))
             )}

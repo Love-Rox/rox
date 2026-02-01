@@ -311,13 +311,15 @@ export const apiClient = new ApiClient(
  * ```
  */
 export function withToken(token: string | null) {
-  apiClient.setToken(token);
+  // Create a new client instance to avoid race conditions
+  const client = new ApiClient(getApiBase());
+  client.setToken(token);
   return {
-    get: <T>(path: string) => apiClient.get<T>(path),
-    post: <T>(path: string, data?: unknown) => apiClient.post<T>(path, data),
-    patch: <T>(path: string, data?: unknown) => apiClient.patch<T>(path, data),
-    delete: <T>(path: string, body?: unknown) => apiClient.delete<T>(path, body),
+    get: <T>(path: string) => client.get<T>(path),
+    post: <T>(path: string, data?: unknown) => client.post<T>(path, data),
+    patch: <T>(path: string, data?: unknown) => client.patch<T>(path, data),
+    delete: <T>(path: string, body?: unknown) => client.delete<T>(path, body),
     upload: <T>(path: string, formData: FormData, timeout?: number) =>
-      apiClient.upload<T>(path, formData, timeout),
+      client.upload<T>(path, formData, timeout),
   };
 }

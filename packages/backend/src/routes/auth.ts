@@ -254,7 +254,10 @@ app.post("/session", rateLimit(RateLimitPresets.login), async (c) => {
         password: body.password,
       },
       {
-        ipAddress: c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || undefined,
+        ipAddress:
+          c.req.header("x-forwarded-for")?.split(",")[0]?.trim() ||
+          c.req.header("x-real-ip") ||
+          undefined,
         userAgent: c.req.header("user-agent") || undefined,
       },
     );

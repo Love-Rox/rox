@@ -22,7 +22,7 @@ Update version in **all** package.json files:
 ## Version Examples
 
 | Release Type | Root Version | Package Version |
-|-------------|--------------|-----------------|
+| ------------ | ------------ | --------------- |
 | First stable release | `2025.12.0` | `1.0.0` |
 | Patch release | `2025.12.1` | `1.0.1` |
 | Minor feature release | `2025.12.2` | `1.1.0` |

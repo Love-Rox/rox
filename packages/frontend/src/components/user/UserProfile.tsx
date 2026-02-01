@@ -608,10 +608,10 @@ export function UserProfile({ username, host }: UserProfileProps) {
               {user.host && (() => {
                 // Validate theme color to prevent CSS injection
                 const validatedThemeColor = validateCssColor(remoteInstance?.themeColor);
-                // Only hex colors support appending alpha (e.g., #RRGGBB15)
-                // For non-hex colors (rgb/hsl), use fallback
-                const isHexColor = validatedThemeColor?.startsWith("#");
-                const badgeBgColor = isHexColor
+                // Only 6-digit hex colors support appending alpha (e.g., #RRGGBB15)
+                // Short hex (#RGB, #RGBA) or 8-digit hex (#RRGGBBAA) would be invalid
+                const isSixDigitHex = /^#[0-9a-f]{6}$/i.test(validatedThemeColor ?? "");
+                const badgeBgColor = isSixDigitHex
                   ? `${validatedThemeColor}15`
                   : "var(--bg-tertiary)";
                 return (

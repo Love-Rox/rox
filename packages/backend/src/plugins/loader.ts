@@ -244,9 +244,16 @@ export class PluginLoader {
       // Create plugin context
       const context = this.createPluginContext(plugin.id);
 
-      // Call onLoad
-      if (plugin.onLoad) {
-        await plugin.onLoad(context);
+      // Call onLoad (rollback handlers if it fails)
+      try {
+        if (plugin.onLoad) {
+          await plugin.onLoad(context);
+        }
+      } catch (error) {
+        this.eventBus.offPlugin(manifest.id);
+        const message = error instanceof Error ? error.message : "Unknown error";
+        logger.error({ pluginId: manifest.id, error: message }, "Plugin onLoad failed");
+        return { success: false, pluginId: manifest.id, error: message };
       }
 
       // Register the plugin
@@ -350,8 +357,15 @@ export class PluginLoader {
     if (enabled && !loaded.enabled) {
       // Re-enable: call onLoad
       const context = this.createPluginContext(pluginId);
-      if (loaded.plugin.onLoad) {
-        await loaded.plugin.onLoad(context);
+      try {
+        if (loaded.plugin.onLoad) {
+          await loaded.plugin.onLoad(context);
+        }
+      } catch (error) {
+        this.eventBus.offPlugin(pluginId);
+        const message = error instanceof Error ? error.message : "Unknown error";
+        logger.error({ pluginId, error: message }, "Plugin onLoad failed during re-enable");
+        return false;
       }
     } else if (!enabled && loaded.enabled) {
       // Disable: call onUnload but keep in memory

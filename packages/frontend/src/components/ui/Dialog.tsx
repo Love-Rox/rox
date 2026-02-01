@@ -58,11 +58,11 @@ export function Dialog({ title, children, trigger, actions, onClose }: DialogPro
   return (
     <DialogTrigger>
       {trigger}
-      <ModalOverlay
-        UNSTABLE_portalContainer={getModalContainer()}
-        className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
-      >
-        <Modal className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl">
+      <ModalOverlay className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+        <Modal
+          UNSTABLE_portalContainer={getModalContainer()}
+          className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl"
+        >
           <AriaDialog className="p-6 outline-none">
             {({ close }) => (
               <>
@@ -145,11 +145,11 @@ export function ConfirmDialog({
   return (
     <DialogTrigger>
       {trigger}
-      <ModalOverlay
-        UNSTABLE_portalContainer={getModalContainer()}
-        className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
-      >
-        <Modal className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl">
+      <ModalOverlay className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+        <Modal
+          UNSTABLE_portalContainer={getModalContainer()}
+          className="w-full max-w-md rounded-lg bg-white dark:bg-gray-800 shadow-xl"
+        >
           <AriaDialog className="p-6 outline-none">
             {({ close }) => (
               <>

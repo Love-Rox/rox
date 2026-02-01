@@ -95,12 +95,16 @@ function closeUncontrolledPopovers(): void {
   // Close any open Select/MenuTrigger popovers
   document
     .querySelectorAll('[data-open], button[aria-expanded="true"]')
-    .forEach((el) => el.dispatchEvent(escapeEvent));
+    .forEach((el) => {
+      el.dispatchEvent(escapeEvent);
+    });
 
   // Close any React Aria top-layer overlays
   document
     .querySelectorAll("[data-react-aria-top-layer]")
-    .forEach((el) => el.dispatchEvent(escapeEvent));
+    .forEach((el) => {
+      el.dispatchEvent(escapeEvent);
+    });
 }
 
 /**
