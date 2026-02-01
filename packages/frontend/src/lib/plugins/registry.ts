@@ -47,6 +47,9 @@ class PluginRegistry {
   private slotComponents: Map<SlotName, SlotEntry[]> = new Map();
   private listeners: Set<() => void> = new Set();
   private registering: Set<string> = new Set();
+  // Cache uses unknown[] to avoid complex generic type issues
+  // The cache is type-safe at runtime since we only store what getSlotComponents computes
+  private slotComponentsCache: Map<SlotName, unknown[]> = new Map();
 
   private constructor() {}
 
@@ -190,6 +193,12 @@ class PluginRegistry {
    * @returns Array of slot entries sorted by priority (highest first)
    */
   getSlotComponents<T extends SlotName>(slotName: T): SlotEntry<T>[] {
+    // Return cached result if available
+    const cached = this.slotComponentsCache.get(slotName);
+    if (cached) {
+      return cached as SlotEntry<T>[];
+    }
+
     const entries = this.slotComponents.get(slotName) || [];
     // Filter by enabled plugins
     const enabledEntries = entries.filter((e) => {
@@ -197,7 +206,11 @@ class PluginRegistry {
       return plugin?.enabled;
     });
     // Sort by priority (highest first)
-    return [...enabledEntries].sort((a, b) => b.priority - a.priority) as SlotEntry<T>[];
+    const result = [...enabledEntries].sort((a, b) => b.priority - a.priority) as SlotEntry<T>[];
+
+    // Cache the result
+    this.slotComponentsCache.set(slotName, result);
+    return result;
   }
 
   /**
@@ -279,6 +292,9 @@ class PluginRegistry {
   }
 
   private notifyListeners(): void {
+    // Invalidate slot components cache
+    this.slotComponentsCache.clear();
+
     for (const listener of this.listeners) {
       try {
         listener();

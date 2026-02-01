@@ -369,8 +369,14 @@ export class PluginLoader {
       }
     } else if (!enabled && loaded.enabled) {
       // Disable: call onUnload but keep in memory
-      if (loaded.plugin.onUnload) {
-        await loaded.plugin.onUnload();
+      try {
+        if (loaded.plugin.onUnload) {
+          await loaded.plugin.onUnload();
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Unknown error";
+        logger.error({ pluginId, error: message }, "Plugin onUnload failed during disable");
+        return false;
       }
       this.eventBus.offPlugin(pluginId);
     }
