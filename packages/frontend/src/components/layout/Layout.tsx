@@ -86,7 +86,9 @@ export function Layout({ children, showSidebar = true, maxWidth = "2xl", header 
         {/* Footer with legal links */}
         <footer className="border-t border-(--border-color) py-4 mt-8">
           <div className="container mx-auto px-3 sm:px-4">
-            <div className={`${maxWidthClass} mx-auto flex flex-wrap justify-center gap-4 text-xs text-(--text-muted)`}>
+            <div
+              className={`${maxWidthClass} mx-auto flex flex-wrap justify-center gap-4 text-xs text-(--text-muted)`}
+            >
               <a
                 href={instanceInfo?.tosUrl || "/legal/terms"}
                 className="hover:text-(--text-primary)"

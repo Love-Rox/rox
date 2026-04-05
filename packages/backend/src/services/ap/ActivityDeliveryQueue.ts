@@ -401,7 +401,7 @@ export class ActivityDeliveryQueue {
     let hash = 0;
     for (let i = 0; i < input.length; i++) {
       const char = input.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32bit integer
     }
     return `${Math.abs(hash).toString(36)}`;
@@ -580,7 +580,10 @@ export class ActivityDeliveryQueue {
 
         // Warn if success rate is below 95%
         if (stats.successRate < 95) {
-          logger.warn({ successRate: stats.successRate }, "Delivery success rate is below target (95%)");
+          logger.warn(
+            { successRate: stats.successRate },
+            "Delivery success rate is below target (95%)",
+          );
         }
       }
     }, intervalMs);

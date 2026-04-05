@@ -77,9 +77,7 @@ export function useDraft() {
         if (currentDraftId) {
           // Update existing draft
           return prev.map((d) =>
-            d.id === currentDraftId
-              ? { ...d, ...data, timestamp: Date.now() }
-              : d
+            d.id === currentDraftId ? { ...d, ...data, timestamp: Date.now() } : d,
           );
         } else {
           // Create new draft
@@ -118,9 +116,7 @@ export function useDraft() {
 
       setDrafts((prev) => {
         // Remove current working draft if it exists
-        const filtered = currentDraftId
-          ? prev.filter((d) => d.id !== currentDraftId)
-          : prev;
+        const filtered = currentDraftId ? prev.filter((d) => d.id !== currentDraftId) : prev;
         // Add new draft at the beginning
         const updated = [newDraft, ...filtered].slice(0, MAX_DRAFTS);
         return updated;
@@ -188,8 +184,7 @@ export function useDraft() {
    * Check if there's a draft available
    */
   const hasDraft =
-    currentDraft !== null &&
-    (currentDraft.text.trim() !== "" || currentDraft.cw.trim() !== "");
+    currentDraft !== null && (currentDraft.text.trim() !== "" || currentDraft.cw.trim() !== "");
 
   return {
     saveDraft,
@@ -212,7 +207,10 @@ export function useDraft() {
  * @param data - Draft data to save
  * @param delay - Debounce delay in milliseconds
  */
-export function useAutosaveDraft(data: Omit<DraftData, "id" | "timestamp" | "title">, delay = 1000) {
+export function useAutosaveDraft(
+  data: Omit<DraftData, "id" | "timestamp" | "title">,
+  delay = 1000,
+) {
   const { saveDraft } = useDraft();
 
   useEffect(() => {

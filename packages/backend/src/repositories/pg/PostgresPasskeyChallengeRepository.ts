@@ -1,6 +1,10 @@
 import { eq, lt } from "drizzle-orm";
 import type { Database } from "../../db/index.js";
-import { passkeyChallenges, type PasskeyChallenge, type NewPasskeyChallenge } from "../../db/schema/pg.js";
+import {
+  passkeyChallenges,
+  type PasskeyChallenge,
+  type NewPasskeyChallenge,
+} from "../../db/schema/pg.js";
 import type { IPasskeyChallengeRepository } from "../../interfaces/repositories/IPasskeyChallengeRepository.js";
 
 /**

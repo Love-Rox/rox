@@ -84,7 +84,13 @@ export interface NoteComposerProps {
  * - Draft auto-save and recovery
  * - Submit with loading state
  */
-export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibility, autoFocus }: NoteComposerProps) {
+export function NoteComposer({
+  onNoteCreated,
+  replyTo,
+  replyId,
+  initialVisibility,
+  autoFocus,
+}: NoteComposerProps) {
   const [currentUser] = useAtom(currentUserAtom);
   const [token] = useAtom(tokenAtom);
   const [, addToast] = useAtom(addToastAtom);
@@ -93,7 +99,9 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
   const [text, setText] = useState("");
   const [cw, setCw] = useState("");
   const [showCw, setShowCw] = useState(false);
-  const [visibility, setVisibility] = useState<NoteVisibility>(initialVisibility === "specified" ? "direct" : (initialVisibility || "public"));
+  const [visibility, setVisibility] = useState<NoteVisibility>(
+    initialVisibility === "specified" ? "direct" : initialVisibility || "public",
+  );
   const [files, setFiles] = useState<File[]>([]);
   const [driveFiles, setDriveFiles] = useState<DriveFile[]>([]);
   const [showDrivePicker, setShowDrivePicker] = useState(false);
@@ -1248,7 +1256,8 @@ export function NoteComposer({ onNoteCreated, replyTo, replyId, initialVisibilit
                   </span>
                 </Button>
                 <span className="text-xs text-muted-foreground">
-                  {typeof navigator !== "undefined" && /Mac|iPhone|iPad|iPod/.test(navigator.platform)
+                  {typeof navigator !== "undefined" &&
+                  /Mac|iPhone|iPad|iPod/.test(navigator.platform)
                     ? "⌘↵"
                     : "Ctrl+Enter"}
                 </span>

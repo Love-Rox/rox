@@ -27,7 +27,11 @@ export class MysqlSessionRepository implements ISessionRepository {
     });
 
     // MySQL doesn't support RETURNING, fetch the inserted record
-    const [result] = await this.db.select().from(sessions).where(eq(sessions.id, session.id)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.id, session.id))
+      .limit(1);
 
     if (!result) {
       throw new Error("Failed to create session");

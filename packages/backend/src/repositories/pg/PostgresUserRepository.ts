@@ -100,7 +100,6 @@ export class PostgresUserRepository implements IUserRepository {
     return result?.count ?? 0;
   }
 
-
   async countActiveLocal(days: number): Promise<number> {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
@@ -242,13 +241,7 @@ export class PostgresUserRepository implements IUserRepository {
     const [result] = await this.db
       .select()
       .from(users)
-      .where(
-        and(
-          isNull(users.host),
-          eq(users.isAdmin, true),
-          isNotNull(users.privateKey),
-        ),
-      )
+      .where(and(isNull(users.host), eq(users.isAdmin, true), isNotNull(users.privateKey)))
       .limit(1);
 
     return (result as User) ?? null;

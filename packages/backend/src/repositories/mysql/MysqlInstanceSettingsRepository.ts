@@ -56,7 +56,11 @@ export class MysqlInstanceSettingsRepository implements IInstanceSettingsReposit
       });
 
     // MySQL doesn't support RETURNING, fetch the record
-    const [result] = await this.db.select().from(instanceSettings).where(eq(instanceSettings.key, key)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(instanceSettings)
+      .where(eq(instanceSettings.key, key))
+      .limit(1);
 
     if (!result) {
       throw new Error("Failed to set instance setting");

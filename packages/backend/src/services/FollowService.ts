@@ -129,7 +129,10 @@ export class FollowService {
     // Create notification for the followee (only for local users)
     if (this.notificationService && !followee.host) {
       this.notificationService.createFollowNotification(followeeId, followerId).catch((error) => {
-        logger.error({ err: error, followeeId, followerId }, "Failed to create follow notification");
+        logger.error(
+          { err: error, followeeId, followerId },
+          "Failed to create follow notification",
+        );
       });
     }
 
@@ -142,7 +145,10 @@ export class FollowService {
           followee: toPluginUser(followee),
         })
         .catch((error) => {
-          logger.error({ err: error, followId: follow.id }, "Failed to emit follow:afterCreate event");
+          logger.error(
+            { err: error, followId: follow.id },
+            "Failed to emit follow:afterCreate event",
+          );
         });
     }
 
@@ -191,7 +197,10 @@ export class FollowService {
     if (this.deliveryService && follower && followee && followee.host) {
       // Fire-and-forget delivery (don't await to avoid blocking)
       this.deliveryService.deliverUndoFollow(follower, followee).catch((error) => {
-        logger.error({ err: error, followerId, followeeId }, "Failed to deliver Undo Follow activity");
+        logger.error(
+          { err: error, followerId, followeeId },
+          "Failed to deliver Undo Follow activity",
+        );
       });
     }
 
@@ -205,7 +214,10 @@ export class FollowService {
           followee: toPluginUser(followee),
         })
         .catch((error) => {
-          logger.error({ err: error, followerId, followeeId }, "Failed to emit follow:afterDelete event");
+          logger.error(
+            { err: error, followerId, followeeId },
+            "Failed to emit follow:afterDelete event",
+          );
         });
     }
   }

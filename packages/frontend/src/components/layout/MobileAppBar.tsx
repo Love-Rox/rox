@@ -107,7 +107,7 @@ export function MobileAppBar() {
             >
               {item.icon}
             </SpaLink>
-          )
+          ),
         )}
       </div>
       {/* Safe area spacer - adds padding below content for notched devices */}

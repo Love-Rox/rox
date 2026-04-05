@@ -259,13 +259,7 @@ export class MysqlUserRepository implements IUserRepository {
     const [result] = await this.db
       .select()
       .from(users)
-      .where(
-        and(
-          isNull(users.host),
-          eq(users.isAdmin, true),
-          isNotNull(users.privateKey),
-        ),
-      )
+      .where(and(isNull(users.host), eq(users.isAdmin, true), isNotNull(users.privateKey)))
       .limit(1);
 
     return (result as User) ?? null;

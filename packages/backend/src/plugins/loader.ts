@@ -508,9 +508,7 @@ export class PluginLoader {
   private validatePlugin(plugin: unknown): plugin is RoxPlugin {
     if (!plugin || typeof plugin !== "object") return false;
     const p = plugin as Record<string, unknown>;
-    return (
-      typeof p.id === "string" && typeof p.name === "string" && typeof p.version === "string"
-    );
+    return typeof p.id === "string" && typeof p.name === "string" && typeof p.version === "string";
   }
 
   /**
@@ -522,12 +520,10 @@ export class PluginLoader {
     return {
       events: this.eventBus,
       logger: {
-        debug: (message: string, ...args: unknown[]) =>
-          logger.debug({ pluginId, args }, message),
+        debug: (message: string, ...args: unknown[]) => logger.debug({ pluginId, args }, message),
         info: (message: string, ...args: unknown[]) => logger.info({ pluginId, args }, message),
         warn: (message: string, ...args: unknown[]) => logger.warn({ pluginId, args }, message),
-        error: (message: string, ...args: unknown[]) =>
-          logger.error({ pluginId, args }, message),
+        error: (message: string, ...args: unknown[]) => logger.error({ pluginId, args }, message),
       },
       config: {
         get: <T>(key: string, defaultValue?: T) => configStorage.get(pluginId, key, defaultValue),

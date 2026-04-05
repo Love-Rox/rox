@@ -35,10 +35,10 @@ self.addEventListener("install", (event) => {
         STATIC_ASSETS.map((url) =>
           cache.add(url).catch((err) => {
             console.warn(`[SW] Failed to cache ${url}:`, err);
-          })
-        )
+          }),
+        ),
       );
-    })
+    }),
   );
 
   // Skip waiting to activate immediately
@@ -50,24 +50,27 @@ self.addEventListener("activate", (event) => {
   console.log("[SW] Service Worker activated");
 
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          // Delete old version caches
-          if (
-            cacheName !== CACHE_NAME &&
-            cacheName !== STATIC_CACHE_NAME &&
-            (cacheName.startsWith("rox-cache-") || cacheName.startsWith("rox-static-"))
-          ) {
-            console.log("[SW] Deleting old cache:", cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      // Take control of all clients immediately
-      return self.clients.claim();
-    })
+    caches
+      .keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            // Delete old version caches
+            if (
+              cacheName !== CACHE_NAME &&
+              cacheName !== STATIC_CACHE_NAME &&
+              (cacheName.startsWith("rox-cache-") || cacheName.startsWith("rox-static-"))
+            ) {
+              console.log("[SW] Deleting old cache:", cacheName);
+              return caches.delete(cacheName);
+            }
+          }),
+        );
+      })
+      .then(() => {
+        // Take control of all clients immediately
+        return self.clients.claim();
+      }),
   );
 });
 
@@ -122,7 +125,7 @@ self.addEventListener("fetch", (event) => {
             // Fallback to cached home page for SPA navigation
             return caches.match("/timeline") || caches.match("/");
           });
-        })
+        }),
     );
     return;
   }
@@ -152,7 +155,7 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         });
-      })
+      }),
     );
     return;
   }
@@ -214,16 +217,22 @@ self.addEventListener("push", (event) => {
     ],
   };
 
-  console.log("[SW] Showing notification with title:", data.title, "options:", JSON.stringify(options));
+  console.log(
+    "[SW] Showing notification with title:",
+    data.title,
+    "options:",
+    JSON.stringify(options),
+  );
 
   event.waitUntil(
-    self.registration.showNotification(data.title, options)
+    self.registration
+      .showNotification(data.title, options)
       .then(() => {
         console.log("[SW] showNotification succeeded");
       })
       .catch((error) => {
         console.error("[SW] showNotification failed:", error);
-      })
+      }),
   );
 });
 

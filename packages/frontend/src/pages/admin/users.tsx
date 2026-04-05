@@ -89,9 +89,7 @@ export default function AdminUsersPage() {
       } else if (userFilter === "remote") {
         params.set("remoteOnly", "true");
       }
-      const response = await api.get<UsersResponse>(
-        `/api/admin/users?${params}`,
-      );
+      const response = await api.get<UsersResponse>(`/api/admin/users?${params}`);
       setUsers(response.users);
       setTotal(response.total);
     } catch (err) {
@@ -142,9 +140,7 @@ export default function AdminUsersPage() {
 
       addToast({
         type: "success",
-        message: user.isSuspended
-          ? t`User unsuspended`
-          : t`User suspended`,
+        message: user.isSuspended ? t`User unsuspended` : t`User suspended`,
       });
 
       await loadUsers();
@@ -166,9 +162,7 @@ export default function AdminUsersPage() {
 
       addToast({
         type: "success",
-        message: user.isAdmin
-          ? t`Admin status removed`
-          : t`Admin status granted`,
+        message: user.isAdmin ? t`Admin status removed` : t`Admin status granted`,
       });
 
       await loadUsers();
@@ -287,7 +281,6 @@ export default function AdminUsersPage() {
       subtitle={<Trans>Manage user accounts</Trans>}
     >
       <div className="space-y-6">
-
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card>
@@ -312,7 +305,9 @@ export default function AdminUsersPage() {
                   <User className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-(--text-primary)">{localUsers.length}</div>
+                  <div className="text-2xl font-bold text-(--text-primary)">
+                    {localUsers.length}
+                  </div>
                   <div className="text-xs text-(--text-muted)">
                     <Trans>Local</Trans>
                   </div>
@@ -327,7 +322,9 @@ export default function AdminUsersPage() {
                   <Globe className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-(--text-primary)">{remoteUsers.length}</div>
+                  <div className="text-2xl font-bold text-(--text-primary)">
+                    {remoteUsers.length}
+                  </div>
                   <div className="text-xs text-(--text-muted)">
                     <Trans>Remote</Trans>
                   </div>
@@ -342,7 +339,9 @@ export default function AdminUsersPage() {
                   <Ban className="w-6 h-6 text-red-600 dark:text-red-400" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-(--text-primary)">{suspendedUsers.length}</div>
+                  <div className="text-2xl font-bold text-(--text-primary)">
+                    {suspendedUsers.length}
+                  </div>
                   <div className="text-xs text-(--text-muted)">
                     <Trans>Suspended</Trans>
                   </div>
@@ -467,9 +466,7 @@ export default function AdminUsersPage() {
                               <Trans>Deleted</Trans>
                             </span>
                           )}
-                          {user.host && (
-                            <Globe className="w-4 h-4 text-(--text-muted)" />
-                          )}
+                          {user.host && <Globe className="w-4 h-4 text-(--text-muted)" />}
                         </div>
                         <div className="text-sm text-(--text-muted)">
                           @{user.username}
@@ -562,8 +559,8 @@ export default function AdminUsersPage() {
 
                 <p className="text-(--text-secondary) mb-4">
                   <Trans>
-                    Are you sure you want to delete{" "}
-                    <strong>@{userToDelete.username}</strong>? This action will:
+                    Are you sure you want to delete <strong>@{userToDelete.username}</strong>? This
+                    action will:
                   </Trans>
                 </p>
 

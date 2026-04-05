@@ -179,7 +179,10 @@ export class ReactionService {
             : undefined,
         )
         .catch((error) => {
-          logger.error({ err: error, reactionId: newReaction.id }, "Failed to deliver Like activity");
+          logger.error(
+            { err: error, reactionId: newReaction.id },
+            "Failed to deliver Like activity",
+          );
         });
     }
 

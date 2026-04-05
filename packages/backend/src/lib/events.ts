@@ -19,7 +19,7 @@ export type EventHandler<T> = (payload: T) => void | Promise<void>;
  * Before event handler that can cancel or modify the operation
  */
 export type BeforeEventHandler<T> = (
-  payload: T
+  payload: T,
 ) => BeforeEventResult<T> | Promise<BeforeEventResult<T>>;
 
 /**
@@ -95,7 +95,7 @@ export class EventBus {
     event: K,
     handler: EventHandler<PluginEventPayload<K>>,
     pluginId: string,
-    priority = 0
+    priority = 0,
   ): void {
     const handlers = this.handlers.get(event) || [];
     handlers.push({
@@ -122,7 +122,7 @@ export class EventBus {
     event: K,
     handler: BeforeEventHandler<PluginEventPayload<K>>,
     pluginId: string,
-    priority = 0
+    priority = 0,
   ): void {
     const handlers = this.beforeHandlers.get(event) || [];
     handlers.push({
@@ -133,9 +133,7 @@ export class EventBus {
     handlers.sort((a, b) => b.priority - a.priority);
     this.beforeHandlers.set(event, handlers);
 
-    logger.debug(
-      `[EventBus] Before handler registered for ${event} by ${pluginId}`
-    );
+    logger.debug(`[EventBus] Before handler registered for ${event} by ${pluginId}`);
   }
 
   /**
@@ -176,7 +174,7 @@ export class EventBus {
    */
   async emit<K extends keyof PluginEvents>(
     event: K,
-    payload: PluginEventPayload<K>
+    payload: PluginEventPayload<K>,
   ): Promise<void> {
     const handlers = this.handlers.get(event);
     if (!handlers || handlers.length === 0) {
@@ -189,7 +187,7 @@ export class EventBus {
       } catch (error) {
         logger.error(
           { err: error, event, pluginId: entry.pluginId },
-          `[EventBus] Error in handler for ${event} (plugin: ${entry.pluginId})`
+          `[EventBus] Error in handler for ${event} (plugin: ${entry.pluginId})`,
         );
       }
     }
@@ -215,7 +213,7 @@ export class EventBus {
    */
   async emitBefore<K extends keyof PluginEvents>(
     event: K,
-    payload: PluginEventPayload<K>
+    payload: PluginEventPayload<K>,
   ): Promise<BeforeEventResult<PluginEventPayload<K>>> {
     const handlers = this.beforeHandlers.get(event);
     if (!handlers || handlers.length === 0) {
@@ -226,14 +224,12 @@ export class EventBus {
 
     for (const entry of handlers) {
       try {
-        const handler = entry.handler as BeforeEventHandler<
-          PluginEventPayload<K>
-        >;
+        const handler = entry.handler as BeforeEventHandler<PluginEventPayload<K>>;
         const result = await handler(currentPayload);
 
         if (result.cancelled) {
           logger.info(
-            `[EventBus] Event ${event} cancelled by ${entry.pluginId}: ${result.cancelReason || "No reason provided"}`
+            `[EventBus] Event ${event} cancelled by ${entry.pluginId}: ${result.cancelReason || "No reason provided"}`,
           );
           return {
             cancelled: true,
@@ -247,7 +243,7 @@ export class EventBus {
       } catch (error) {
         logger.error(
           { err: error, event, pluginId: entry.pluginId },
-          `[EventBus] Error in before handler for ${event} (plugin: ${entry.pluginId})`
+          `[EventBus] Error in before handler for ${event} (plugin: ${entry.pluginId})`,
         );
       }
     }

@@ -88,9 +88,7 @@ export function DeckProfileSwitcher() {
         handleCloseCreateDialog();
       }
     } catch (error) {
-      setCreateError(
-        error instanceof Error ? error.message : "Failed to create profile"
-      );
+      setCreateError(error instanceof Error ? error.message : "Failed to create profile");
     } finally {
       setIsSubmitting(false);
     }
@@ -130,9 +128,7 @@ export function DeckProfileSwitcher() {
         handleCloseEditDialog();
       }
     } catch (error) {
-      setEditError(
-        error instanceof Error ? error.message : "Failed to update profile"
-      );
+      setEditError(error instanceof Error ? error.message : "Failed to update profile");
     } finally {
       setIsEditing(false);
     }
@@ -147,19 +143,15 @@ export function DeckProfileSwitcher() {
         await deleteProfile(profileId);
         setDeleteConfirmId(null);
       } catch (error) {
-        setDeleteError(
-          error instanceof Error ? error.message : "Failed to delete profile"
-        );
+        setDeleteError(error instanceof Error ? error.message : "Failed to delete profile");
       } finally {
         setIsDeleting(false);
       }
     },
-    [profiles.length, deleteProfile]
+    [profiles.length, deleteProfile],
   );
 
-  const profileToDelete = deleteConfirmId
-    ? profiles.find((p) => p.id === deleteConfirmId)
-    : null;
+  const profileToDelete = deleteConfirmId ? profiles.find((p) => p.id === deleteConfirmId) : null;
 
   // Show loading state
   if (loading && profiles.length === 0) {
@@ -329,20 +321,14 @@ export function DeckProfileSwitcher() {
               >
                 <Trans>Delete Profile</Trans>
               </Heading>
-              <p
-                id={deleteDialogDescriptionId}
-                className="text-gray-700 dark:text-gray-300 mb-6"
-              >
+              <p id={deleteDialogDescriptionId} className="text-gray-700 dark:text-gray-300 mb-6">
                 <Trans>
-                  Are you sure you want to delete "{profileToDelete.name}"? This
-                  will remove all columns and settings for this profile. This
-                  action cannot be undone.
+                  Are you sure you want to delete "{profileToDelete.name}"? This will remove all
+                  columns and settings for this profile. This action cannot be undone.
                 </Trans>
               </p>
               {deleteError && (
-                <p className="text-sm text-red-600 dark:text-red-400 mb-4">
-                  {deleteError}
-                </p>
+                <p className="text-sm text-red-600 dark:text-red-400 mb-4">{deleteError}</p>
               )}
               <div className="flex justify-end gap-2">
                 <Button
@@ -429,12 +415,7 @@ function ProfileFormDialog({
             {title}
           </Heading>
           <div className="mb-6">
-            <TextField
-              value={value}
-              onChange={onChange}
-              isDisabled={isSubmitting}
-              autoFocus
-            >
+            <TextField value={value} onChange={onChange} isDisabled={isSubmitting} autoFocus>
               <Input
                 placeholder={t`Profile name`}
                 className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -443,30 +424,14 @@ function ProfileFormDialog({
                 }}
               />
             </TextField>
-            {error && (
-              <p className="text-sm text-red-600 dark:text-red-400 mt-2">
-                {error}
-              </p>
-            )}
+            {error && <p className="text-sm text-red-600 dark:text-red-400 mt-2">{error}</p>}
           </div>
           <div className="flex justify-end gap-2">
-            <Button
-              variant="secondary"
-              onPress={onCancel}
-              isDisabled={isSubmitting}
-            >
+            <Button variant="secondary" onPress={onCancel} isDisabled={isSubmitting}>
               <Trans>Cancel</Trans>
             </Button>
-            <Button
-              variant="primary"
-              onPress={onSubmit}
-              isDisabled={isSubmitting || !value.trim()}
-            >
-              {isSubmitting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                submitLabel
-              )}
+            <Button variant="primary" onPress={onSubmit} isDisabled={isSubmitting || !value.trim()}>
+              {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : submitLabel}
             </Button>
           </div>
         </Dialog>

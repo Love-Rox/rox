@@ -179,7 +179,6 @@ app.get("/directory", async (c: Context) => {
   return c.json(accounts);
 });
 
-
 /**
  * Get Instance Peers
  *

@@ -35,18 +35,26 @@ export class SqliteModerationAuditLogRepository implements IModerationAuditLogRe
   }): Promise<ModerationAuditLog> {
     const id = generateId();
 
-    this.db.insert(moderationAuditLogs).values({
-      id,
-      moderatorId: data.moderatorId,
-      action: data.action,
-      targetType: data.targetType,
-      targetId: data.targetId,
-      reason: data.reason ?? null,
-      details: data.details ?? null,
-    }).run();
+    this.db
+      .insert(moderationAuditLogs)
+      .values({
+        id,
+        moderatorId: data.moderatorId,
+        action: data.action,
+        targetType: data.targetType,
+        targetId: data.targetId,
+        reason: data.reason ?? null,
+        details: data.details ?? null,
+      })
+      .run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
-    const [result] = this.db.select().from(moderationAuditLogs).where(eq(moderationAuditLogs.id, id)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(moderationAuditLogs)
+      .where(eq(moderationAuditLogs.id, id))
+      .limit(1)
+      .all();
 
     if (!result) {
       throw new Error("Failed to create moderation audit log");
@@ -133,7 +141,10 @@ export class SqliteModerationAuditLogRepository implements IModerationAuditLogRe
       return result?.count ?? 0;
     }
 
-    const [result] = this.db.select({ count: sql<number>`COUNT(*)` }).from(moderationAuditLogs).all();
+    const [result] = this.db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(moderationAuditLogs)
+      .all();
     return result?.count ?? 0;
   }
 

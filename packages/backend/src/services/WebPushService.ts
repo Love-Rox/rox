@@ -209,7 +209,10 @@ export class WebPushService {
     const TIMEOUT_MS = 15000; // 15 seconds
 
     try {
-      logger.debug({ endpoint: subscription.endpoint.substring(0, 60) }, "Sending push notification");
+      logger.debug(
+        { endpoint: subscription.endpoint.substring(0, 60) },
+        "Sending push notification",
+      );
       const startTime = Date.now();
 
       // Use web-push to generate the encrypted payload and headers
@@ -238,7 +241,10 @@ export class WebPushService {
         clearTimeout(timeoutId);
 
         if (response.status === 201 || response.status === 200) {
-          logger.debug({ subscriptionId: subscription.id, durationMs: Date.now() - startTime }, "Push notification sent");
+          logger.debug(
+            { subscriptionId: subscription.id, durationMs: Date.now() - startTime },
+            "Push notification sent",
+          );
           return true;
         }
 

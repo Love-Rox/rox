@@ -5,7 +5,10 @@
  */
 
 import { describe, test, expect, mock, beforeEach } from "bun:test";
-import type { IOAuthAccountRepository, OAuthProvider } from "../../interfaces/repositories/IOAuthAccountRepository";
+import type {
+  IOAuthAccountRepository,
+  OAuthProvider,
+} from "../../interfaces/repositories/IOAuthAccountRepository";
 import type { OAuthAccount } from "../../db/schema/pg";
 
 describe("OAuthAccountRepository", () => {

@@ -27,7 +27,14 @@ import type { PasskeyCredential } from "../../db/schema/pg.js";
  */
 type MockPasskeyCredentialRepo = Pick<
   IPasskeyCredentialRepository,
-  "findByUserId" | "findById" | "findByCredentialId" | "create" | "delete" | "updateName" | "countByUserId" | "updateCounter"
+  | "findByUserId"
+  | "findById"
+  | "findByCredentialId"
+  | "create"
+  | "delete"
+  | "updateName"
+  | "countByUserId"
+  | "updateCounter"
 >;
 
 type MockPasskeyChallengeRepo = Pick<
@@ -35,15 +42,9 @@ type MockPasskeyChallengeRepo = Pick<
   "create" | "findByChallenge" | "deleteByChallenge"
 >;
 
-type MockUserRepo = Pick<
-  IUserRepository,
-  "findById" | "findByUsername"
->;
+type MockUserRepo = Pick<IUserRepository, "findById" | "findByUsername">;
 
-type MockSessionRepo = Pick<
-  ISessionRepository,
-  "create"
->;
+type MockSessionRepo = Pick<ISessionRepository, "create">;
 
 describe("PasskeyService", () => {
   // Mock data
@@ -120,8 +121,26 @@ describe("PasskeyService", () => {
     };
 
     mockPasskeyChallengeRepo = {
-      create: mock(() => Promise.resolve({ id: "challenge1", challenge: "test-challenge", userId: "user1", type: "registration", expiresAt: new Date(), createdAt: new Date() })),
-      findByChallenge: mock(() => Promise.resolve({ id: "challenge1", challenge: "test-challenge", userId: "user1", type: "registration", expiresAt: new Date(), createdAt: new Date() })),
+      create: mock(() =>
+        Promise.resolve({
+          id: "challenge1",
+          challenge: "test-challenge",
+          userId: "user1",
+          type: "registration",
+          expiresAt: new Date(),
+          createdAt: new Date(),
+        }),
+      ),
+      findByChallenge: mock(() =>
+        Promise.resolve({
+          id: "challenge1",
+          challenge: "test-challenge",
+          userId: "user1",
+          type: "registration",
+          expiresAt: new Date(),
+          createdAt: new Date(),
+        }),
+      ),
       deleteByChallenge: mock(() => Promise.resolve()),
     };
 
@@ -131,16 +150,18 @@ describe("PasskeyService", () => {
     };
 
     mockSessionRepo = {
-      create: mock(() => Promise.resolve({
-        id: "session1",
-        userId: "user1",
-        token: "mock-token",
-        expiresAt: new Date(),
-        userAgent: null,
-        ipAddress: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })),
+      create: mock(() =>
+        Promise.resolve({
+          id: "session1",
+          userId: "user1",
+          token: "mock-token",
+          expiresAt: new Date(),
+          userAgent: null,
+          ipAddress: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }),
+      ),
     };
   });
 
@@ -206,9 +227,9 @@ describe("PasskeyService", () => {
         mockSessionRepo as ISessionRepository,
       );
 
-      await expect(
-        service.deletePasskey("user1", "nonexistent")
-      ).rejects.toThrow("Passkey not found");
+      await expect(service.deletePasskey("user1", "nonexistent")).rejects.toThrow(
+        "Passkey not found",
+      );
     });
 
     test("should throw error when passkey belongs to different user", async () => {
@@ -225,9 +246,7 @@ describe("PasskeyService", () => {
         mockSessionRepo as ISessionRepository,
       );
 
-      await expect(
-        service.deletePasskey("user1", "passkey1")
-      ).rejects.toThrow("Passkey not found");
+      await expect(service.deletePasskey("user1", "passkey1")).rejects.toThrow("Passkey not found");
     });
 
     test("should throw error when deleting last passkey with no password", async () => {
@@ -249,9 +268,9 @@ describe("PasskeyService", () => {
         mockSessionRepo as ISessionRepository,
       );
 
-      await expect(
-        service.deletePasskey("user1", "passkey1")
-      ).rejects.toThrow("Cannot delete the last passkey when no password is set");
+      await expect(service.deletePasskey("user1", "passkey1")).rejects.toThrow(
+        "Cannot delete the last passkey when no password is set",
+      );
     });
 
     test("should allow deleting last passkey when user has password", async () => {
@@ -285,9 +304,7 @@ describe("PasskeyService", () => {
         mockSessionRepo as ISessionRepository,
       );
 
-      await expect(
-        service.deletePasskey("user1", "passkey1")
-      ).rejects.toThrow("User not found");
+      await expect(service.deletePasskey("user1", "passkey1")).rejects.toThrow("User not found");
     });
   });
 
@@ -303,7 +320,10 @@ describe("PasskeyService", () => {
       const result = await service.renamePasskey("user1", "passkey1", "New Passkey Name");
 
       expect(result.name).toBe("New Name"); // From mock
-      expect(mockPasskeyCredentialRepo.updateName).toHaveBeenCalledWith("passkey1", "New Passkey Name");
+      expect(mockPasskeyCredentialRepo.updateName).toHaveBeenCalledWith(
+        "passkey1",
+        "New Passkey Name",
+      );
     });
 
     test("should throw error when passkey not found", async () => {
@@ -319,9 +339,9 @@ describe("PasskeyService", () => {
         mockSessionRepo as ISessionRepository,
       );
 
-      await expect(
-        service.renamePasskey("user1", "nonexistent", "New Name")
-      ).rejects.toThrow("Passkey not found");
+      await expect(service.renamePasskey("user1", "nonexistent", "New Name")).rejects.toThrow(
+        "Passkey not found",
+      );
     });
 
     test("should throw error when passkey belongs to different user", async () => {
@@ -338,9 +358,9 @@ describe("PasskeyService", () => {
         mockSessionRepo as ISessionRepository,
       );
 
-      await expect(
-        service.renamePasskey("user1", "passkey1", "New Name")
-      ).rejects.toThrow("Passkey not found");
+      await expect(service.renamePasskey("user1", "passkey1", "New Name")).rejects.toThrow(
+        "Passkey not found",
+      );
     });
   });
 
@@ -358,9 +378,9 @@ describe("PasskeyService", () => {
         mockSessionRepo as ISessionRepository,
       );
 
-      await expect(
-        service.generateRegistrationOptions("nonexistent")
-      ).rejects.toThrow("User not found");
+      await expect(service.generateRegistrationOptions("nonexistent")).rejects.toThrow(
+        "User not found",
+      );
     });
   });
 });

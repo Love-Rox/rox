@@ -251,9 +251,7 @@ export default function ContactPage() {
                     className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-y"
                     placeholder={t`Please describe your inquiry in detail...`}
                   />
-                  <p className="text-xs text-(--text-muted) mt-1">
-                    {message.length}/10000
-                  </p>
+                  <p className="text-xs text-(--text-muted) mt-1">{message.length}/10000</p>
                 </div>
 
                 <div className="flex gap-3 pt-2">
@@ -344,8 +342,8 @@ export default function ContactPage() {
               <MessageCircle className="w-12 h-12 mx-auto mb-3 text-(--text-muted)" />
               <p className="text-(--text-secondary) mb-4">
                 <Trans>
-                  You can submit an inquiry without an account.
-                  To track your inquiry history, please log in.
+                  You can submit an inquiry without an account. To track your inquiry history,
+                  please log in.
                 </Trans>
               </p>
               <Button onClick={() => setShowNewForm(true)}>

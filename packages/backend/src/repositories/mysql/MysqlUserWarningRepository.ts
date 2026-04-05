@@ -39,7 +39,11 @@ export class MysqlUserWarningRepository implements IUserWarningRepository {
     });
 
     // MySQL doesn't support RETURNING, fetch the inserted record
-    const [warning] = await this.db.select().from(userWarnings).where(eq(userWarnings.id, id)).limit(1);
+    const [warning] = await this.db
+      .select()
+      .from(userWarnings)
+      .where(eq(userWarnings.id, id))
+      .limit(1);
 
     return warning as UserWarning;
   }
@@ -121,7 +125,11 @@ export class MysqlUserWarningRepository implements IUserWarningRepository {
       .where(eq(userWarnings.id, id));
 
     // MySQL doesn't support RETURNING, fetch the updated record
-    const [warning] = await this.db.select().from(userWarnings).where(eq(userWarnings.id, id)).limit(1);
+    const [warning] = await this.db
+      .select()
+      .from(userWarnings)
+      .where(eq(userWarnings.id, id))
+      .limit(1);
 
     return (warning as UserWarning) ?? null;
   }
@@ -171,7 +179,9 @@ export class MysqlUserWarningRepository implements IUserWarningRepository {
   }
 
   async count(): Promise<number> {
-    const [result] = await this.db.select({ count: sql<number>`CAST(COUNT(*) AS SIGNED)` }).from(userWarnings);
+    const [result] = await this.db
+      .select({ count: sql<number>`CAST(COUNT(*) AS SIGNED)` })
+      .from(userWarnings);
 
     return result?.count ?? 0;
   }

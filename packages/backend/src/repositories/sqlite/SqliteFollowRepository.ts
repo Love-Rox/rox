@@ -23,11 +23,14 @@ export class SqliteFollowRepository implements IFollowRepository {
 
   async create(follow: Omit<Follow, "createdAt" | "updatedAt">): Promise<Follow> {
     const now = new Date();
-    this.db.insert(follows).values({
-      ...follow,
-      createdAt: now,
-      updatedAt: now,
-    }).run();
+    this.db
+      .insert(follows)
+      .values({
+        ...follow,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
     const [result] = this.db.select().from(follows).where(eq(follows.id, follow.id)).limit(1).all();

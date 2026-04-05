@@ -46,7 +46,7 @@ export const openComposeModalAtom = atom(
       replyId?: string;
       initialText?: string;
       initialVisibility?: "public" | "home" | "followers" | "specified";
-    }
+    },
   ) => {
     set(composeModalAtom, {
       isOpen: true,
@@ -54,7 +54,7 @@ export const openComposeModalAtom = atom(
       initialText: payload?.initialText,
       initialVisibility: payload?.initialVisibility,
     });
-  }
+  },
 );
 
 /**

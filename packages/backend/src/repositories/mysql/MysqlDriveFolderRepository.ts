@@ -27,7 +27,11 @@ export class MysqlDriveFolderRepository implements IDriveFolderRepository {
     });
 
     // MySQL doesn't support RETURNING, fetch the inserted record
-    const [result] = await this.db.select().from(driveFolders).where(eq(driveFolders.id, folder.id)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(driveFolders)
+      .where(eq(driveFolders.id, folder.id))
+      .limit(1);
 
     if (!result) {
       throw new Error("Failed to create folder");
@@ -89,7 +93,11 @@ export class MysqlDriveFolderRepository implements IDriveFolderRepository {
       .where(eq(driveFolders.id, id));
 
     // MySQL doesn't support RETURNING, fetch the updated record
-    const [result] = await this.db.select().from(driveFolders).where(eq(driveFolders.id, id)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(driveFolders)
+      .where(eq(driveFolders.id, id))
+      .limit(1);
 
     if (!result) {
       throw new Error("Folder not found");

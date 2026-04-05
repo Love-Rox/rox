@@ -291,7 +291,11 @@ export class ActivityBuilder {
   ): Activity {
     // Use extended context with Misskey-compatible _misskey_reaction definition
     // This ensures remote Misskey instances properly recognize the reaction emoji
-    const context: (string | Record<string, string>)[] = [AS_CONTEXT, SECURITY_CONTEXT, MISSKEY_LIKE_CONTEXT];
+    const context: (string | Record<string, string>)[] = [
+      AS_CONTEXT,
+      SECURITY_CONTEXT,
+      MISSKEY_LIKE_CONTEXT,
+    ];
 
     const activity: Activity & {
       content?: string;
@@ -570,7 +574,6 @@ export class ActivityBuilder {
       object: noteObject,
     };
   }
-
 }
 
 /**

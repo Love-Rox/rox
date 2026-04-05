@@ -286,7 +286,7 @@ describe("SQLite Repository Integration Tests", () => {
           username: "testuser",
           email: "test@example.com",
           passwordHash: "hashedpassword",
-        })
+        }),
       );
 
       expect(user.id).toBe(userId);
@@ -302,7 +302,7 @@ describe("SQLite Repository Integration Tests", () => {
           username: "findbyid",
           email: "findbyid@example.com",
           passwordHash: "hash",
-        })
+        }),
       );
 
       const found = await userRepo.findById(userId);
@@ -318,7 +318,7 @@ describe("SQLite Repository Integration Tests", () => {
           username: "findbyusername",
           email: "findbyusername@example.com",
           passwordHash: "hash",
-        })
+        }),
       );
 
       const found = await userRepo.findByUsername("findbyusername");
@@ -339,7 +339,7 @@ describe("SQLite Repository Integration Tests", () => {
           username: "updateuser",
           email: "update@example.com",
           passwordHash: "hash",
-        })
+        }),
       );
 
       const updated = await userRepo.update(userId, {
@@ -361,7 +361,7 @@ describe("SQLite Repository Integration Tests", () => {
           username: "user1",
           email: "user1@example.com",
           passwordHash: "hash",
-        })
+        }),
       );
 
       const count2 = await userRepo.count();
@@ -385,7 +385,7 @@ describe("SQLite Repository Integration Tests", () => {
           username: "noteuser",
           email: "noteuser@example.com",
           passwordHash: "hash",
-        })
+        }),
       );
     });
 
@@ -401,7 +401,7 @@ describe("SQLite Repository Integration Tests", () => {
           id: noteId,
           userId: testUserId,
           text: "Hello, world!",
-        })
+        }),
       );
 
       expect(note.id).toBe(noteId);
@@ -416,7 +416,7 @@ describe("SQLite Repository Integration Tests", () => {
           id: noteId,
           userId: testUserId,
           text: "Find me!",
-        })
+        }),
       );
 
       const found = (await noteRepo.findById(noteId)) as NoteWithUser | null;
@@ -438,7 +438,7 @@ describe("SQLite Repository Integration Tests", () => {
           id: noteId,
           userId: testUserId,
           text: "Delete me!",
-        })
+        }),
       );
 
       const deleted = await noteRepo.softDelete(noteId, testUserId, "Test deletion");
@@ -454,7 +454,7 @@ describe("SQLite Repository Integration Tests", () => {
           id: noteId,
           userId: testUserId,
           text: "Restore me!",
-        })
+        }),
       );
 
       await noteRepo.softDelete(noteId, testUserId);
@@ -471,7 +471,7 @@ describe("SQLite Repository Integration Tests", () => {
           id: noteId,
           userId: testUserId,
           text: "Count replies!",
-        })
+        }),
       );
 
       await noteRepo.incrementRepliesCount(noteId);
@@ -497,7 +497,7 @@ describe("SQLite Repository Integration Tests", () => {
           id: noteId1,
           userId: testUserId,
           text: "Note 1",
-        })
+        }),
       );
 
       await noteRepo.create(
@@ -505,7 +505,7 @@ describe("SQLite Repository Integration Tests", () => {
           id: noteId2,
           userId: testUserId,
           text: "Note 2",
-        })
+        }),
       );
 
       const count = await noteRepo.count();
@@ -529,7 +529,7 @@ describe("SQLite Repository Integration Tests", () => {
           username: "sessionuser",
           email: "sessionuser@example.com",
           passwordHash: "hash",
-        })
+        }),
       );
     });
 
@@ -545,7 +545,7 @@ describe("SQLite Repository Integration Tests", () => {
           userId: testUserId,
           token: "test-token-" + sessionId,
           expiresAt: new Date(Date.now() + 86400000),
-        })
+        }),
       );
 
       expect(session.id).toBe(sessionId);
@@ -561,7 +561,7 @@ describe("SQLite Repository Integration Tests", () => {
           userId: testUserId,
           token,
           expiresAt: new Date(Date.now() + 86400000),
-        })
+        }),
       );
 
       const found = await sessionRepo.findByToken(token);
@@ -577,7 +577,7 @@ describe("SQLite Repository Integration Tests", () => {
           userId: testUserId,
           token: "delete-token-" + sessionId,
           expiresAt: new Date(Date.now() + 86400000),
-        })
+        }),
       );
 
       await sessionRepo.delete(sessionId);
@@ -596,7 +596,7 @@ describe("SQLite Repository Integration Tests", () => {
           userId: testUserId,
           token: "expired-token",
           expiresAt: new Date(Date.now() - 86400000), // Yesterday
-        })
+        }),
       );
 
       // Create valid session
@@ -606,7 +606,7 @@ describe("SQLite Repository Integration Tests", () => {
           userId: testUserId,
           token: "valid-token",
           expiresAt: new Date(Date.now() + 86400000), // Tomorrow
-        })
+        }),
       );
 
       const deletedCount = await sessionRepo.deleteExpired();
@@ -638,7 +638,7 @@ describe("SQLite Repository Integration Tests", () => {
           username: "follower",
           email: "follower@example.com",
           passwordHash: "hash",
-        })
+        }),
       );
 
       await userRepo.create(
@@ -647,7 +647,7 @@ describe("SQLite Repository Integration Tests", () => {
           username: "followee",
           email: "followee@example.com",
           passwordHash: "hash",
-        })
+        }),
       );
     });
 
@@ -662,7 +662,7 @@ describe("SQLite Repository Integration Tests", () => {
           id: followId,
           followerId: user1Id,
           followeeId: user2Id,
-        })
+        }),
       );
 
       expect(follow.id).toBe(followId);
@@ -677,7 +677,7 @@ describe("SQLite Repository Integration Tests", () => {
           id: followId,
           followerId: user1Id,
           followeeId: user2Id,
-        })
+        }),
       );
 
       const isFollowing = await followRepo.exists(user1Id, user2Id);
@@ -694,7 +694,7 @@ describe("SQLite Repository Integration Tests", () => {
           id: followId,
           followerId: user1Id,
           followeeId: user2Id,
-        })
+        }),
       );
 
       const followers = await followRepo.findByFolloweeId(user2Id);
@@ -709,7 +709,7 @@ describe("SQLite Repository Integration Tests", () => {
           id: followId,
           followerId: user1Id,
           followeeId: user2Id,
-        })
+        }),
       );
 
       const following = await followRepo.findByFollowerId(user1Id);
@@ -724,7 +724,7 @@ describe("SQLite Repository Integration Tests", () => {
           id: followId,
           followerId: user1Id,
           followeeId: user2Id,
-        })
+        }),
       );
 
       await followRepo.delete(user1Id, user2Id);
@@ -749,7 +749,7 @@ describe("SQLite Repository Integration Tests", () => {
           email: "admin@example.com",
           passwordHash: "hash",
           isAdmin: true,
-        })
+        }),
       );
     });
 

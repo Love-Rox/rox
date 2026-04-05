@@ -240,7 +240,9 @@ export class PasskeyService {
     } catch (error) {
       // Clean up challenge
       await this.passkeyChallengeRepository.deleteByChallenge(challenge);
-      throw new Error(`Verification failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+      throw new Error(
+        `Verification failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
 
     if (!verification.verified || !verification.registrationInfo) {
@@ -248,7 +250,11 @@ export class PasskeyService {
       throw new Error("Registration verification failed");
     }
 
-    const { credential: verifiedCredential, credentialDeviceType, credentialBackedUp } = verification.registrationInfo;
+    const {
+      credential: verifiedCredential,
+      credentialDeviceType,
+      credentialBackedUp,
+    } = verification.registrationInfo;
 
     // Store the credential
     const passkeyCredential = await this.passkeyCredentialRepository.create({
@@ -277,7 +283,9 @@ export class PasskeyService {
    * @returns Authentication options to pass to browser
    */
   async generateAuthenticationOptions(username?: string): Promise<AuthenticationOptionsResponse> {
-    let allowCredentials: Array<{ id: string; transports?: AuthenticatorTransportFuture[] }> | undefined;
+    let allowCredentials:
+      | Array<{ id: string; transports?: AuthenticatorTransportFuture[] }>
+      | undefined;
 
     if (username) {
       const user = await this.userRepository.findByUsername(username);
@@ -328,7 +336,9 @@ export class PasskeyService {
    * @param credential - The credential from browser
    * @returns User and session if authentication successful
    */
-  async verifyAuthentication(credential: AuthenticationCredential): Promise<{ user: User; session: Session }> {
+  async verifyAuthentication(
+    credential: AuthenticationCredential,
+  ): Promise<{ user: User; session: Session }> {
     // Decode clientDataJSON to get the challenge
     const clientDataJSON = JSON.parse(
       Buffer.from(credential.response.clientDataJSON, "base64url").toString("utf-8"),
@@ -391,7 +401,9 @@ export class PasskeyService {
       });
     } catch (error) {
       await this.passkeyChallengeRepository.deleteByChallenge(challenge);
-      throw new Error(`Authentication failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+      throw new Error(
+        `Authentication failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
 
     if (!verification.verified) {

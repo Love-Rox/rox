@@ -31,19 +31,27 @@ export class SqliteNotificationRepository implements INotificationRepository {
   }): Promise<Notification> {
     const id = generateId();
 
-    this.db.insert(notifications).values({
-      id,
-      userId: data.userId,
-      type: data.type,
-      notifierId: data.notifierId ?? null,
-      noteId: data.noteId ?? null,
-      reaction: data.reaction ?? null,
-      warningId: data.warningId ?? null,
-      isRead: false,
-    }).run();
+    this.db
+      .insert(notifications)
+      .values({
+        id,
+        userId: data.userId,
+        type: data.type,
+        notifierId: data.notifierId ?? null,
+        noteId: data.noteId ?? null,
+        reaction: data.reaction ?? null,
+        warningId: data.warningId ?? null,
+        isRead: false,
+      })
+      .run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
-    const [notification] = this.db.select().from(notifications).where(eq(notifications.id, id)).limit(1).all();
+    const [notification] = this.db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.id, id))
+      .limit(1)
+      .all();
 
     return notification as Notification;
   }
@@ -124,7 +132,12 @@ export class SqliteNotificationRepository implements INotificationRepository {
     this.db.update(notifications).set({ isRead: true }).where(eq(notifications.id, id)).run();
 
     // SQLite doesn't support RETURNING, fetch the updated record
-    const [notification] = this.db.select().from(notifications).where(eq(notifications.id, id)).limit(1).all();
+    const [notification] = this.db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.id, id))
+      .limit(1)
+      .all();
 
     return (notification as Notification) ?? null;
   }

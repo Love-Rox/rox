@@ -103,9 +103,7 @@ export default function ModeratorUsersPage() {
       );
 
       // Then get the user details from moderation endpoint
-      const userDetail = await api.get<UserDetailResponse>(
-        `/api/mod/users/${resolveResponse.id}`,
-      );
+      const userDetail = await api.get<UserDetailResponse>(`/api/mod/users/${resolveResponse.id}`);
       setSelectedUser(userDetail);
     } catch (err: any) {
       console.error("Failed to find user:", err);

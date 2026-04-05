@@ -3,7 +3,8 @@ import postgres from "postgres";
 import { customEmojis } from "../src/db/schema/pg.js";
 import { like, isNotNull, desc } from "drizzle-orm";
 
-const DATABASE_URL = process.env.DATABASE_URL || "postgresql://rox:rox_dev_password@localhost:5432/rox";
+const DATABASE_URL =
+  process.env.DATABASE_URL || "postgresql://rox:rox_dev_password@localhost:5432/rox";
 const sql = postgres(DATABASE_URL);
 const db = drizzle(sql);
 

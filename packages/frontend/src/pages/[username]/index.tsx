@@ -47,10 +47,14 @@ export default async function UserPage({ username: usernameParam }: PageProps<"/
   const { username, host } = parseUserParam(usernameParam);
 
   // Fetch user data for OGP meta tags (Server Component can fetch directly)
-  let user: Awaited<ReturnType<typeof import("../../lib/api/users").usersApi.getByUsername>> | null = null;
+  let user: Awaited<
+    ReturnType<typeof import("../../lib/api/users").usersApi.getByUsername>
+  > | null = null;
   try {
     // Fetch user by username and host
-    user = await import("../../lib/api/users").then(m => m.usersApi.getByUsername(username, host));
+    user = await import("../../lib/api/users").then((m) =>
+      m.usersApi.getByUsername(username, host),
+    );
   } catch (error) {
     console.error("[SSR] Failed to fetch user for OGP:", error);
   }
@@ -64,9 +68,7 @@ export default async function UserPage({ username: usernameParam }: PageProps<"/
   // Build title - ensure it's never empty
   const displayName = user?.displayName || user?.username || username;
   const userHandle = `@${username}${host ? `@${host}` : ""}`;
-  const title = user
-    ? `${displayName} (${userHandle})`
-    : userHandle;
+  const title = user ? `${displayName} (${userHandle})` : userHandle;
   const fullTitle = `${title} | ${instanceName}`;
   const description = user?.bio || `View ${username}'s profile on Rox`;
   const profileUrl = `${baseUrl}/@${username}${host ? `@${host}` : ""}`;
@@ -101,7 +103,11 @@ export default async function UserPage({ username: usernameParam }: PageProps<"/
       <link rel="icon" href={`${baseUrl}/favicon.png`} type="image/png" />
       {/* ActivityPub alternate link for Discord Mastodon-style embeds (only for local users) */}
       {!host && (
-        <link rel="alternate" href={`${baseUrl}/users/${username}`} type="application/activity+json" />
+        <link
+          rel="alternate"
+          href={`${baseUrl}/users/${username}`}
+          type="application/activity+json"
+        />
       )}
       <title>{fullTitle}</title>
       <meta name="description" content={description} />

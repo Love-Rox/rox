@@ -11,11 +11,7 @@
 
 import { Hono } from "hono";
 import type { Context } from "hono";
-import {
-  generateNoteOEmbed,
-  generateUserOEmbed,
-  type OEmbedResponse,
-} from "../lib/oembed.js";
+import { generateNoteOEmbed, generateUserOEmbed, type OEmbedResponse } from "../lib/oembed.js";
 
 const oembed = new Hono();
 
@@ -100,10 +96,7 @@ oembed.get("/", async (c: Context) => {
 
   // Validate format (only JSON is supported)
   if (format !== "json") {
-    return c.json(
-      { error: "Unsupported format. Only 'json' is supported." },
-      501,
-    );
+    return c.json({ error: "Unsupported format. Only 'json' is supported." }, 501);
   }
 
   // URL is required

@@ -108,10 +108,7 @@ export interface ReactionButtonProps {
  * Displays a smile-plus icon button that opens an emoji picker for adding
  * reactions to notes.
  */
-export function ReactionButton({
-  onReactionSelect,
-  isDisabled = false,
-}: ReactionButtonProps) {
+export function ReactionButton({ onReactionSelect, isDisabled = false }: ReactionButtonProps) {
   return (
     <EmojiPicker
       onEmojiSelect={onReactionSelect}

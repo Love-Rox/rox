@@ -180,10 +180,7 @@ export class RemoteInstanceRefreshService {
         return 0;
       }
 
-      logger.info(
-        { count: staleInstances.length },
-        "Refreshing stale remote instances",
-      );
+      logger.info({ count: staleInstances.length }, "Refreshing stale remote instances");
 
       let refreshedCount = 0;
 

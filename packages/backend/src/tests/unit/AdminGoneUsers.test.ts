@@ -78,7 +78,7 @@ describe("Admin Gone Users API", () => {
       findWithFetchErrors: mock(async () => Promise.resolve([mockGoneUser1, mockGoneUser2])),
       countWithFetchErrors: mock(async () => Promise.resolve(2)),
       update: mock(async (id: string, data: Partial<User>) =>
-        Promise.resolve({ ...baseUser, ...data, id, updatedAt: new Date() })
+        Promise.resolve({ ...baseUser, ...data, id, updatedAt: new Date() }),
       ),
       clearFetchFailure: mock(async () => Promise.resolve()),
     };
@@ -201,7 +201,9 @@ describe("Admin Gone Users API", () => {
         throw new Error("Database connection failed");
       });
 
-      await expect(mockUserRepo.findWithFetchErrors()).rejects.toThrow("Database connection failed");
+      await expect(mockUserRepo.findWithFetchErrors()).rejects.toThrow(
+        "Database connection failed",
+      );
     });
 
     test("should handle update errors", async () => {
@@ -209,7 +211,9 @@ describe("Admin Gone Users API", () => {
         throw new Error("User not found");
       });
 
-      await expect(mockUserRepo.update!("nonexistent", { isDeleted: true })).rejects.toThrow("User not found");
+      await expect(mockUserRepo.update!("nonexistent", { isDeleted: true })).rejects.toThrow(
+        "User not found",
+      );
     });
   });
 });

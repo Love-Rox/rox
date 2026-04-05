@@ -52,11 +52,7 @@ export interface ListCreateModalProps {
  * />
  * ```
  */
-export function ListCreateModal({
-  isOpen,
-  onClose,
-  onCreated,
-}: ListCreateModalProps) {
+export function ListCreateModal({ isOpen, onClose, onCreated }: ListCreateModalProps) {
   const [name, setName] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -100,11 +96,7 @@ export function ListCreateModal({
           <Button variant="secondary" onPress={handleClose} isDisabled={isLoading}>
             <Trans>Cancel</Trans>
           </Button>
-          <Button
-            variant="primary"
-            onPress={handleSubmit}
-            isDisabled={!name.trim() || isLoading}
-          >
+          <Button variant="primary" onPress={handleSubmit} isDisabled={!name.trim() || isLoading}>
             {isLoading ? (
               <div className="flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />

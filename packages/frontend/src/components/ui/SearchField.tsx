@@ -109,7 +109,9 @@ export function SearchField({
 
   return (
     <AriaSearchField {...props} className={`flex flex-col gap-1 ${className || ""}`}>
-      <Label className={showLabel ? "text-sm font-medium text-gray-700 dark:text-gray-300" : "sr-only"}>
+      <Label
+        className={showLabel ? "text-sm font-medium text-gray-700 dark:text-gray-300" : "sr-only"}
+      >
         {resolvedLabel}
       </Label>
       <div className="relative">

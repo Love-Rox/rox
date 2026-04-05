@@ -21,10 +21,7 @@ const scheduledNotes = new Hono();
  * @returns Configured ScheduledNoteService instance
  */
 function getScheduledNoteService(c: Context): ScheduledNoteService {
-  return new ScheduledNoteService(
-    c.get("scheduledNoteRepository"),
-    c.get("roleService"),
-  );
+  return new ScheduledNoteService(c.get("scheduledNoteRepository"), c.get("roleService"));
 }
 
 /**
@@ -35,11 +32,7 @@ function getScheduledNoteService(c: Context): ScheduledNoteService {
  * @param defaultMessage - Default error message if error is not an Error instance
  * @returns JSON response with error message and appropriate status code
  */
-function handleServiceError(
-  c: Context,
-  error: unknown,
-  defaultMessage: string,
-): Response {
+function handleServiceError(c: Context, error: unknown, defaultMessage: string): Response {
   const message = error instanceof Error ? error.message : defaultMessage;
   const status = message.includes("not found") ? 404 : 400;
   return c.json({ error: message }, status);
@@ -135,7 +128,12 @@ scheduledNotes.get("/list", requireAuth(), async (c: Context) => {
     100,
   );
   const offset = c.req.query("offset") ? Number.parseInt(c.req.query("offset")!, 10) : 0;
-  const status = c.req.query("status") as "pending" | "published" | "failed" | "cancelled" | undefined;
+  const status = c.req.query("status") as
+    | "pending"
+    | "published"
+    | "failed"
+    | "cancelled"
+    | undefined;
 
   const notes = await getScheduledNoteService(c).findByUserId(user.id, {
     limit,

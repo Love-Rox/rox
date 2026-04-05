@@ -80,9 +80,8 @@ function MfmRendererComponent({
   const nodes = useMemo(() => {
     if (!processedText) return [];
     // Limit text length to prevent DoS from very long content
-    const safeText = processedText.length > 10000
-      ? processedText.slice(0, 10000) + "..."
-      : processedText;
+    const safeText =
+      processedText.length > 10000 ? processedText.slice(0, 10000) + "..." : processedText;
     try {
       return plain ? mfm.parseSimple(safeText) : mfm.parse(safeText, { nestLimit });
     } catch (error) {
@@ -200,7 +199,9 @@ function MfmRendererComponent({
     while ((match = pattern.exec(text)) !== null) {
       // Add text before the emoji
       if (match.index > lastIndex) {
-        parts.push(<span key={`${baseKey}-${partIndex++}`}>{text.slice(lastIndex, match.index)}</span>);
+        parts.push(
+          <span key={`${baseKey}-${partIndex++}`}>{text.slice(lastIndex, match.index)}</span>,
+        );
       }
       // Add the emoji
       const nameWithHost = `${match[1]}@${match[2]}`;

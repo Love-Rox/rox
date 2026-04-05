@@ -95,14 +95,14 @@ export function generateIOSStartupImageLinks(): string {
     links.push(
       `<link rel="apple-touch-startup-image" ` +
         `href="/api/startup-image/${device.imgW}/${device.imgH}" ` +
-        `media="(device-width: ${device.width}px) and (device-height: ${device.height}px) and (-webkit-device-pixel-ratio: ${device.ratio}) and (orientation: portrait)">`
+        `media="(device-width: ${device.width}px) and (device-height: ${device.height}px) and (-webkit-device-pixel-ratio: ${device.ratio}) and (orientation: portrait)">`,
     );
 
     // Landscape orientation (swap width/height for image)
     links.push(
       `<link rel="apple-touch-startup-image" ` +
         `href="/api/startup-image/${device.imgH}/${device.imgW}" ` +
-        `media="(device-width: ${device.width}px) and (device-height: ${device.height}px) and (-webkit-device-pixel-ratio: ${device.ratio}) and (orientation: landscape)">`
+        `media="(device-width: ${device.width}px) and (device-height: ${device.height}px) and (-webkit-device-pixel-ratio: ${device.ratio}) and (orientation: landscape)">`,
     );
   }
 

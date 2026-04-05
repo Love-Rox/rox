@@ -1,9 +1,4 @@
-import {
-  RadioGroup,
-  Radio,
-  Label,
-  type RadioGroupProps,
-} from "react-aria-components";
+import { RadioGroup, Radio, Label, type RadioGroupProps } from "react-aria-components";
 import type { ReactNode } from "react";
 
 /**
@@ -36,8 +31,10 @@ export interface FilterOption<T extends string = string> {
 /**
  * Props for the FilterGroup component
  */
-export interface FilterGroupProps<T extends string = string>
-  extends Omit<RadioGroupProps, "children" | "value" | "onChange"> {
+export interface FilterGroupProps<T extends string = string> extends Omit<
+  RadioGroupProps,
+  "children" | "value" | "onChange"
+> {
   /** Filter options to display */
   options: FilterOption<T>[];
   /** Currently selected value */
@@ -116,11 +113,7 @@ export function FilterGroup<T extends string = string>({
       className={`flex flex-col gap-2 ${className || ""}`}
     >
       <Label
-        className={
-          showLabel
-            ? "text-sm font-medium text-gray-700 dark:text-gray-300"
-            : "sr-only"
-        }
+        className={showLabel ? "text-sm font-medium text-gray-700 dark:text-gray-300" : "sr-only"}
       >
         {label}
       </Label>

@@ -23,7 +23,7 @@ import { recordNavigation } from "../hooks/useNavigationHistory";
 const isPortalCleanupErrorMessage = (message?: string): boolean =>
   Boolean(
     message?.includes("Cannot read properties of null (reading 'removeChild')") ||
-      (message?.includes("removeChild") && message?.includes("null"))
+    (message?.includes("removeChild") && message?.includes("null")),
   );
 
 /**

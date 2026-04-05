@@ -471,7 +471,9 @@ app.post("/passkey/authenticate/begin", rateLimit(RateLimitPresets.login), async
   } catch (error) {
     logger.error({ err: error }, "Passkey authentication begin error");
     return c.json(
-      { error: error instanceof Error ? error.message : "Failed to generate authentication options" },
+      {
+        error: error instanceof Error ? error.message : "Failed to generate authentication options",
+      },
       400,
     );
   }
@@ -510,10 +512,7 @@ app.post("/passkey/authenticate/finish", rateLimit(RateLimitPresets.login), asyn
         return c.json({ error: "Account is suspended" }, 403);
       }
     }
-    return c.json(
-      { error: error instanceof Error ? error.message : "Authentication failed" },
-      401,
-    );
+    return c.json({ error: error instanceof Error ? error.message : "Authentication failed" }, 401);
   }
 });
 

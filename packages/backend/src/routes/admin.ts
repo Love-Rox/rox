@@ -469,7 +469,10 @@ app.post("/remote-instances/:host/refresh", async (c) => {
 
   return c.json({
     success: true,
-    message: instance.fetchErrorCount > 0 ? "Refresh attempted but encountered errors" : "Instance info refreshed successfully",
+    message:
+      instance.fetchErrorCount > 0
+        ? "Refresh attempted but encountered errors"
+        : "Instance info refreshed successfully",
     instance,
   });
 });
@@ -1367,7 +1370,10 @@ app.delete("/storage/files/:fileId", async (c) => {
   try {
     await fileStorage.delete(file.storageKey);
   } catch (error) {
-    logger.error({ err: error, fileId, storageKey: file.storageKey }, "Failed to delete file from storage");
+    logger.error(
+      { err: error, fileId, storageKey: file.storageKey },
+      "Failed to delete file from storage",
+    );
     // Continue to delete database record even if storage deletion fails
   }
 
@@ -1477,7 +1483,16 @@ app.post("/assets/upload", async (c) => {
   }
 
   // Validate asset type
-  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon", "pwaIcon192", "pwaIcon512", "pwaMaskableIcon192", "pwaMaskableIcon512"];
+  const validAssetTypes = [
+    "icon",
+    "darkIcon",
+    "banner",
+    "favicon",
+    "pwaIcon192",
+    "pwaIcon512",
+    "pwaMaskableIcon192",
+    "pwaMaskableIcon512",
+  ];
   if (!assetType || !validAssetTypes.includes(assetType)) {
     return errorResponse(c, `type must be one of: ${validAssetTypes.join(", ")}`);
   }
@@ -1550,11 +1565,14 @@ app.post("/assets/upload", async (c) => {
 
     await instanceSettingsService.updateInstanceMetadata(updateData, admin?.id);
 
-    return c.json({
-      url: driveFile.url,
-      type: assetType,
-      fileId: driveFile.id,
-    }, 201);
+    return c.json(
+      {
+        url: driveFile.url,
+        type: assetType,
+        fileId: driveFile.id,
+      },
+      201,
+    );
   } catch (error) {
     if (error instanceof Error) {
       return errorResponse(c, error.message);
@@ -1580,7 +1598,16 @@ app.delete("/assets/:type", async (c) => {
   const assetType = c.req.param("type");
 
   // Validate asset type
-  const validAssetTypes = ["icon", "darkIcon", "banner", "favicon", "pwaIcon192", "pwaIcon512", "pwaMaskableIcon192", "pwaMaskableIcon512"];
+  const validAssetTypes = [
+    "icon",
+    "darkIcon",
+    "banner",
+    "favicon",
+    "pwaIcon192",
+    "pwaIcon512",
+    "pwaMaskableIcon192",
+    "pwaMaskableIcon512",
+  ];
   if (!validAssetTypes.includes(assetType)) {
     return errorResponse(c, `type must be one of: ${validAssetTypes.join(", ")}`);
   }
@@ -2096,7 +2123,11 @@ app.get("/system-follows", async (c) => {
   // Get system account
   const systemUser = await userRepository.findSystemUser();
   if (!systemUser) {
-    return errorResponse(c, "System account not found. Please ensure the server has been initialized.", 404);
+    return errorResponse(
+      c,
+      "System account not found. Please ensure the server has been initialized.",
+      404,
+    );
   }
 
   const { limit, offset } = parsePagination(c);
@@ -2117,7 +2148,10 @@ app.get("/system-follows", async (c) => {
       if (!followee) return null;
 
       // Get lists containing this user (owned by system account)
-      const listsContaining = await listRepository.findListsContainingUser(followee.id, systemUser.id);
+      const listsContaining = await listRepository.findListsContainingUser(
+        followee.id,
+        systemUser.id,
+      );
       const lists = listsContaining.map((l) => listMap.get(l.id)).filter(Boolean);
 
       return {

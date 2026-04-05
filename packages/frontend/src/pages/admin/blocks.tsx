@@ -192,7 +192,6 @@ export default function AdminBlocksPage() {
       subtitle={<Trans>Block instances from federating with this server</Trans>}
     >
       <div className="max-w-4xl mx-auto">
-
         {/* Stats */}
         <div className="grid grid-cols-1 gap-4 mb-8">
           <Card>

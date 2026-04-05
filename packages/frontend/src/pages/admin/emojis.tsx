@@ -11,7 +11,21 @@ import { useState, useEffect, useCallback } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { Trash2, Plus, RefreshCw, Smile, Edit2, X, Upload, Download, Globe, Archive, CheckSquare, Square, FolderInput } from "lucide-react";
+import {
+  Trash2,
+  Plus,
+  RefreshCw,
+  Smile,
+  Edit2,
+  X,
+  Upload,
+  Download,
+  Globe,
+  Archive,
+  CheckSquare,
+  Square,
+  FolderInput,
+} from "lucide-react";
 import { currentUserAtom } from "../../lib/atoms/auth";
 import { useApi } from "../../hooks/useApi";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
@@ -125,29 +139,32 @@ export default function AdminEmojisPage() {
   const [showBulkCategoryModal, setShowBulkCategoryModal] = useState(false);
   const [bulkCategory, setBulkCategory] = useState("");
 
-  const loadEmojis = useCallback(async (loadAll = false) => {
-    if (!api.token) return;
+  const loadEmojis = useCallback(
+    async (loadAll = false) => {
+      if (!api.token) return;
 
-    try {
-      // First, get initial batch and total count
-      const response = await api.get<EmojisResponse>("/api/emojis?limit=100");
-      setTotalEmojis(response.total);
+      try {
+        // First, get initial batch and total count
+        const response = await api.get<EmojisResponse>("/api/emojis?limit=100");
+        setTotalEmojis(response.total);
 
-      if (loadAll && response.total > response.emojis.length) {
-        // Load all emojis if requested and there are more
-        setIsLoadingMore(true);
-        const allResponse = await api.get<EmojisResponse>(`/api/emojis?limit=${response.total}`);
-        setEmojis(allResponse.emojis);
+        if (loadAll && response.total > response.emojis.length) {
+          // Load all emojis if requested and there are more
+          setIsLoadingMore(true);
+          const allResponse = await api.get<EmojisResponse>(`/api/emojis?limit=${response.total}`);
+          setEmojis(allResponse.emojis);
+          setIsLoadingMore(false);
+        } else {
+          setEmojis(response.emojis);
+        }
+      } catch (err) {
+        console.error("Failed to load emojis:", err);
+        setError("Failed to load custom emojis");
         setIsLoadingMore(false);
-      } else {
-        setEmojis(response.emojis);
       }
-    } catch (err) {
-      console.error("Failed to load emojis:", err);
-      setError("Failed to load custom emojis");
-      setIsLoadingMore(false);
-    }
-  }, [api]);
+    },
+    [api],
+  );
 
   const loadCategories = useCallback(async () => {
     if (!api.token) return;
@@ -332,9 +349,7 @@ export default function AdminEmojisPage() {
 
       try {
         // Check if user is admin and restore session
-        const sessionResponse = await api.get<{ user: { isAdmin?: boolean } }>(
-          "/api/auth/session",
-        );
+        const sessionResponse = await api.get<{ user: { isAdmin?: boolean } }>("/api/auth/session");
         if (!sessionResponse.user?.isAdmin) {
           window.location.href = "/timeline";
           return;
@@ -796,7 +811,6 @@ export default function AdminEmojisPage() {
       actions={headerActions as any}
     >
       <div className="max-w-6xl mx-auto">
-
         <Card>
           <CardHeader className="sr-only">
             <CardTitle>
@@ -846,7 +860,11 @@ export default function AdminEmojisPage() {
                     </label>
                     {editingEmoji ? (
                       <div className="flex items-center gap-2 px-3 py-2 border rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-                        <img src={getProxiedImageUrl(url) || ""} alt="" className="w-6 h-6 object-contain" />
+                        <img
+                          src={getProxiedImageUrl(url) || ""}
+                          alt=""
+                          className="w-6 h-6 object-contain"
+                        />
                         <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
                           {url}
                         </span>
@@ -870,7 +888,11 @@ export default function AdminEmojisPage() {
                             </>
                           ) : selectedFile ? (
                             <>
-                              <img src={getProxiedImageUrl(url) || ""} alt="" className="w-6 h-6 object-contain" />
+                              <img
+                                src={getProxiedImageUrl(url) || ""}
+                                alt=""
+                                className="w-6 h-6 object-contain"
+                              />
                               <span className="text-sm text-green-600">{selectedFile.name}</span>
                             </>
                           ) : (
@@ -1132,12 +1154,26 @@ export default function AdminEmojisPage() {
                               <thead className="text-left text-gray-500 dark:text-gray-400 bg-(--bg-tertiary)">
                                 <tr>
                                   {isBulkMode && <th className="px-3 py-2 w-10"></th>}
-                                  <th className="px-3 py-2 w-16"><Trans>Image</Trans></th>
-                                  <th className="px-3 py-2"><Trans>Name</Trans></th>
-                                  <th className="px-3 py-2 hidden sm:table-cell"><Trans>Aliases</Trans></th>
-                                  <th className="px-3 py-2 hidden md:table-cell"><Trans>License</Trans></th>
-                                  <th className="px-3 py-2 w-16 text-center"><Trans>NSFW</Trans></th>
-                                  {!isBulkMode && <th className="px-3 py-2 w-20 text-right"><Trans>Actions</Trans></th>}
+                                  <th className="px-3 py-2 w-16">
+                                    <Trans>Image</Trans>
+                                  </th>
+                                  <th className="px-3 py-2">
+                                    <Trans>Name</Trans>
+                                  </th>
+                                  <th className="px-3 py-2 hidden sm:table-cell">
+                                    <Trans>Aliases</Trans>
+                                  </th>
+                                  <th className="px-3 py-2 hidden md:table-cell">
+                                    <Trans>License</Trans>
+                                  </th>
+                                  <th className="px-3 py-2 w-16 text-center">
+                                    <Trans>NSFW</Trans>
+                                  </th>
+                                  {!isBulkMode && (
+                                    <th className="px-3 py-2 w-20 text-right">
+                                      <Trans>Actions</Trans>
+                                    </th>
+                                  )}
                                 </tr>
                               </thead>
                               <tbody>
@@ -1146,7 +1182,11 @@ export default function AdminEmojisPage() {
                                   return (
                                     <tr
                                       key={emoji.id}
-                                      onClick={isBulkMode ? () => toggleEmojiSelection(emoji.id) : undefined}
+                                      onClick={
+                                        isBulkMode
+                                          ? () => toggleEmojiSelection(emoji.id)
+                                          : undefined
+                                      }
                                       className={`border-t border-(--border-color) transition-colors ${
                                         isBulkMode
                                           ? `cursor-pointer ${
@@ -1230,7 +1270,9 @@ export default function AdminEmojisPage() {
                 <div className="mt-6 pt-4 border-t dark:border-gray-700 flex flex-wrap items-center justify-between gap-4">
                   <div className="text-sm text-gray-500 dark:text-gray-400">
                     {emojis.length < totalEmojis ? (
-                      <Trans>Showing {emojis.length} of {totalEmojis} emojis</Trans>
+                      <Trans>
+                        Showing {emojis.length} of {totalEmojis} emojis
+                      </Trans>
                     ) : (
                       <Trans>Total: {totalEmojis} emojis</Trans>
                     )}
@@ -1250,7 +1292,9 @@ export default function AdminEmojisPage() {
                       {isLoadingMore ? (
                         <>
                           <Spinner size="xs" />
-                          <span className="ml-1"><Trans>Loading...</Trans></span>
+                          <span className="ml-1">
+                            <Trans>Loading...</Trans>
+                          </span>
                         </>
                       ) : (
                         <Trans>Load All ({totalEmojis - emojis.length} more)</Trans>
@@ -1267,8 +1311,8 @@ export default function AdminEmojisPage() {
                 <div className="mb-4">
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                     <Trans>
-                      Remote emojis are collected from reactions received from other servers.
-                      You can adopt them as local emojis to use on your instance.
+                      Remote emojis are collected from reactions received from other servers. You
+                      can adopt them as local emojis to use on your instance.
                     </Trans>
                   </p>
 
@@ -1304,7 +1348,10 @@ export default function AdminEmojisPage() {
                       <Trans>No remote emojis collected yet</Trans>
                     </p>
                     <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
-                      <Trans>Remote emojis will appear here when users from other servers react with custom emojis</Trans>
+                      <Trans>
+                        Remote emojis will appear here when users from other servers react with
+                        custom emojis
+                      </Trans>
                     </p>
                   </div>
                 ) : (
@@ -1313,10 +1360,18 @@ export default function AdminEmojisPage() {
                       <table className="w-full text-sm">
                         <thead className="text-left text-gray-500 dark:text-gray-400 bg-(--bg-tertiary)">
                           <tr>
-                            <th className="px-3 py-2 w-16"><Trans>Image</Trans></th>
-                            <th className="px-3 py-2"><Trans>Name</Trans></th>
-                            <th className="px-3 py-2"><Trans>Host</Trans></th>
-                            <th className="px-3 py-2 w-24 text-right"><Trans>Actions</Trans></th>
+                            <th className="px-3 py-2 w-16">
+                              <Trans>Image</Trans>
+                            </th>
+                            <th className="px-3 py-2">
+                              <Trans>Name</Trans>
+                            </th>
+                            <th className="px-3 py-2">
+                              <Trans>Host</Trans>
+                            </th>
+                            <th className="px-3 py-2 w-24 text-right">
+                              <Trans>Actions</Trans>
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
@@ -1334,9 +1389,7 @@ export default function AdminEmojisPage() {
                                     className="w-8 h-8 object-contain"
                                   />
                                 </td>
-                                <td className="px-3 py-2 font-mono text-xs">
-                                  :{emoji.name}:
-                                </td>
+                                <td className="px-3 py-2 font-mono text-xs">:{emoji.name}:</td>
                                 <td className="px-3 py-2 text-gray-500 dark:text-gray-400 text-xs">
                                   {emoji.host}
                                 </td>
@@ -1363,7 +1416,9 @@ export default function AdminEmojisPage() {
 
                     {/* Stats */}
                     <div className="mt-6 pt-4 border-t dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
-                      <Trans>Total: {remoteEmojis.length} remote emojis from {remoteHosts.length} servers</Trans>
+                      <Trans>
+                        Total: {remoteEmojis.length} remote emojis from {remoteHosts.length} servers
+                      </Trans>
                     </div>
                   </>
                 )}
@@ -1379,8 +1434,8 @@ export default function AdminEmojisPage() {
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                     <Trans>
-                      Upload a ZIP file containing emoji images. You can optionally include a meta.json file
-                      to specify emoji names, categories, and other metadata.
+                      Upload a ZIP file containing emoji images. You can optionally include a
+                      meta.json file to specify emoji names, categories, and other metadata.
                     </Trans>
                   </p>
 
@@ -1390,10 +1445,20 @@ export default function AdminEmojisPage() {
                       <Trans>ZIP Format</Trans>
                     </h4>
                     <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
-                      <li><Trans>Supported formats: PNG, GIF, WebP, APNG</Trans></li>
-                      <li><Trans>Maximum file size per emoji: 256KB</Trans></li>
-                      <li><Trans>Maximum ZIP size: 50MB</Trans></li>
-                      <li><Trans>Emoji names are derived from filenames if no meta.json is provided</Trans></li>
+                      <li>
+                        <Trans>Supported formats: PNG, GIF, WebP, APNG</Trans>
+                      </li>
+                      <li>
+                        <Trans>Maximum file size per emoji: 256KB</Trans>
+                      </li>
+                      <li>
+                        <Trans>Maximum ZIP size: 50MB</Trans>
+                      </li>
+                      <li>
+                        <Trans>
+                          Emoji names are derived from filenames if no meta.json is provided
+                        </Trans>
+                      </li>
                     </ul>
 
                     <div className="mt-3 p-3 bg-white dark:bg-gray-800 rounded border dark:border-gray-600">
@@ -1401,7 +1466,7 @@ export default function AdminEmojisPage() {
                         meta.json (optional):
                       </p>
                       <pre className="text-xs font-mono text-gray-500 dark:text-gray-500 overflow-x-auto">
-{`[
+                        {`[
   {
     "name": "emoji_name",
     "file": "emoji_name.png",
@@ -1497,9 +1562,15 @@ export default function AdminEmojisPage() {
                         <table className="w-full text-sm">
                           <thead className="text-left text-gray-500 dark:text-gray-400">
                             <tr>
-                              <th className="pb-2"><Trans>Emoji</Trans></th>
-                              <th className="pb-2"><Trans>Status</Trans></th>
-                              <th className="pb-2"><Trans>Reason</Trans></th>
+                              <th className="pb-2">
+                                <Trans>Emoji</Trans>
+                              </th>
+                              <th className="pb-2">
+                                <Trans>Status</Trans>
+                              </th>
+                              <th className="pb-2">
+                                <Trans>Reason</Trans>
+                              </th>
                             </tr>
                           </thead>
                           <tbody>

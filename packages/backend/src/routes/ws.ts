@@ -75,7 +75,9 @@ ws.get(
 
         const user = await validateToken(token, userRepository, sessionRepository);
         if (!user) {
-          ws.send(JSON.stringify({ event: "error", data: { message: "Invalid or expired token" } }));
+          ws.send(
+            JSON.stringify({ event: "error", data: { message: "Invalid or expired token" } }),
+          );
           ws.close(4001, "Invalid or expired token");
           return;
         }
@@ -175,7 +177,9 @@ ws.get(
               }
             });
 
-            ws.send(JSON.stringify({ event: "connected", data: { userId: user.id, channel: "social" } }));
+            ws.send(
+              JSON.stringify({ event: "connected", data: { userId: user.id, channel: "social" } }),
+            );
           } else {
             // Fall back to local timeline if token invalid
             wsData.channel = "local";
@@ -413,7 +417,9 @@ ws.get(
 
         const user = await validateToken(token, userRepository, sessionRepository);
         if (!user) {
-          ws.send(JSON.stringify({ event: "error", data: { message: "Invalid or expired token" } }));
+          ws.send(
+            JSON.stringify({ event: "error", data: { message: "Invalid or expired token" } }),
+          );
           ws.close(4001, "Invalid or expired token");
           return;
         }
@@ -432,7 +438,12 @@ ws.get(
         });
 
         // Send connected event
-        ws.send(JSON.stringify({ event: "connected", data: { userId: user.id, channel: "notifications" } }));
+        ws.send(
+          JSON.stringify({
+            event: "connected",
+            data: { userId: user.id, channel: "notifications" },
+          }),
+        );
 
         // Start heartbeat
         heartbeatInterval = setInterval(() => {
@@ -487,7 +498,7 @@ ws.get(
   "/list/:listId",
   upgradeWebSocket((c) => {
     const token = c.req.query("token");
-    const listId = c.req.param("listId");
+    const listId = c.req.param("listId")!;
     const userRepository = c.get("userRepository");
     const sessionRepository = c.get("sessionRepository");
     const listRepository = c.get("listRepository") as IListRepository | undefined;
@@ -513,7 +524,9 @@ ws.get(
 
         const user = await validateToken(token, userRepository, sessionRepository);
         if (!user) {
-          ws.send(JSON.stringify({ event: "error", data: { message: "Invalid or expired token" } }));
+          ws.send(
+            JSON.stringify({ event: "error", data: { message: "Invalid or expired token" } }),
+          );
           ws.close(4001, "Invalid or expired token");
           return;
         }
@@ -549,7 +562,12 @@ ws.get(
         });
 
         // Send connected event
-        ws.send(JSON.stringify({ event: "connected", data: { userId: user.id, listId, channel: "list" } }));
+        ws.send(
+          JSON.stringify({
+            event: "connected",
+            data: { userId: user.id, listId, channel: "list" },
+          }),
+        );
 
         // Start heartbeat
         heartbeatInterval = setInterval(() => {

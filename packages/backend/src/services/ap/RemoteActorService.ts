@@ -177,7 +177,10 @@ export class RemoteActorService {
       // This is a local user URI - find by URI (which includes local users)
       const localUser = await this.userRepository.findByUri(actorUri);
       if (localUser) {
-        logger.debug({ username: localUser.username, host: localUser.host }, "Found local user by URI");
+        logger.debug(
+          { username: localUser.username, host: localUser.host },
+          "Found local user by URI",
+        );
         return localUser;
       }
 
@@ -216,7 +219,10 @@ export class RemoteActorService {
       const DB_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
       if (cacheAge < DB_CACHE_TTL) {
-        logger.debug({ username: existing.username, host: existing.host }, "L2 cache hit for actor");
+        logger.debug(
+          { username: existing.username, host: existing.host },
+          "L2 cache hit for actor",
+        );
 
         // Warm L1 cache for future requests
         if (this.cacheService?.isAvailable()) {
@@ -228,7 +234,10 @@ export class RemoteActorService {
         return existing;
       }
 
-      logger.debug({ username: existing.username, host: existing.host }, "Actor cache expired, refreshing");
+      logger.debug(
+        { username: existing.username, host: existing.host },
+        "Actor cache expired, refreshing",
+      );
     }
 
     // Fetch actor document from remote server
@@ -314,7 +323,10 @@ export class RemoteActorService {
     // Check if a user with the same username/host already exists (race condition protection)
     // The database has a unique constraint on (username, host), but we check by URI above.
     // A user may have been created by a concurrent request with a different URI or no URI yet.
-    const existingByUsernameHost = await this.userRepository.findByUsername(actor.preferredUsername, host);
+    const existingByUsernameHost = await this.userRepository.findByUsername(
+      actor.preferredUsername,
+      host,
+    );
     if (existingByUsernameHost) {
       // Update the existing user with the new data (including URI if not set)
       const updated = await this.userRepository.update(existingByUsernameHost.id, {
@@ -471,7 +483,9 @@ export class RemoteActorService {
     // Validate actor document
     if (!actor.id || !actor.type || !actor.preferredUsername || !actor.inbox) {
       logger.error({ actorUri }, "Invalid actor document: missing required fields");
-      throw new Error("Invalid actor document: missing required fields (id, type, preferredUsername, or inbox)");
+      throw new Error(
+        "Invalid actor document: missing required fields (id, type, preferredUsername, or inbox)",
+      );
     }
 
     return actor;

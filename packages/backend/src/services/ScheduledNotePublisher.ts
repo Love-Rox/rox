@@ -171,7 +171,9 @@ export class ScheduledNotePublisher {
       }
 
       if (successCount > 0 || failCount > 0) {
-        logger.info(`Scheduled note processing complete: ${successCount} published, ${failCount} failed`);
+        logger.info(
+          `Scheduled note processing complete: ${successCount} published, ${failCount} failed`,
+        );
       }
 
       return successCount;

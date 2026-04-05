@@ -48,11 +48,14 @@ export class SqliteNoteRepository implements INoteRepository {
 
   async create(note: NoteCreateInput): Promise<Note> {
     const now = new Date();
-    this.db.insert(notes).values({
-      ...note,
-      createdAt: now,
-      updatedAt: now,
-    }).run();
+    this.db
+      .insert(notes)
+      .values({
+        ...note,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
     const [result] = this.db.select().from(notes).where(eq(notes.id, note.id)).limit(1).all();
@@ -152,7 +155,11 @@ export class SqliteNoteRepository implements INoteRepository {
 
     const conditions = [eq(notes.isDeleted, false)];
 
-    const localConditions = [isNull(users.host), eq(notes.visibility, "public"), eq(notes.localOnly, false)];
+    const localConditions = [
+      isNull(users.host),
+      eq(notes.visibility, "public"),
+      eq(notes.localOnly, false),
+    ];
 
     if (userIds.length > 0) {
       conditions.push(or(and(...localConditions), inArray(notes.userId, userIds))!);
@@ -183,7 +190,11 @@ export class SqliteNoteRepository implements INoteRepository {
   async getGlobalTimeline(options: TimelineOptions): Promise<Note[]> {
     const { limit = 20, sinceId, untilId } = options;
 
-    const conditions = [eq(notes.visibility, "public"), eq(notes.localOnly, false), eq(notes.isDeleted, false)];
+    const conditions = [
+      eq(notes.visibility, "public"),
+      eq(notes.localOnly, false),
+      eq(notes.isDeleted, false),
+    ];
 
     if (sinceId) {
       conditions.push(gt(notes.id, sinceId));

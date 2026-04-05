@@ -94,10 +94,7 @@ export class PostgresSessionRepository implements ISessionRepository {
       .select({ count: sql<number>`count(distinct ${sessions.userId})::int` })
       .from(sessions)
       .where(
-        and(
-          sql`${sessions.createdAt} >= ${startDate}`,
-          sql`${sessions.createdAt} < ${endDate}`,
-        ),
+        and(sql`${sessions.createdAt} >= ${startDate}`, sql`${sessions.createdAt} < ${endDate}`),
       );
 
     return result[0]?.count ?? 0;

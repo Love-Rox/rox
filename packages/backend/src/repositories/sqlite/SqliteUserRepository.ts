@@ -23,11 +23,14 @@ export class SqliteUserRepository implements IUserRepository {
 
   async create(user: Omit<User, "createdAt" | "updatedAt">): Promise<User> {
     const now = new Date();
-    this.db.insert(users).values({
-      ...user,
-      createdAt: now,
-      updatedAt: now,
-    }).run();
+    this.db
+      .insert(users)
+      .values({
+        ...user,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .run();
 
     // SQLite with better-sqlite3 is synchronous, fetch the inserted record
     const [result] = this.db.select().from(users).where(eq(users.id, user.id)).limit(1).all();
@@ -267,13 +270,7 @@ export class SqliteUserRepository implements IUserRepository {
     const [result] = this.db
       .select()
       .from(users)
-      .where(
-        and(
-          isNull(users.host),
-          eq(users.isAdmin, true),
-          isNotNull(users.privateKey),
-        ),
-      )
+      .where(and(isNull(users.host), eq(users.isAdmin, true), isNotNull(users.privateKey)))
       .limit(1)
       .all();
 

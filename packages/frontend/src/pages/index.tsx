@@ -20,7 +20,7 @@ export default function HomePage() {
     const checkOnboarding = async () => {
       try {
         const response = await apiClient.get<{ needsOnboarding: boolean }>(
-          "/api/onboarding/status"
+          "/api/onboarding/status",
         );
         if (response.needsOnboarding) {
           window.location.href = "/onboarding";

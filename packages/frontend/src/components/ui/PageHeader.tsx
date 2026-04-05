@@ -3,11 +3,7 @@
 import { type ReactNode, type Key } from "react";
 import { ArrowLeft, RefreshCw } from "lucide-react";
 import { Button as AriaButton } from "react-aria-components";
-import {
-  Tabs as AriaTabs,
-  TabList as AriaTabList,
-  Tab as AriaTab,
-} from "react-aria-components";
+import { Tabs as AriaTabs, TabList as AriaTabList, Tab as AriaTab } from "react-aria-components";
 
 /**
  * Tab item configuration
@@ -154,18 +150,12 @@ export function PageHeader({
                 className="flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors shrink-0"
               >
                 <ArrowLeft className="w-5 h-5" />
-                {backLabel && (
-                  <span className="hidden sm:inline text-sm">{backLabel}</span>
-                )}
+                {backLabel && <span className="hidden sm:inline text-sm">{backLabel}</span>}
               </a>
             )}
 
             {/* Icon */}
-            {icon && (
-              <div className="text-gray-600 dark:text-gray-400 shrink-0">
-                {icon}
-              </div>
-            )}
+            {icon && <div className="text-gray-600 dark:text-gray-400 shrink-0">{icon}</div>}
 
             {/* Title and subtitle */}
             <div className="min-w-0">
@@ -190,9 +180,7 @@ export function PageHeader({
                 className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50 outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                 aria-label="Reload"
               >
-                <RefreshCw
-                  className={`w-5 h-5 ${isReloading ? "animate-spin" : ""}`}
-                />
+                <RefreshCw className={`w-5 h-5 ${isReloading ? "animate-spin" : ""}`} />
               </AriaButton>
             )}
 
@@ -220,10 +208,7 @@ export function PageHeader({
       {/* Tabs row - using React Aria Tabs */}
       {tabs && tabs.length > 0 && (
         <div className="px-4 border-t border-gray-100 dark:border-gray-700/50">
-          <AriaTabs
-            selectedKey={activeTab}
-            onSelectionChange={handleSelectionChange}
-          >
+          <AriaTabs selectedKey={activeTab} onSelectionChange={handleSelectionChange}>
             <AriaTabList
               aria-label="Page navigation"
               className="flex gap-1 overflow-x-auto scrollbar-hide -mb-px"

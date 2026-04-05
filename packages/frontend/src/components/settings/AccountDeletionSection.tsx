@@ -99,10 +99,7 @@ export function AccountDeletionSection() {
                 will delete all your data, including notes, followers, and profile information.
               </Trans>
             </p>
-            <Button
-              variant="danger"
-              onPress={() => setShowConfirmation(true)}
-            >
+            <Button variant="danger" onPress={() => setShowConfirmation(true)}>
               <Trash2 className="w-4 h-4 mr-2" />
               <Trans>Delete Account</Trans>
             </Button>
@@ -157,9 +154,7 @@ export function AccountDeletionSection() {
               />
             </div>
 
-            {error && (
-              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-            )}
+            {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
             <div className="flex items-center gap-3">
               <Button

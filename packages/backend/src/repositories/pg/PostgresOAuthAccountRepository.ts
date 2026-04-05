@@ -40,14 +40,20 @@ export class PostgresOAuthAccountRepository implements IOAuthAccountRepository {
       .select()
       .from(oauthAccounts)
       .where(
-        and(eq(oauthAccounts.provider, provider), eq(oauthAccounts.providerAccountId, providerAccountId)),
+        and(
+          eq(oauthAccounts.provider, provider),
+          eq(oauthAccounts.providerAccountId, providerAccountId),
+        ),
       )
       .limit(1);
 
     return result ?? null;
   }
 
-  async findByUserAndProvider(userId: string, provider: OAuthProvider): Promise<OAuthAccount | null> {
+  async findByUserAndProvider(
+    userId: string,
+    provider: OAuthProvider,
+  ): Promise<OAuthAccount | null> {
     const [result] = await this.db
       .select()
       .from(oauthAccounts)

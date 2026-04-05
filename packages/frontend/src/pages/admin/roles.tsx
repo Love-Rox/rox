@@ -318,7 +318,6 @@ export default function AdminRolesPage() {
       subtitle={<Trans>Create and manage user roles with custom permissions</Trans>}
     >
       <div className="max-w-4xl mx-auto">
-
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           <Card>

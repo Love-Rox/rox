@@ -42,23 +42,39 @@ export class SqliteOAuthAccountRepository implements IOAuthAccountRepository {
   }
 
   async findById(id: string): Promise<OAuthAccount | null> {
-    const [result] = this.db.select().from(oauthAccounts).where(eq(oauthAccounts.id, id)).limit(1).all();
-
-    return (result as OAuthAccount) ?? null;
-  }
-
-  async findByProviderAccount(provider: OAuthProvider, providerAccountId: string): Promise<OAuthAccount | null> {
     const [result] = this.db
       .select()
       .from(oauthAccounts)
-      .where(and(eq(oauthAccounts.provider, provider), eq(oauthAccounts.providerAccountId, providerAccountId)))
+      .where(eq(oauthAccounts.id, id))
       .limit(1)
       .all();
 
     return (result as OAuthAccount) ?? null;
   }
 
-  async findByUserAndProvider(userId: string, provider: OAuthProvider): Promise<OAuthAccount | null> {
+  async findByProviderAccount(
+    provider: OAuthProvider,
+    providerAccountId: string,
+  ): Promise<OAuthAccount | null> {
+    const [result] = this.db
+      .select()
+      .from(oauthAccounts)
+      .where(
+        and(
+          eq(oauthAccounts.provider, provider),
+          eq(oauthAccounts.providerAccountId, providerAccountId),
+        ),
+      )
+      .limit(1)
+      .all();
+
+    return (result as OAuthAccount) ?? null;
+  }
+
+  async findByUserAndProvider(
+    userId: string,
+    provider: OAuthProvider,
+  ): Promise<OAuthAccount | null> {
     const [result] = this.db
       .select()
       .from(oauthAccounts)
@@ -99,7 +115,12 @@ export class SqliteOAuthAccountRepository implements IOAuthAccountRepository {
       .run();
 
     // SQLite doesn't support RETURNING, fetch the updated record
-    const [result] = this.db.select().from(oauthAccounts).where(eq(oauthAccounts.id, id)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(oauthAccounts)
+      .where(eq(oauthAccounts.id, id))
+      .limit(1)
+      .all();
 
     if (!result) {
       throw new Error("OAuth account not found");

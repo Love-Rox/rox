@@ -81,9 +81,7 @@ export default function ModeratorInstanceBlocksPage() {
       params.set("limit", String(limit));
       params.set("offset", String(offset));
 
-      const response = await api.get<InstanceBlocksResponse>(
-        `/api/mod/instance-blocks?${params}`,
-      );
+      const response = await api.get<InstanceBlocksResponse>(`/api/mod/instance-blocks?${params}`);
       setBlocks(response.blocks);
       setTotal(response.total);
     } catch (err) {

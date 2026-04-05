@@ -383,7 +383,6 @@ export class RoleService {
     });
   }
 
-
   /**
    * Get user's max scheduled notes limit (-1 = unlimited, 0 = disabled)
    */

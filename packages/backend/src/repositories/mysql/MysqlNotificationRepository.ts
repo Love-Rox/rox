@@ -43,7 +43,11 @@ export class MysqlNotificationRepository implements INotificationRepository {
     });
 
     // MySQL doesn't support RETURNING, fetch the inserted record
-    const [notification] = await this.db.select().from(notifications).where(eq(notifications.id, id)).limit(1);
+    const [notification] = await this.db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.id, id))
+      .limit(1);
 
     return notification as Notification;
   }
@@ -121,7 +125,11 @@ export class MysqlNotificationRepository implements INotificationRepository {
     await this.db.update(notifications).set({ isRead: true }).where(eq(notifications.id, id));
 
     // MySQL doesn't support RETURNING, fetch the updated record
-    const [notification] = await this.db.select().from(notifications).where(eq(notifications.id, id)).limit(1);
+    const [notification] = await this.db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.id, id))
+      .limit(1);
 
     return (notification as Notification) ?? null;
   }

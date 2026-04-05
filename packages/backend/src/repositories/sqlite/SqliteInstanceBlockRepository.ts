@@ -25,14 +25,22 @@ export class SqliteInstanceBlockRepository implements IInstanceBlockRepository {
     const id = generateId();
     const now = new Date();
 
-    this.db.insert(instanceBlocks).values({
-      id,
-      ...block,
-      createdAt: now,
-    }).run();
+    this.db
+      .insert(instanceBlocks)
+      .values({
+        id,
+        ...block,
+        createdAt: now,
+      })
+      .run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
-    const [result] = this.db.select().from(instanceBlocks).where(eq(instanceBlocks.id, id)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(instanceBlocks)
+      .where(eq(instanceBlocks.id, id))
+      .limit(1)
+      .all();
 
     if (!result) {
       throw new Error("Failed to create instance block");
@@ -76,10 +84,7 @@ export class SqliteInstanceBlockRepository implements IInstanceBlockRepository {
       return false;
     }
 
-    this.db
-      .delete(instanceBlocks)
-      .where(eq(instanceBlocks.host, host.toLowerCase()))
-      .run();
+    this.db.delete(instanceBlocks).where(eq(instanceBlocks.host, host.toLowerCase())).run();
 
     return true;
   }

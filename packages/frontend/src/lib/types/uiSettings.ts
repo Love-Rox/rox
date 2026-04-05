@@ -50,7 +50,9 @@ export interface NotificationSoundSettings {
 /**
  * Map of notification type to sound settings
  */
-export type NotificationSoundsByType = Partial<Record<NotificationSoundType, NotificationSoundSettings>>;
+export type NotificationSoundsByType = Partial<
+  Record<NotificationSoundType, NotificationSoundSettings>
+>;
 
 /**
  * User interface customization settings.
@@ -79,7 +81,9 @@ export interface UISettings {
 /**
  * Default UI settings
  */
-export const defaultUISettings: Required<Omit<UISettings, "appCustomCss" | "notificationSoundsByType" | "deckEnabled">> & {
+export const defaultUISettings: Required<
+  Omit<UISettings, "appCustomCss" | "notificationSoundsByType" | "deckEnabled">
+> & {
   appCustomCss: string;
   notificationSoundsByType: NotificationSoundsByType | undefined;
   deckEnabled: boolean;

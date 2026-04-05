@@ -85,7 +85,8 @@ function getFileIcon(mimeType: string) {
   if (mimeType.startsWith("image/")) return <FileImage className="w-4 h-4" />;
   if (mimeType.startsWith("video/")) return <FileVideo className="w-4 h-4" />;
   if (mimeType.startsWith("audio/")) return <FileAudio className="w-4 h-4" />;
-  if (mimeType.startsWith("text/") || mimeType.includes("pdf")) return <FileText className="w-4 h-4" />;
+  if (mimeType.startsWith("text/") || mimeType.includes("pdf"))
+    return <FileText className="w-4 h-4" />;
   return <File className="w-4 h-4" />;
 }
 
@@ -272,7 +273,7 @@ export default function AdminStoragePage() {
   const filteredTopUsers = stats?.topUsers.filter(
     (u) =>
       u.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.userId.includes(searchQuery)
+      u.userId.includes(searchQuery),
   );
 
   return (
@@ -281,7 +282,6 @@ export default function AdminStoragePage() {
       title={<Trans>Storage Management</Trans>}
       subtitle={<Trans>Manage instance storage and user quotas</Trans>}
     >
-
       {/* Instance Overview */}
       {stats && (
         <Card className="mb-6">
@@ -521,10 +521,7 @@ export default function AdminStoragePage() {
                         placeholder={t`MB (-1 for unlimited)`}
                         className="w-32 px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
                       />
-                      <Button
-                        size="sm"
-                        onPress={() => handleUpdateQuota(selectedUser.user.id)}
-                      >
+                      <Button size="sm" onPress={() => handleUpdateQuota(selectedUser.user.id)}>
                         <Trans>Save</Trans>
                       </Button>
                       <Button
@@ -545,12 +542,13 @@ export default function AdminStoragePage() {
                       onPress={() => {
                         setEditingQuota(selectedUser.user.id);
                         setNewQuota(
-                          selectedUser.quotaMb === -1 ? "-1" : String(selectedUser.quotaMb)
+                          selectedUser.quotaMb === -1 ? "-1" : String(selectedUser.quotaMb),
                         );
                       }}
                     >
                       <Trans>
-                        Quota: {selectedUser.quotaMb === -1 ? "Unlimited" : `${selectedUser.quotaMb} MB`}
+                        Quota:{" "}
+                        {selectedUser.quotaMb === -1 ? "Unlimited" : `${selectedUser.quotaMb} MB`}
                       </Trans>
                     </Button>
                   )}
@@ -572,9 +570,7 @@ export default function AdminStoragePage() {
                       style={{ width: `${Math.min(selectedUser.usagePercent, 100)}%` }}
                     />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {selectedUser.usagePercent}% used
-                  </p>
+                  <p className="text-xs text-gray-500 mt-1">{selectedUser.usagePercent}% used</p>
                 </div>
               )}
 

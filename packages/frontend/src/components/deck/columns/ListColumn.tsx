@@ -33,10 +33,7 @@ export interface ListColumnContentProps {
  *
  * Displays notes from members of a specific list.
  */
-export function ListColumnContent({
-  columnId,
-  listId,
-}: ListColumnContentProps) {
+export function ListColumnContent({ columnId, listId }: ListColumnContentProps) {
   const state = useAtomValue(columnNotesStateAtomFamily(columnId));
   const updateState = useAtom(updateColumnStateAtomFamily(columnId))[1];
   const appendNotes = useAtom(appendColumnNotesAtomFamily(columnId))[1];
@@ -90,14 +87,11 @@ export function ListColumnContent({
         if (signal?.aborted) return;
         updateState({
           loading: false,
-          error:
-            err instanceof Error
-              ? err.message
-              : "Failed to load list timeline",
+          error: err instanceof Error ? err.message : "Failed to load list timeline",
         });
       }
     },
-    [listId, updateState]
+    [listId, updateState],
   );
 
   // Load initial data on mount
@@ -119,14 +113,7 @@ export function ListColumnContent({
 
   // Reload data when state is reset (notes become empty while not loading)
   useEffect(() => {
-    if (
-      notes.length === 0 &&
-      !loading &&
-      !error &&
-      hasLoadedRef.current &&
-      currentUser &&
-      listId
-    ) {
+    if (notes.length === 0 && !loading && !error && hasLoadedRef.current && currentUser && listId) {
       abortControllerRef.current?.abort();
       const controller = new AbortController();
       abortControllerRef.current = controller;
@@ -167,10 +154,7 @@ export function ListColumnContent({
     } catch (err) {
       updateState({
         loading: false,
-        error:
-          err instanceof Error
-            ? err.message
-            : "Failed to load list timeline",
+        error: err instanceof Error ? err.message : "Failed to load list timeline",
       });
     }
   }, [loading, hasMore, cursor, listId, updateState, appendNotes]);
@@ -189,7 +173,7 @@ export function ListColumnContent({
     (noteId: string) => {
       removeNote(noteId);
     },
-    [removeNote]
+    [removeNote],
   );
 
   // Retry
@@ -236,21 +220,14 @@ export function ListColumnContent({
       )}
 
       {/* Initial Loading */}
-      {!error && loading && notes.length === 0 && (
-        <TimelineSkeleton count={3} />
-      )}
+      {!error && loading && notes.length === 0 && <TimelineSkeleton count={3} />}
 
       {/* Notes List */}
       <AnimatedList
         items={notes}
         keyExtractor={(note) => note.id}
         className="space-y-3"
-        renderItem={(note) => (
-          <NoteCard
-            note={note}
-            onDelete={() => handleNoteDelete(note.id)}
-          />
-        )}
+        renderItem={(note) => <NoteCard note={note} onDelete={() => handleNoteDelete(note.id)} />}
       />
 
       {/* Loading More */}

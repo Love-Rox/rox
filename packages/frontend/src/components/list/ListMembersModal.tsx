@@ -12,12 +12,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Trans } from "@lingui/react/macro";
 import { X, Users, Loader2, UserPlus } from "lucide-react";
-import {
-  Dialog,
-  Modal,
-  Heading,
-  Button as AriaButton,
-} from "react-aria-components";
+import { Dialog, Modal, Heading, Button as AriaButton } from "react-aria-components";
 import { SafeModalOverlay } from "../ui/SafeModalOverlay";
 import { listsApi, type List, type ListMembership } from "../../lib/api/lists";
 import { Button } from "../ui/Button";
@@ -128,9 +123,7 @@ export function ListMembersModal({
 
   // Handle member updated
   const handleMemberUpdated = (updated: ListMembership) => {
-    setMembers((prev) =>
-      prev.map((m) => (m.id === updated.id ? updated : m)),
-    );
+    setMembers((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
   };
 
   // Handle member added from AddMemberModal
@@ -153,10 +146,7 @@ export function ListMembersModal({
               <div className="flex items-center justify-between p-4 border-b border-(--border-color)">
                 <div className="flex items-center gap-2">
                   <Users className="w-5 h-5 text-(--text-muted)" />
-                  <Heading
-                    slot="title"
-                    className="text-lg font-semibold text-(--text-primary)"
-                  >
+                  <Heading slot="title" className="text-lg font-semibold text-(--text-primary)">
                     <Trans>Members of "{list.name}"</Trans>
                   </Heading>
                 </div>
@@ -178,10 +168,7 @@ export function ListMembersModal({
                 ) : error ? (
                   <div className="text-center py-12">
                     <p className="text-red-500 mb-4">{error}</p>
-                    <Button
-                      variant="secondary"
-                      onPress={() => fetchMembers(0)}
-                    >
+                    <Button variant="secondary" onPress={() => fetchMembers(0)}>
                       <Trans>Try again</Trans>
                     </Button>
                   </div>

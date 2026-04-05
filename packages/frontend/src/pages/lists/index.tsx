@@ -165,9 +165,12 @@ export default function ListsPage() {
                 if (api.token) {
                   setLoading(true);
                   setError(null);
-                  listsApi.list()
+                  listsApi
+                    .list()
                     .then(setLists)
-                    .catch(err => setError(err instanceof Error ? err.message : "Failed to load lists"))
+                    .catch((err) =>
+                      setError(err instanceof Error ? err.message : "Failed to load lists"),
+                    )
                     .finally(() => setLoading(false));
                 }
               }}

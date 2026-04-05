@@ -35,7 +35,9 @@ export default function InteractPage() {
 
   // Get the current instance host
   const instanceHost =
-    typeof window !== "undefined" ? window.location.host : process.env.URL?.replace(/^https?:\/\//, "") || "localhost";
+    typeof window !== "undefined"
+      ? window.location.host
+      : process.env.URL?.replace(/^https?:\/\//, "") || "localhost";
 
   // Full WebFinger address
   const webFingerAddress = user ? `@${user.username}@${instanceHost}` : "";
@@ -117,7 +119,11 @@ export default function InteractPage() {
           </CardHeader>
           <CardContent className="text-center text-gray-600 dark:text-gray-400">
             <p>{error || <Trans>The requested user could not be found.</Trans>}</p>
-            <Button variant="secondary" className="mt-4" onPress={() => (window.location.href = "/")}>
+            <Button
+              variant="secondary"
+              className="mt-4"
+              onPress={() => (window.location.href = "/")}
+            >
               <Trans>Go to Home</Trans>
             </Button>
           </CardContent>
@@ -233,11 +239,7 @@ export default function InteractPage() {
               {webFingerAddress}
             </code>
             <Button variant="secondary" onPress={handleCopy} aria-label={_(t`Copy address`)}>
-              {copied ? (
-                <Check className="w-4 h-4 text-green-500" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
+              {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
             </Button>
           </div>
 

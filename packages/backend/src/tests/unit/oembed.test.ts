@@ -93,7 +93,6 @@ describe("oEmbed", () => {
 
       expect(response.thumbnail_url).toBeUndefined();
     });
-
   });
 
   describe("generateUserOEmbed", () => {
@@ -143,7 +142,6 @@ describe("oEmbed", () => {
       expect(response.thumbnail_height).toBeUndefined();
     });
 
-
     it("should handle missing avatar", () => {
       const response = generateUserOEmbed({
         ...baseOptions,
@@ -163,18 +161,20 @@ describe("oEmbed", () => {
   describe("generateOEmbedDiscoveryLink", () => {
     it("should generate valid link tag", () => {
       const link = generateOEmbedDiscoveryLink(
-        "https://example.com/oembed?url=https://example.com/notes/abc123"
+        "https://example.com/oembed?url=https://example.com/notes/abc123",
       );
 
       expect(link).toContain('rel="alternate"');
       expect(link).toContain('type="application/json+oembed"');
-      expect(link).toContain('href="https://example.com/oembed?url=https://example.com/notes/abc123"');
+      expect(link).toContain(
+        'href="https://example.com/oembed?url=https://example.com/notes/abc123"',
+      );
       expect(link).toContain('title="oEmbed"');
     });
 
     it("should escape special characters in URL", () => {
       const link = generateOEmbedDiscoveryLink(
-        'https://example.com/oembed?url=https://example.com/notes/abc&foo="bar"'
+        'https://example.com/oembed?url=https://example.com/notes/abc&foo="bar"',
       );
 
       expect(link).toContain("&amp;");

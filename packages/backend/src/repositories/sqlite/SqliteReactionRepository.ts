@@ -23,15 +23,23 @@ export class SqliteReactionRepository implements IReactionRepository {
 
   async create(reaction: Omit<Reaction, "createdAt" | "updatedAt">): Promise<Reaction> {
     const now = new Date();
-    this.db.insert(reactions).values({
-      ...reaction,
-      customEmojiUrl: reaction.customEmojiUrl ?? null,
-      createdAt: now,
-      updatedAt: now,
-    }).run();
+    this.db
+      .insert(reactions)
+      .values({
+        ...reaction,
+        customEmojiUrl: reaction.customEmojiUrl ?? null,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
-    const [result] = this.db.select().from(reactions).where(eq(reactions.id, reaction.id)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(reactions)
+      .where(eq(reactions.id, reaction.id))
+      .limit(1)
+      .all();
 
     if (!result) {
       throw new Error("Failed to create reaction");
@@ -57,7 +65,11 @@ export class SqliteReactionRepository implements IReactionRepository {
     return result ? this.mapToReaction(result) : null;
   }
 
-  async findByUserNoteAndReaction(userId: string, noteId: string, reaction: string): Promise<Reaction | null> {
+  async findByUserNoteAndReaction(
+    userId: string,
+    noteId: string,
+    reaction: string,
+  ): Promise<Reaction | null> {
     const [result] = this.db
       .select()
       .from(reactions)
@@ -175,7 +187,11 @@ export class SqliteReactionRepository implements IReactionRepository {
       .run();
   }
 
-  async deleteByUserNoteAndReaction(userId: string, noteId: string, reaction: string): Promise<void> {
+  async deleteByUserNoteAndReaction(
+    userId: string,
+    noteId: string,
+    reaction: string,
+  ): Promise<void> {
     this.db
       .delete(reactions)
       .where(

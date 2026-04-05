@@ -8,11 +8,7 @@
  */
 
 import { apiClient } from "./client";
-import type {
-  DeckProfile,
-  CreateDeckProfileInput,
-  UpdateDeckProfileInput,
-} from "shared";
+import type { DeckProfile, CreateDeckProfileInput, UpdateDeckProfileInput } from "shared";
 
 export type { DeckProfile, CreateDeckProfileInput, UpdateDeckProfileInput };
 
@@ -56,10 +52,7 @@ export const deckApi = {
    * @param input - Profile update data
    * @returns Updated profile
    */
-  async updateProfile(
-    profileId: string,
-    input: UpdateDeckProfileInput
-  ): Promise<DeckProfile> {
+  async updateProfile(profileId: string, input: UpdateDeckProfileInput): Promise<DeckProfile> {
     return apiClient.patch<DeckProfile>(`/api/deck/profiles/${profileId}`, input);
   },
 
@@ -70,8 +63,6 @@ export const deckApi = {
    * @returns Success status
    */
   async deleteProfile(profileId: string): Promise<{ success: boolean }> {
-    return apiClient.delete<{ success: boolean }>(
-      `/api/deck/profiles/${profileId}`
-    );
+    return apiClient.delete<{ success: boolean }>(`/api/deck/profiles/${profileId}`);
   },
 };

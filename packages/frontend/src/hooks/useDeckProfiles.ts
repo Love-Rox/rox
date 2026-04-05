@@ -103,17 +103,14 @@ export function useDeckProfiles() {
         return null;
       }
     },
-    [isAuthenticated, profiles.length, addLocalProfile, setActiveProfileId, setError]
+    [isAuthenticated, profiles.length, addLocalProfile, setActiveProfileId, setError],
   );
 
   /**
    * Update an existing profile
    */
   const updateProfile = useCallback(
-    async (
-      profileId: string,
-      input: UpdateDeckProfileInput
-    ): Promise<DeckProfile | null> => {
+    async (profileId: string, input: UpdateDeckProfileInput): Promise<DeckProfile | null> => {
       if (!isAuthenticated) return null;
 
       setError(null);
@@ -129,7 +126,7 @@ export function useDeckProfiles() {
         return null;
       }
     },
-    [isAuthenticated, updateLocalProfile, setError]
+    [isAuthenticated, updateLocalProfile, setError],
   );
 
   /**
@@ -160,7 +157,7 @@ export function useDeckProfiles() {
         return false;
       }
     },
-    [isAuthenticated, profiles.length, removeLocalProfile, setError]
+    [isAuthenticated, profiles.length, removeLocalProfile, setError],
   );
 
   /**
@@ -189,7 +186,7 @@ export function useDeckProfiles() {
         return false;
       }
     },
-    [activeProfile, updateLocalProfile]
+    [activeProfile, updateLocalProfile],
   );
 
   /**
@@ -201,7 +198,7 @@ export function useDeckProfiles() {
         setActiveProfileId(profileId);
       }
     },
-    [profiles, setActiveProfileId]
+    [profiles, setActiveProfileId],
   );
 
   // Load profiles on mount when authenticated

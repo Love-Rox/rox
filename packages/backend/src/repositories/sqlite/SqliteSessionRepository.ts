@@ -23,14 +23,22 @@ export class SqliteSessionRepository implements ISessionRepository {
 
   async create(session: Omit<Session, "createdAt" | "updatedAt">): Promise<Session> {
     const now = new Date();
-    this.db.insert(sessions).values({
-      ...session,
-      createdAt: now,
-      updatedAt: now,
-    }).run();
+    this.db
+      .insert(sessions)
+      .values({
+        ...session,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
-    const [result] = this.db.select().from(sessions).where(eq(sessions.id, session.id)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.id, session.id))
+      .limit(1)
+      .all();
 
     if (!result) {
       throw new Error("Failed to create session");
@@ -46,7 +54,12 @@ export class SqliteSessionRepository implements ISessionRepository {
   }
 
   async findByToken(token: string): Promise<Session | null> {
-    const [result] = this.db.select().from(sessions).where(eq(sessions.token, token)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(sessions)
+      .where(eq(sessions.token, token))
+      .limit(1)
+      .all();
 
     return (result as Session) ?? null;
   }

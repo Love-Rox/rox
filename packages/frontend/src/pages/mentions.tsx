@@ -71,10 +71,13 @@ export default function MentionsPage() {
   });
 
   // Handle note deletion
-  const handleNoteDelete = useCallback((_noteId: string) => {
-    // The hook manages state internally, so we just refresh
-    fetchMentions();
-  }, [fetchMentions]);
+  const handleNoteDelete = useCallback(
+    (_noteId: string) => {
+      // The hook manages state internally, so we just refresh
+      fetchMentions();
+    },
+    [fetchMentions],
+  );
 
   // Show loading while checking auth
   if (isLoading || !currentUser) {
@@ -126,7 +129,11 @@ export default function MentionsPage() {
 
           {/* Loading More Indicator */}
           {loading && mentions.length > 0 && (
-            <div className="flex justify-center py-8" role="status" aria-label="Loading more mentions">
+            <div
+              className="flex justify-center py-8"
+              role="status"
+              aria-label="Loading more mentions"
+            >
               <Loader2 className="w-6 h-6 animate-spin text-(--text-muted)" />
               <span className="sr-only">
                 <Trans>Loading more mentions...</Trans>
@@ -139,11 +146,7 @@ export default function MentionsPage() {
 
           {/* End of Timeline */}
           {!hasMore && mentions.length > 0 && (
-            <div
-              className="py-8 text-center text-(--text-muted)"
-              role="status"
-              aria-live="polite"
-            >
+            <div className="py-8 text-center text-(--text-muted)" role="status" aria-live="polite">
               <Trans>You've reached the end</Trans>
             </div>
           )}

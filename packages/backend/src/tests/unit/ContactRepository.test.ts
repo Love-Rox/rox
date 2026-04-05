@@ -53,15 +53,9 @@ describe("ContactRepository", () => {
         ]),
       ),
       countThreads: mock(() => Promise.resolve(1)),
-      updateThreadStatus: mock(() =>
-        Promise.resolve({ ...mockThread, status: "in_progress" }),
-      ),
-      assignThread: mock(() =>
-        Promise.resolve({ ...mockThread, assignedToId: "admin1" }),
-      ),
-      updateThreadPriority: mock(() =>
-        Promise.resolve({ ...mockThread, priority: 1 }),
-      ),
+      updateThreadStatus: mock(() => Promise.resolve({ ...mockThread, status: "in_progress" })),
+      assignThread: mock(() => Promise.resolve({ ...mockThread, assignedToId: "admin1" })),
+      updateThreadPriority: mock(() => Promise.resolve({ ...mockThread, priority: 1 })),
       updateInternalNotes: mock(() =>
         Promise.resolve({ ...mockThread, internalNotes: "User needs password reset" }),
       ),
@@ -240,9 +234,7 @@ describe("ContactRepository", () => {
       });
 
       test("should unassign thread", async () => {
-        mockRepo.assignThread = mock(() =>
-          Promise.resolve({ ...mockThread, assignedToId: null }),
-        );
+        mockRepo.assignThread = mock(() => Promise.resolve({ ...mockThread, assignedToId: null }));
 
         const result = await mockRepo.assignThread("thread1", null);
 
@@ -258,9 +250,7 @@ describe("ContactRepository", () => {
       });
 
       test("should set high priority", async () => {
-        mockRepo.updateThreadPriority = mock(() =>
-          Promise.resolve({ ...mockThread, priority: 2 }),
-        );
+        mockRepo.updateThreadPriority = mock(() => Promise.resolve({ ...mockThread, priority: 2 }));
 
         const result = await mockRepo.updateThreadPriority("thread1", 2);
 
@@ -270,10 +260,7 @@ describe("ContactRepository", () => {
 
     describe("updateInternalNotes", () => {
       test("should update internal notes", async () => {
-        const result = await mockRepo.updateInternalNotes(
-          "thread1",
-          "User needs password reset",
-        );
+        const result = await mockRepo.updateInternalNotes("thread1", "User needs password reset");
 
         expect(result.internalNotes).toBe("User needs password reset");
       });

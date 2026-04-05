@@ -27,7 +27,12 @@ export class SqliteCustomEmojiRepository implements ICustomEmojiRepository {
     this.db.insert(customEmojis).values(emoji).run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
-    const [result] = this.db.select().from(customEmojis).where(eq(customEmojis.id, emoji.id)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(customEmojis)
+      .where(eq(customEmojis.id, emoji.id))
+      .limit(1)
+      .all();
 
     if (!result) {
       throw new Error("Failed to create custom emoji");
@@ -37,7 +42,12 @@ export class SqliteCustomEmojiRepository implements ICustomEmojiRepository {
   }
 
   async findById(id: string): Promise<CustomEmoji | null> {
-    const [result] = this.db.select().from(customEmojis).where(eq(customEmojis.id, id)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(customEmojis)
+      .where(eq(customEmojis.id, id))
+      .limit(1)
+      .all();
 
     return (result as CustomEmoji) ?? null;
   }
@@ -54,7 +64,12 @@ export class SqliteCustomEmojiRepository implements ICustomEmojiRepository {
   }
 
   async findByNameAnyHost(name: string): Promise<CustomEmoji | null> {
-    const [result] = this.db.select().from(customEmojis).where(eq(customEmojis.name, name)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(customEmojis)
+      .where(eq(customEmojis.name, name))
+      .limit(1)
+      .all();
 
     return (result as CustomEmoji) ?? null;
   }
@@ -86,7 +101,11 @@ export class SqliteCustomEmojiRepository implements ICustomEmojiRepository {
       return new Map();
     }
 
-    const results = this.db.select().from(customEmojis).where(inArray(customEmojis.name, names)).all();
+    const results = this.db
+      .select()
+      .from(customEmojis)
+      .where(inArray(customEmojis.name, names))
+      .all();
 
     const map = new Map<string, CustomEmoji>();
     for (const emoji of results) {
@@ -168,7 +187,12 @@ export class SqliteCustomEmojiRepository implements ICustomEmojiRepository {
       .run();
 
     // Fetch the updated record
-    const [result] = this.db.select().from(customEmojis).where(eq(customEmojis.id, id)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(customEmojis)
+      .where(eq(customEmojis.id, id))
+      .limit(1)
+      .all();
 
     return (result as CustomEmoji) ?? null;
   }
@@ -190,7 +214,12 @@ export class SqliteCustomEmojiRepository implements ICustomEmojiRepository {
         ? and(eq(customEmojis.name, name), isNull(customEmojis.host))
         : and(eq(customEmojis.name, name), eq(customEmojis.host, host));
 
-    const [result] = this.db.select({ id: customEmojis.id }).from(customEmojis).where(conditions).limit(1).all();
+    const [result] = this.db
+      .select({ id: customEmojis.id })
+      .from(customEmojis)
+      .where(conditions)
+      .limit(1)
+      .all();
 
     return result !== undefined;
   }
@@ -225,7 +254,10 @@ export class SqliteCustomEmojiRepository implements ICustomEmojiRepository {
             .from(customEmojis)
             .where(and(...conditions))
             .all()
-        : this.db.select({ count: sql<number>`COUNT(*)` }).from(customEmojis).all();
+        : this.db
+            .select({ count: sql<number>`COUNT(*)` })
+            .from(customEmojis)
+            .all();
 
     return result?.count ?? 0;
   }

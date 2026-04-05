@@ -29,17 +29,25 @@ export class SqliteUserWarningRepository implements IUserWarningRepository {
   }): Promise<UserWarning> {
     const id = generateId();
 
-    this.db.insert(userWarnings).values({
-      id,
-      userId: data.userId,
-      moderatorId: data.moderatorId,
-      reason: data.reason,
-      expiresAt: data.expiresAt ?? null,
-      isRead: false,
-    }).run();
+    this.db
+      .insert(userWarnings)
+      .values({
+        id,
+        userId: data.userId,
+        moderatorId: data.moderatorId,
+        reason: data.reason,
+        expiresAt: data.expiresAt ?? null,
+        isRead: false,
+      })
+      .run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
-    const [warning] = this.db.select().from(userWarnings).where(eq(userWarnings.id, id)).limit(1).all();
+    const [warning] = this.db
+      .select()
+      .from(userWarnings)
+      .where(eq(userWarnings.id, id))
+      .limit(1)
+      .all();
 
     return warning as UserWarning;
   }
@@ -129,7 +137,12 @@ export class SqliteUserWarningRepository implements IUserWarningRepository {
       .run();
 
     // SQLite doesn't support RETURNING, fetch the updated record
-    const [warning] = this.db.select().from(userWarnings).where(eq(userWarnings.id, id)).limit(1).all();
+    const [warning] = this.db
+      .select()
+      .from(userWarnings)
+      .where(eq(userWarnings.id, id))
+      .limit(1)
+      .all();
 
     return (warning as UserWarning) ?? null;
   }
@@ -183,7 +196,10 @@ export class SqliteUserWarningRepository implements IUserWarningRepository {
   }
 
   async count(): Promise<number> {
-    const [result] = this.db.select({ count: sql<number>`COUNT(*)` }).from(userWarnings).all();
+    const [result] = this.db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(userWarnings)
+      .all();
 
     return result?.count ?? 0;
   }

@@ -59,7 +59,8 @@ export interface CardProps extends VariantProps<typeof cardVariants> {
  * Props for the interactive Card component (with click handler)
  */
 export interface InteractiveCardProps
-  extends VariantProps<typeof cardVariants>,
+  extends
+    VariantProps<typeof cardVariants>,
     Omit<AriaButtonProps, "children" | "className" | "style"> {
   /** Card content */
   children: ReactNode;
@@ -95,16 +96,7 @@ export interface InteractiveCardProps
  * ```
  */
 export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
-  {
-    children,
-    padding,
-    shadow,
-    hover,
-    className,
-    role,
-    "aria-label": ariaLabel,
-    tabIndex,
-  },
+  { children, padding, shadow, hover, className, role, "aria-label": ariaLabel, tabIndex },
   ref,
 ) {
   return (
@@ -165,9 +157,7 @@ export const InteractiveCard = forwardRef<HTMLButtonElement, InteractiveCardProp
             shadow,
             hover,
             className: `${className || ""} ${
-              renderProps.isFocusVisible
-                ? "outline-none ring-2 ring-primary-500 ring-offset-2"
-                : ""
+              renderProps.isFocusVisible ? "outline-none ring-2 ring-primary-500 ring-offset-2" : ""
             } ${renderProps.isPressed ? "scale-[0.98]" : ""} ${
               renderProps.isDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
             }`.trim(),

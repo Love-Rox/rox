@@ -13,7 +13,15 @@ import { useState, useEffect, useCallback } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { Plug, Power, PowerOff, RefreshCw, ExternalLink, AlertCircle, CheckCircle } from "lucide-react";
+import {
+  Plug,
+  Power,
+  PowerOff,
+  RefreshCw,
+  ExternalLink,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
 import { currentUserAtom } from "../../lib/atoms/auth";
 import { useApi } from "../../hooks/useApi";
 import { Button } from "../../components/ui/Button";
@@ -77,9 +85,7 @@ export default function AdminPluginsPage() {
       await api.post(`/api/plugins/${pluginId}/${action}`, {});
       addToast({
         type: "success",
-        message: enable
-          ? t`Plugin "${pluginId}" enabled`
-          : t`Plugin "${pluginId}" disabled`,
+        message: enable ? t`Plugin "${pluginId}" enabled` : t`Plugin "${pluginId}" disabled`,
       });
       await fetchPlugins();
     } catch (err) {
@@ -109,7 +115,6 @@ export default function AdminPluginsPage() {
       title={<Trans>Plugins</Trans>}
       subtitle={<Trans>Manage installed plugins</Trans>}
     >
-
       {/* Plugin System Status */}
       <Card className="mb-6">
         <CardHeader>
@@ -250,9 +255,7 @@ export default function AdminPluginsPage() {
             <Trans>Plugin Development</Trans>
           </h3>
           <p className="text-sm text-(--text-secondary) mb-3">
-            <Trans>
-              Learn how to create plugins for Rox by reading the plugin documentation.
-            </Trans>
+            <Trans>Learn how to create plugins for Rox by reading the plugin documentation.</Trans>
           </p>
           <a
             href="https://github.com/Love-Rox/rox/blob/main/plugins/README.md"

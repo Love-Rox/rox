@@ -84,28 +84,31 @@ export function useMentionSuggestions(): UseMentionSuggestionsResult {
   /**
    * Detect mention pattern in text at cursor position
    */
-  const detectMention = useCallback((text: string, cursorPosition: number): { query: string; start: number } | null => {
-    // Look backwards from cursor to find @
-    let start = cursorPosition - 1;
-    while (start >= 0) {
-      const char = text[start];
-      // Stop if we hit whitespace or another @
-      if (char === " " || char === "\n" || char === "\t") {
-        return null;
-      }
-      if (char === "@") {
-        // Found the @, extract the query
-        const query = text.substring(start + 1, cursorPosition);
-        // Only trigger if query is non-empty and doesn't contain spaces
-        if (query.length > 0 && !query.includes(" ")) {
-          return { query, start };
+  const detectMention = useCallback(
+    (text: string, cursorPosition: number): { query: string; start: number } | null => {
+      // Look backwards from cursor to find @
+      let start = cursorPosition - 1;
+      while (start >= 0) {
+        const char = text[start];
+        // Stop if we hit whitespace or another @
+        if (char === " " || char === "\n" || char === "\t") {
+          return null;
         }
-        return null;
+        if (char === "@") {
+          // Found the @, extract the query
+          const query = text.substring(start + 1, cursorPosition);
+          // Only trigger if query is non-empty and doesn't contain spaces
+          if (query.length > 0 && !query.includes(" ")) {
+            return { query, start };
+          }
+          return null;
+        }
+        start--;
       }
-      start--;
-    }
-    return null;
-  }, []);
+      return null;
+    },
+    [],
+  );
 
   /**
    * Fetch user suggestions from API

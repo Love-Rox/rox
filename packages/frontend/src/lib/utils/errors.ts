@@ -28,10 +28,7 @@
  * }
  * ```
  */
-export function getErrorMessage(
-  error: unknown,
-  fallback = "An unexpected error occurred"
-): string {
+export function getErrorMessage(error: unknown, fallback = "An unexpected error occurred"): string {
   if (error instanceof Error) {
     return error.message;
   }
@@ -57,9 +54,7 @@ export function getErrorMessage(
  * }
  * ```
  */
-export function hasErrorMessage(
-  error: unknown
-): error is { message: string } {
+export function hasErrorMessage(error: unknown): error is { message: string } {
   return (
     typeof error === "object" &&
     error !== null &&

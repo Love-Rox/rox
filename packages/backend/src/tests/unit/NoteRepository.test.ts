@@ -5,7 +5,11 @@
  */
 
 import { describe, test, expect, mock, beforeEach } from "bun:test";
-import type { INoteRepository, NoteCreateInput, TimelineOptions } from "../../interfaces/repositories/INoteRepository.js";
+import type {
+  INoteRepository,
+  NoteCreateInput,
+  TimelineOptions,
+} from "../../interfaces/repositories/INoteRepository.js";
 import type { Note } from "../../../../shared/src/types/note.js";
 
 describe("NoteRepository", () => {
@@ -68,13 +72,13 @@ describe("NoteRepository", () => {
   beforeEach(() => {
     mockRepo = {
       create: mock(async (note: NoteCreateInput) =>
-        Promise.resolve({ ...mockNote, ...note, id: note.id || "new-note-id" })
+        Promise.resolve({ ...mockNote, ...note, id: note.id || "new-note-id" }),
       ),
       findById: mock(async (id: string) =>
-        id === "note1" ? Promise.resolve(mockNote) : Promise.resolve(null)
+        id === "note1" ? Promise.resolve(mockNote) : Promise.resolve(null),
       ),
       findByUri: mock(async (uri: string) =>
-        uri === mockRemoteNote.uri ? Promise.resolve(mockRemoteNote) : Promise.resolve(null)
+        uri === mockRemoteNote.uri ? Promise.resolve(mockRemoteNote) : Promise.resolve(null),
       ),
       getLocalTimeline: mock(async () => Promise.resolve([mockNote])),
       getTimeline: mock(async () => Promise.resolve([mockNote])),
@@ -84,7 +88,7 @@ describe("NoteRepository", () => {
       findReplies: mock(async () => Promise.resolve([mockNoteWithReply])),
       findRenotes: mock(async () => Promise.resolve([mockRenote])),
       update: mock(async (id: string, data: Partial<Note>) =>
-        Promise.resolve({ ...mockNote, ...data, id })
+        Promise.resolve({ ...mockNote, ...data, id }),
       ),
       delete: mock(async () => Promise.resolve()),
       softDelete: mock(async () => Promise.resolve(mockDeletedNote)),
@@ -479,7 +483,7 @@ describe("NoteRepository", () => {
 
       test("should soft delete without reason", async () => {
         mockRepo.softDelete = mock(async () =>
-          Promise.resolve({ ...mockDeletedNote, deletionReason: null })
+          Promise.resolve({ ...mockDeletedNote, deletionReason: null }),
         );
 
         const result = await mockRepo.softDelete("note1", "admin1");
@@ -546,7 +550,7 @@ describe("NoteRepository", () => {
 
       test("should return local-only note count", async () => {
         mockRepo.count = mock(async (localOnly) =>
-          localOnly ? Promise.resolve(50) : Promise.resolve(100)
+          localOnly ? Promise.resolve(50) : Promise.resolve(100),
         );
 
         const result = await mockRepo.count(true);
@@ -617,7 +621,7 @@ describe("NoteRepository", () => {
     describe("findMentionsAndReplies", () => {
       test("should return mentions and replies for a user", async () => {
         mockRepo.findMentionsAndReplies = mock(async () =>
-          Promise.resolve([mockMention, mockReplyToUser])
+          Promise.resolve([mockMention, mockReplyToUser]),
         );
 
         const result = await mockRepo.findMentionsAndReplies("user1", { limit: 20 });

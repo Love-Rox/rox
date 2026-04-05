@@ -32,9 +32,7 @@ export interface MentionsColumnContentProps {
  *
  * Displays notes that mention the current user.
  */
-export function MentionsColumnContent({
-  columnId,
-}: MentionsColumnContentProps) {
+export function MentionsColumnContent({ columnId }: MentionsColumnContentProps) {
   const state = useAtomValue(columnNotesStateAtomFamily(columnId));
   const updateState = useAtom(updateColumnStateAtomFamily(columnId))[1];
   const appendNotes = useAtom(appendColumnNotesAtomFamily(columnId))[1];
@@ -62,8 +60,7 @@ export function MentionsColumnContent({
     } catch (err) {
       updateState({
         loading: false,
-        error:
-          err instanceof Error ? err.message : "Failed to load mentions",
+        error: err instanceof Error ? err.message : "Failed to load mentions",
       });
     }
   }, [updateState]);
@@ -77,13 +74,7 @@ export function MentionsColumnContent({
 
   // Reload data when state is reset (notes become empty while not loading)
   useEffect(() => {
-    if (
-      notes.length === 0 &&
-      !loading &&
-      !error &&
-      hasLoadedRef.current &&
-      currentUser
-    ) {
+    if (notes.length === 0 && !loading && !error && hasLoadedRef.current && currentUser) {
       loadInitialData();
     }
   }, [notes.length, loading, error, currentUser, loadInitialData]);
@@ -121,8 +112,7 @@ export function MentionsColumnContent({
     } catch (err) {
       updateState({
         loading: false,
-        error:
-          err instanceof Error ? err.message : "Failed to load mentions",
+        error: err instanceof Error ? err.message : "Failed to load mentions",
       });
     }
   }, [loading, hasMore, cursor, updateState, appendNotes]);
@@ -141,7 +131,7 @@ export function MentionsColumnContent({
     (noteId: string) => {
       removeNote(noteId);
     },
-    [removeNote]
+    [removeNote],
   );
 
   // Retry
@@ -177,21 +167,14 @@ export function MentionsColumnContent({
       )}
 
       {/* Initial Loading */}
-      {!error && loading && notes.length === 0 && (
-        <TimelineSkeleton count={3} />
-      )}
+      {!error && loading && notes.length === 0 && <TimelineSkeleton count={3} />}
 
       {/* Notes List */}
       <AnimatedList
         items={notes}
         keyExtractor={(note) => note.id}
         className="space-y-3"
-        renderItem={(note) => (
-          <NoteCard
-            note={note}
-            onDelete={() => handleNoteDelete(note.id)}
-          />
-        )}
+        renderItem={(note) => <NoteCard note={note} onDelete={() => handleNoteDelete(note.id)} />}
       />
 
       {/* Loading More */}

@@ -129,11 +129,7 @@ export function ListMemberCard({
   return (
     <div className="flex items-center gap-3 p-3 hover:bg-(--bg-secondary) transition-colors rounded-lg group">
       {/* User info - clickable */}
-      <SpaLink
-        to={profileUrl}
-        onClick={onClose}
-        className="flex items-center gap-3 flex-1 min-w-0"
-      >
+      <SpaLink to={profileUrl} onClick={onClose} className="flex items-center gap-3 flex-1 min-w-0">
         <Avatar
           src={user.avatarUrl ? getProxiedImageUrl(user.avatarUrl) : undefined}
           alt={displayName}
@@ -158,9 +154,15 @@ export function ListMemberCard({
           {/* Include replies toggle */}
           <label
             className="flex items-center gap-2 cursor-pointer text-xs text-(--text-muted)"
-            title={membership.withReplies ? "Replies included in timeline" : "Replies excluded from timeline"}
+            title={
+              membership.withReplies
+                ? "Replies included in timeline"
+                : "Replies excluded from timeline"
+            }
           >
-            <MessageCircle className={`w-4 h-4 ${membership.withReplies ? "text-primary-500" : "text-(--text-muted)"}`} />
+            <MessageCircle
+              className={`w-4 h-4 ${membership.withReplies ? "text-primary-500" : "text-(--text-muted)"}`}
+            />
             <span className="hidden sm:inline">
               <Trans>Replies</Trans>
             </span>

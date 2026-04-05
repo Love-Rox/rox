@@ -15,10 +15,7 @@ export class PostgresScheduledNoteRepository implements IScheduledNoteRepository
   constructor(private db: PostgresJsDatabase) {}
 
   async create(input: NewScheduledNote): Promise<ScheduledNote> {
-    const [scheduledNote] = await this.db
-      .insert(scheduledNotes)
-      .values(input)
-      .returning();
+    const [scheduledNote] = await this.db.insert(scheduledNotes).values(input).returning();
 
     return scheduledNote as ScheduledNote;
   }
@@ -64,9 +61,7 @@ export class PostgresScheduledNoteRepository implements IScheduledNoteRepository
     const [result] = await this.db
       .select({ count: sql<number>`count(*)::int` })
       .from(scheduledNotes)
-      .where(
-        and(eq(scheduledNotes.userId, userId), eq(scheduledNotes.status, "pending")),
-      );
+      .where(and(eq(scheduledNotes.userId, userId), eq(scheduledNotes.status, "pending")));
 
     return result?.count ?? 0;
   }
@@ -75,12 +70,7 @@ export class PostgresScheduledNoteRepository implements IScheduledNoteRepository
     const results = await this.db
       .select()
       .from(scheduledNotes)
-      .where(
-        and(
-          eq(scheduledNotes.status, "pending"),
-          lt(scheduledNotes.scheduledAt, before),
-        ),
-      )
+      .where(and(eq(scheduledNotes.status, "pending"), lt(scheduledNotes.scheduledAt, before)))
       .orderBy(scheduledNotes.scheduledAt)
       .limit(limit);
 

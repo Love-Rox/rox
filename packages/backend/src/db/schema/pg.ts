@@ -306,7 +306,7 @@ export const notes = pgTable(
     // Index for soft delete queries
     isDeletedIdx: index("note_is_deleted_idx").on(table.isDeleted),
   }),
-);;
+);
 
 /**
  * File source type

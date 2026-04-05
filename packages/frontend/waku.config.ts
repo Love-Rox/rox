@@ -1,22 +1,24 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { lingui } from "@lingui/vite-plugin";
+import babelPlugin from "@rolldown/plugin-babel";
 import { defineConfig } from "waku/config";
 
 /**
  * Waku configuration
  * Configures Vite settings for Tailwind CSS v4 (via Vite plugin) and Lingui integration
+ *
+ * Note: @vitejs/plugin-react v6 (Vite 8) removed the `babel` option.
+ * Lingui macro transformation is now handled via @rolldown/plugin-babel.
  */
 export default defineConfig({
   /** Vite configuration for all environments */
   vite: {
     plugins: [
       tailwindcss(),
-      react({
-        babel: {
-          // Temporarily disabled react-compiler to debug browser freeze issue
-          plugins: ["@lingui/babel-plugin-lingui-macro"],
-        },
+      react(),
+      babelPlugin({
+        plugins: ["@lingui/babel-plugin-lingui-macro"],
       }),
       lingui(),
     ],
@@ -41,18 +43,25 @@ export default defineConfig({
     build: {
       /** Suppress chunk size warnings (500kB -> 1MB threshold) */
       chunkSizeWarningLimit: 1000,
-      rollupOptions: {
+      rolldownOptions: {
         output: {
-          /** Manual chunk splitting for better caching */
-          manualChunks: {
-            /** React core libraries */
-            "react-vendor": ["react", "react-dom"],
-            /** UI component libraries */
-            "ui-vendor": ["react-aria-components"],
-            /** i18n libraries */
-            "i18n-vendor": ["@lingui/react", "@lingui/core"],
-            /** State management */
-            "state-vendor": ["jotai"],
+          /** Manual chunk splitting for better caching (Rolldown requires function form) */
+          manualChunks: (id: string) => {
+            if (id.includes("node_modules/react-dom") || id.includes("node_modules/react/")) {
+              return "react-vendor";
+            }
+            if (id.includes("node_modules/react-aria-components")) {
+              return "ui-vendor";
+            }
+            if (
+              id.includes("node_modules/@lingui/react") ||
+              id.includes("node_modules/@lingui/core")
+            ) {
+              return "i18n-vendor";
+            }
+            if (id.includes("node_modules/jotai")) {
+              return "state-vendor";
+            }
           },
         },
       },

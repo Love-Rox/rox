@@ -9,11 +9,7 @@
 
 import type { ComponentType } from "react";
 import type { SlotName } from "./slots";
-import type {
-  FrontendPlugin,
-  LoadedFrontendPlugin,
-  SlotProps,
-} from "./types";
+import type { FrontendPlugin, LoadedFrontendPlugin, SlotProps } from "./types";
 
 /**
  * Slot component entry
@@ -315,10 +311,7 @@ export function getPluginRegistry(): PluginRegistry {
 /**
  * Register a plugin
  */
-export async function registerPlugin(
-  plugin: FrontendPlugin,
-  priority = 0,
-): Promise<void> {
+export async function registerPlugin(plugin: FrontendPlugin, priority = 0): Promise<void> {
   return getPluginRegistry().register(plugin, priority);
 }
 

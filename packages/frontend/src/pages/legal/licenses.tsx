@@ -31,29 +31,84 @@ const KEY_DEPENDENCIES: DependencyInfo[] = [
   { name: "Bun", version: "1.x", license: "MIT", repository: "https://github.com/oven-sh/bun" },
   { name: "Hono", version: "4.x", license: "MIT", repository: "https://github.com/honojs/hono" },
   { name: "Waku", version: "0.x", license: "MIT", repository: "https://github.com/dai-shi/waku" },
-  { name: "React", version: "19.x", license: "MIT", repository: "https://github.com/facebook/react" },
+  {
+    name: "React",
+    version: "19.x",
+    license: "MIT",
+    repository: "https://github.com/facebook/react",
+  },
 
   // Database
-  { name: "Drizzle ORM", version: "0.x", license: "Apache-2.0", repository: "https://github.com/drizzle-team/drizzle-orm" },
-  { name: "PostgreSQL (pg)", version: "8.x", license: "MIT", repository: "https://github.com/brianc/node-postgres" },
+  {
+    name: "Drizzle ORM",
+    version: "0.x",
+    license: "Apache-2.0",
+    repository: "https://github.com/drizzle-team/drizzle-orm",
+  },
+  {
+    name: "PostgreSQL (pg)",
+    version: "8.x",
+    license: "MIT",
+    repository: "https://github.com/brianc/node-postgres",
+  },
 
   // UI
-  { name: "React Aria Components", version: "1.x", license: "Apache-2.0", repository: "https://github.com/adobe/react-spectrum" },
-  { name: "Tailwind CSS", version: "4.x", license: "MIT", repository: "https://github.com/tailwindlabs/tailwindcss" },
-  { name: "Lucide React", version: "0.x", license: "ISC", repository: "https://github.com/lucide-icons/lucide" },
+  {
+    name: "React Aria Components",
+    version: "1.x",
+    license: "Apache-2.0",
+    repository: "https://github.com/adobe/react-spectrum",
+  },
+  {
+    name: "Tailwind CSS",
+    version: "4.x",
+    license: "MIT",
+    repository: "https://github.com/tailwindlabs/tailwindcss",
+  },
+  {
+    name: "Lucide React",
+    version: "0.x",
+    license: "ISC",
+    repository: "https://github.com/lucide-icons/lucide",
+  },
 
   // State Management & i18n
   { name: "Jotai", version: "2.x", license: "MIT", repository: "https://github.com/pmndrs/jotai" },
-  { name: "Lingui", version: "5.x", license: "MIT", repository: "https://github.com/lingui/js-lingui" },
+  {
+    name: "Lingui",
+    version: "5.x",
+    license: "MIT",
+    repository: "https://github.com/lingui/js-lingui",
+  },
 
   // Utilities
   { name: "Zod", version: "4.x", license: "MIT", repository: "https://github.com/colinhacks/zod" },
-  { name: "Sharp", version: "0.x", license: "Apache-2.0", repository: "https://github.com/lovell/sharp" },
-  { name: "BullMQ", version: "5.x", license: "MIT", repository: "https://github.com/taskforcesh/bullmq" },
+  {
+    name: "Sharp",
+    version: "0.x",
+    license: "Apache-2.0",
+    repository: "https://github.com/lovell/sharp",
+  },
+  {
+    name: "BullMQ",
+    version: "5.x",
+    license: "MIT",
+    repository: "https://github.com/taskforcesh/bullmq",
+  },
 
   // Development
-  { name: "TypeScript", version: "5.x", license: "Apache-2.0", repository: "https://github.com/microsoft/TypeScript" },
-  { name: "oxlint", version: "0.x", license: "MIT", repository: "https://github.com/oxc-project/oxc" },
+  {
+    name: "TypeScript",
+    version: "5.x",
+    license: "Apache-2.0",
+    repository: "https://github.com/microsoft/TypeScript",
+  },
+  {
+    name: "oxlint",
+    version: "0.x",
+    license: "MIT",
+    repository: "https://github.com/oxc-project/oxc",
+  },
 ];
 
 export default function LicensesPage() {
@@ -107,9 +162,10 @@ export default function LicensesPage() {
             <p className="text-sm text-(--text-secondary)">
               <Trans>
                 This software is licensed under the GNU Affero General Public License version 3.0.
-                This means you are free to use, modify, and distribute this software, but any modifications
-                must also be released under the same license, and if you run a modified version as a
-                network service, you must make the source code available to users.
+                This means you are free to use, modify, and distribute this software, but any
+                modifications must also be released under the same license, and if you run a
+                modified version as a network service, you must make the source code available to
+                users.
               </Trans>
             </p>
 
@@ -149,8 +205,8 @@ export default function LicensesPage() {
           <CardContent>
             <p className="text-sm text-(--text-secondary) mb-4">
               <Trans>
-                Rox is built upon many excellent open source projects. Below are the key dependencies
-                and their respective licenses.
+                Rox is built upon many excellent open source projects. Below are the key
+                dependencies and their respective licenses.
               </Trans>
             </p>
 
@@ -175,12 +231,8 @@ export default function LicensesPage() {
                 <tbody>
                   {KEY_DEPENDENCIES.map((dep) => (
                     <tr key={dep.name} className="border-b border-(--border-color) last:border-0">
-                      <td className="py-3 px-2 font-medium text-(--text-primary)">
-                        {dep.name}
-                      </td>
-                      <td className="py-3 px-2 text-(--text-secondary)">
-                        {dep.version}
-                      </td>
+                      <td className="py-3 px-2 font-medium text-(--text-primary)">{dep.name}</td>
+                      <td className="py-3 px-2 text-(--text-secondary)">{dep.version}</td>
                       <td className="py-3 px-2">
                         <span className="inline-flex px-2 py-0.5 text-xs font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded">
                           {dep.license}

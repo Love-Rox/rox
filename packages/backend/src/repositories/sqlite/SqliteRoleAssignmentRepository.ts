@@ -44,16 +44,24 @@ export class SqliteRoleAssignmentRepository implements IRoleAssignmentRepository
       return existing as RoleAssignment;
     }
 
-    this.db.insert(roleAssignments).values({
-      id,
-      userId,
-      roleId,
-      assignedById: assignedById ?? null,
-      expiresAt: expiresAt ?? null,
-    }).run();
+    this.db
+      .insert(roleAssignments)
+      .values({
+        id,
+        userId,
+        roleId,
+        assignedById: assignedById ?? null,
+        expiresAt: expiresAt ?? null,
+      })
+      .run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
-    const [result] = this.db.select().from(roleAssignments).where(eq(roleAssignments.id, id)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(roleAssignments)
+      .where(eq(roleAssignments.id, id))
+      .limit(1)
+      .all();
 
     if (!result) {
       throw new Error("Failed to assign role");

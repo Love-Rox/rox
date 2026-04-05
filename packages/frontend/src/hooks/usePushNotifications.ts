@@ -184,7 +184,10 @@ export function usePushNotifications(): UsePushNotificationsState & UsePushNotif
       });
 
       // Get user's preferred language from localStorage
-      const language = typeof localStorage !== "undefined" ? localStorage.getItem("locale") || undefined : undefined;
+      const language =
+        typeof localStorage !== "undefined"
+          ? localStorage.getItem("locale") || undefined
+          : undefined;
 
       // Send subscription to server
       const result = await pushApi.subscribe(subscription, language);

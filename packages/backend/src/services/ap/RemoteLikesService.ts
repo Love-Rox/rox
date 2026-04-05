@@ -169,13 +169,19 @@ export class RemoteLikesService {
 
     // Check if in cooldown
     if (state.cooldownUntil && now < state.cooldownUntil) {
-      logger.debug({ host, cooldownRemaining: state.cooldownUntil - now }, "Host in cooldown, skipping");
+      logger.debug(
+        { host, cooldownRemaining: state.cooldownUntil - now },
+        "Host in cooldown, skipping",
+      );
       return true;
     }
 
     // Check minimum interval
     if (now - state.lastRequest < RemoteLikesService.MIN_REQUEST_INTERVAL) {
-      logger.debug({ host, timeSinceLastRequest: now - state.lastRequest }, "Rate limiting: too soon");
+      logger.debug(
+        { host, timeSinceLastRequest: now - state.lastRequest },
+        "Rate limiting: too soon",
+      );
       return true;
     }
 
@@ -210,13 +216,15 @@ export class RemoteLikesService {
     RemoteLikesService.hostRateLimits.set(host, {
       lastRequest: Date.now(),
       failures,
-      cooldownUntil: failures >= RemoteLikesService.MAX_FAILURES
-        ? Date.now() + cooldownDuration
-        : undefined,
+      cooldownUntil:
+        failures >= RemoteLikesService.MAX_FAILURES ? Date.now() + cooldownDuration : undefined,
     });
 
     if (failures >= RemoteLikesService.MAX_FAILURES) {
-      logger.warn({ host, failures, cooldownMs: cooldownDuration }, "Host entering cooldown after repeated failures");
+      logger.warn(
+        { host, failures, cooldownMs: cooldownDuration },
+        "Host entering cooldown after repeated failures",
+      );
     }
   }
 
@@ -432,7 +440,10 @@ export class RemoteLikesService {
       });
 
       if (!response.ok) {
-        logger.debug({ baseUrl, status: response.status }, "Failed to fetch emojis from Misskey instance");
+        logger.debug(
+          { baseUrl, status: response.status },
+          "Failed to fetch emojis from Misskey instance",
+        );
         return {};
       }
 
@@ -458,7 +469,10 @@ export class RemoteLikesService {
         }
       }
 
-      logger.debug({ count: Object.keys(emojis).length, baseUrl }, "Fetched emoji URLs from Misskey instance");
+      logger.debug(
+        { count: Object.keys(emojis).length, baseUrl },
+        "Fetched emoji URLs from Misskey instance",
+      );
       return emojis;
     } catch (error) {
       logger.debug({ err: error, baseUrl }, "Failed to fetch emoji URLs");
@@ -516,7 +530,10 @@ export class RemoteLikesService {
    * @param noteData - Remote note ActivityPub object
    * @returns Likes collection URL or null
    */
-  private getLikesUrl(noteData: { likes?: string | APCollection; reactions?: string | APCollection }): string | null {
+  private getLikesUrl(noteData: {
+    likes?: string | APCollection;
+    reactions?: string | APCollection;
+  }): string | null {
     // Try 'likes' first (standard ActivityPub)
     if (noteData.likes) {
       if (typeof noteData.likes === "string") {
@@ -555,7 +572,8 @@ export class RemoteLikesService {
     if (collection.first) {
       const firstUrl = typeof collection.first === "string" ? collection.first : null;
       if (firstUrl) {
-        const pageResult = await this.fetchService.fetchActivityPubObject<APCollectionPage>(firstUrl);
+        const pageResult =
+          await this.fetchService.fetchActivityPubObject<APCollectionPage>(firstUrl);
         if (pageResult.success && pageResult.data) {
           const pageItems = pageResult.data.orderedItems || pageResult.data.items || [];
           for (const item of pageItems) {
@@ -623,7 +641,10 @@ export class RemoteLikesService {
           reaction,
           ...(customEmojiUrl && { customEmojiUrl }),
         });
-        logger.debug({ username: user.username, host: user.host, reaction, noteId }, "Stored remote reaction");
+        logger.debug(
+          { username: user.username, host: user.host, reaction, noteId },
+          "Stored remote reaction",
+        );
       }
     } catch (error) {
       logger.debug({ err: error }, "Failed to process like item");

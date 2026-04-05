@@ -54,9 +54,7 @@ export interface UseListStreamOptions {
  */
 function getListWSUrl(listId: string, token: string): string {
   const protocol =
-    typeof window !== "undefined" && window.location.protocol === "https:"
-      ? "wss:"
-      : "ws:";
+    typeof window !== "undefined" && window.location.protocol === "https:" ? "wss:" : "ws:";
   const host = typeof window !== "undefined" ? window.location.host : "";
   return `${protocol}//${host}/ws/list/${listId}?token=${encodeURIComponent(token)}`;
 }
@@ -99,9 +97,7 @@ export function useListStream(options: UseListStreamOptions): {
 
   // Refs
   const socketRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const reconnectAttemptsRef = useRef(0);
   const prependNotesRef = useRef(prependColumnNotes);
@@ -215,7 +211,7 @@ export function useListStream(options: UseListStreamOptions): {
       if (!isAuthError) {
         const delay = Math.min(
           INITIAL_RECONNECT_DELAY_MS * Math.pow(2, reconnectAttemptsRef.current),
-          MAX_RECONNECT_DELAY_MS
+          MAX_RECONNECT_DELAY_MS,
         );
         reconnectAttemptsRef.current++;
 

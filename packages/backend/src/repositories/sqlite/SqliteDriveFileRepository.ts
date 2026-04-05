@@ -23,14 +23,22 @@ export class SqliteDriveFileRepository implements IDriveFileRepository {
 
   async create(file: Omit<DriveFile, "createdAt" | "updatedAt">): Promise<DriveFile> {
     const now = new Date();
-    this.db.insert(driveFiles).values({
-      ...file,
-      createdAt: now,
-      updatedAt: now,
-    }).run();
+    this.db
+      .insert(driveFiles)
+      .values({
+        ...file,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
-    const [result] = this.db.select().from(driveFiles).where(eq(driveFiles.id, file.id)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(driveFiles)
+      .where(eq(driveFiles.id, file.id))
+      .limit(1)
+      .all();
 
     if (!result) {
       throw new Error("Failed to create drive file");
@@ -144,7 +152,10 @@ export class SqliteDriveFileRepository implements IDriveFileRepository {
     return results as DriveFile[];
   }
 
-  async update(id: string, data: Partial<Omit<DriveFile, "id" | "userId" | "createdAt">>): Promise<DriveFile> {
+  async update(
+    id: string,
+    data: Partial<Omit<DriveFile, "id" | "userId" | "createdAt">>,
+  ): Promise<DriveFile> {
     this.db
       .update(driveFiles)
       .set({

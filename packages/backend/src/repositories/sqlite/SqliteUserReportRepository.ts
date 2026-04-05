@@ -33,18 +33,26 @@ export class SqliteUserReportRepository implements IUserReportRepository {
   }): Promise<UserReport> {
     const id = generateId();
 
-    this.db.insert(userReports).values({
-      id,
-      reporterId: data.reporterId,
-      targetUserId: data.targetUserId ?? null,
-      targetNoteId: data.targetNoteId ?? null,
-      reason: data.reason,
-      comment: data.comment ?? null,
-      status: "pending",
-    }).run();
+    this.db
+      .insert(userReports)
+      .values({
+        id,
+        reporterId: data.reporterId,
+        targetUserId: data.targetUserId ?? null,
+        targetNoteId: data.targetNoteId ?? null,
+        reason: data.reason,
+        comment: data.comment ?? null,
+        status: "pending",
+      })
+      .run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
-    const [result] = this.db.select().from(userReports).where(eq(userReports.id, id)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(userReports)
+      .where(eq(userReports.id, id))
+      .limit(1)
+      .all();
 
     if (!result) {
       throw new Error("Failed to create user report");
@@ -123,7 +131,10 @@ export class SqliteUserReportRepository implements IUserReportRepository {
       return result?.count ?? 0;
     }
 
-    const [result] = this.db.select({ count: sql<number>`COUNT(*)` }).from(userReports).all();
+    const [result] = this.db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(userReports)
+      .all();
     return result?.count ?? 0;
   }
 
@@ -146,7 +157,12 @@ export class SqliteUserReportRepository implements IUserReportRepository {
       .run();
 
     // SQLite doesn't support RETURNING, fetch the updated record
-    const [updated] = this.db.select().from(userReports).where(eq(userReports.id, id)).limit(1).all();
+    const [updated] = this.db
+      .select()
+      .from(userReports)
+      .where(eq(userReports.id, id))
+      .limit(1)
+      .all();
 
     return (updated as UserReport) ?? null;
   }

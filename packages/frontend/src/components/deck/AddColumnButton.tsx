@@ -24,10 +24,7 @@ export function AddColumnButton() {
         <Plus className="w-6 h-6" />
       </Button>
 
-      <AddColumnDialog
-        isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-      />
+      <AddColumnDialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)} />
     </>
   );
 }

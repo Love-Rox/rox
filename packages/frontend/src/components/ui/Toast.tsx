@@ -12,9 +12,11 @@ function getToastStyles(type: ToastType["type"]) {
     case "success":
       // Light, subtle success style
       return {
-        container: "bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200",
+        container:
+          "bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200",
         icon: "text-green-600 dark:text-green-400",
-        closeButton: "text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200",
+        closeButton:
+          "text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200",
       };
     case "error":
       // More prominent error style
@@ -26,15 +28,18 @@ function getToastStyles(type: ToastType["type"]) {
     case "info":
       // Moderate info style
       return {
-        container: "bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200",
+        container:
+          "bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200",
         icon: "text-blue-600 dark:text-blue-400",
-        closeButton: "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200",
+        closeButton:
+          "text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200",
       };
     default:
       return {
         container: "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200",
         icon: "text-gray-600 dark:text-gray-400",
-        closeButton: "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200",
+        closeButton:
+          "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200",
       };
   }
 }

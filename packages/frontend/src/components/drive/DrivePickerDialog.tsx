@@ -12,11 +12,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import {
-  Dialog as AriaDialog,
-  Modal,
-  Heading,
-} from "react-aria-components";
+import { Dialog as AriaDialog, Modal, Heading } from "react-aria-components";
 import { SafeModalOverlay } from "../ui/SafeModalOverlay";
 import {
   X,
@@ -472,12 +468,7 @@ export function DrivePickerDialog({
                 {/* Load more button */}
                 {hasMore && (
                   <div className="flex justify-center mt-4">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onPress={loadMore}
-                      isDisabled={isLoading}
-                    >
+                    <Button variant="secondary" size="sm" onPress={loadMore} isDisabled={isLoading}>
                       {isLoading ? (
                         <div className="flex items-center gap-2">
                           <Spinner size="xs" />

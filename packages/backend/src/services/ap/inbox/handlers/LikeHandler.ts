@@ -35,13 +35,16 @@ export class LikeHandler extends BaseHandler {
 
       // Debug: Log received activity for custom emoji troubleshooting
       if (activity._misskey_reaction || activity.content) {
-        logger.debug({
-          actor: activity.actor,
-          object: objectUri,
-          content: activity.content,
-          _misskey_reaction: activity._misskey_reaction,
-          tag: activity.tag,
-        }, "Like activity received with reaction");
+        logger.debug(
+          {
+            actor: activity.actor,
+            object: objectUri,
+            content: activity.content,
+            _misskey_reaction: activity._misskey_reaction,
+            tag: activity.tag,
+          },
+          "Like activity received with reaction",
+        );
       }
 
       // Extract reaction (supports Misskey custom emoji)
@@ -73,7 +76,10 @@ export class LikeHandler extends BaseHandler {
         logger.debug({ emojiName, emojiHost, customEmojiUrl }, "Saving remote emoji");
         await this.saveRemoteEmoji(c, emojiName, emojiHost, customEmojiUrl);
       } else if (emojiName) {
-        logger.debug({ emojiName, hasUrl: !!customEmojiUrl, hasHost: !!emojiHost }, "Cannot save remote emoji - missing data");
+        logger.debug(
+          { emojiName, hasUrl: !!customEmojiUrl, hasHost: !!emojiHost },
+          "Cannot save remote emoji - missing data",
+        );
       }
 
       // Check if reaction already exists
@@ -132,12 +138,7 @@ export class LikeHandler extends BaseHandler {
    * This allows users to use remote emojis when reacting to notes
    * from that remote server.
    */
-  private async saveRemoteEmoji(
-    c: any,
-    name: string,
-    host: string,
-    url: string,
-  ): Promise<void> {
+  private async saveRemoteEmoji(c: any, name: string, host: string, url: string): Promise<void> {
     try {
       const customEmojiRepository = this.getCustomEmojiRepository(c);
 

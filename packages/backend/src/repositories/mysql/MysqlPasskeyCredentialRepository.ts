@@ -8,7 +8,11 @@
 
 import { eq, sql } from "drizzle-orm";
 import type { MySql2Database } from "drizzle-orm/mysql2";
-import { passkeyCredentials, type PasskeyCredential, type NewPasskeyCredential } from "../../db/schema/mysql.js";
+import {
+  passkeyCredentials,
+  type PasskeyCredential,
+  type NewPasskeyCredential,
+} from "../../db/schema/mysql.js";
 import type * as mysqlSchema from "../../db/schema/mysql.js";
 import type { IPasskeyCredentialRepository } from "../../interfaces/repositories/IPasskeyCredentialRepository.js";
 

@@ -5,17 +5,7 @@
  * Includes standard Unicode emojis organized by category.
  */
 
-import {
-  Clock,
-  Smile,
-  Hand,
-  Dog,
-  Pizza,
-  Lightbulb,
-  Plane,
-  Heart,
-  Flag,
-} from "lucide-react";
+import { Clock, Smile, Hand, Dog, Pizza, Lightbulb, Plane, Heart, Flag } from "lucide-react";
 import { createElement } from "react";
 
 /**

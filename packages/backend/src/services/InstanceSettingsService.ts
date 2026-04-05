@@ -391,7 +391,10 @@ export class InstanceSettingsService {
    * Get PWA icon 192x192 URL
    */
   async getPwaIcon192Url(): Promise<string | null> {
-    return this.getCachedValue<string | null>("instance.pwaIcon192Url", DEFAULT_METADATA.pwaIcon192Url);
+    return this.getCachedValue<string | null>(
+      "instance.pwaIcon192Url",
+      DEFAULT_METADATA.pwaIcon192Url,
+    );
   }
 
   /**
@@ -410,7 +413,10 @@ export class InstanceSettingsService {
    * Get PWA icon 512x512 URL
    */
   async getPwaIcon512Url(): Promise<string | null> {
-    return this.getCachedValue<string | null>("instance.pwaIcon512Url", DEFAULT_METADATA.pwaIcon512Url);
+    return this.getCachedValue<string | null>(
+      "instance.pwaIcon512Url",
+      DEFAULT_METADATA.pwaIcon512Url,
+    );
   }
 
   /**
@@ -590,8 +596,7 @@ export class InstanceSettingsService {
         (values.get("instance.privacyPolicyUrl") as string | null) ??
         DEFAULT_METADATA.privacyPolicyUrl,
       sourceCodeUrl:
-        (values.get("instance.sourceCodeUrl") as string | null) ??
-        DEFAULT_METADATA.sourceCodeUrl,
+        (values.get("instance.sourceCodeUrl") as string | null) ?? DEFAULT_METADATA.sourceCodeUrl,
     };
 
     // Cache the result
@@ -837,7 +842,6 @@ export class InstanceSettingsService {
 
     return result;
   }
-
 
   // ================================
   // Onboarding Settings

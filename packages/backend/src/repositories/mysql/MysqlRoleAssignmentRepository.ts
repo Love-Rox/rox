@@ -53,7 +53,11 @@ export class MysqlRoleAssignmentRepository implements IRoleAssignmentRepository 
     });
 
     // MySQL doesn't support RETURNING, fetch the inserted record
-    const [result] = await this.db.select().from(roleAssignments).where(eq(roleAssignments.id, id)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(roleAssignments)
+      .where(eq(roleAssignments.id, id))
+      .limit(1);
 
     if (!result) {
       throw new Error("Failed to assign role");

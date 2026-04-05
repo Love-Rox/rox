@@ -325,10 +325,7 @@ export class MigrationService {
       }
     }
 
-    logger.info(
-      { from: localUri, to: targetUri, notifiedCount },
-      "Migration initiated",
-    );
+    logger.info({ from: localUri, to: targetUri, notifiedCount }, "Migration initiated");
 
     return {
       success: true,

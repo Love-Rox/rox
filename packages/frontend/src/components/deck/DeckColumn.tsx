@@ -80,22 +80,14 @@ function renderColumnContent(column: DeckColumnType) {
   switch (column.config.type) {
     case "timeline":
       return (
-        <TimelineColumnContent
-          columnId={column.id}
-          timelineType={column.config.timelineType}
-        />
+        <TimelineColumnContent columnId={column.id} timelineType={column.config.timelineType} />
       );
     case "notifications":
       return <NotificationsColumnContent columnId={column.id} />;
     case "mentions":
       return <MentionsColumnContent columnId={column.id} />;
     case "list":
-      return (
-        <ListColumnContent
-          columnId={column.id}
-          listId={column.config.listId}
-        />
-      );
+      return <ListColumnContent columnId={column.id} listId={column.config.listId} />;
     default:
       return (
         <div className="p-4 text-center text-gray-500">
@@ -127,16 +119,17 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
 
   // Reset atoms for refreshing
   const resetNotesState = useSetAtom(resetColumnStateAtomFamily(column.id));
-  const resetNotificationsState = useSetAtom(
-    resetNotificationColumnStateAtomFamily(column.id)
-  );
+  const resetNotificationsState = useSetAtom(resetNotificationColumnStateAtomFamily(column.id));
 
   // Translated width options
-  const widthOptions: WidthOption[] = useMemo(() => [
-    { value: "narrow", label: t`Narrow` },
-    { value: "normal", label: t`Normal` },
-    { value: "wide", label: t`Wide` },
-  ], [t]);
+  const widthOptions: WidthOption[] = useMemo(
+    () => [
+      { value: "narrow", label: t`Narrow` },
+      { value: "normal", label: t`Normal` },
+      { value: "wide", label: t`Wide` },
+    ],
+    [t],
+  );
 
   // Get translated column title
   const columnTitle = useMemo(() => {
@@ -147,31 +140,33 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
     // For timeline columns, translate based on timeline type
     if (column.config.type === "timeline") {
       switch (column.config.timelineType) {
-        case "home": return t`Home`;
-        case "local": return t`Local`;
-        case "social": return t`Social`;
-        case "global": return t`Global`;
-        default: return t`Timeline`;
+        case "home":
+          return t`Home`;
+        case "local":
+          return t`Local`;
+        case "social":
+          return t`Social`;
+        case "global":
+          return t`Global`;
+        default:
+          return t`Timeline`;
       }
     }
     // For other types, translate
     switch (column.config.type) {
-      case "notifications": return t`Notifications`;
-      case "mentions": return t`Mentions`;
-      case "list": return t`List`;
-      default: return t`Column`;
+      case "notifications":
+        return t`Notifications`;
+      case "mentions":
+        return t`Mentions`;
+      case "list":
+        return t`List`;
+      default:
+        return t`Column`;
     }
   }, [column.config, t]);
 
   // Sortable setup for drag-and-drop
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: column.id,
     disabled: isMobile,
   });
@@ -189,13 +184,11 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
 
   const handleWidthChange = useCallback(
     (width: DeckColumnWidth) => {
-      const newColumns = columns.map((c) =>
-        c.id === column.id ? { ...c, width } : c
-      );
+      const newColumns = columns.map((c) => (c.id === column.id ? { ...c, width } : c));
       updateActiveColumns(newColumns);
       setShowSettings(false);
     },
-    [column.id, columns, updateActiveColumns]
+    [column.id, columns, updateActiveColumns],
   );
 
   /**
@@ -219,12 +212,7 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
     setTimeout(() => {
       setIsRefreshing(false);
     }, 500);
-  }, [
-    isRefreshing,
-    column.config.type,
-    resetNotesState,
-    resetNotificationsState,
-  ]);
+  }, [isRefreshing, column.config.type, resetNotesState, resetNotificationsState]);
 
   return (
     <div
@@ -269,9 +257,7 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
             aria-label={t`Refresh column`}
             isDisabled={isRefreshing}
           >
-            <RefreshCw
-              className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
-            />
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
           </Button>
 
           {/* Settings Toggle */}
@@ -321,9 +307,7 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
       )}
 
       {/* Column Content */}
-      <div className="flex-1 overflow-y-auto">
-        {renderColumnContent(column)}
-      </div>
+      <div className="flex-1 overflow-y-auto">{renderColumnContent(column)}</div>
     </div>
   );
 }

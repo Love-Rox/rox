@@ -156,7 +156,7 @@ app.post("/", requirePermission("canInvite"), async (c) => {
 app.delete("/:id", requireAuth(), async (c) => {
   const invitationCodeRepository = c.get("invitationCodeRepository");
   const user = c.get("user");
-  const id = c.req.param("id");
+  const id = c.req.param("id")!;
 
   if (!user) {
     return c.json({ error: "Unauthorized" }, 401);

@@ -180,7 +180,11 @@ export class MysqlNoteRepository implements INoteRepository {
 
     const conditions = [eq(notes.isDeleted, false)];
 
-    const localConditions = [isNull(users.host), eq(notes.visibility, "public"), eq(notes.localOnly, false)];
+    const localConditions = [
+      isNull(users.host),
+      eq(notes.visibility, "public"),
+      eq(notes.localOnly, false),
+    ];
 
     if (userIds.length > 0) {
       conditions.push(or(and(...localConditions), inArray(notes.userId, userIds))!);
@@ -224,7 +228,11 @@ export class MysqlNoteRepository implements INoteRepository {
   async getGlobalTimeline(options: TimelineOptions): Promise<Note[]> {
     const { limit = 20, sinceId, untilId } = options;
 
-    const conditions = [eq(notes.visibility, "public"), eq(notes.localOnly, false), eq(notes.isDeleted, false)];
+    const conditions = [
+      eq(notes.visibility, "public"),
+      eq(notes.localOnly, false),
+      eq(notes.isDeleted, false),
+    ];
 
     if (sinceId) {
       conditions.push(gt(notes.id, sinceId));

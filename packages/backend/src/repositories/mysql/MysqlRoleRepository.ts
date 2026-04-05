@@ -134,7 +134,9 @@ export class MysqlRoleRepository implements IRoleRepository {
   }
 
   async count(): Promise<number> {
-    const [result] = await this.db.select({ count: sql<number>`CAST(COUNT(*) AS SIGNED)` }).from(roles);
+    const [result] = await this.db
+      .select({ count: sql<number>`CAST(COUNT(*) AS SIGNED)` })
+      .from(roles);
 
     return result?.count ?? 0;
   }

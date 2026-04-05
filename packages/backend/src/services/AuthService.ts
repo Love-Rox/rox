@@ -217,7 +217,10 @@ export class AuthService {
    * });
    * ```
    */
-  async login(input: LoginInput, context?: { ipAddress?: string; userAgent?: string }): Promise<{ user: User; session: Session }> {
+  async login(
+    input: LoginInput,
+    context?: { ipAddress?: string; userAgent?: string },
+  ): Promise<{ user: User; session: Session }> {
     // Emit user:beforeLogin event (plugins can cancel)
     // Note: ipAddress and userAgent are excluded as PII
     if (this.eventBus) {

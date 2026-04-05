@@ -46,7 +46,11 @@ export class MysqlModerationAuditLogRepository implements IModerationAuditLogRep
     });
 
     // MySQL doesn't support RETURNING, fetch the inserted record
-    const [result] = await this.db.select().from(moderationAuditLogs).where(eq(moderationAuditLogs.id, id)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(moderationAuditLogs)
+      .where(eq(moderationAuditLogs.id, id))
+      .limit(1);
 
     if (!result) {
       throw new Error("Failed to create moderation audit log");
@@ -123,7 +127,9 @@ export class MysqlModerationAuditLogRepository implements IModerationAuditLogRep
       conditions.push(eq(moderationAuditLogs.targetId, options.targetId));
     }
 
-    const query = this.db.select({ count: sql<number>`CAST(COUNT(*) AS SIGNED)` }).from(moderationAuditLogs);
+    const query = this.db
+      .select({ count: sql<number>`CAST(COUNT(*) AS SIGNED)` })
+      .from(moderationAuditLogs);
 
     if (conditions.length > 0) {
       const [result] = await query.where(and(...conditions));

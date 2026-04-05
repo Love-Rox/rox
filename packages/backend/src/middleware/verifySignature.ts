@@ -69,7 +69,11 @@ function getCachedFailure(actorUrl: string): FetchFailureEntry | null {
 /**
  * Cache a fetch failure for an actor URL
  */
-function cacheFailure(actorUrl: string, errorType: FetchFailureEntry["errorType"], message: string): void {
+function cacheFailure(
+  actorUrl: string,
+  errorType: FetchFailureEntry["errorType"],
+  message: string,
+): void {
   const ttl = FAILURE_CACHE_TTL[errorType];
   fetchFailureCache.set(actorUrl, {
     errorType,
@@ -194,7 +198,11 @@ async function fetchPublicKey(
   const cachedFailure = getCachedFailure(actorUrl);
   if (cachedFailure) {
     logger.debug(
-      { actorUrl, errorType: cachedFailure.errorType, ttlRemaining: cachedFailure.expires - Date.now() },
+      {
+        actorUrl,
+        errorType: cachedFailure.errorType,
+        ttlRemaining: cachedFailure.expires - Date.now(),
+      },
       "Skipping fetch due to cached failure",
     );
     throw new Error(`Cached failure (${cachedFailure.errorType}): ${cachedFailure.message}`);
@@ -244,9 +252,15 @@ async function fetchPublicKey(
 
     // Use appropriate log level based on error type
     if (errorType === "permanent_error") {
-      logger.warn({ err: result.error, actorUrl, errorType }, "Failed to fetch public key (permanent error)");
+      logger.warn(
+        { err: result.error, actorUrl, errorType },
+        "Failed to fetch public key (permanent error)",
+      );
     } else {
-      logger.debug({ err: result.error, actorUrl, errorType }, "Failed to fetch public key (transient error)");
+      logger.debug(
+        { err: result.error, actorUrl, errorType },
+        "Failed to fetch public key (transient error)",
+      );
     }
 
     throw new Error(`Failed to fetch actor: ${errorMessage}`);
@@ -298,7 +312,10 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
   const requestPath = c.req.path;
   const requestHost = c.req.header("Host");
 
-  logger.debug({ path: requestPath, host: requestHost, hasSignature: !!signatureHeader }, "Inbox request received");
+  logger.debug(
+    { path: requestPath, host: requestHost, hasSignature: !!signatureHeader },
+    "Inbox request received",
+  );
 
   if (!signatureHeader) {
     logger.warn({ path: requestPath }, "Missing Signature header");
@@ -308,7 +325,10 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
   try {
     // Parse signature header
     const params = parseSignatureHeader(signatureHeader);
-    logger.debug({ keyId: params.keyId, algorithm: params.algorithm, headers: params.headers }, "Parsed signature header");
+    logger.debug(
+      { keyId: params.keyId, algorithm: params.algorithm, headers: params.headers },
+      "Parsed signature header",
+    );
 
     // Get services from context (if available)
     const cacheService = c.get("cacheService") as ICacheService | undefined;
@@ -320,7 +340,10 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
     // Fetch public key (with Redis caching and signed fetch retry)
     logger.debug({ keyId: params.keyId }, "Fetching public key");
     const publicKey = await fetchPublicKey(params.keyId, cacheService, userRepository, baseUrl);
-    logger.debug({ keyId: params.keyId, keyLength: publicKey.length }, "Public key fetched successfully");
+    logger.debug(
+      { keyId: params.keyId, keyLength: publicKey.length },
+      "Public key fetched successfully",
+    );
 
     // Get request details
     const method = c.req.method;

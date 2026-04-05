@@ -82,8 +82,16 @@ export function ListCard({ list, isOwner, onEdit, onDelete, showActions }: ListC
           {list.notifyLevel !== "none" && (
             <span
               className="text-primary-500"
-              title={list.notifyLevel === "all" ? "Notifications: All posts" : "Notifications: Original posts only"}
-              aria-label={list.notifyLevel === "all" ? "Notifications enabled for all posts" : "Notifications enabled for original posts"}
+              title={
+                list.notifyLevel === "all"
+                  ? "Notifications: All posts"
+                  : "Notifications: Original posts only"
+              }
+              aria-label={
+                list.notifyLevel === "all"
+                  ? "Notifications enabled for all posts"
+                  : "Notifications enabled for original posts"
+              }
             >
               {list.notifyLevel === "all" ? (
                 <BellRing className="w-4 h-4" />
@@ -130,10 +138,7 @@ export function ListCard({ list, isOwner, onEdit, onDelete, showActions }: ListC
             >
               <MoreHorizontal className="w-5 h-5" />
             </Button>
-            <Popover
-              UNSTABLE_portalContainer={getModalContainer()}
-              placement="bottom end"
-            >
+            <Popover UNSTABLE_portalContainer={getModalContainer()} placement="bottom end">
               <Menu
                 className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 min-w-35"
                 onAction={(key) => {

@@ -39,7 +39,9 @@ export async function getRemoteInstanceInfo(host: string): Promise<PublicRemoteI
   }
 
   try {
-    const data = await apiClient.get<PublicRemoteInstance>(`/api/instance/remote/${encodeURIComponent(host)}`);
+    const data = await apiClient.get<PublicRemoteInstance>(
+      `/api/instance/remote/${encodeURIComponent(host)}`,
+    );
 
     // Cache the result
     instanceCache.set(host, {
@@ -59,7 +61,9 @@ export async function getRemoteInstanceInfo(host: string): Promise<PublicRemoteI
  * @param hosts - Array of hostnames
  * @returns Map of hostname to instance info
  */
-export async function getRemoteInstanceInfoBatch(hosts: string[]): Promise<Map<string, PublicRemoteInstance>> {
+export async function getRemoteInstanceInfoBatch(
+  hosts: string[],
+): Promise<Map<string, PublicRemoteInstance>> {
   const result = new Map<string, PublicRemoteInstance>();
   const hostsToFetch: string[] = [];
 
@@ -76,9 +80,12 @@ export async function getRemoteInstanceInfoBatch(hosts: string[]): Promise<Map<s
   // Fetch remaining hosts
   if (hostsToFetch.length > 0) {
     try {
-      const data = await apiClient.post<Record<string, PublicRemoteInstance>>("/api/instance/remote/batch", {
-        hosts: hostsToFetch,
-      });
+      const data = await apiClient.post<Record<string, PublicRemoteInstance>>(
+        "/api/instance/remote/batch",
+        {
+          hosts: hostsToFetch,
+        },
+      );
 
       // Cache and add to result
       for (const [host, info] of Object.entries(data)) {

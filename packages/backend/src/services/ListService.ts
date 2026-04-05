@@ -10,8 +10,17 @@
 
 import type { IListRepository } from "../interfaces/repositories/IListRepository.js";
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
-import type { INoteRepository, TimelineOptions } from "../interfaces/repositories/INoteRepository.js";
-import type { List, ListMember, ListWithMemberCount, ListMembership, ListNotifyLevel } from "shared";
+import type {
+  INoteRepository,
+  TimelineOptions,
+} from "../interfaces/repositories/INoteRepository.js";
+import type {
+  List,
+  ListMember,
+  ListWithMemberCount,
+  ListMembership,
+  ListNotifyLevel,
+} from "shared";
 import type { Note } from "shared";
 import { generateId } from "../../../shared/src/utils/id.js";
 import type { NoteService } from "./NoteService.js";
@@ -344,7 +353,9 @@ export class ListService {
         // Promise.allSettled never rejects, so no .catch() needed
         // All failures are handled in .then() via results with status === "rejected"
         void Promise.allSettled(
-          remoteMembers.map((member) => this.systemAccountService!.ensureSystemFollow(member.userId)),
+          remoteMembers.map((member) =>
+            this.systemAccountService!.ensureSystemFollow(member.userId),
+          ),
         ).then((results) => {
           const failures = results.filter((r) => r.status === "rejected");
           if (failures.length > 0) {

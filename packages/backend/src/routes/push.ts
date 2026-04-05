@@ -72,7 +72,8 @@ push.post("/subscribe", requireAuth(), async (c: Context) => {
     }
 
     // Validate language if provided (only allow supported languages)
-    const language = body.language && ["en", "ja"].includes(body.language) ? body.language : undefined;
+    const language =
+      body.language && ["en", "ja"].includes(body.language) ? body.language : undefined;
 
     const subscription = await webPushService.subscribe(
       user.id,
