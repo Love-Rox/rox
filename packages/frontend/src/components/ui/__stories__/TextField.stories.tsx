@@ -71,6 +71,7 @@ export const AllTypes: Story = {
       <TextField label="Email" type="email" placeholder="you@example.com" />
       <TextField label="Password" type="password" placeholder="Enter password" />
       <TextField label="Number" type="number" placeholder="0" />
+      <TextField label="Tel" type="tel" placeholder="+1 555-123-4567" />
       <TextField label="URL" type="url" placeholder="https://example.com" />
       <TextField label="Date" type="date" />
     </div>

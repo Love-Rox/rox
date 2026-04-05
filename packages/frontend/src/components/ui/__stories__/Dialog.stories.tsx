@@ -66,8 +66,14 @@ export const RichContent: Story = {
     children: (
       <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         <div>
-          <label style={{ display: "block", fontWeight: 600, marginBottom: 4 }}>Display Name</label>
+          <label
+            htmlFor="dialog-display-name"
+            style={{ display: "block", fontWeight: 600, marginBottom: 4 }}
+          >
+            Display Name
+          </label>
           <input
+            id="dialog-display-name"
             type="text"
             defaultValue="Jane Doe"
             style={{
@@ -79,8 +85,14 @@ export const RichContent: Story = {
           />
         </div>
         <div>
-          <label style={{ display: "block", fontWeight: 600, marginBottom: 4 }}>Bio</label>
+          <label
+            htmlFor="dialog-bio"
+            style={{ display: "block", fontWeight: 600, marginBottom: 4 }}
+          >
+            Bio
+          </label>
           <textarea
+            id="dialog-bio"
             rows={3}
             defaultValue="Hello world!"
             style={{

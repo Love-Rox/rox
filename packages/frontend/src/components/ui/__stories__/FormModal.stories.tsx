@@ -27,14 +27,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  render: () => {
+  render: (args) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div>
         <Button variant="primary" onPress={() => setIsOpen(true)}>
           Open Modal
         </Button>
-        <FormModal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Create Item">
+        <FormModal {...args} isOpen={isOpen} onClose={() => setIsOpen(false)} title="Create Item">
           <TextField label="Name" placeholder="Enter a name" />
           <TextField label="Description" placeholder="Enter a description" multiline rows={3} />
         </FormModal>
@@ -44,7 +44,7 @@ export const Default: Story = {
 };
 
 export const SmallWidth: Story = {
-  render: () => {
+  render: (args) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div>
@@ -52,6 +52,7 @@ export const SmallWidth: Story = {
           Small Modal
         </Button>
         <FormModal
+          {...args}
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           title="Small Modal"
@@ -65,7 +66,7 @@ export const SmallWidth: Story = {
 };
 
 export const LargeWidth: Story = {
-  render: () => {
+  render: (args) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div>
@@ -73,6 +74,7 @@ export const LargeWidth: Story = {
           Large Modal
         </Button>
         <FormModal
+          {...args}
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           title="Large Modal"
@@ -87,7 +89,7 @@ export const LargeWidth: Story = {
 };
 
 export const ExtraLargeWidth: Story = {
-  render: () => {
+  render: (args) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div>
@@ -95,6 +97,7 @@ export const ExtraLargeWidth: Story = {
           XL Modal
         </Button>
         <FormModal
+          {...args}
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           title="Extra Large Modal"
@@ -110,7 +113,7 @@ export const ExtraLargeWidth: Story = {
 };
 
 export const WithFooter: Story = {
-  render: () => {
+  render: (args) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div>
@@ -118,6 +121,7 @@ export const WithFooter: Story = {
           Open With Footer
         </Button>
         <FormModal
+          {...args}
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           title="Create List"

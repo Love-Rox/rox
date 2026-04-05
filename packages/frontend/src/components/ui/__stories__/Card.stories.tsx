@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import {
   Card,
@@ -97,17 +98,20 @@ export const WithHover: Story = {
 };
 
 export const Interactive: Story = {
-  render: () => (
-    <InteractiveCard onPress={() => alert("Card pressed!")}>
-      <CardHeader>
-        <CardTitle>Interactive Card</CardTitle>
-        <CardDescription>Click or press Enter to interact</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <p>This card is built with React Aria Button for full accessibility.</p>
-      </CardContent>
-    </InteractiveCard>
-  ),
+  render: () => {
+    const [pressCount, setPressCount] = useState(0);
+    return (
+      <InteractiveCard onPress={() => setPressCount((count) => count + 1)}>
+        <CardHeader>
+          <CardTitle>Interactive Card</CardTitle>
+          <CardDescription>Click or press Enter to interact</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>Pressed {pressCount} times.</p>
+        </CardContent>
+      </InteractiveCard>
+    );
+  },
 };
 
 export const InteractiveDisabled: Story = {

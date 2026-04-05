@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Search, Settings, Plus, Globe } from "lucide-react";
 import { PageHeader, type PageHeaderTab, type PageHeaderAction } from "../PageHeader";
@@ -83,6 +83,8 @@ export const WithBackButton: Story = {
 export const WithReload: Story = {
   render: () => {
     const [isReloading, setIsReloading] = useState(false);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+    useEffect(() => () => clearTimeout(timeoutRef.current), []);
     return (
       <PageHeader
         title="Timeline"
@@ -90,7 +92,7 @@ export const WithReload: Story = {
         isReloading={isReloading}
         onReload={() => {
           setIsReloading(true);
-          setTimeout(() => setIsReloading(false), 1500);
+          timeoutRef.current = setTimeout(() => setIsReloading(false), 1500);
         }}
       />
     );
@@ -101,6 +103,8 @@ export const FullFeatured: Story = {
   render: () => {
     const [activeTab, setActiveTab] = useState("local");
     const [isReloading, setIsReloading] = useState(false);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+    useEffect(() => () => clearTimeout(timeoutRef.current), []);
     const tabs: PageHeaderTab[] = [
       { key: "local", label: "Local" },
       { key: "global", label: "Global", icon: <Globe className="w-4 h-4" /> },
@@ -127,7 +131,7 @@ export const FullFeatured: Story = {
         isReloading={isReloading}
         onReload={() => {
           setIsReloading(true);
-          setTimeout(() => setIsReloading(false), 1500);
+          timeoutRef.current = setTimeout(() => setIsReloading(false), 1500);
         }}
       />
     );

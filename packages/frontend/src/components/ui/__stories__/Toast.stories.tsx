@@ -69,7 +69,7 @@ function AllToastDemo() {
           variant="ghost"
           onPress={() =>
             addToast({
-              type: undefined as unknown as ToastType,
+              type: "info",
               message: "A default notification.",
             })
           }
