@@ -10,7 +10,9 @@
     "start": "bun run start.ts",
     "typecheck": "tsc --noEmit",
     "lingui:extract": "lingui extract",
-    "lingui:compile": "lingui compile"
+    "lingui:compile": "lingui compile",
+    "storybook": "storybook dev -p 6006",
+    "storybook:build": "storybook build -o storybook-static"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -44,6 +46,9 @@
     "@lingui/cli": "^5.9.4",
     "@lingui/macro": "^5.9.4",
     "@lingui/vite-plugin": "^5.9.4",
+    "@storybook/addon-a11y": "^10.3.4",
+    "@storybook/react": "^10.3.4",
+    "@storybook/react-vite": "^10.3.4",
     "@tailwindcss/vite": "^4.2.0",
     "@types/katex": "^0.16.8",
     "@types/react": "19.2.10",
@@ -51,6 +56,7 @@
     "@vitejs/plugin-react": "^6.0.0",
     "babel-plugin-react-compiler": "1.0.0",
     "rollup-plugin-visualizer": "^6.0.11",
+    "storybook": "^10.3.4",
     "tailwindcss": "^4.2.0",
     "typescript": "5.9.3"
   }
