@@ -1,6 +1,6 @@
 {
   "name": "rox",
-  "version": "2026.4.0-alpha.1",
+  "version": "2026.4.0-alpha.2",
   "license": "AGPL-3.0-only",
   "devDependencies": {
     "@playwright/test": "^1.59.1",
@@ -34,6 +34,7 @@
     "test:backend": "bun run --cwd packages/backend test",
     "test:unit": "bun run --cwd packages/backend test:unit",
     "test:integration": "bun run --cwd packages/backend test:integration",
+    "storybook": "bun run --cwd packages/frontend storybook",
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",
     "format": "vp fmt packages",

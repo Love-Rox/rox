@@ -125,6 +125,7 @@ function AccordionSection({
             <div className="grid grid-cols-8 gap-0.5">
               {displayedEmojis.map((emoji, index) => (
                 <Button
+                  variant="ghost"
                   key={`${emoji}-${index}`}
                   onPress={() => onEmojiClick(emoji)}
                   className="text-xl p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -204,6 +205,7 @@ function CustomAccordionSection({
             <div className="grid grid-cols-8 gap-0.5">
               {displayedEmojis.map((emoji) => (
                 <Button
+                  variant="ghost"
                   key={emoji.id}
                   onPress={() => onEmojiClick(emoji)}
                   className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -483,6 +485,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                               .slice(0, getVisibleCount("search-custom"))
                               .map((emoji) => (
                                 <Button
+                                  variant="ghost"
                                   key={emoji.id}
                                   onPress={() => handleCustomEmojiClick(emoji)}
                                   className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -512,6 +515,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                               .slice(0, getVisibleCount("search-unicode"))
                               .map((emoji, index) => (
                                 <Button
+                                  variant="ghost"
                                   key={`${emoji}-${index}`}
                                   onPress={() => handleEmojiClick(emoji)}
                                   className="text-xl p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
