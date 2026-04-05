@@ -8,7 +8,11 @@
 
 import { eq, lt, sql } from "drizzle-orm";
 import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
-import { passkeyChallenges, type PasskeyChallenge, type NewPasskeyChallenge } from "../../db/schema/sqlite.js";
+import {
+  passkeyChallenges,
+  type PasskeyChallenge,
+  type NewPasskeyChallenge,
+} from "../../db/schema/sqlite.js";
 import type * as sqliteSchema from "../../db/schema/sqlite.js";
 import type { IPasskeyChallengeRepository } from "../../interfaces/repositories/IPasskeyChallengeRepository.js";
 

@@ -70,7 +70,10 @@ export class UserDeletionService {
    * @param options - Deletion options
    * @returns Deletion result
    */
-  async deleteLocalUser(userId: string, options: UserDeletionOptions = {}): Promise<UserDeletionResult> {
+  async deleteLocalUser(
+    userId: string,
+    options: UserDeletionOptions = {},
+  ): Promise<UserDeletionResult> {
     const user = await this.userRepository.findById(userId);
 
     if (!user) {
@@ -199,7 +202,10 @@ export class UserDeletionService {
       };
     }
 
-    logger.info({ userId, username: user.username, host: user.host }, "Marking remote user as deleted");
+    logger.info(
+      { userId, username: user.username, host: user.host },
+      "Marking remote user as deleted",
+    );
 
     try {
       // Mark as deleted

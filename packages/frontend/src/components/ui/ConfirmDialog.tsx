@@ -1,11 +1,7 @@
 "use client";
 
 import { Trans } from "@lingui/react/macro";
-import {
-  Dialog as AriaDialog,
-  Modal,
-  Heading,
-} from "react-aria-components";
+import { Dialog as AriaDialog, Modal, Heading } from "react-aria-components";
 import { Button } from "./Button";
 import { SafeModalOverlay } from "./SafeModalOverlay";
 
@@ -90,11 +86,7 @@ export function ConfirmDialog({
             <Button variant="secondary" onPress={onClose} isDisabled={isLoading}>
               {cancelText}
             </Button>
-            <Button
-              variant={confirmVariant}
-              onPress={onConfirm}
-              isDisabled={isLoading}
-            >
+            <Button variant={confirmVariant} onPress={onConfirm} isDisabled={isLoading}>
               {isLoading && loadingText ? loadingText : confirmText}
             </Button>
           </div>

@@ -43,7 +43,13 @@ function getListService(c: Context): ListService {
     eventBus,
   );
 
-  return new ListService(listRepository, userRepository, noteRepository, noteService, systemAccountService);
+  return new ListService(
+    listRepository,
+    userRepository,
+    noteRepository,
+    noteService,
+    systemAccountService,
+  );
 }
 
 /**
@@ -56,29 +62,24 @@ function getListService(c: Context): ListService {
  * @body {boolean} [isPublic=false] - Whether the list is publicly visible
  * @returns {List} Created list
  */
-lists.post(
-  "/create",
-  requireAuth(),
-  userRateLimit(RateLimitPresets.write),
-  async (c: Context) => {
-    const user = c.get("user")!;
-    const listService = getListService(c);
+lists.post("/create", requireAuth(), userRateLimit(RateLimitPresets.write), async (c: Context) => {
+  const user = c.get("user")!;
+  const listService = getListService(c);
 
-    const body = await c.req.json();
+  const body = await c.req.json();
 
-    if (!body.name) {
-      return c.json({ error: "name is required" }, 400);
-    }
+  if (!body.name) {
+    return c.json({ error: "name is required" }, 400);
+  }
 
-    try {
-      const list = await listService.createList(user.id, body.name, body.isPublic ?? false);
-      return c.json(list, 201);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to create list";
-      return c.json({ error: message }, 400);
-    }
-  },
-);
+  try {
+    const list = await listService.createList(user.id, body.name, body.isPublic ?? false);
+    return c.json(list, 201);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to create list";
+    return c.json({ error: message }, 400);
+  }
+});
 
 /**
  * POST /api/users/lists/delete
@@ -89,29 +90,24 @@ lists.post(
  * @body {string} listId - List ID to delete
  * @returns {void}
  */
-lists.post(
-  "/delete",
-  requireAuth(),
-  userRateLimit(RateLimitPresets.write),
-  async (c: Context) => {
-    const user = c.get("user")!;
-    const listService = getListService(c);
+lists.post("/delete", requireAuth(), userRateLimit(RateLimitPresets.write), async (c: Context) => {
+  const user = c.get("user")!;
+  const listService = getListService(c);
 
-    const body = await c.req.json();
+  const body = await c.req.json();
 
-    if (!body.listId) {
-      return c.json({ error: "listId is required" }, 400);
-    }
+  if (!body.listId) {
+    return c.json({ error: "listId is required" }, 400);
+  }
 
-    try {
-      await listService.deleteList(body.listId, user.id);
-      return c.json({ success: true });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to delete list";
-      return c.json({ error: message }, 400);
-    }
-  },
-);
+  try {
+    await listService.deleteList(body.listId, user.id);
+    return c.json({ success: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to delete list";
+    return c.json({ error: message }, 400);
+  }
+});
 
 /**
  * POST /api/users/lists/update
@@ -125,46 +121,45 @@ lists.post(
  * @body {string} [notifyLevel] - Notification level ("none" | "all" | "original")
  * @returns {List} Updated list
  */
-lists.post(
-  "/update",
-  requireAuth(),
-  userRateLimit(RateLimitPresets.write),
-  async (c: Context) => {
-    const user = c.get("user")!;
-    const listService = getListService(c);
+lists.post("/update", requireAuth(), userRateLimit(RateLimitPresets.write), async (c: Context) => {
+  const user = c.get("user")!;
+  const listService = getListService(c);
 
-    const body = await c.req.json();
+  const body = await c.req.json();
 
-    if (!body.listId) {
-      return c.json({ error: "listId is required" }, 400);
+  if (!body.listId) {
+    return c.json({ error: "listId is required" }, 400);
+  }
+
+  // Validate notifyLevel if provided
+  if (body.notifyLevel !== undefined) {
+    const validLevels = ["none", "all", "original"];
+    if (!validLevels.includes(body.notifyLevel)) {
+      return c.json({ error: "notifyLevel must be one of: none, all, original" }, 400);
     }
+  }
 
-    // Validate notifyLevel if provided
-    if (body.notifyLevel !== undefined) {
-      const validLevels = ["none", "all", "original"];
-      if (!validLevels.includes(body.notifyLevel)) {
-        return c.json({ error: "notifyLevel must be one of: none, all, original" }, 400);
-      }
-    }
+  const updateData: {
+    name?: string;
+    isPublic?: boolean;
+    notifyLevel?: "none" | "all" | "original";
+  } = {};
+  if (body.name !== undefined) updateData.name = body.name;
+  if (body.isPublic !== undefined) updateData.isPublic = body.isPublic;
+  if (body.notifyLevel !== undefined) updateData.notifyLevel = body.notifyLevel;
 
-    const updateData: { name?: string; isPublic?: boolean; notifyLevel?: "none" | "all" | "original" } = {};
-    if (body.name !== undefined) updateData.name = body.name;
-    if (body.isPublic !== undefined) updateData.isPublic = body.isPublic;
-    if (body.notifyLevel !== undefined) updateData.notifyLevel = body.notifyLevel;
+  if (Object.keys(updateData).length === 0) {
+    return c.json({ error: "At least one field to update is required" }, 400);
+  }
 
-    if (Object.keys(updateData).length === 0) {
-      return c.json({ error: "At least one field to update is required" }, 400);
-    }
-
-    try {
-      const list = await listService.updateList(body.listId, user.id, updateData);
-      return c.json(list);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to update list";
-      return c.json({ error: message }, 400);
-    }
-  },
-);
+  try {
+    const list = await listService.updateList(body.listId, user.id, updateData);
+    return c.json(list);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to update list";
+    return c.json({ error: message }, 400);
+  }
+});
 
 /**
  * POST /api/users/lists/show
@@ -241,37 +236,32 @@ lists.post("/list", optionalAuth(), async (c: Context) => {
  * @body {boolean} [withReplies=true] - Include replies in timeline
  * @returns {ListMember} Created membership
  */
-lists.post(
-  "/push",
-  requireAuth(),
-  userRateLimit(RateLimitPresets.write),
-  async (c: Context) => {
-    const user = c.get("user")!;
-    const listService = getListService(c);
+lists.post("/push", requireAuth(), userRateLimit(RateLimitPresets.write), async (c: Context) => {
+  const user = c.get("user")!;
+  const listService = getListService(c);
 
-    const body = await c.req.json();
+  const body = await c.req.json();
 
-    if (!body.listId) {
-      return c.json({ error: "listId is required" }, 400);
-    }
-    if (!body.userId) {
-      return c.json({ error: "userId is required" }, 400);
-    }
+  if (!body.listId) {
+    return c.json({ error: "listId is required" }, 400);
+  }
+  if (!body.userId) {
+    return c.json({ error: "userId is required" }, 400);
+  }
 
-    try {
-      const member = await listService.addMember(
-        body.listId,
-        body.userId,
-        user.id,
-        body.withReplies ?? true,
-      );
-      return c.json(member, 201);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to add member";
-      return c.json({ error: message }, 400);
-    }
-  },
-);
+  try {
+    const member = await listService.addMember(
+      body.listId,
+      body.userId,
+      user.id,
+      body.withReplies ?? true,
+    );
+    return c.json(member, 201);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to add member";
+    return c.json({ error: message }, 400);
+  }
+});
 
 /**
  * POST /api/users/lists/pull
@@ -283,32 +273,27 @@ lists.post(
  * @body {string} userId - User ID to remove
  * @returns {void}
  */
-lists.post(
-  "/pull",
-  requireAuth(),
-  userRateLimit(RateLimitPresets.write),
-  async (c: Context) => {
-    const user = c.get("user")!;
-    const listService = getListService(c);
+lists.post("/pull", requireAuth(), userRateLimit(RateLimitPresets.write), async (c: Context) => {
+  const user = c.get("user")!;
+  const listService = getListService(c);
 
-    const body = await c.req.json();
+  const body = await c.req.json();
 
-    if (!body.listId) {
-      return c.json({ error: "listId is required" }, 400);
-    }
-    if (!body.userId) {
-      return c.json({ error: "userId is required" }, 400);
-    }
+  if (!body.listId) {
+    return c.json({ error: "listId is required" }, 400);
+  }
+  if (!body.userId) {
+    return c.json({ error: "userId is required" }, 400);
+  }
 
-    try {
-      await listService.removeMember(body.listId, body.userId, user.id);
-      return c.json({ success: true });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to remove member";
-      return c.json({ error: message }, 400);
-    }
-  },
-);
+  try {
+    await listService.removeMember(body.listId, body.userId, user.id);
+    return c.json({ success: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to remove member";
+    return c.json({ error: message }, 400);
+  }
+});
 
 /**
  * POST /api/users/lists/get-memberships

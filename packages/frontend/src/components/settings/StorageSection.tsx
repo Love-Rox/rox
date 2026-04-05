@@ -13,7 +13,16 @@ import { useState, useEffect, useCallback } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { HardDrive, Trash2, FileImage, FileVideo, FileAudio, FileText, File, RefreshCw } from "lucide-react";
+import {
+  HardDrive,
+  Trash2,
+  FileImage,
+  FileVideo,
+  FileAudio,
+  FileText,
+  File,
+  RefreshCw,
+} from "lucide-react";
 import { useApi } from "../../hooks/useApi";
 import { Button } from "../ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
@@ -49,7 +58,8 @@ function getFileIcon(mimeType: string) {
   if (mimeType.startsWith("image/")) return <FileImage className="w-4 h-4" />;
   if (mimeType.startsWith("video/")) return <FileVideo className="w-4 h-4" />;
   if (mimeType.startsWith("audio/")) return <FileAudio className="w-4 h-4" />;
-  if (mimeType.startsWith("text/") || mimeType.includes("pdf")) return <FileText className="w-4 h-4" />;
+  if (mimeType.startsWith("text/") || mimeType.includes("pdf"))
+    return <FileText className="w-4 h-4" />;
   return <File className="w-4 h-4" />;
 }
 
@@ -196,7 +206,9 @@ export function StorageSection() {
                       ? "bg-yellow-500"
                       : "bg-primary-500"
                 }`}
-                style={{ width: usage.isUnlimited ? "0%" : `${Math.min(usage.usagePercent, 100)}%` }}
+                style={{
+                  width: usage.isUnlimited ? "0%" : `${Math.min(usage.usagePercent, 100)}%`,
+                }}
               />
             </div>
 
@@ -255,12 +267,7 @@ export function StorageSection() {
             <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
               <Trans>Your Files</Trans>
             </h4>
-            <Button
-              variant="ghost"
-              size="sm"
-              onPress={fetchData}
-              isDisabled={isLoading}
-            >
+            <Button variant="ghost" size="sm" onPress={fetchData} isDisabled={isLoading}>
               <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
             </Button>
           </div>
@@ -331,11 +338,7 @@ export function StorageSection() {
               {/* Show More / Show Less */}
               {files.length > 10 && (
                 <div className="text-center pt-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onPress={() => setShowAllFiles(!showAllFiles)}
-                  >
+                  <Button variant="ghost" size="sm" onPress={() => setShowAllFiles(!showAllFiles)}>
                     {showAllFiles ? (
                       <Trans>Show less</Trans>
                     ) : (

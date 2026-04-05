@@ -182,7 +182,7 @@ app.get("/threads/:threadId", requireAuth(), async (c) => {
   const user = c.get("user");
   const contactRepository = c.get("contactRepository");
   const roleService = c.get("roleService");
-  const threadId = c.req.param("threadId");
+  const threadId = c.req.param("threadId")!;
 
   const thread = await contactRepository.findThreadById(threadId);
   if (!thread) {
@@ -246,7 +246,7 @@ app.post(
   async (c) => {
     const user = c.get("user");
     const contactRepository = c.get("contactRepository");
-    const threadId = c.req.param("threadId");
+    const threadId = c.req.param("threadId")!;
 
     const thread = await contactRepository.findThreadById(threadId);
     if (!thread) {
@@ -361,7 +361,12 @@ app.get("/admin/threads", requireAuth(), requireContactManagement(), async (c) =
 
   const limit = Math.min(Number(c.req.query("limit")) || 20, 100);
   const offset = Number(c.req.query("offset")) || 0;
-  const status = c.req.query("status") as "open" | "in_progress" | "resolved" | "closed" | undefined;
+  const status = c.req.query("status") as
+    | "open"
+    | "in_progress"
+    | "resolved"
+    | "closed"
+    | undefined;
   const category = c.req.query("category") as ContactCategory | undefined;
   const sortBy = (c.req.query("sortBy") as "createdAt" | "updatedAt" | "priority") || "updatedAt";
   const sortOrder = (c.req.query("sortOrder") as "asc" | "desc") || "desc";
@@ -429,7 +434,7 @@ app.get("/admin/threads", requireAuth(), requireContactManagement(), async (c) =
 app.get("/admin/threads/:threadId", requireAuth(), requireContactManagement(), async (c) => {
   const contactRepository = c.get("contactRepository");
   const userRepository = c.get("userRepository");
-  const threadId = c.req.param("threadId");
+  const threadId = c.req.param("threadId")!;
 
   const thread = await contactRepository.findThreadById(threadId);
   if (!thread) {
@@ -500,7 +505,7 @@ app.post(
     const user = c.get("user");
     const contactRepository = c.get("contactRepository");
     const roleService = c.get("roleService");
-    const threadId = c.req.param("threadId");
+    const threadId = c.req.param("threadId")!;
 
     const thread = await contactRepository.findThreadById(threadId);
     if (!thread) {
@@ -565,7 +570,7 @@ app.patch(
   requireContactManagement(),
   async (c) => {
     const contactRepository = c.get("contactRepository");
-    const threadId = c.req.param("threadId");
+    const threadId = c.req.param("threadId")!;
 
     const thread = await contactRepository.findThreadById(threadId);
     if (!thread) {
@@ -603,7 +608,7 @@ app.patch(
   requireContactManagement(),
   async (c) => {
     const contactRepository = c.get("contactRepository");
-    const threadId = c.req.param("threadId");
+    const threadId = c.req.param("threadId")!;
 
     const thread = await contactRepository.findThreadById(threadId);
     if (!thread) {
@@ -639,7 +644,7 @@ app.patch(
   requireContactManagement(),
   async (c) => {
     const contactRepository = c.get("contactRepository");
-    const threadId = c.req.param("threadId");
+    const threadId = c.req.param("threadId")!;
 
     const thread = await contactRepository.findThreadById(threadId);
     if (!thread) {
@@ -692,9 +697,7 @@ app.get("/categories", (c) => {
   return c.json({
     categories: VALID_CATEGORIES.map((category) => ({
       value: category,
-      label: category
-        .replace(/_/g, " ")
-        .replace(/\b\w/g, (l) => l.toUpperCase()),
+      label: category.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
     })),
   });
 });

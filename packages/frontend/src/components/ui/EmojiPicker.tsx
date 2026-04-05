@@ -102,7 +102,10 @@ function AccordionSection({
   const displayedEmojis = emojis.slice(0, visibleCount);
 
   return (
-    <Disclosure id={categoryKey} className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+    <Disclosure
+      id={categoryKey}
+      className="border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+    >
       {({ isExpanded }) => (
         <>
           <AriaButton
@@ -178,7 +181,10 @@ function CustomAccordionSection({
   const displayedEmojis = emojis.slice(0, visibleCount);
 
   return (
-    <Disclosure id={categoryKey} className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+    <Disclosure
+      id={categoryKey}
+      className="border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+    >
       {({ isExpanded }) => (
         <>
           <AriaButton
@@ -302,7 +308,10 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
       if (searchQuery.trim()) {
         // Load more for both search result categories
         loadMore("search-custom", customEmojis.length);
-        loadMore("search-unicode", Object.values(EMOJI_CATEGORIES).reduce((sum, cat) => sum + cat.emojis.length, 0));
+        loadMore(
+          "search-unicode",
+          Object.values(EMOJI_CATEGORIES).reduce((sum, cat) => sum + cat.emojis.length, 0),
+        );
         return;
       }
       // Otherwise load more for expanded categories
@@ -317,11 +326,21 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
         } else if (expandedCategory === "recent") {
           loadMore("recent", recentEmojis.length);
         } else if (expandedCategory in EMOJI_CATEGORIES) {
-          loadMore(expandedCategory, EMOJI_CATEGORIES[expandedCategory as EmojiCategory].emojis.length);
+          loadMore(
+            expandedCategory,
+            EMOJI_CATEGORIES[expandedCategory as EmojiCategory].emojis.length,
+          );
         }
       }
     }
-  }, [expandedKeys, customEmojis.length, emojisByCategory, recentEmojis.length, loadMore, searchQuery]);
+  }, [
+    expandedKeys,
+    customEmojis.length,
+    emojisByCategory,
+    recentEmojis.length,
+    loadMore,
+    searchQuery,
+  ]);
 
   // Save emoji to recent emojis
   const saveToRecent = useCallback((emoji: string) => {
@@ -460,21 +479,23 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                             <span className="ml-1">({searchResults.customResults.length})</span>
                           </h3>
                           <div className="grid grid-cols-8 gap-0.5">
-                            {searchResults.customResults.slice(0, getVisibleCount("search-custom")).map((emoji) => (
-                              <Button
-                                key={emoji.id}
-                                onPress={() => handleCustomEmojiClick(emoji)}
-                                className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                aria-label={`Select :${emoji.name}:`}
-                              >
-                                <img
-                                  src={getProxiedImageUrl(emoji.url) || ""}
-                                  alt={`:${emoji.name}:`}
-                                  className="w-5 h-5 object-contain"
-                                  loading="lazy"
-                                />
-                              </Button>
-                            ))}
+                            {searchResults.customResults
+                              .slice(0, getVisibleCount("search-custom"))
+                              .map((emoji) => (
+                                <Button
+                                  key={emoji.id}
+                                  onPress={() => handleCustomEmojiClick(emoji)}
+                                  className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                  aria-label={`Select :${emoji.name}:`}
+                                >
+                                  <img
+                                    src={getProxiedImageUrl(emoji.url) || ""}
+                                    alt={`:${emoji.name}:`}
+                                    className="w-5 h-5 object-contain"
+                                    loading="lazy"
+                                  />
+                                </Button>
+                              ))}
                           </div>
                         </div>
                       )}
@@ -487,38 +508,38 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                             <span className="ml-1">({searchResults.unicodeResults.length})</span>
                           </h3>
                           <div className="grid grid-cols-8 gap-0.5">
-                            {searchResults.unicodeResults.slice(0, getVisibleCount("search-unicode")).map((emoji, index) => (
-                              <Button
-                                key={`${emoji}-${index}`}
-                                onPress={() => handleEmojiClick(emoji)}
-                                className="text-xl p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                aria-label={`Select ${emoji}`}
-                              >
-                                {emoji}
-                              </Button>
-                            ))}
+                            {searchResults.unicodeResults
+                              .slice(0, getVisibleCount("search-unicode"))
+                              .map((emoji, index) => (
+                                <Button
+                                  key={`${emoji}-${index}`}
+                                  onPress={() => handleEmojiClick(emoji)}
+                                  className="text-xl p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                  aria-label={`Select ${emoji}`}
+                                >
+                                  {emoji}
+                                </Button>
+                              ))}
                           </div>
                         </div>
                       )}
 
                       {/* Empty search state */}
-                      {searchResults.customResults.length === 0 && searchResults.unicodeResults.length === 0 && (
-                        <div className="flex flex-col items-center justify-center py-8 text-gray-400 dark:text-gray-500">
-                          <Smile className="w-10 h-10 mb-2" />
-                          <p className="text-sm">
-                            <Trans>No emojis found</Trans>
-                          </p>
-                        </div>
-                      )}
+                      {searchResults.customResults.length === 0 &&
+                        searchResults.unicodeResults.length === 0 && (
+                          <div className="flex flex-col items-center justify-center py-8 text-gray-400 dark:text-gray-500">
+                            <Smile className="w-10 h-10 mb-2" />
+                            <p className="text-sm">
+                              <Trans>No emojis found</Trans>
+                            </p>
+                          </div>
+                        )}
                     </div>
                   )}
 
                   {/* Accordion Categories */}
                   {!searchResults && (
-                    <DisclosureGroup
-                      expandedKeys={expandedKeys}
-                      onExpandedChange={setExpandedKeys}
-                    >
+                    <DisclosureGroup expandedKeys={expandedKeys} onExpandedChange={setExpandedKeys}>
                       {/* Loading state for custom emojis */}
                       {isLoadingEmojis && (
                         <div className="flex items-center justify-center py-3">
@@ -595,7 +616,9 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                             emojis={EMOJI_CATEGORIES[category].emojis}
                             onEmojiClick={handleEmojiClick}
                             visibleCount={getVisibleCount(category)}
-                            hasMore={getVisibleCount(category) < EMOJI_CATEGORIES[category].emojis.length}
+                            hasMore={
+                              getVisibleCount(category) < EMOJI_CATEGORIES[category].emojis.length
+                            }
                           />
                         ))}
                     </DisclosureGroup>

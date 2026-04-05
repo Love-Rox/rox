@@ -23,7 +23,7 @@ const noopStorage: Storage = {
 };
 
 const storage = createJSONStorage<boolean>(() =>
-  typeof window !== "undefined" ? localStorage : noopStorage
+  typeof window !== "undefined" ? localStorage : noopStorage,
 );
 
 /**
@@ -35,6 +35,5 @@ export const sidebarCollapsedAtom = atomWithStorage<boolean>(
   SIDEBAR_COLLAPSED_KEY,
   false,
   storage,
-  { getOnInit: true }
+  { getOnInit: true },
 );
-

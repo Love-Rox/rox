@@ -7,11 +7,7 @@
 /**
  * Column types available in the deck
  */
-export type DeckColumnType =
-  | "timeline"
-  | "notifications"
-  | "mentions"
-  | "list";
+export type DeckColumnType = "timeline" | "notifications" | "mentions" | "list";
 
 /**
  * Timeline types for timeline columns

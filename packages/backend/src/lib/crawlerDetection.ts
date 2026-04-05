@@ -66,9 +66,7 @@ export function isEmbedCrawler(userAgent: string | undefined): boolean {
 
   // Check if User-Agent contains any known crawler pattern (case-insensitive)
   const lowerUserAgent = userAgent.toLowerCase();
-  return EMBED_CRAWLER_PATTERNS.some((pattern) =>
-    lowerUserAgent.includes(pattern.toLowerCase())
-  );
+  return EMBED_CRAWLER_PATTERNS.some((pattern) => lowerUserAgent.includes(pattern.toLowerCase()));
 }
 
 /**
@@ -91,8 +89,5 @@ export function isActivityPubRequest(accept: string | undefined): boolean {
     return false;
   }
 
-  return (
-    accept.includes("application/activity+json") ||
-    accept.includes("application/ld+json")
-  );
+  return accept.includes("application/activity+json") || accept.includes("application/ld+json");
 }

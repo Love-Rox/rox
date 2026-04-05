@@ -11,7 +11,10 @@ export interface TimelineOptions {
  * Input type for creating a note.
  * repliesCount and renoteCount are optional as they have database defaults.
  */
-export type NoteCreateInput = Omit<Note, "createdAt" | "updatedAt" | "repliesCount" | "renoteCount"> & {
+export type NoteCreateInput = Omit<
+  Note,
+  "createdAt" | "updatedAt" | "repliesCount" | "renoteCount"
+> & {
   repliesCount?: number;
   renoteCount?: number;
 };
@@ -165,7 +168,7 @@ export interface INoteRepository {
   findDirectMessageThread(
     userId: string,
     partnerId: string,
-    options: TimelineOptions
+    options: TimelineOptions,
   ): Promise<Note[]>;
 
   /**
@@ -175,7 +178,7 @@ export interface INoteRepository {
    */
   getConversationPartners(
     userId: string,
-    limit: number
+    limit: number,
   ): Promise<
     Array<{
       partnerId: string;

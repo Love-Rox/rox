@@ -120,9 +120,11 @@ export default function AdminFederationPage() {
 
     setRefreshingHost(host);
     try {
-      const response = await api.post<{ success: boolean; message: string; instance: RemoteInstance }>(
-        `/api/admin/remote-instances/${encodeURIComponent(host)}/refresh`,
-      );
+      const response = await api.post<{
+        success: boolean;
+        message: string;
+        instance: RemoteInstance;
+      }>(`/api/admin/remote-instances/${encodeURIComponent(host)}/refresh`);
 
       addToast({
         type: response.instance.fetchErrorCount > 0 ? "info" : "success",
@@ -130,9 +132,7 @@ export default function AdminFederationPage() {
       });
 
       // Update the instance in the list
-      setInstances((prev) =>
-        prev.map((inst) => (inst.host === host ? response.instance : inst)),
-      );
+      setInstances((prev) => prev.map((inst) => (inst.host === host ? response.instance : inst)));
     } catch (err: any) {
       addToast({
         type: "error",
@@ -240,9 +240,7 @@ export default function AdminFederationPage() {
         },
       ]}
     >
-
       <div className="space-y-6">
-
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card>
@@ -280,7 +278,9 @@ export default function AdminFederationPage() {
               <div className="flex items-center gap-3">
                 <AlertTriangle className="w-8 h-8 text-yellow-500" />
                 <div>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{errorCount}</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {errorCount}
+                  </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     <Trans>With Errors</Trans>
                   </p>
@@ -339,10 +339,7 @@ export default function AdminFederationPage() {
             ) : (
               <div className="divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredInstances.map((instance) => (
-                  <div
-                    key={instance.host}
-                    className="py-4 first:pt-0 last:pb-0"
-                  >
+                  <div key={instance.host} className="py-4 first:pt-0 last:pb-0">
                     <div className="flex flex-col sm:flex-row gap-4">
                       {/* Instance Info */}
                       <div className="flex-1 min-w-0">

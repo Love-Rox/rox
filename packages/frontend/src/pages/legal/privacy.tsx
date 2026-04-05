@@ -68,9 +68,7 @@ export default function PrivacyPolicyPage() {
                 <ExternalLink className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 <div>
                   <p className="text-sm text-(--text-primary)">
-                    <Trans>
-                      This instance has a dedicated Privacy Policy page:
-                    </Trans>
+                    <Trans>This instance has a dedicated Privacy Policy page:</Trans>
                   </p>
                   <a
                     href={instanceInfo.privacyPolicyUrl}
@@ -139,12 +137,24 @@ export default function PrivacyPolicyPage() {
                 <Trans>We use collected information to:</Trans>
               </p>
               <ul className="list-disc list-inside text-(--text-secondary) space-y-1">
-                <li><Trans>Provide and maintain the service</Trans></li>
-                <li><Trans>Process your account registration and authentication</Trans></li>
-                <li><Trans>Display your content to other users</Trans></li>
-                <li><Trans>Send service-related notifications</Trans></li>
-                <li><Trans>Ensure security and prevent abuse</Trans></li>
-                <li><Trans>Comply with legal obligations</Trans></li>
+                <li>
+                  <Trans>Provide and maintain the service</Trans>
+                </li>
+                <li>
+                  <Trans>Process your account registration and authentication</Trans>
+                </li>
+                <li>
+                  <Trans>Display your content to other users</Trans>
+                </li>
+                <li>
+                  <Trans>Send service-related notifications</Trans>
+                </li>
+                <li>
+                  <Trans>Ensure security and prevent abuse</Trans>
+                </li>
+                <li>
+                  <Trans>Comply with legal obligations</Trans>
+                </li>
               </ul>
             </section>
 
@@ -159,9 +169,15 @@ export default function PrivacyPolicyPage() {
                 </Trans>
               </p>
               <ul className="list-disc list-inside text-(--text-secondary) space-y-1 mt-3">
-                <li><Trans>Your public profile information</Trans></li>
-                <li><Trans>Public posts and media</Trans></li>
-                <li><Trans>Public follow/follower relationships</Trans></li>
+                <li>
+                  <Trans>Your public profile information</Trans>
+                </li>
+                <li>
+                  <Trans>Public posts and media</Trans>
+                </li>
+                <li>
+                  <Trans>Public follow/follower relationships</Trans>
+                </li>
               </ul>
               <p className="text-(--text-secondary) leading-relaxed mt-3">
                 <Trans>
@@ -193,11 +209,21 @@ export default function PrivacyPolicyPage() {
                 <Trans>You have the right to:</Trans>
               </p>
               <ul className="list-disc list-inside text-(--text-secondary) space-y-1">
-                <li><Trans>Access your personal data</Trans></li>
-                <li><Trans>Correct inaccurate data</Trans></li>
-                <li><Trans>Delete your account and associated data</Trans></li>
-                <li><Trans>Export your data in a portable format</Trans></li>
-                <li><Trans>Object to certain data processing</Trans></li>
+                <li>
+                  <Trans>Access your personal data</Trans>
+                </li>
+                <li>
+                  <Trans>Correct inaccurate data</Trans>
+                </li>
+                <li>
+                  <Trans>Delete your account and associated data</Trans>
+                </li>
+                <li>
+                  <Trans>Export your data in a portable format</Trans>
+                </li>
+                <li>
+                  <Trans>Object to certain data processing</Trans>
+                </li>
               </ul>
               <p className="text-(--text-secondary) leading-relaxed mt-3">
                 <Trans>
@@ -207,7 +233,8 @@ export default function PrivacyPolicyPage() {
                     className="text-primary-600 dark:text-primary-400 hover:underline"
                   >
                     contact us
-                  </SpaLink>.
+                  </SpaLink>
+                  .
                 </Trans>
               </p>
             </section>
@@ -218,8 +245,8 @@ export default function PrivacyPolicyPage() {
               </h2>
               <p className="text-(--text-secondary) leading-relaxed mb-3">
                 <Trans>
-                  We use cookies and local storage to provide and improve our service.
-                  You can manage your cookie preferences at any time.
+                  We use cookies and local storage to provide and improve our service. You can
+                  manage your cookie preferences at any time.
                 </Trans>
               </p>
 
@@ -258,8 +285,8 @@ export default function PrivacyPolicyPage() {
                   </p>
                   <p className="text-sm">
                     <Trans>
-                      Help us understand how visitors use the service. This data is anonymized
-                      and used only to improve the service. These are optional.
+                      Help us understand how visitors use the service. This data is anonymized and
+                      used only to improve the service. These are optional.
                     </Trans>
                   </p>
                 </div>
@@ -320,8 +347,8 @@ export default function PrivacyPolicyPage() {
               <p className="text-(--text-secondary) leading-relaxed">
                 <Trans>
                   We may update this privacy policy from time to time. We will notify users of
-                  significant changes when possible. Your continued use of the service after
-                  changes constitutes acceptance of the updated policy.
+                  significant changes when possible. Your continued use of the service after changes
+                  constitutes acceptance of the updated policy.
                 </Trans>
               </p>
             </section>
@@ -338,7 +365,8 @@ export default function PrivacyPolicyPage() {
                     className="text-primary-600 dark:text-primary-400 hover:underline"
                   >
                     contact us through our inquiry form
-                  </SpaLink>.
+                  </SpaLink>
+                  .
                 </Trans>
               </p>
             </section>

@@ -33,7 +33,7 @@ export function ComposeModal() {
         closeModal();
       }
     },
-    [modalState.isOpen, closeModal]
+    [modalState.isOpen, closeModal],
   );
 
   useEffect(() => {
@@ -76,10 +76,7 @@ export function ComposeModal() {
       <div className="w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-xl sm:mt-10 sm:rounded-lg bg-(--card-bg) shadow-xl overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-(--border-color)">
-          <h2
-            id="compose-modal-title"
-            className="text-lg font-semibold text-(--text-primary)"
-          >
+          <h2 id="compose-modal-title" className="text-lg font-semibold text-(--text-primary)">
             {modalState.initialVisibility === "specified" ? (
               <Trans>New Message</Trans>
             ) : (

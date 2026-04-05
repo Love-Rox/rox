@@ -42,10 +42,7 @@ import {
 } from "../../lib/api/contact";
 import type { ContactThreadSummary, ContactThreadAdmin, ContactMessageAdmin } from "shared";
 
-const STATUS_CONFIG: Record<
-  string,
-  { icon: React.ReactNode; label: string; color: string }
-> = {
+const STATUS_CONFIG: Record<string, { icon: React.ReactNode; label: string; color: string }> = {
   open: {
     icon: <Clock className="w-4 h-4" />,
     label: "Open",
@@ -289,7 +286,6 @@ export default function AdminContactsPage() {
         subtitle={<Trans>Contact thread details</Trans>}
       >
         <div className="max-w-6xl mx-auto">
-
           <div className="mb-4">
             <button
               onClick={() => setSelectedThread(null)}
@@ -372,7 +368,11 @@ export default function AdminContactsPage() {
                                     : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
                                 }`}
                               >
-                                {isUser ? <User className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
+                                {isUser ? (
+                                  <User className="w-4 h-4" />
+                                ) : (
+                                  <Shield className="w-4 h-4" />
+                                )}
                               </div>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
@@ -470,11 +470,7 @@ export default function AdminContactsPage() {
                     className="w-full px-3 py-2 border border-(--border-color) rounded-lg bg-(--bg-primary) text-(--text-primary) text-sm resize-none"
                     placeholder={t`Add notes about this inquiry...`}
                   />
-                  <Button
-                    variant="secondary"
-                    onPress={handleSaveNotes}
-                    className="mt-2 w-full"
-                  >
+                  <Button variant="secondary" onPress={handleSaveNotes} className="mt-2 w-full">
                     <Trans>Save Notes</Trans>
                   </Button>
                 </CardContent>
@@ -505,7 +501,6 @@ export default function AdminContactsPage() {
       onReload={loadThreads}
     >
       <div className="max-w-6xl mx-auto">
-
         <div className="mb-6 flex items-center justify-end">
           <select
             value={statusFilter}
@@ -523,9 +518,7 @@ export default function AdminContactsPage() {
           </select>
         </div>
 
-        {error && (
-          <InlineError message={error} className="mb-4" />
-        )}
+        {error && <InlineError message={error} className="mb-4" />}
 
         <Card>
           <CardContent className="p-0">

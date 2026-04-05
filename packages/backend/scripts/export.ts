@@ -196,9 +196,7 @@ async function main(): Promise<void> {
   const file = Bun.file(outputFile);
   const size = file.size;
   const sizeStr =
-    size > 1024 * 1024
-      ? `${(size / 1024 / 1024).toFixed(2)} MB`
-      : `${(size / 1024).toFixed(2)} KB`;
+    size > 1024 * 1024 ? `${(size / 1024 / 1024).toFixed(2)} MB` : `${(size / 1024).toFixed(2)} KB`;
   console.log(`   File size: ${sizeStr}`);
 
   console.log("");

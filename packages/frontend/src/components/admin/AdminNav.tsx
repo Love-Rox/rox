@@ -6,7 +6,21 @@
  * Provides navigation between admin pages.
  */
 
-import { Settings, Users, UserCog, Ticket, Shield, AlertTriangle, Smile, HardDrive, Globe, Activity, MessageCircle, Ghost, Plug } from "lucide-react";
+import {
+  Settings,
+  Users,
+  UserCog,
+  Ticket,
+  Shield,
+  AlertTriangle,
+  Smile,
+  HardDrive,
+  Globe,
+  Activity,
+  MessageCircle,
+  Ghost,
+  Plug,
+} from "lucide-react";
 
 /**
  * Admin navigation items

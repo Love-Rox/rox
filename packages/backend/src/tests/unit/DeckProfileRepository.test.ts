@@ -81,9 +81,7 @@ describe("DeckProfileRepository", () => {
     });
 
     test("should create profile with empty columns", async () => {
-      mockRepo.create = mock(() =>
-        Promise.resolve({ ...mockProfile, columns: [] })
-      );
+      mockRepo.create = mock(() => Promise.resolve({ ...mockProfile, columns: [] }));
 
       const input = {
         id: "profile3",
@@ -110,9 +108,7 @@ describe("DeckProfileRepository", () => {
 
       await mockRepo.create(input);
 
-      expect(mockRepo.create).toHaveBeenCalledWith(
-        expect.objectContaining({ isDefault: true })
-      );
+      expect(mockRepo.create).toHaveBeenCalledWith(expect.objectContaining({ isDefault: true }));
     });
   });
 
@@ -223,13 +219,11 @@ describe("DeckProfileRepository", () => {
     });
 
     test("should throw error for non-existent profile", async () => {
-      mockRepo.update = mock(() =>
-        Promise.reject(new Error("Deck profile not found"))
-      );
+      mockRepo.update = mock(() => Promise.reject(new Error("Deck profile not found")));
 
-      await expect(
-        mockRepo.update("nonexistent", { name: "Test" })
-      ).rejects.toThrow("Deck profile not found");
+      await expect(mockRepo.update("nonexistent", { name: "Test" })).rejects.toThrow(
+        "Deck profile not found",
+      );
     });
   });
 

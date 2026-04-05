@@ -31,11 +31,7 @@ class PluginErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error(
-      `Plugin ${this.props.pluginId} error:`,
-      error,
-      errorInfo.componentStack,
-    );
+    console.error(`Plugin ${this.props.pluginId} error:`, error, errorInfo.componentStack);
   }
 
   render() {

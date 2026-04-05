@@ -301,7 +301,6 @@ export default function AdminSystemFollowsPage() {
       subtitle={<Trans>Manage accounts followed by the system account</Trans>}
     >
       <div className="space-y-6">
-
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           <Card>
@@ -514,9 +513,7 @@ export default function AdminSystemFollowsPage() {
                               `@${follow.user.username}`
                             )}
                           </span>
-                          {follow.user.host && (
-                            <Globe className="w-4 h-4 text-(--text-muted)" />
-                          )}
+                          {follow.user.host && <Globe className="w-4 h-4 text-(--text-muted)" />}
                           {follow.listCount > 0 && (
                             <span className="px-2 py-0.5 text-xs rounded bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
                               <Trans>{follow.listCount} lists</Trans>
@@ -560,18 +557,16 @@ export default function AdminSystemFollowsPage() {
                 {/* Load More Button */}
                 {hasMore && (
                   <div className="flex justify-center pt-4">
-                    <Button
-                      variant="secondary"
-                      onPress={handleLoadMore}
-                      isDisabled={isLoadingMore}
-                    >
+                    <Button variant="secondary" onPress={handleLoadMore} isDisabled={isLoadingMore}>
                       {isLoadingMore ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                           <Trans>Loading...</Trans>
                         </>
                       ) : (
-                        <Trans>Load More ({currentCount} / {total})</Trans>
+                        <Trans>
+                          Load More ({currentCount} / {total})
+                        </Trans>
                       )}
                     </Button>
                   </div>
@@ -596,10 +591,7 @@ export default function AdminSystemFollowsPage() {
                     <div className="p-3 rounded-full bg-red-100 dark:bg-red-900/30">
                       <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
                     </div>
-                    <Heading
-                      slot="title"
-                      className="text-xl font-bold text-(--text-primary)"
-                    >
+                    <Heading slot="title" className="text-xl font-bold text-(--text-primary)">
                       <Trans>Unfollow User</Trans>
                     </Heading>
                   </div>
@@ -619,8 +611,8 @@ export default function AdminSystemFollowsPage() {
                     <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 mb-4">
                       <p className="text-sm text-amber-800 dark:text-amber-200">
                         <Trans>
-                          This user is in {userToUnfollow.listCount} list(s). Unfollowing won't remove
-                          them from lists.
+                          This user is in {userToUnfollow.listCount} list(s). Unfollowing won't
+                          remove them from lists.
                         </Trans>
                       </p>
                       <div className="flex flex-wrap gap-1 mt-2">

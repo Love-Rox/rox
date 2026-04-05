@@ -257,7 +257,7 @@ app.post("/lookup", async (c: Context) => {
  */
 app.get("/:id", async (c: Context) => {
   const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
-  const id = c.req.param("id");
+  const id = c.req.param("id")!;
 
   const emoji = await customEmojiRepository.findById(id);
 
@@ -397,7 +397,10 @@ app.post("/create", async (c: Context) => {
 
   // Validate name format (alphanumeric and underscores only)
   if (!/^[a-zA-Z0-9_-]+$/.test(body.name)) {
-    return c.json({ error: "Emoji name must contain only letters, numbers, underscores, and hyphens" }, 400);
+    return c.json(
+      { error: "Emoji name must contain only letters, numbers, underscores, and hyphens" },
+      400,
+    );
   }
 
   // Check if name already exists
@@ -451,7 +454,7 @@ app.patch("/:id", async (c: Context) => {
   }
 
   const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
-  const id = c.req.param("id");
+  const id = c.req.param("id")!;
 
   const body = await c.req.json<{
     name?: string;
@@ -464,7 +467,10 @@ app.patch("/:id", async (c: Context) => {
 
   // Validate name format if provided
   if (body.name && !/^[a-zA-Z0-9_-]+$/.test(body.name)) {
-    return c.json({ error: "Emoji name must contain only letters, numbers, underscores, and hyphens" }, 400);
+    return c.json(
+      { error: "Emoji name must contain only letters, numbers, underscores, and hyphens" },
+      400,
+    );
   }
 
   const emoji = await customEmojiRepository.update(id, {
@@ -509,7 +515,7 @@ app.delete("/:id", async (c: Context) => {
   }
 
   const customEmojiRepository = c.get("customEmojiRepository") as ICustomEmojiRepository;
-  const id = c.req.param("id");
+  const id = c.req.param("id")!;
 
   const deleted = await customEmojiRepository.delete(id);
 
@@ -622,7 +628,10 @@ app.post("/bulk-update", async (c: Context) => {
 
   // Must have at least one field to update
   if (body.category === undefined && body.isSensitive === undefined) {
-    return c.json({ error: "At least one field to update is required (category or isSensitive)" }, 400);
+    return c.json(
+      { error: "At least one field to update is required (category or isSensitive)" },
+      400,
+    );
   }
 
   const results: {
@@ -710,7 +719,10 @@ app.post("/adopt", async (c: Context) => {
 
   // Validate name format
   if (!/^[a-zA-Z0-9_-]+$/.test(newName)) {
-    return c.json({ error: "Emoji name must contain only letters, numbers, underscores, and hyphens" }, 400);
+    return c.json(
+      { error: "Emoji name must contain only letters, numbers, underscores, and hyphens" },
+      400,
+    );
   }
 
   // Check if name already exists locally
@@ -798,7 +810,10 @@ app.post("/adopt", async (c: Context) => {
     localOnly: false,
   });
 
-  logger.info({ remoteEmojiName: remoteEmoji.name, host: remoteEmoji.host, newName }, "Adopted remote emoji as local");
+  logger.info(
+    { remoteEmojiName: remoteEmoji.name, host: remoteEmoji.host, newName },
+    "Adopted remote emoji as local",
+  );
 
   return c.json(
     {
@@ -872,7 +887,10 @@ app.post("/import", async (c: Context) => {
   // Maximum ZIP size: 50MB
   const MAX_ZIP_SIZE = 50 * 1024 * 1024;
   if (zipFile.size > MAX_ZIP_SIZE) {
-    return c.json({ error: `ZIP file too large. Maximum size: ${MAX_ZIP_SIZE / 1024 / 1024}MB` }, 400);
+    return c.json(
+      { error: `ZIP file too large. Maximum size: ${MAX_ZIP_SIZE / 1024 / 1024}MB` },
+      400,
+    );
   }
 
   const arrayBuffer = await zipFile.arrayBuffer();
@@ -926,17 +944,23 @@ app.post("/import", async (c: Context) => {
 
     logger.info({ imageFiles }, "Found image files in ZIP (no meta.json)");
 
-    emojiMetas = imageFiles.map((file) => {
-      // Extract filename without path and extension
-      const filename = file.split("/").pop() || "";
-      const name = filename.replace(/\.[^.]+$/, "");
-      // Sanitize name: only alphanumeric, underscores, and hyphens
-      const sanitizedName = name.toLowerCase().replace(/[^a-z0-9_-]/g, "_").replace(/^[_-]+|[_-]+$/g, "").replace(/[_-]+/g, (m) => m[0] || "_");
-      return {
-        name: sanitizedName || `emoji_${Date.now()}`,
-        file,
-      };
-    }).filter((meta) => meta.name.length > 0);
+    emojiMetas = imageFiles
+      .map((file) => {
+        // Extract filename without path and extension
+        const filename = file.split("/").pop() || "";
+        const name = filename.replace(/\.[^.]+$/, "");
+        // Sanitize name: only alphanumeric, underscores, and hyphens
+        const sanitizedName = name
+          .toLowerCase()
+          .replace(/[^a-z0-9_-]/g, "_")
+          .replace(/^[_-]+|[_-]+$/g, "")
+          .replace(/[_-]+/g, (m) => m[0] || "_");
+        return {
+          name: sanitizedName || `emoji_${Date.now()}`,
+          file,
+        };
+      })
+      .filter((meta) => meta.name.length > 0);
   }
 
   if (emojiMetas.length === 0) {
@@ -1044,7 +1068,11 @@ app.post("/import", async (c: Context) => {
   }
 
   logger.info(
-    { success: results.success.length, skipped: results.skipped.length, failed: results.failed.length },
+    {
+      success: results.success.length,
+      skipped: results.skipped.length,
+      failed: results.failed.length,
+    },
     "Emoji import complete",
   );
 

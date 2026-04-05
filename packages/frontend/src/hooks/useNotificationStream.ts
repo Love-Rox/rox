@@ -53,9 +53,7 @@ let tokenGetterForReconnect: (() => string | null) | null = null;
  *
  * @param getter - Function that returns the current auth token
  */
-export function setTokenGetterForReconnect(
-  getter: (() => string | null) | null
-): void {
+export function setTokenGetterForReconnect(getter: (() => string | null) | null): void {
   tokenGetterForReconnect = getter;
 }
 
@@ -68,7 +66,7 @@ export function setTokenGetterForReconnect(
  */
 export function registerMentionCallback(
   columnId: string,
-  callback: (notification: Notification) => void
+  callback: (notification: Notification) => void,
 ): void {
   mentionCallbacks.set(columnId, callback);
 }
@@ -144,9 +142,7 @@ function notifyConnectionChange(connected: boolean) {
  */
 function getNotificationsWSUrl(token: string): string {
   const protocol =
-    typeof window !== "undefined" && window.location.protocol === "https:"
-      ? "wss:"
-      : "ws:";
+    typeof window !== "undefined" && window.location.protocol === "https:" ? "wss:" : "ws:";
   const host = typeof window !== "undefined" ? window.location.host : "";
   return `${protocol}//${host}/ws/notifications?token=${encodeURIComponent(token)}`;
 }
@@ -258,7 +254,7 @@ function connectNotificationWS(token: string): void {
     if (connection.connectionCount > 0 && !isAuthError) {
       const delay = Math.min(
         INITIAL_RECONNECT_DELAY_MS * Math.pow(2, reconnectAttempts),
-        MAX_RECONNECT_DELAY_MS
+        MAX_RECONNECT_DELAY_MS,
       );
       reconnectAttempts++;
 
@@ -343,18 +339,14 @@ export function useNotificationStream(options: UseNotificationStreamOptions): {
   const { enabled = true, columnId, onNewNotification } = options;
 
   // Column-scoped atom setter
-  const prependColumnNotifications = useSetAtom(
-    prependColumnNotificationsAtomFamily(columnId)
-  );
+  const prependColumnNotifications = useSetAtom(prependColumnNotificationsAtomFamily(columnId));
 
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const token = useAtomValue(tokenAtom);
   const uiSettings = useAtomValue(uiSettingsAtom);
 
   // Local state for connection status
-  const [connected, setConnected] = useState(
-    () => notificationConnection.connected
-  );
+  const [connected, setConnected] = useState(() => notificationConnection.connected);
 
   // Refs to store stable references
   const tokenRef = useRef(token);
@@ -415,7 +407,7 @@ export function useNotificationStream(options: UseNotificationStreamOptions): {
               notification.type,
               settings.notificationSoundsByType,
               defaultSound,
-              defaultVolume
+              defaultVolume,
             );
             lastSoundPlayedAt = now;
           }

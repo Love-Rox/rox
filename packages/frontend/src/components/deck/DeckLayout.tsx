@@ -17,10 +17,7 @@ import {
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Trans } from "@lingui/react/macro";
-import {
-  mobileActiveColumnIndexAtom,
-  setMobileActiveColumnAtom,
-} from "../../lib/atoms/deck";
+import { mobileActiveColumnIndexAtom, setMobileActiveColumnAtom } from "../../lib/atoms/deck";
 import { currentUserAtom } from "../../lib/atoms/auth";
 import { useDeckProfiles } from "../../hooks/useDeckProfiles";
 import { sidebarCollapsedAtom } from "../../lib/atoms/sidebar";
@@ -63,17 +60,12 @@ function getColumnWidthClass(width: DeckColumnWidth): string {
  * Displays multiple columns side-by-side with horizontal scrolling.
  * Supports drag-and-drop reordering and mobile swipe navigation.
  */
-export function DeckLayout({
-  showAddColumn = true,
-  showProfileSwitcher = true,
-}: DeckLayoutProps) {
+export function DeckLayout({ showAddColumn = true, showProfileSwitcher = true }: DeckLayoutProps) {
   const currentUser = useAtomValue(currentUserAtom);
   const isCollapsed = useAtomValue(sidebarCollapsedAtom);
   const { activeProfile, updateActiveColumns } = useDeckProfiles();
   const columns = activeProfile?.columns ?? [];
-  const [mobileColumnIndex, setMobileColumnIndex] = useAtom(
-    mobileActiveColumnIndexAtom
-  );
+  const [mobileColumnIndex, setMobileColumnIndex] = useAtom(mobileActiveColumnIndexAtom);
   const setMobileColumn = useSetAtom(setMobileActiveColumnAtom);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -90,7 +82,7 @@ export function DeckLayout({
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   // Handle drag end for column reordering
@@ -112,7 +104,7 @@ export function DeckLayout({
         }
       }
     },
-    [columns, updateActiveColumns]
+    [columns, updateActiveColumns],
   );
 
   // Handle mobile swipe
@@ -124,7 +116,7 @@ export function DeckLayout({
         setMobileColumn(mobileColumnIndex - 1);
       }
     },
-    [mobileColumnIndex, columns.length, setMobileColumn]
+    [mobileColumnIndex, columns.length, setMobileColumn],
   );
 
   // Mobile touch handling with visual feedback
@@ -187,7 +179,7 @@ export function DeckLayout({
         setSwipeOffset(offset);
       }
     },
-    [mobileColumnIndex, columns.length]
+    [mobileColumnIndex, columns.length],
   );
 
   const handleTouchEnd = useCallback(
@@ -210,15 +202,11 @@ export function DeckLayout({
       setSwipeOffset(0);
       touchStartRef.current = null;
     },
-    [handleMobileSwipe]
+    [handleMobileSwipe],
   );
 
   // Sidebar margin for desktop
-  const sidebarMarginClass = currentUser
-    ? isCollapsed
-      ? "lg:ml-16"
-      : "lg:ml-64"
-    : "";
+  const sidebarMarginClass = currentUser ? (isCollapsed ? "lg:ml-16" : "lg:ml-64") : "";
 
   if (!currentUser) {
     return (

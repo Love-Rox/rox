@@ -58,7 +58,11 @@ export class MysqlRemoteInstanceRepository implements IRemoteInstanceRepository 
       });
 
     // MySQL doesn't support RETURNING, fetch the record
-    const [result] = await this.db.select().from(remoteInstances).where(eq(remoteInstances.host, instance.host)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(remoteInstances)
+      .where(eq(remoteInstances.host, instance.host))
+      .limit(1);
 
     if (!result) {
       throw new Error("Failed to upsert remote instance");
@@ -122,7 +126,9 @@ export class MysqlRemoteInstanceRepository implements IRemoteInstanceRepository 
   }
 
   async count(): Promise<number> {
-    const result = await this.db.select({ count: sql<number>`CAST(COUNT(*) AS SIGNED)` }).from(remoteInstances);
+    const result = await this.db
+      .select({ count: sql<number>`CAST(COUNT(*) AS SIGNED)` })
+      .from(remoteInstances);
     return Number(result[0]?.count ?? 0);
   }
 

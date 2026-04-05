@@ -236,9 +236,7 @@ reactions.get("/counts-with-emojis", optionalAuth(), async (c: Context) => {
       const note = await noteRepository.findById(noteId);
       if (note?.uri) {
         // This is a remote note - try to fetch reactions from remote server
-        const { RemoteLikesService } = await import(
-          "../services/ap/RemoteLikesService.js"
-        );
+        const { RemoteLikesService } = await import("../services/ap/RemoteLikesService.js");
         const customEmojiRepository = c.get("customEmojiRepository");
         const remoteLikesService = new RemoteLikesService(
           reactionRepository,

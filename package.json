@@ -3,14 +3,17 @@
   "version": "2026.2.0",
   "license": "AGPL-3.0-only",
   "devDependencies": {
-    "@playwright/test": "^1.58.0",
-    "@types/bun": "^1.3.7",
-    "bun-types": "^1.3.7",
-    "oxfmt": "^0.18.0",
-    "oxlint": "^1.42.0",
-    "playwright": "^1.58.0",
-    "typedoc": "^0.28.16",
-    "typescript": "^5.9.3"
+    "@playwright/test": "^1.59.1",
+    "@types/bun": "^1.3.11",
+    "bun-types": "^1.3.11",
+    "playwright": "^1.59.1",
+    "typedoc": "^0.28.18",
+    "typescript": "^5.9.3",
+    "vite-plus": "^0.1.15"
+  },
+  "overrides": {
+    "vite": "^8.0.0",
+    "@vitejs/plugin-react": "^6.0.0"
   },
   "description": "Lightweight ActivityPub server & client with Misskey API compatibility",
   "engines": {
@@ -31,10 +34,10 @@
     "test:backend": "bun run --cwd packages/backend test",
     "test:unit": "bun run --cwd packages/backend test:unit",
     "test:integration": "bun run --cwd packages/backend test:integration",
-    "lint": "oxlint",
-    "lint:fix": "oxlint --fix",
-    "format": "oxfmt packages",
-    "format:check": "oxfmt --check packages",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
+    "format": "vp fmt packages",
+    "format:check": "vp fmt --check packages",
     "typecheck": "bun run --cwd packages/backend typecheck && bun run --cwd packages/frontend typecheck",
     "typecheck:backend": "bun run --cwd packages/backend typecheck",
     "typecheck:frontend": "bun run --cwd packages/frontend typecheck",

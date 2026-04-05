@@ -96,9 +96,7 @@ export function NoteComposerDrafts({
                     }
                   }}
                   className={`flex items-start justify-between px-3 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 ${
-                    currentDraftId === draft.id
-                      ? "bg-primary-50 dark:bg-primary-900/20"
-                      : ""
+                    currentDraftId === draft.id ? "bg-primary-50 dark:bg-primary-900/20" : ""
                   }`}
                   role="button"
                   tabIndex={0}

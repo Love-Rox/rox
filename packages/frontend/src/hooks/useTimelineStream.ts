@@ -45,10 +45,38 @@ interface TimelineWSConnection {
 }
 
 const timelineConnections: Record<TimelineType, TimelineWSConnection> = {
-  home: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null, connected: false, callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null } },
-  local: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null, connected: false, callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null } },
-  social: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null, connected: false, callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null } },
-  global: { socket: null, reconnectTimeout: null, connectionCount: 0, pingInterval: null, connected: false, callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null } },
+  home: {
+    socket: null,
+    reconnectTimeout: null,
+    connectionCount: 0,
+    pingInterval: null,
+    connected: false,
+    callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null },
+  },
+  local: {
+    socket: null,
+    reconnectTimeout: null,
+    connectionCount: 0,
+    pingInterval: null,
+    connected: false,
+    callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null },
+  },
+  social: {
+    socket: null,
+    reconnectTimeout: null,
+    connectionCount: 0,
+    pingInterval: null,
+    connected: false,
+    callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null },
+  },
+  global: {
+    socket: null,
+    reconnectTimeout: null,
+    connectionCount: 0,
+    pingInterval: null,
+    connected: false,
+    callbacks: { onNote: null, onNoteDeleted: null, onNoteReacted: null },
+  },
 };
 
 // Subscribers for connection state changes (for React state sync)
@@ -71,7 +99,8 @@ function notifyConnectionChange(timelineType: TimelineType, connected: boolean) 
  * Get WebSocket endpoint URL for timeline type
  */
 function getTimelineWSUrl(timelineType: TimelineType, token: string | null): string {
-  const protocol = typeof window !== "undefined" && window.location.protocol === "https:" ? "wss:" : "ws:";
+  const protocol =
+    typeof window !== "undefined" && window.location.protocol === "https:" ? "wss:" : "ws:";
   const host = typeof window !== "undefined" ? window.location.host : "";
 
   switch (timelineType) {
@@ -104,14 +133,15 @@ export interface NoteReactedEvent {
 /**
  * Connect to timeline WebSocket stream (singleton per timeline type)
  */
-function connectTimelineWS(
-  timelineType: TimelineType,
-  token: string | null,
-) {
+function connectTimelineWS(timelineType: TimelineType, token: string | null) {
   const connection = timelineConnections[timelineType];
 
   // Already connected or connecting
-  if (connection.socket && (connection.socket.readyState === WebSocket.OPEN || connection.socket.readyState === WebSocket.CONNECTING)) {
+  if (
+    connection.socket &&
+    (connection.socket.readyState === WebSocket.OPEN ||
+      connection.socket.readyState === WebSocket.CONNECTING)
+  ) {
     return;
   }
 
@@ -252,21 +282,19 @@ export function useTimelineStream(
   options: UseTimelineStreamOptions | boolean = true,
 ) {
   // Support legacy boolean argument for backwards compatibility
-  const { enabled = true, onNewNote, columnId } = typeof options === "boolean" ? { enabled: options } : options;
+  const {
+    enabled = true,
+    onNewNote,
+    columnId,
+  } = typeof options === "boolean" ? { enabled: options } : options;
 
   // Global atom setter (for regular timeline view)
   const setGlobalNotes = useSetAtom(timelineNotesAtom);
 
   // Column-scoped atom setters (for deck view)
-  const prependColumnNotes = useSetAtom(
-    prependColumnNotesAtomFamily(columnId ?? "")
-  );
-  const removeColumnNote = useSetAtom(
-    removeColumnNoteAtomFamily(columnId ?? "")
-  );
-  const updateColumnNote = useSetAtom(
-    updateColumnNoteAtomFamily(columnId ?? "")
-  );
+  const prependColumnNotes = useSetAtom(prependColumnNotesAtomFamily(columnId ?? ""));
+  const removeColumnNote = useSetAtom(removeColumnNoteAtomFamily(columnId ?? ""));
+  const updateColumnNote = useSetAtom(updateColumnNoteAtomFamily(columnId ?? ""));
 
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
   const token = useAtomValue(tokenAtom);

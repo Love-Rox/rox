@@ -24,14 +24,7 @@ import { ProfileImageSection } from "../components/settings/ProfileImageSection"
 import { PasskeySection } from "../components/settings/PasskeySection";
 import { AccountDeletionSection } from "../components/settings/AccountDeletionSection";
 import { DataExportSection } from "../components/settings/DataExportSection";
-import {
-  User,
-  Shield,
-  Bell,
-  HardDrive,
-  Settings,
-  UserCog,
-} from "lucide-react";
+import { User, Shield, Bell, HardDrive, Settings, UserCog } from "lucide-react";
 
 type SettingsTab = "profile" | "security" | "notifications" | "storage" | "account" | "advanced";
 
@@ -154,7 +147,11 @@ export default function SettingsPage() {
   const TABS = [
     { key: "profile", label: <Trans>Profile</Trans>, icon: <User className="w-4 h-4" /> },
     { key: "security", label: <Trans>Security</Trans>, icon: <Shield className="w-4 h-4" /> },
-    { key: "notifications", label: <Trans>Notifications</Trans>, icon: <Bell className="w-4 h-4" /> },
+    {
+      key: "notifications",
+      label: <Trans>Notifications</Trans>,
+      icon: <Bell className="w-4 h-4" />,
+    },
     { key: "storage", label: <Trans>Storage</Trans>, icon: <HardDrive className="w-4 h-4" /> },
     { key: "account", label: <Trans>Account</Trans>, icon: <UserCog className="w-4 h-4" /> },
     { key: "advanced", label: <Trans>Advanced</Trans>, icon: <Settings className="w-4 h-4" /> },
@@ -281,7 +278,8 @@ export default function SettingsPage() {
                   </div>
                   <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                     <Trans>
-                      Note: Custom CSS is sanitized and some properties may be restricted for security.
+                      Note: Custom CSS is sanitized and some properties may be restricted for
+                      security.
                     </Trans>
                   </p>
                 </div>
@@ -322,19 +320,13 @@ export default function SettingsPage() {
       )}
 
       {/* Security Tab */}
-      {activeTab === "security" && (
-        <PasskeySection />
-      )}
+      {activeTab === "security" && <PasskeySection />}
 
       {/* Notifications Tab */}
-      {activeTab === "notifications" && (
-        <PushNotificationSection />
-      )}
+      {activeTab === "notifications" && <PushNotificationSection />}
 
       {/* Storage Tab */}
-      {activeTab === "storage" && (
-        <StorageSection />
-      )}
+      {activeTab === "storage" && <StorageSection />}
 
       {/* Account Tab */}
       {activeTab === "account" && (
@@ -348,11 +340,7 @@ export default function SettingsPage() {
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 <Trans>Sign out of your account on this device.</Trans>
               </p>
-              <Button
-                variant="danger"
-                onPress={handleLogout}
-                isDisabled={isLoggingOut}
-              >
+              <Button variant="danger" onPress={handleLogout} isDisabled={isLoggingOut}>
                 {isLoggingOut ? (
                   <div className="flex items-center gap-2">
                     <Spinner size="xs" variant="white" />

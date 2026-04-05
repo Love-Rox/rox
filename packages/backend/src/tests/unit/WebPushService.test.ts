@@ -184,37 +184,19 @@ describe("WebPushService", () => {
     });
 
     test("creates payload for warning notification", async () => {
-      const payload = await webPushService.createPayload(
-        "warning",
-        null,
-        "notif-123",
-        null,
-        "en",
-      );
+      const payload = await webPushService.createPayload("warning", null, "notif-123", null, "en");
 
       expect(payload.body).toBe("You have received a warning from the moderators");
     });
 
     test("uses fallback name when notifier name is null", async () => {
-      const payload = await webPushService.createPayload(
-        "follow",
-        null,
-        "notif-123",
-        null,
-        "en",
-      );
+      const payload = await webPushService.createPayload("follow", null, "notif-123", null, "en");
 
       expect(payload.body).toBe("Someone followed you");
     });
 
     test("uses Japanese fallback name when notifier name is null", async () => {
-      const payload = await webPushService.createPayload(
-        "follow",
-        null,
-        "notif-123",
-        null,
-        "ja",
-      );
+      const payload = await webPushService.createPayload("follow", null, "notif-123", null, "ja");
 
       expect(payload.body).toBe("誰かさんにフォローされました");
     });
@@ -352,13 +334,7 @@ describe("WebPushService", () => {
     });
 
     test("generates notifications URL for warning notification", async () => {
-      const payload = await webPushService.createPayload(
-        "warning",
-        null,
-        "notif-123",
-        null,
-        "en",
-      );
+      const payload = await webPushService.createPayload("warning", null, "notif-123", null, "en");
 
       expect(payload.data?.url).toContain("/notifications");
     });

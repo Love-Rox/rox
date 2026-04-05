@@ -269,7 +269,10 @@ export class ActivityPubDeliveryService {
       actor: reactor,
     });
 
-    logger.debug({ noteId, reaction: reaction || "❤️", inboxUrl: noteAuthorInbox }, "Enqueued Like activity");
+    logger.debug(
+      { noteId, reaction: reaction || "❤️", inboxUrl: noteAuthorInbox },
+      "Enqueued Like activity",
+    );
   }
 
   /**
@@ -289,7 +292,11 @@ export class ActivityPubDeliveryService {
     });
 
     logger.debug(
-      { follower: follower.username, followee: `${followee.username}@${followee.host}`, inboxUrl: followee.inbox },
+      {
+        follower: follower.username,
+        followee: `${followee.username}@${followee.host}`,
+        inboxUrl: followee.inbox,
+      },
       "Enqueued Follow activity",
     );
     return activity.id;
@@ -316,7 +323,11 @@ export class ActivityPubDeliveryService {
     });
 
     logger.debug(
-      { follower: follower.username, followee: `${followee.username}@${followee.host}`, inboxUrl: followee.inbox },
+      {
+        follower: follower.username,
+        followee: `${followee.username}@${followee.host}`,
+        inboxUrl: followee.inbox,
+      },
       "Enqueued Undo Follow activity",
     );
   }
@@ -373,7 +384,10 @@ export class ActivityPubDeliveryService {
     const inboxUrls = this.getUniqueInboxUrls(remoteFollowers);
 
     await this.deliverToInboxes(activity, inboxUrls, actor, JobPriority.LOW);
-    logger.debug({ username: actor.username, inboxCount: inboxUrls.size }, "Enqueued Update activity");
+    logger.debug(
+      { username: actor.username, inboxCount: inboxUrls.size },
+      "Enqueued Update activity",
+    );
   }
 
   /**
@@ -464,7 +478,10 @@ export class ActivityPubDeliveryService {
     );
 
     if (author.host || note.localOnly) {
-      logger.debug({ noteId: note.id }, "Skipping DM delivery: author is remote or note is local-only");
+      logger.debug(
+        { noteId: note.id },
+        "Skipping DM delivery: author is remote or note is local-only",
+      );
       return;
     }
     if (recipientIds.length === 0) {

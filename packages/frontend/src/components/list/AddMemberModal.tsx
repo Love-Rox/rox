@@ -276,10 +276,7 @@ export function AddMemberModal({
               <div className="flex items-center justify-between p-4 border-b border-(--border-color)">
                 <div className="flex items-center gap-2">
                   <UserPlus className="w-5 h-5 text-(--text-muted)" />
-                  <Heading
-                    slot="title"
-                    className="text-lg font-semibold text-(--text-primary)"
-                  >
+                  <Heading slot="title" className="text-lg font-semibold text-(--text-primary)">
                     <Trans>Add member to "{list.name}"</Trans>
                   </Heading>
                 </div>

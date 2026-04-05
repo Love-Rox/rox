@@ -44,7 +44,11 @@ export class MysqlUserReportRepository implements IUserReportRepository {
     });
 
     // MySQL doesn't support RETURNING, fetch the inserted record
-    const [result] = await this.db.select().from(userReports).where(eq(userReports.id, id)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(userReports)
+      .where(eq(userReports.id, id))
+      .limit(1);
 
     if (!result) {
       throw new Error("Failed to create user report");
@@ -113,7 +117,9 @@ export class MysqlUserReportRepository implements IUserReportRepository {
       conditions.push(eq(userReports.reporterId, options.reporterId));
     }
 
-    const query = this.db.select({ count: sql<number>`CAST(COUNT(*) AS SIGNED)` }).from(userReports);
+    const query = this.db
+      .select({ count: sql<number>`CAST(COUNT(*) AS SIGNED)` })
+      .from(userReports);
 
     if (conditions.length > 0) {
       const [result] = await query.where(and(...conditions));
@@ -142,7 +148,11 @@ export class MysqlUserReportRepository implements IUserReportRepository {
       .where(eq(userReports.id, id));
 
     // MySQL doesn't support RETURNING, fetch the updated record
-    const [updated] = await this.db.select().from(userReports).where(eq(userReports.id, id)).limit(1);
+    const [updated] = await this.db
+      .select()
+      .from(userReports)
+      .where(eq(userReports.id, id))
+      .limit(1);
 
     return updated ?? null;
   }

@@ -70,7 +70,12 @@ export class SqliteInstanceSettingsRepository implements IInstanceSettingsReposi
     }
 
     // Fetch the record
-    const [result] = this.db.select().from(instanceSettings).where(eq(instanceSettings.key, key)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(instanceSettings)
+      .where(eq(instanceSettings.key, key))
+      .limit(1)
+      .all();
 
     if (!result) {
       throw new Error("Failed to set instance setting");

@@ -210,7 +210,18 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleAssetUpload = async (assetType: "icon" | "darkIcon" | "banner" | "favicon" | "pwaIcon192" | "pwaIcon512" | "pwaMaskableIcon192" | "pwaMaskableIcon512", file: File) => {
+  const handleAssetUpload = async (
+    assetType:
+      | "icon"
+      | "darkIcon"
+      | "banner"
+      | "favicon"
+      | "pwaIcon192"
+      | "pwaIcon512"
+      | "pwaMaskableIcon192"
+      | "pwaMaskableIcon512",
+    file: File,
+  ) => {
     setIsUploadingAsset(assetType);
     setError(null);
 
@@ -245,7 +256,17 @@ export default function AdminSettingsPage() {
     }
   };
 
-  const handleAssetDelete = async (assetType: "icon" | "darkIcon" | "banner" | "favicon" | "pwaIcon192" | "pwaIcon512" | "pwaMaskableIcon192" | "pwaMaskableIcon512") => {
+  const handleAssetDelete = async (
+    assetType:
+      | "icon"
+      | "darkIcon"
+      | "banner"
+      | "favicon"
+      | "pwaIcon192"
+      | "pwaIcon512"
+      | "pwaMaskableIcon192"
+      | "pwaMaskableIcon512",
+  ) => {
     setIsUploadingAsset(assetType);
     setError(null);
 
@@ -534,7 +555,9 @@ export default function AdminSettingsPage() {
               </label>
               <p className="text-sm text-(--text-muted) mb-3">
                 <Trans>
-                  This color represents your server's brand identity. It will be used for buttons, links, and UI accents across the instance, and shared with other federated servers.
+                  This color represents your server's brand identity. It will be used for buttons,
+                  links, and UI accents across the instance, and shared with other federated
+                  servers.
                 </Trans>
               </p>
 
@@ -669,8 +692,8 @@ export default function AdminSettingsPage() {
               </label>
               <p className="text-sm text-(--text-muted) mb-3">
                 <Trans>
-                  This color is shown on external services like Misskey when displaying your instance info.
-                  Leave empty to use the primary color.
+                  This color is shown on external services like Misskey when displaying your
+                  instance info. Leave empty to use the primary color.
                 </Trans>
               </p>
 
@@ -778,13 +801,18 @@ export default function AdminSettingsPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <p className="text-sm text-(--text-muted)">
-              <Trans>Upload images for your instance branding. Files are automatically converted to WebP format.</Trans>
+              <Trans>
+                Upload images for your instance branding. Files are automatically converted to WebP
+                format.
+              </Trans>
             </p>
 
             <AssetUploadCard
               type="icon"
               title={<Trans>Instance Icon</Trans>}
-              description={<Trans>Used for push notifications and instance branding (max 2MB)</Trans>}
+              description={
+                <Trans>Used for push notifications and instance branding (max 2MB)</Trans>
+              }
               currentUrl={assets.icon}
               isUploading={isUploadingAsset === "icon"}
               onUpload={(file) => handleAssetUpload("icon", file)}
@@ -795,7 +823,9 @@ export default function AdminSettingsPage() {
             <AssetUploadCard
               type="darkIcon"
               title={<Trans>Dark Mode Icon</Trans>}
-              description={<Trans>Icon for dark mode. Falls back to standard icon if not set (max 2MB)</Trans>}
+              description={
+                <Trans>Icon for dark mode. Falls back to standard icon if not set (max 2MB)</Trans>
+              }
               currentUrl={assets.darkIcon}
               isUploading={isUploadingAsset === "darkIcon"}
               onUpload={(file) => handleAssetUpload("darkIcon", file)}
@@ -828,7 +858,12 @@ export default function AdminSettingsPage() {
             <AssetUploadCard
               type="pwaIcon192"
               title={<Trans>PWA Icon (192x192)</Trans>}
-              description={<Trans>Icon for Progressive Web App, 192x192 pixels (max 1MB). Falls back to instance icon if not set.</Trans>}
+              description={
+                <Trans>
+                  Icon for Progressive Web App, 192x192 pixels (max 1MB). Falls back to instance
+                  icon if not set.
+                </Trans>
+              }
               currentUrl={assets.pwaIcon192}
               isUploading={isUploadingAsset === "pwaIcon192"}
               onUpload={(file) => handleAssetUpload("pwaIcon192", file)}
@@ -839,7 +874,12 @@ export default function AdminSettingsPage() {
             <AssetUploadCard
               type="pwaIcon512"
               title={<Trans>PWA Icon (512x512)</Trans>}
-              description={<Trans>High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls back to instance icon if not set.</Trans>}
+              description={
+                <Trans>
+                  High-res icon for PWA splash screen, 512x512 pixels (max 2MB). Falls back to
+                  instance icon if not set.
+                </Trans>
+              }
               currentUrl={assets.pwaIcon512}
               isUploading={isUploadingAsset === "pwaIcon512"}
               onUpload={(file) => handleAssetUpload("pwaIcon512", file)}
@@ -854,9 +894,10 @@ export default function AdminSettingsPage() {
               </h3>
               <p className="text-sm text-(--text-muted) mb-4">
                 <Trans>
-                  Maskable icons are designed to be cropped by the OS into different shapes (circles, rounded squares, etc.).
-                  These should have important content within a "safe zone" (centered 80% of the icon).
-                  If not set, only standard icons will be used.
+                  Maskable icons are designed to be cropped by the OS into different shapes
+                  (circles, rounded squares, etc.). These should have important content within a
+                  "safe zone" (centered 80% of the icon). If not set, only standard icons will be
+                  used.
                 </Trans>
               </p>
 
@@ -864,7 +905,11 @@ export default function AdminSettingsPage() {
                 <AssetUploadCard
                   type="pwaMaskableIcon192"
                   title={<Trans>PWA Maskable Icon (192x192)</Trans>}
-                  description={<Trans>Maskable icon for PWA with safe zone padding, 192x192 pixels (max 1MB).</Trans>}
+                  description={
+                    <Trans>
+                      Maskable icon for PWA with safe zone padding, 192x192 pixels (max 1MB).
+                    </Trans>
+                  }
                   currentUrl={assets.pwaMaskableIcon192}
                   isUploading={isUploadingAsset === "pwaMaskableIcon192"}
                   onUpload={(file) => handleAssetUpload("pwaMaskableIcon192", file)}
@@ -875,7 +920,12 @@ export default function AdminSettingsPage() {
                 <AssetUploadCard
                   type="pwaMaskableIcon512"
                   title={<Trans>PWA Maskable Icon (512x512)</Trans>}
-                  description={<Trans>High-res maskable icon for PWA with safe zone padding, 512x512 pixels (max 2MB).</Trans>}
+                  description={
+                    <Trans>
+                      High-res maskable icon for PWA with safe zone padding, 512x512 pixels (max
+                      2MB).
+                    </Trans>
+                  }
                   currentUrl={assets.pwaMaskableIcon512}
                   isUploading={isUploadingAsset === "pwaMaskableIcon512"}
                   onUpload={(file) => handleAssetUpload("pwaMaskableIcon512", file)}
@@ -898,7 +948,10 @@ export default function AdminSettingsPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <p className="text-sm text-(--text-muted)">
-              <Trans>Configure links to your Terms of Service and Privacy Policy pages. These links will be displayed in the site footer and during registration.</Trans>
+              <Trans>
+                Configure links to your Terms of Service and Privacy Policy pages. These links will
+                be displayed in the site footer and during registration.
+              </Trans>
             </p>
 
             <div>
@@ -919,7 +972,10 @@ export default function AdminSettingsPage() {
                 disabled={isSaving}
               />
               <p className="mt-1 text-sm text-(--text-muted)">
-                <Trans>Enter a URL to your Terms of Service page, or leave empty to use the default template at /legal/terms</Trans>
+                <Trans>
+                  Enter a URL to your Terms of Service page, or leave empty to use the default
+                  template at /legal/terms
+                </Trans>
               </p>
             </div>
 
@@ -941,7 +997,10 @@ export default function AdminSettingsPage() {
                 disabled={isSaving}
               />
               <p className="mt-1 text-sm text-(--text-muted)">
-                <Trans>Enter a URL to your Privacy Policy page, or leave empty to use the default template at /legal/privacy</Trans>
+                <Trans>
+                  Enter a URL to your Privacy Policy page, or leave empty to use the default
+                  template at /legal/privacy
+                </Trans>
               </p>
             </div>
 
@@ -950,7 +1009,10 @@ export default function AdminSettingsPage() {
                 <Trans>Source Code URL (AGPL-3.0 Compliance)</Trans>
               </h4>
               <p className="text-sm text-(--text-muted) mb-3">
-                <Trans>Under the AGPL-3.0 license, you must provide access to the source code of this instance. If you have modified the code, enter the URL to your fork.</Trans>
+                <Trans>
+                  Under the AGPL-3.0 license, you must provide access to the source code of this
+                  instance. If you have modified the code, enter the URL to your fork.
+                </Trans>
               </p>
               <input
                 type="url"
@@ -966,7 +1028,10 @@ export default function AdminSettingsPage() {
                 disabled={isSaving}
               />
               <p className="mt-1 text-sm text-(--text-muted)">
-                <Trans>Default: https://github.com/Love-Rox/rox. Change this if you are running a modified version.</Trans>
+                <Trans>
+                  Default: https://github.com/Love-Rox/rox. Change this if you are running a
+                  modified version.
+                </Trans>
               </p>
             </div>
 

@@ -88,7 +88,10 @@ export class PostgresListRepository implements IListRepository {
     return result !== undefined;
   }
 
-  async update(id: string, data: Partial<Pick<List, "name" | "isPublic" | "notifyLevel">>): Promise<List> {
+  async update(
+    id: string,
+    data: Partial<Pick<List, "name" | "isPublic" | "notifyLevel">>,
+  ): Promise<List> {
     const [result] = await this.db
       .update(userLists)
       .set({ ...data, updatedAt: new Date() })

@@ -430,10 +430,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button
-              variant="secondary"
-              onPress={() => navigate("/timeline")}
-            >
+            <Button variant="secondary" onPress={() => navigate("/timeline")}>
               <Trans>Go Back</Trans>
             </Button>
             <Button variant="primary" onPress={() => navigate("/")}>
@@ -525,10 +522,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
               <div className="flex-1 flex justify-end gap-1 sm:gap-2 flex-wrap">
                 {isOwnProfile ? (
                   <>
-                    <Button
-                      variant="secondary"
-                      onPress={() => navigate("/settings")}
-                    >
+                    <Button variant="secondary" onPress={() => navigate("/settings")}>
                       <Trans>Edit Profile</Trans>
                     </Button>
                     <Button
@@ -602,53 +596,55 @@ export function UserProfile({ username, host }: UserProfileProps) {
                 )}
               </div>
               <p className="text-gray-600 dark:text-gray-400">
-                @{user.username}{user.host && `@${user.host}`}
+                @{user.username}
+                {user.host && `@${user.host}`}
               </p>
               {/* Remote Instance Badge */}
-              {user.host && (() => {
-                // Validate theme color to prevent CSS injection
-                const validatedThemeColor = validateCssColor(remoteInstance?.themeColor);
-                // Only 6-digit hex colors support appending alpha (e.g., #RRGGBB15)
-                // Short hex (#RGB, #RGBA) or 8-digit hex (#RRGGBBAA) would be invalid
-                const isSixDigitHex = /^#[0-9a-f]{6}$/i.test(validatedThemeColor ?? "");
-                const badgeBgColor = isSixDigitHex
-                  ? `${validatedThemeColor}15`
-                  : "var(--bg-tertiary)";
-                return (
-                <div className="mt-1">
-                  <a
-                    href={`https://${user.host}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded hover:opacity-80 transition-opacity"
-                    style={{
-                      backgroundColor: badgeBgColor,
-                      borderLeft: validatedThemeColor
-                        ? `3px solid ${validatedThemeColor}`
-                        : "3px solid var(--border-color)",
-                    }}
-                    title={
-                      remoteInstance
-                        ? `${remoteInstance.name || user.host}${remoteInstance.softwareName ? ` (${remoteInstance.softwareName})` : ""}`
-                        : `From ${user.host}`
-                    }
-                  >
-                    {remoteInstance?.iconUrl && !remoteInstanceIconFailed ? (
-                      <img
-                        src={getProxiedImageUrl(remoteInstance.iconUrl) || ""}
-                        alt=""
-                        className="w-4 h-4 rounded-sm object-contain"
-                        loading="lazy"
-                        onError={() => setRemoteInstanceIconFailed(true)}
-                      />
-                    ) : (
-                      <Globe className="w-4 h-4" />
-                    )}
-                    <span>{remoteInstance?.name || user.host}</span>
-                  </a>
-                </div>
-                );
-              })()}
+              {user.host &&
+                (() => {
+                  // Validate theme color to prevent CSS injection
+                  const validatedThemeColor = validateCssColor(remoteInstance?.themeColor);
+                  // Only 6-digit hex colors support appending alpha (e.g., #RRGGBB15)
+                  // Short hex (#RGB, #RGBA) or 8-digit hex (#RRGGBBAA) would be invalid
+                  const isSixDigitHex = /^#[0-9a-f]{6}$/i.test(validatedThemeColor ?? "");
+                  const badgeBgColor = isSixDigitHex
+                    ? `${validatedThemeColor}15`
+                    : "var(--bg-tertiary)";
+                  return (
+                    <div className="mt-1">
+                      <a
+                        href={`https://${user.host}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded hover:opacity-80 transition-opacity"
+                        style={{
+                          backgroundColor: badgeBgColor,
+                          borderLeft: validatedThemeColor
+                            ? `3px solid ${validatedThemeColor}`
+                            : "3px solid var(--border-color)",
+                        }}
+                        title={
+                          remoteInstance
+                            ? `${remoteInstance.name || user.host}${remoteInstance.softwareName ? ` (${remoteInstance.softwareName})` : ""}`
+                            : `From ${user.host}`
+                        }
+                      >
+                        {remoteInstance?.iconUrl && !remoteInstanceIconFailed ? (
+                          <img
+                            src={getProxiedImageUrl(remoteInstance.iconUrl) || ""}
+                            alt=""
+                            className="w-4 h-4 rounded-sm object-contain"
+                            loading="lazy"
+                            onError={() => setRemoteInstanceIconFailed(true)}
+                          />
+                        ) : (
+                          <Globe className="w-4 h-4" />
+                        )}
+                        <span>{remoteInstance?.name || user.host}</span>
+                      </a>
+                    </div>
+                  );
+                })()}
               {/* Public Role Badges */}
               {publicRoles.length > 0 && (
                 <div className="mt-2">
@@ -784,13 +780,7 @@ export function UserProfile({ username, host }: UserProfileProps) {
       )}
 
       {/* QR Code Modal - only render when open */}
-      {showQRCode && (
-        <UserQRCodeModal
-          isOpen
-          onClose={() => setShowQRCode(false)}
-          user={user}
-        />
-      )}
+      {showQRCode && <UserQRCodeModal isOpen onClose={() => setShowQRCode(false)} user={user} />}
 
       {/* Add to List Modal - only render when open */}
       {currentUser && !isOwnProfile && showAddToList && (

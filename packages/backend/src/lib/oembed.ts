@@ -103,7 +103,6 @@ export interface UserOEmbedOptions {
   instanceIconUrl: string | null;
 }
 
-
 /**
  * Generate oEmbed response for a note
  *
@@ -140,15 +139,8 @@ export interface UserOEmbedOptions {
  * ```
  */
 export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
-  const {
-    text,
-    cw,
-    authorUsername,
-    authorDisplayName,
-    authorHost,
-    baseUrl,
-    instanceName,
-  } = options;
+  const { text, cw, authorUsername, authorDisplayName, authorHost, baseUrl, instanceName } =
+    options;
 
   // Build Fediverse-style author name: "Display Name (@user@domain)"
   const displayName = authorDisplayName || authorUsername;
@@ -207,14 +199,7 @@ export function generateNoteOEmbed(options: NoteOEmbedOptions): OEmbedResponse {
  * ```
  */
 export function generateUserOEmbed(options: UserOEmbedOptions): OEmbedResponse {
-  const {
-    username,
-    displayName,
-    bio,
-    host,
-    baseUrl,
-    instanceName,
-  } = options;
+  const { username, displayName, bio, host, baseUrl, instanceName } = options;
 
   // Build Fediverse-style author name: "Display Name (@user@domain)"
   const name = displayName || username;

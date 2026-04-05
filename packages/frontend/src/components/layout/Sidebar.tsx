@@ -200,18 +200,14 @@ export function Sidebar() {
       {/* Logo / Brand */}
       <div className="p-4 border-b border-(--border-color)">
         <SpaLink to="/timeline" className="flex items-center gap-3" onClick={handleNavClick}>
-          <SpaLink to="/timeline" className="flex items-center gap-3" onClick={handleNavClick}>
-            {effectiveIconUrl ? (
-              <img
-                src={effectiveIconUrl}
-                alt={instanceInfo?.name || "Logo"}
-                className="w-8 h-8 rounded-lg object-cover"
-              />
-            ) : null}
-            <span className="text-xl font-bold text-primary-600">
-              {instanceInfo?.name || "Rox"}
-            </span>
-          </SpaLink>
+          {effectiveIconUrl ? (
+            <img
+              src={effectiveIconUrl}
+              alt={instanceInfo?.name || "Logo"}
+              className="w-8 h-8 rounded-lg object-cover"
+            />
+          ) : null}
+          <span className="text-xl font-bold text-primary-600">{instanceInfo?.name || "Rox"}</span>
         </SpaLink>
       </div>
 
@@ -223,7 +219,9 @@ export function Sidebar() {
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary-500 hover:bg-primary-600 text-white transition-colors cursor-pointer"
         >
           <PenSquare className="w-5 h-5" />
-          <span className="font-medium"><Trans>Post</Trans></span>
+          <span className="font-medium">
+            <Trans>Post</Trans>
+          </span>
         </button>
       </div>
 
@@ -312,33 +310,31 @@ export function Sidebar() {
         className={`p-4 border-b border-(--border-color) flex items-center ${isCollapsed ? "justify-center" : "justify-between"}`}
       >
         <SpaLink to="/timeline" className={`flex items-center ${isCollapsed ? "" : "gap-3"}`}>
-          <SpaLink to="/timeline" className={`flex items-center ${isCollapsed ? "" : "gap-3"}`}>
-            {/* Use same icon for both collapsed and expanded modes */}
-            {isCollapsed ? (
-              effectiveIconUrl ? (
+          {/* Use same icon for both collapsed and expanded modes */}
+          {isCollapsed ? (
+            effectiveIconUrl ? (
+              <img
+                src={effectiveIconUrl}
+                alt={instanceInfo?.name || "Logo"}
+                className="w-8 h-8 rounded object-cover"
+              />
+            ) : (
+              <span className="text-xl font-bold text-primary-600">R</span>
+            )
+          ) : (
+            <>
+              {effectiveIconUrl ? (
                 <img
                   src={effectiveIconUrl}
                   alt={instanceInfo?.name || "Logo"}
-                  className="w-8 h-8 rounded object-cover"
+                  className="w-8 h-8 rounded-lg object-cover"
                 />
-              ) : (
-                <span className="text-xl font-bold text-primary-600">R</span>
-              )
-            ) : (
-              <>
-                {effectiveIconUrl ? (
-                  <img
-                    src={effectiveIconUrl}
-                    alt={instanceInfo?.name || "Logo"}
-                    className="w-8 h-8 rounded-lg object-cover"
-                  />
-                ) : null}
-                <span className="text-xl font-bold text-primary-600">
-                  {instanceInfo?.name || "Rox"}
-                </span>
-              </>
-            )}
-          </SpaLink>
+              ) : null}
+              <span className="text-xl font-bold text-primary-600">
+                {instanceInfo?.name || "Rox"}
+              </span>
+            </>
+          )}
         </SpaLink>
         {!isCollapsed && (
           <button
@@ -364,7 +360,11 @@ export function Sidebar() {
           title={isCollapsed ? "Post" : undefined}
         >
           <PenSquare className="w-5 h-5" />
-          {!isCollapsed && <span className="font-medium"><Trans>Post</Trans></span>}
+          {!isCollapsed && (
+            <span className="font-medium">
+              <Trans>Post</Trans>
+            </span>
+          )}
         </button>
       </div>
 
@@ -466,13 +466,17 @@ export function Sidebar() {
 
       {/* Version display */}
       {instanceInfo?.software && (
-        <div className={`border-t border-(--border-color) ${isCollapsed ? "p-2 flex justify-center" : "px-4 py-2"}`}>
+        <div
+          className={`border-t border-(--border-color) ${isCollapsed ? "p-2 flex justify-center" : "px-4 py-2"}`}
+        >
           <SpaLink
             to="/settings?tab=advanced"
             className="text-xs text-(--text-muted) hover:text-(--text-secondary) transition-colors"
             title={`${instanceInfo.software.name} v${instanceInfo.software.version}`}
           >
-            {isCollapsed ? `v${instanceInfo.software.version.split(".")[0] || instanceInfo.software.version}` : `v${instanceInfo.software.version}`}
+            {isCollapsed
+              ? `v${instanceInfo.software.version.split(".")[0] || instanceInfo.software.version}`
+              : `v${instanceInfo.software.version}`}
           </SpaLink>
         </div>
       )}
@@ -493,18 +497,14 @@ export function Sidebar() {
         </button>
 
         <SpaLink to="/timeline" className="flex items-center gap-2">
-          <SpaLink to="/timeline" className="flex items-center gap-2">
-            {effectiveIconUrl ? (
-              <img
-                src={effectiveIconUrl}
-                alt={instanceInfo?.name || "Logo"}
-                className="w-7 h-7 rounded-lg object-cover"
-              />
-            ) : null}
-            <span className="text-lg font-bold text-primary-600">
-              {instanceInfo?.name || "Rox"}
-            </span>
-          </SpaLink>
+          {effectiveIconUrl ? (
+            <img
+              src={effectiveIconUrl}
+              alt={instanceInfo?.name || "Logo"}
+              className="w-7 h-7 rounded-lg object-cover"
+            />
+          ) : null}
+          <span className="text-lg font-bold text-primary-600">{instanceInfo?.name || "Rox"}</span>
         </SpaLink>
 
         <SpaLink to={`/${currentUser.username}`} className="p-1 -mr-1 rounded-full">

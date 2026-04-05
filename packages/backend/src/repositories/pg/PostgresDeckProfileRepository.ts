@@ -14,7 +14,7 @@ import type { IDeckProfileRepository } from "../../interfaces/repositories/IDeck
 import type { DeckProfile, DeckColumn } from "shared";
 
 export class PostgresDeckProfileRepository implements IDeckProfileRepository {
-  constructor(private db: Database) { }
+  constructor(private db: Database) {}
 
   async create(profile: Omit<DeckProfile, "createdAt" | "updatedAt">): Promise<DeckProfile> {
     const now = new Date();
@@ -177,7 +177,7 @@ export class PostgresDeckProfileRepository implements IDeckProfileRepository {
         .update(deckProfiles)
         .set({ isDefault: false })
         .where(
-          and(eq(deckProfiles.userId, userId), sql`${deckProfiles.id} != ${excludeProfileId}`)
+          and(eq(deckProfiles.userId, userId), sql`${deckProfiles.id} != ${excludeProfileId}`),
         );
     } else {
       await this.db

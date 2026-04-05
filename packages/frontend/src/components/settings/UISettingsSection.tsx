@@ -15,7 +15,16 @@ import { useState, useEffect } from "react";
 import { useAtom } from "jotai";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { Settings, Type, AlignJustify, Maximize2, Palette, Code, Volume2, LayoutGrid } from "lucide-react";
+import {
+  Settings,
+  Type,
+  AlignJustify,
+  Maximize2,
+  Palette,
+  Code,
+  Volume2,
+  LayoutGrid,
+} from "lucide-react";
 import { currentUserAtom } from "../../lib/atoms/auth";
 import { uiSettingsAtom } from "../../lib/atoms/uiSettings";
 import { useApi } from "../../hooks/useApi";
@@ -331,9 +340,7 @@ export function UISettingsSection() {
               onClick={() => handleSettingChange("deckEnabled", !localSettings.deckEnabled)}
               disabled={isSaving}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                localSettings.deckEnabled
-                  ? "bg-primary-500"
-                  : "bg-gray-300 dark:bg-gray-600"
+                localSettings.deckEnabled ? "bg-primary-500" : "bg-gray-300 dark:bg-gray-600"
               } ${isSaving ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
               role="switch"
               aria-checked={localSettings.deckEnabled}
@@ -419,12 +426,19 @@ export function UISettingsSection() {
             <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 space-y-3">
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                 <Trans>
-                  Override the default sound for specific notification types. Leave as default to use
-                  the settings above.
+                  Override the default sound for specific notification types. Leave as default to
+                  use the settings above.
                 </Trans>
               </p>
               {(
-                ["follow", "mention", "reply", "reaction", "renote", "quote"] as NotificationSoundType[]
+                [
+                  "follow",
+                  "mention",
+                  "reply",
+                  "reaction",
+                  "renote",
+                  "quote",
+                ] as NotificationSoundType[]
               ).map((notifType) => {
                 const typeSettings = localSettings.notificationSoundsByType?.[notifType];
                 const isOverridden = !!typeSettings;

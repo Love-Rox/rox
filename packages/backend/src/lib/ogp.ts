@@ -288,14 +288,10 @@ export function generateUserOgpHtml(options: UserOgpOptions): string {
   const formattedUsername = formatUsername(username, host);
 
   // Profile URL is /@username for local users, /@username@host for remote
-  const profileUrl = host
-    ? `${baseUrl}/@${username}@${host}`
-    : `${baseUrl}/@${username}`;
+  const profileUrl = host ? `${baseUrl}/@${username}@${host}` : `${baseUrl}/@${username}`;
 
   // Build title
-  const title = displayName
-    ? `${displayName} (${formattedUsername})`
-    : formattedUsername;
+  const title = displayName ? `${displayName} (${formattedUsername})` : formattedUsername;
 
   // Build description from bio or default
   const description = bio

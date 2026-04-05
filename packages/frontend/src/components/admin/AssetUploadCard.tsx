@@ -9,7 +9,15 @@ import { Trans } from "@lingui/react/macro";
 import { Button } from "../ui/Button";
 import { Spinner } from "../ui/Spinner";
 
-type AssetType = "icon" | "darkIcon" | "banner" | "favicon" | "pwaIcon192" | "pwaIcon512" | "pwaMaskableIcon192" | "pwaMaskableIcon512";
+type AssetType =
+  | "icon"
+  | "darkIcon"
+  | "banner"
+  | "favicon"
+  | "pwaIcon192"
+  | "pwaIcon512"
+  | "pwaMaskableIcon192"
+  | "pwaMaskableIcon512";
 
 interface AssetUploadCardProps {
   type: AssetType;
@@ -66,21 +74,11 @@ export function AssetUploadCard({
           <p className="text-sm text-(--text-muted) mt-1">{description}</p>
         </div>
         <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onPress={handleFileSelect}
-            isDisabled={isUploading}
-          >
+          <Button variant="secondary" size="sm" onPress={handleFileSelect} isDisabled={isUploading}>
             {isUploading ? <Spinner size="xs" /> : <Trans>Upload</Trans>}
           </Button>
           {currentUrl && (
-            <Button
-              variant="danger"
-              size="sm"
-              onPress={onDelete}
-              isDisabled={isUploading}
-            >
+            <Button variant="danger" size="sm" onPress={onDelete} isDisabled={isUploading}>
               <Trans>Remove</Trans>
             </Button>
           )}

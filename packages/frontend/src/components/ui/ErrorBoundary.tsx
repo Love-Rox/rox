@@ -81,12 +81,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             <span>
               <Trans>Something went wrong</Trans>
             </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onPress={this.handleRetry}
-              className="ml-auto"
-            >
+            <Button variant="ghost" size="sm" onPress={this.handleRetry} className="ml-auto">
               <Trans>Retry</Trans>
             </Button>
           </div>
@@ -101,9 +96,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             <Trans>Something went wrong</Trans>
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md">
-            <Trans>
-              An unexpected error occurred. Try refreshing the page or going back.
-            </Trans>
+            <Trans>An unexpected error occurred. Try refreshing the page or going back.</Trans>
           </p>
           <div className="flex gap-3">
             <Button variant="secondary" onPress={this.handleRetry}>

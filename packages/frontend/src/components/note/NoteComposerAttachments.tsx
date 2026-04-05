@@ -36,7 +36,7 @@ export function NoteComposerAttachments({
   // Memoize object URLs to prevent recreation on every render
   const filePreviews = useMemo(
     () => files.map((file) => ({ file, url: URL.createObjectURL(file) })),
-    [files]
+    [files],
   );
 
   // Cleanup object URLs when component unmounts or files change

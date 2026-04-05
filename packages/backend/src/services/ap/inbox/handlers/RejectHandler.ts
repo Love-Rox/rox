@@ -55,7 +55,11 @@ export class RejectHandler extends BaseHandler {
         const followRepository = c.get("followRepository");
 
         // Extract username from follower URI (our local user)
-        const localUser = await this.findLocalUserFromUri(followerUri, userRepository, context.baseUrl);
+        const localUser = await this.findLocalUserFromUri(
+          followerUri,
+          userRepository,
+          context.baseUrl,
+        );
 
         if (localUser) {
           // Delete the follow relationship since it was rejected

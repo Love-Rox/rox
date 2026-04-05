@@ -11,9 +11,7 @@
 
 import { Hono } from "hono";
 import type { Context } from "hono";
-import {
-  isActivityPubRequest,
-} from "../lib/crawlerDetection.js";
+import { isActivityPubRequest } from "../lib/crawlerDetection.js";
 
 const profile = new Hono();
 

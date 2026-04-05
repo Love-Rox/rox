@@ -90,7 +90,10 @@ export class ActivityDeliveryService {
       }
 
       if (!response.ok) {
-        logger.error({ inboxUrl, status: response.status, statusText: response.statusText }, "Failed to deliver activity");
+        logger.error(
+          { inboxUrl, status: response.status, statusText: response.statusText },
+          "Failed to deliver activity",
+        );
         const duration = (Date.now() - startTime) / 1000;
         recordActivityDelivery(activityType, false, duration);
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);

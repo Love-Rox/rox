@@ -112,7 +112,8 @@ app.get("/nodeinfo/2.1", async (c) => {
     },
     metadata: {
       nodeName: metadata.name || "Rox Instance",
-      nodeDescription: metadata.description || "A lightweight ActivityPub server with Misskey API compatibility",
+      nodeDescription:
+        metadata.description || "A lightweight ActivityPub server with Misskey API compatibility",
       maintainer: {
         name: "Administrator",
         email: metadata.maintainerEmail || null,
@@ -179,7 +180,8 @@ app.get("/nodeinfo/2.0", async (c) => {
     },
     metadata: {
       nodeName: metadata.name || "Rox Instance",
-      nodeDescription: metadata.description || "A lightweight ActivityPub server with Misskey API compatibility",
+      nodeDescription:
+        metadata.description || "A lightweight ActivityPub server with Misskey API compatibility",
       maintainer: {
         name: "Administrator",
         email: metadata.maintainerEmail || null,

@@ -13,7 +13,10 @@ export default function ServerErrorPage() {
       statusCode={500}
       title={<Trans>Server Error</Trans>}
       description={
-        <Trans>Something went wrong on our end. Please try again later or contact support if the problem persists.</Trans>
+        <Trans>
+          Something went wrong on our end. Please try again later or contact support if the problem
+          persists.
+        </Trans>
       }
     >
       {/* Retry button */}

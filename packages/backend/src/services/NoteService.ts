@@ -137,13 +137,7 @@ export class NoteService {
    * - Renote can have no text (quote renote if text is provided)
    */
   async create(input: NoteCreateInput): Promise<Note> {
-    const {
-      userId,
-      replyId = null,
-      renoteId = null,
-      fileIds = [],
-      visibleUserIds = [],
-    } = input;
+    const { userId, replyId = null, renoteId = null, fileIds = [], visibleUserIds = [] } = input;
 
     // Modifiable fields (may be changed by plugins via beforeCreate event)
     let text = input.text ?? null;
@@ -317,18 +311,19 @@ export class NoteService {
       if (visibility === "specified" && visibleUserIds.length > 0) {
         // Direct message: deliver to specific recipients
         logger.debug({ noteId, recipientCount: visibleUserIds.length }, "Starting DM delivery");
-        this.deliveryService
-          .deliverDirectMessage(note, author, visibleUserIds)
-          .catch((error) => {
-            logger.error({ err: error, noteId }, "Failed to deliver Direct Message activity");
-          });
+        this.deliveryService.deliverDirectMessage(note, author, visibleUserIds).catch((error) => {
+          logger.error({ err: error, noteId }, "Failed to deliver Direct Message activity");
+        });
       } else if (visibility === "public") {
         if (isPureRenote && renoteTarget) {
           // Pure renote: send Announce activity to all followers
           this.deliveryService
             .deliverAnnounceActivity(note.id, renoteTarget, author)
             .catch((error) => {
-              logger.error({ err: error, noteId }, "Failed to deliver Announce activity for renote");
+              logger.error(
+                { err: error, noteId },
+                "Failed to deliver Announce activity for renote",
+              );
             });
         } else {
           // Regular note or quote renote: send Create activity
@@ -406,7 +401,6 @@ export class NoteService {
     const [hydratedNote] = await this.hydrateFiles([note]);
     return hydratedNote ?? null;
   }
-
 
   /**
    * Hydrate renote information for a list of notes
@@ -818,7 +812,6 @@ export class NoteService {
     return await this.hydrateFiles(hydratedNotes);
   }
 
-
   /**
    * Get replies to a note
    *
@@ -995,11 +988,7 @@ export class NoteService {
 
     // Reply notification
     if (replyTarget && replyTargetUser && !replyTargetUser.host) {
-      await this.notificationService.createReplyNotification(
-        replyTarget.userId,
-        authorId,
-        note.id,
-      );
+      await this.notificationService.createReplyNotification(replyTarget.userId, authorId, note.id);
     }
 
     // Renote notification (pure renote without text)

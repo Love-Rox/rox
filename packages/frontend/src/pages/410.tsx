@@ -13,7 +13,9 @@ export default function GonePage() {
     <ErrorPage
       statusCode={410}
       title={<Trans>Gone</Trans>}
-      description={<Trans>This content has been permanently deleted and is no longer available.</Trans>}
+      description={
+        <Trans>This content has been permanently deleted and is no longer available.</Trans>
+      }
     />
   );
 }

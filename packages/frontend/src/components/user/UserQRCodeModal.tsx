@@ -174,10 +174,7 @@ export function UserQRCodeModal({ isOpen, onClose, user }: UserQRCodeModalProps)
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{webFingerAddress}</p>
 
           {/* QR Code */}
-          <div
-            ref={qrRef}
-            className="bg-white p-4 rounded-lg shadow-inner mb-4"
-          >
+          <div ref={qrRef} className="bg-white p-4 rounded-lg shadow-inner mb-4">
             <QRCodeSVG
               value={interactUrl}
               size={200}

@@ -23,14 +23,22 @@ export class SqliteDriveFolderRepository implements IDriveFolderRepository {
 
   async create(folder: Omit<DriveFolder, "createdAt" | "updatedAt">): Promise<DriveFolder> {
     const now = new Date();
-    this.db.insert(driveFolders).values({
-      ...folder,
-      createdAt: now,
-      updatedAt: now,
-    }).run();
+    this.db
+      .insert(driveFolders)
+      .values({
+        ...folder,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
-    const [result] = this.db.select().from(driveFolders).where(eq(driveFolders.id, folder.id)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(driveFolders)
+      .where(eq(driveFolders.id, folder.id))
+      .limit(1)
+      .all();
 
     if (!result) {
       throw new Error("Failed to create folder");
@@ -95,7 +103,12 @@ export class SqliteDriveFolderRepository implements IDriveFolderRepository {
       .run();
 
     // Fetch the updated record
-    const [result] = this.db.select().from(driveFolders).where(eq(driveFolders.id, id)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(driveFolders)
+      .where(eq(driveFolders.id, id))
+      .limit(1)
+      .all();
 
     if (!result) {
       throw new Error("Folder not found");

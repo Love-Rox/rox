@@ -139,8 +139,9 @@ export function CookieConsentBanner() {
               <div className="text-sm text-(--text-secondary)">
                 <p className="mb-1">
                   <Trans>
-                    We use cookies to improve your experience. Essential cookies are required for the
-                    service to function. You can customize your preferences or accept all cookies.
+                    We use cookies to improve your experience. Essential cookies are required for
+                    the service to function. You can customize your preferences or accept all
+                    cookies.
                   </Trans>
                 </p>
                 <SpaLink
@@ -152,19 +153,11 @@ export function CookieConsentBanner() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2 shrink-0">
-              <Button
-                variant="secondary"
-                size="sm"
-                onPress={() => setShowDetails(true)}
-              >
+              <Button variant="secondary" size="sm" onPress={() => setShowDetails(true)}>
                 <Settings className="w-4 h-4 mr-1" />
                 <Trans>Customize</Trans>
               </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onPress={handleRejectNonEssential}
-              >
+              <Button variant="secondary" size="sm" onPress={handleRejectNonEssential}>
                 <Trans>Essential only</Trans>
               </Button>
               <Button size="sm" onPress={handleAcceptAll}>
@@ -199,9 +192,7 @@ export function CookieConsentBanner() {
                     <Trans>Essential Cookies</Trans>
                   </p>
                   <p className="text-sm text-(--text-muted)">
-                    <Trans>
-                      Required for the website to function. These cannot be disabled.
-                    </Trans>
+                    <Trans>Required for the website to function. These cannot be disabled.</Trans>
                   </p>
                 </div>
                 <div className="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">
@@ -216,9 +207,7 @@ export function CookieConsentBanner() {
                     <Trans>Functional Cookies</Trans>
                   </p>
                   <p className="text-sm text-(--text-muted)">
-                    <Trans>
-                      Remember your preferences and settings for a better experience.
-                    </Trans>
+                    <Trans>Remember your preferences and settings for a better experience.</Trans>
                   </p>
                 </div>
                 <Switch
@@ -237,9 +226,7 @@ export function CookieConsentBanner() {
                     <Trans>Analytics Cookies</Trans>
                   </p>
                   <p className="text-sm text-(--text-muted)">
-                    <Trans>
-                      Help us understand how you use the service to improve it.
-                    </Trans>
+                    <Trans>Help us understand how you use the service to improve it.</Trans>
                   </p>
                 </div>
                 <Switch

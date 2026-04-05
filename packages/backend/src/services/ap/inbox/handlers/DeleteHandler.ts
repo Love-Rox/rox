@@ -91,7 +91,10 @@ export class DeleteHandler extends BaseHandler {
    * When a remote server sends a Delete activity for an actor,
    * we mark that actor as deleted in our database.
    */
-  private async handleActorDeletion(actorUri: string, c: HandlerContext["c"]): Promise<HandlerResult> {
+  private async handleActorDeletion(
+    actorUri: string,
+    c: HandlerContext["c"],
+  ): Promise<HandlerResult> {
     const userRepository = this.getUserRepository(c);
 
     // Find the user by their ActivityPub URI

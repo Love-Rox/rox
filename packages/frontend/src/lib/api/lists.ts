@@ -7,7 +7,13 @@
  */
 
 import { apiClient } from "./client";
-import type { List, ListWithMemberCount, ListMember, ListMembership, ListNotifyLevel } from "shared";
+import type {
+  List,
+  ListWithMemberCount,
+  ListMember,
+  ListMembership,
+  ListNotifyLevel,
+} from "shared";
 import type { Note } from "../types/note";
 
 export type { List, ListWithMemberCount, ListMember, ListMembership, ListNotifyLevel };
@@ -53,7 +59,10 @@ export const listsApi = {
    * @param data - Fields to update
    * @returns Updated list
    */
-  async update(listId: string, data: { name?: string; isPublic?: boolean; notifyLevel?: ListNotifyLevel }): Promise<List> {
+  async update(
+    listId: string,
+    data: { name?: string; isPublic?: boolean; notifyLevel?: ListNotifyLevel },
+  ): Promise<List> {
     return apiClient.post<List>("/api/users/lists/update", { listId, ...data });
   },
 
@@ -131,7 +140,11 @@ export const listsApi = {
    * @param withReplies - Include replies in timeline
    * @returns Updated membership
    */
-  async updateMembership(listId: string, userId: string, withReplies: boolean): Promise<ListMember> {
+  async updateMembership(
+    listId: string,
+    userId: string,
+    withReplies: boolean,
+  ): Promise<ListMember> {
     return apiClient.post<ListMember>("/api/users/lists/update-membership", {
       listId,
       userId,

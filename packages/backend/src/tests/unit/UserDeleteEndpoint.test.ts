@@ -32,7 +32,7 @@ const mockDeleteLocalUser = mock(() =>
     deletedUserId: "user-1",
     isRemoteUser: false,
     activitiesSent: 5,
-  })
+  }),
 );
 
 describe("POST /api/users/@me/delete", () => {
@@ -148,7 +148,7 @@ describe("POST /api/users/@me/delete", () => {
     });
 
     expect(res.status).toBe(200);
-    const data = await res.json() as SuccessResponse;
+    const data = (await res.json()) as SuccessResponse;
     expect(data.success).toBe(true);
     expect(data.message).toBe("Account deleted successfully");
 
@@ -164,7 +164,7 @@ describe("POST /api/users/@me/delete", () => {
     });
 
     expect(res.status).toBe(400);
-    const data = await res.json() as ErrorResponse;
+    const data = (await res.json()) as ErrorResponse;
     expect(data.error).toBe("Password is required to delete your account");
   });
 
@@ -178,7 +178,7 @@ describe("POST /api/users/@me/delete", () => {
     });
 
     expect(res.status).toBe(400);
-    const data = await res.json() as ErrorResponse;
+    const data = (await res.json()) as ErrorResponse;
     expect(data.error).toBe("Incorrect password");
   });
 
@@ -198,7 +198,7 @@ describe("POST /api/users/@me/delete", () => {
     });
 
     expect(res.status).toBe(400);
-    const data = await res.json() as ErrorResponse;
+    const data = (await res.json()) as ErrorResponse;
     expect(data.error).toBe("Cannot delete admin users. Remove admin status first.");
   });
 
@@ -220,7 +220,7 @@ describe("POST /api/users/@me/delete", () => {
     });
 
     expect(res.status).toBe(401);
-    const data = await res.json() as ErrorResponse;
+    const data = (await res.json()) as ErrorResponse;
     expect(data.error).toBe("Unauthorized");
   });
 
@@ -234,13 +234,13 @@ describe("POST /api/users/@me/delete", () => {
     });
 
     expect(res.status).toBe(400);
-    const data = await res.json() as ErrorResponse;
+    const data = (await res.json()) as ErrorResponse;
     expect(data.error).toBe("User not found or no password set");
   });
 
   test("should handle user without password hash (OAuth-only users)", async () => {
     (mockUserRepo as { findById: unknown }).findById = mock(() =>
-      Promise.resolve({ ...mockUser, passwordHash: null })
+      Promise.resolve({ ...mockUser, passwordHash: null }),
     );
 
     const res = await app.request("/@me/delete", {
@@ -250,7 +250,7 @@ describe("POST /api/users/@me/delete", () => {
     });
 
     expect(res.status).toBe(400);
-    const data = await res.json() as ErrorResponse;
+    const data = (await res.json()) as ErrorResponse;
     expect(data.error).toBe("User not found or no password set");
   });
 });

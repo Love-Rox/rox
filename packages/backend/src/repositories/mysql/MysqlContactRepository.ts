@@ -57,7 +57,11 @@ export class MysqlContactRepository implements IContactRepository {
   }
 
   async findThreadById(id: string): Promise<ContactThread | null> {
-    const [thread] = await this.db.select().from(contactThreads).where(eq(contactThreads.id, id)).limit(1);
+    const [thread] = await this.db
+      .select()
+      .from(contactThreads)
+      .where(eq(contactThreads.id, id))
+      .limit(1);
 
     return thread || null;
   }
@@ -179,7 +183,11 @@ export class MysqlContactRepository implements IContactRepository {
     await this.db.update(contactThreads).set(updates).where(eq(contactThreads.id, id));
 
     // MySQL doesn't support RETURNING, fetch the updated record
-    const [thread] = await this.db.select().from(contactThreads).where(eq(contactThreads.id, id)).limit(1);
+    const [thread] = await this.db
+      .select()
+      .from(contactThreads)
+      .where(eq(contactThreads.id, id))
+      .limit(1);
 
     return thread || null;
   }
@@ -194,7 +202,11 @@ export class MysqlContactRepository implements IContactRepository {
       .where(eq(contactThreads.id, id));
 
     // MySQL doesn't support RETURNING, fetch the updated record
-    const [thread] = await this.db.select().from(contactThreads).where(eq(contactThreads.id, id)).limit(1);
+    const [thread] = await this.db
+      .select()
+      .from(contactThreads)
+      .where(eq(contactThreads.id, id))
+      .limit(1);
 
     return thread || null;
   }
@@ -209,7 +221,11 @@ export class MysqlContactRepository implements IContactRepository {
       .where(eq(contactThreads.id, id));
 
     // MySQL doesn't support RETURNING, fetch the updated record
-    const [thread] = await this.db.select().from(contactThreads).where(eq(contactThreads.id, id)).limit(1);
+    const [thread] = await this.db
+      .select()
+      .from(contactThreads)
+      .where(eq(contactThreads.id, id))
+      .limit(1);
 
     return thread || null;
   }
@@ -224,7 +240,11 @@ export class MysqlContactRepository implements IContactRepository {
       .where(eq(contactThreads.id, id));
 
     // MySQL doesn't support RETURNING, fetch the updated record
-    const [thread] = await this.db.select().from(contactThreads).where(eq(contactThreads.id, id)).limit(1);
+    const [thread] = await this.db
+      .select()
+      .from(contactThreads)
+      .where(eq(contactThreads.id, id))
+      .limit(1);
 
     return thread || null;
   }
@@ -240,7 +260,11 @@ export class MysqlContactRepository implements IContactRepository {
       .where(eq(contactThreads.id, id));
 
     // MySQL doesn't support RETURNING, fetch the updated record
-    const [thread] = await this.db.select().from(contactThreads).where(eq(contactThreads.id, id)).limit(1);
+    const [thread] = await this.db
+      .select()
+      .from(contactThreads)
+      .where(eq(contactThreads.id, id))
+      .limit(1);
 
     return thread || null;
   }
@@ -279,7 +303,10 @@ export class MysqlContactRepository implements IContactRepository {
     return message;
   }
 
-  async getMessages(threadId: string, options: { limit?: number; offset?: number } = {}): Promise<ContactMessage[]> {
+  async getMessages(
+    threadId: string,
+    options: { limit?: number; offset?: number } = {},
+  ): Promise<ContactMessage[]> {
     const { limit = 100, offset = 0 } = options;
 
     return this.db

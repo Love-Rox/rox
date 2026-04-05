@@ -15,7 +15,11 @@ import { uiSettingsAtom } from "../lib/atoms/uiSettings";
 import { notificationsApi } from "../lib/api/notifications";
 import { playNotificationSoundForType } from "../lib/utils/notificationSound";
 import type { Notification, NotificationFetchOptions } from "../lib/types/notification";
-import type { NotificationSound, NotificationSoundType, NotificationSoundsByType } from "../lib/types/uiSettings";
+import type {
+  NotificationSound,
+  NotificationSoundType,
+  NotificationSoundsByType,
+} from "../lib/types/uiSettings";
 
 /**
  * Notifications list atom
@@ -49,7 +53,8 @@ let wsConnectionCount = 0; // Track how many components are using the connection
  * Get WebSocket endpoint URL for notifications
  */
 function getNotificationsWSUrl(token: string): string {
-  const protocol = typeof window !== "undefined" && window.location.protocol === "https:" ? "wss:" : "ws:";
+  const protocol =
+    typeof window !== "undefined" && window.location.protocol === "https:" ? "wss:" : "ws:";
   const host = typeof window !== "undefined" ? window.location.host : "";
   return `${protocol}//${host}/ws/notifications?token=${encodeURIComponent(token)}`;
 }
@@ -112,7 +117,11 @@ function connectWSSingleton(
           if (defaultSound !== "none" || uiSettings.notificationSoundsByType) {
             // Map notification type to sound type (exclude warning and follow_request_accepted)
             const soundType = notification.type as NotificationSoundType;
-            if (["follow", "mention", "reply", "reaction", "renote", "quote"].includes(notification.type)) {
+            if (
+              ["follow", "mention", "reply", "reaction", "renote", "quote"].includes(
+                notification.type,
+              )
+            ) {
               playNotificationSoundForType(
                 soundType,
                 uiSettings.notificationSoundsByType,
@@ -337,7 +346,13 @@ export function useNotifications() {
     if (!currentToken) return;
     // Use ref to get latest uiSettings without causing re-renders
     const getUiSettings = () => uiSettingsRef.current;
-    connectWSSingleton(currentToken, setNotifications, setUnreadCount, setWsConnected, getUiSettings);
+    connectWSSingleton(
+      currentToken,
+      setNotifications,
+      setUnreadCount,
+      setWsConnected,
+      getUiSettings,
+    );
   }, [setNotifications, setUnreadCount, setWsConnected]);
 
   /**

@@ -63,15 +63,14 @@ const defaultNotificationsState: ColumnNotificationsState = {
  * The columnId parameter is used by atomFamily to create unique atoms per column.
  */
 export const columnNotesStateAtomFamily = atomFamily((_columnId: string) =>
-  atom<ColumnNotesState>({ ...defaultNotesState })
+  atom<ColumnNotesState>({ ...defaultNotesState }),
 );
 
 /**
  * Atom family for column notifications state.
  */
-export const columnNotificationsStateAtomFamily = atomFamily(
-  (_columnId: string) =>
-    atom<ColumnNotificationsState>({ ...defaultNotificationsState })
+export const columnNotificationsStateAtomFamily = atomFamily((_columnId: string) =>
+  atom<ColumnNotificationsState>({ ...defaultNotificationsState }),
 );
 
 // ============================================
@@ -82,35 +81,35 @@ export const columnNotificationsStateAtomFamily = atomFamily(
  * Derived atom family: Get notes for a column
  */
 export const columnNotesAtomFamily = atomFamily((columnId: string) =>
-  atom((get) => get(columnNotesStateAtomFamily(columnId)).notes)
+  atom((get) => get(columnNotesStateAtomFamily(columnId)).notes),
 );
 
 /**
  * Derived atom family: Get loading state for a column
  */
 export const columnLoadingAtomFamily = atomFamily((columnId: string) =>
-  atom((get) => get(columnNotesStateAtomFamily(columnId)).loading)
+  atom((get) => get(columnNotesStateAtomFamily(columnId)).loading),
 );
 
 /**
  * Derived atom family: Get error state for a column
  */
 export const columnErrorAtomFamily = atomFamily((columnId: string) =>
-  atom((get) => get(columnNotesStateAtomFamily(columnId)).error)
+  atom((get) => get(columnNotesStateAtomFamily(columnId)).error),
 );
 
 /**
  * Derived atom family: Get hasMore state for a column
  */
 export const columnHasMoreAtomFamily = atomFamily((columnId: string) =>
-  atom((get) => get(columnNotesStateAtomFamily(columnId)).hasMore)
+  atom((get) => get(columnNotesStateAtomFamily(columnId)).hasMore),
 );
 
 /**
  * Derived atom family: Get cursor for a column
  */
 export const columnCursorAtomFamily = atomFamily((columnId: string) =>
-  atom((get) => get(columnNotesStateAtomFamily(columnId)).cursor)
+  atom((get) => get(columnNotesStateAtomFamily(columnId)).cursor),
 );
 
 // ============================================
@@ -124,7 +123,7 @@ export const setColumnNotesAtomFamily = atomFamily((columnId: string) =>
   atom(null, (get, set, notes: Note[]) => {
     const state = get(columnNotesStateAtomFamily(columnId));
     set(columnNotesStateAtomFamily(columnId), { ...state, notes });
-  })
+  }),
 );
 
 /**
@@ -140,7 +139,7 @@ export const appendColumnNotesAtomFamily = atomFamily((columnId: string) =>
       ...state,
       notes: [...state.notes, ...uniqueNewNotes],
     });
-  })
+  }),
 );
 
 /**
@@ -156,7 +155,7 @@ export const prependColumnNotesAtomFamily = atomFamily((columnId: string) =>
       ...state,
       notes: [...uniqueNewNotes, ...state.notes],
     });
-  })
+  }),
 );
 
 /**
@@ -169,7 +168,7 @@ export const removeColumnNoteAtomFamily = atomFamily((columnId: string) =>
       ...state,
       notes: state.notes.filter((n) => n.id !== noteId),
     });
-  })
+  }),
 );
 
 /**
@@ -179,7 +178,7 @@ export const setColumnLoadingAtomFamily = atomFamily((columnId: string) =>
   atom(null, (get, set, loading: boolean) => {
     const state = get(columnNotesStateAtomFamily(columnId));
     set(columnNotesStateAtomFamily(columnId), { ...state, loading });
-  })
+  }),
 );
 
 /**
@@ -189,7 +188,7 @@ export const setColumnErrorAtomFamily = atomFamily((columnId: string) =>
   atom(null, (get, set, error: string | null) => {
     const state = get(columnNotesStateAtomFamily(columnId));
     set(columnNotesStateAtomFamily(columnId), { ...state, error });
-  })
+  }),
 );
 
 /**
@@ -199,7 +198,7 @@ export const setColumnHasMoreAtomFamily = atomFamily((columnId: string) =>
   atom(null, (get, set, hasMore: boolean) => {
     const state = get(columnNotesStateAtomFamily(columnId));
     set(columnNotesStateAtomFamily(columnId), { ...state, hasMore });
-  })
+  }),
 );
 
 /**
@@ -209,7 +208,7 @@ export const setColumnCursorAtomFamily = atomFamily((columnId: string) =>
   atom(null, (get, set, cursor: string | null) => {
     const state = get(columnNotesStateAtomFamily(columnId));
     set(columnNotesStateAtomFamily(columnId), { ...state, cursor });
-  })
+  }),
 );
 
 /**
@@ -219,7 +218,7 @@ export const updateColumnStateAtomFamily = atomFamily((columnId: string) =>
   atom(null, (get, set, updates: Partial<ColumnNotesState>) => {
     const state = get(columnNotesStateAtomFamily(columnId));
     set(columnNotesStateAtomFamily(columnId), { ...state, ...updates });
-  })
+  }),
 );
 
 /**
@@ -228,7 +227,7 @@ export const updateColumnStateAtomFamily = atomFamily((columnId: string) =>
 export const resetColumnStateAtomFamily = atomFamily((columnId: string) =>
   atom(null, (_get, set) => {
     set(columnNotesStateAtomFamily(columnId), { ...defaultNotesState });
-  })
+  }),
 );
 
 /**
@@ -239,11 +238,9 @@ export const updateColumnNoteAtomFamily = atomFamily((columnId: string) =>
     const state = get(columnNotesStateAtomFamily(columnId));
     set(columnNotesStateAtomFamily(columnId), {
       ...state,
-      notes: state.notes.map((n) =>
-        n.id === noteId ? { ...n, ...updates } : n
-      ),
+      notes: state.notes.map((n) => (n.id === noteId ? { ...n, ...updates } : n)),
     });
-  })
+  }),
 );
 
 // ============================================
@@ -254,23 +251,21 @@ export const updateColumnNoteAtomFamily = atomFamily((columnId: string) =>
  * Derived atom family: Get notifications for a column
  */
 export const columnNotificationsAtomFamily = atomFamily((columnId: string) =>
-  atom((get) => get(columnNotificationsStateAtomFamily(columnId)).notifications)
+  atom((get) => get(columnNotificationsStateAtomFamily(columnId)).notifications),
 );
 
 /**
  * Derived atom family: Get loading state for notification column
  */
-export const columnNotificationsLoadingAtomFamily = atomFamily(
-  (columnId: string) =>
-    atom((get) => get(columnNotificationsStateAtomFamily(columnId)).loading)
+export const columnNotificationsLoadingAtomFamily = atomFamily((columnId: string) =>
+  atom((get) => get(columnNotificationsStateAtomFamily(columnId)).loading),
 );
 
 /**
  * Derived atom family: Get error state for notification column
  */
-export const columnNotificationsErrorAtomFamily = atomFamily(
-  (columnId: string) =>
-    atom((get) => get(columnNotificationsStateAtomFamily(columnId)).error)
+export const columnNotificationsErrorAtomFamily = atomFamily((columnId: string) =>
+  atom((get) => get(columnNotificationsStateAtomFamily(columnId)).error),
 );
 
 // ============================================
@@ -287,67 +282,59 @@ export const setColumnNotificationsAtomFamily = atomFamily((columnId: string) =>
       ...state,
       notifications,
     });
-  })
+  }),
 );
 
 /**
  * Action atom family: Append notifications to a column
  */
-export const appendColumnNotificationsAtomFamily = atomFamily(
-  (columnId: string) =>
-    atom(null, (get, set, newNotifications: Notification[]) => {
-      const state = get(columnNotificationsStateAtomFamily(columnId));
-      const existingIds = new Set(state.notifications.map((n) => n.id));
-      const uniqueNewNotifications = newNotifications.filter(
-        (n) => !existingIds.has(n.id)
-      );
-      set(columnNotificationsStateAtomFamily(columnId), {
-        ...state,
-        notifications: [...state.notifications, ...uniqueNewNotifications],
-      });
-    })
+export const appendColumnNotificationsAtomFamily = atomFamily((columnId: string) =>
+  atom(null, (get, set, newNotifications: Notification[]) => {
+    const state = get(columnNotificationsStateAtomFamily(columnId));
+    const existingIds = new Set(state.notifications.map((n) => n.id));
+    const uniqueNewNotifications = newNotifications.filter((n) => !existingIds.has(n.id));
+    set(columnNotificationsStateAtomFamily(columnId), {
+      ...state,
+      notifications: [...state.notifications, ...uniqueNewNotifications],
+    });
+  }),
 );
 
 /**
  * Action atom family: Prepend notifications to a column
  */
-export const prependColumnNotificationsAtomFamily = atomFamily(
-  (columnId: string) =>
-    atom(null, (get, set, newNotifications: Notification[]) => {
-      const state = get(columnNotificationsStateAtomFamily(columnId));
-      const existingIds = new Set(state.notifications.map((n) => n.id));
-      const uniqueNewNotifications = newNotifications.filter(
-        (n) => !existingIds.has(n.id)
-      );
-      set(columnNotificationsStateAtomFamily(columnId), {
-        ...state,
-        notifications: [...uniqueNewNotifications, ...state.notifications],
-      });
-    })
+export const prependColumnNotificationsAtomFamily = atomFamily((columnId: string) =>
+  atom(null, (get, set, newNotifications: Notification[]) => {
+    const state = get(columnNotificationsStateAtomFamily(columnId));
+    const existingIds = new Set(state.notifications.map((n) => n.id));
+    const uniqueNewNotifications = newNotifications.filter((n) => !existingIds.has(n.id));
+    set(columnNotificationsStateAtomFamily(columnId), {
+      ...state,
+      notifications: [...uniqueNewNotifications, ...state.notifications],
+    });
+  }),
 );
 
 /**
  * Action atom family: Update notification column state
  */
-export const updateNotificationColumnStateAtomFamily = atomFamily(
-  (columnId: string) =>
-    atom(null, (get, set, updates: Partial<ColumnNotificationsState>) => {
-      const state = get(columnNotificationsStateAtomFamily(columnId));
-      set(columnNotificationsStateAtomFamily(columnId), {
-        ...state,
-        ...updates,
-      });
-    })
+export const updateNotificationColumnStateAtomFamily = atomFamily((columnId: string) =>
+  atom(null, (get, set, updates: Partial<ColumnNotificationsState>) => {
+    const state = get(columnNotificationsStateAtomFamily(columnId));
+    set(columnNotificationsStateAtomFamily(columnId), {
+      ...state,
+      ...updates,
+    });
+  }),
 );
 
 /**
  * Action atom family: Reset notification column state
  */
-export const resetNotificationColumnStateAtomFamily = atomFamily(
-  (columnId: string) =>
-    atom(null, (_get, set) => {
-      set(columnNotificationsStateAtomFamily(columnId), {
-        ...defaultNotificationsState,
-      });
-    })
+export const resetNotificationColumnStateAtomFamily = atomFamily((columnId: string) =>
+  atom(null, (_get, set) => {
+    set(columnNotificationsStateAtomFamily(columnId), {
+      ...defaultNotificationsState,
+    });
+  }),
 );

@@ -181,7 +181,6 @@ export default function AdminGoneUsersPage() {
       isReloading={isLoading}
     >
       <div className="container mx-auto max-w-6xl">
-
         <Card className="mt-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -195,8 +194,9 @@ export default function AdminGoneUsersPage() {
             {/* Description */}
             <div className="mb-4 p-3 bg-(--bg-secondary) rounded-lg text-sm text-(--text-secondary)">
               <Trans>
-                These are remote users whose servers have returned errors (like 410 Gone) when trying to fetch their
-                profiles. You can mark them as deleted or clear the failure status to retry fetching.
+                These are remote users whose servers have returned errors (like 410 Gone) when
+                trying to fetch their profiles. You can mark them as deleted or clear the failure
+                status to retry fetching.
               </Trans>
             </div>
 

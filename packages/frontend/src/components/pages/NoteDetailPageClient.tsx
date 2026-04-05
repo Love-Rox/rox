@@ -103,11 +103,7 @@ export function NoteDetailPageClient({ noteId }: { noteId: string }) {
   }
 
   const pageHeader = (
-    <PageHeader
-      title={<Trans>Note</Trans>}
-      backHref="/timeline"
-      backLabel={<Trans>Back</Trans>}
-    />
+    <PageHeader title={<Trans>Note</Trans>} backHref="/timeline" backLabel={<Trans>Back</Trans>} />
   );
 
   return (

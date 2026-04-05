@@ -32,7 +32,7 @@ describe("ogp utilities", () => {
 
     it("should escape multiple special characters", () => {
       expect(escapeHtml('<script>alert("XSS")</script>')).toBe(
-        "&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;"
+        "&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;",
       );
     });
 
@@ -78,9 +78,7 @@ describe("ogp utilities", () => {
     });
 
     it("should strip nested HTML tags", () => {
-      expect(stripHtml("<div><p><strong>Hello</strong></p></div>")).toBe(
-        "Hello"
-      );
+      expect(stripHtml("<div><p><strong>Hello</strong></p></div>")).toBe("Hello");
     });
 
     it("should strip self-closing tags", () => {
@@ -110,14 +108,12 @@ describe("ogp utilities", () => {
     });
 
     it("should handle multiple newlines", () => {
-      expect(textToHtml("Line 1\nLine 2\nLine 3")).toBe(
-        "<p>Line 1<br>Line 2<br>Line 3</p>"
-      );
+      expect(textToHtml("Line 1\nLine 2\nLine 3")).toBe("<p>Line 1<br>Line 2<br>Line 3</p>");
     });
 
     it("should escape HTML special characters", () => {
       expect(textToHtml('<script>alert("XSS")</script>')).toBe(
-        "<p>&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;</p>"
+        "<p>&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;</p>",
       );
     });
 
@@ -134,9 +130,7 @@ describe("ogp utilities", () => {
     });
 
     it("should handle both escaping and newlines together", () => {
-      expect(textToHtml("Hello <world>\nGoodbye")).toBe(
-        "<p>Hello &lt;world&gt;<br>Goodbye</p>"
-      );
+      expect(textToHtml("Hello <world>\nGoodbye")).toBe("<p>Hello &lt;world&gt;<br>Goodbye</p>");
     });
 
     it("should handle CRLF line endings", () => {
@@ -149,7 +143,7 @@ describe("ogp utilities", () => {
 
     it("should handle mixed line endings", () => {
       expect(textToHtml("Line1\r\nLine2\nLine3\rLine4")).toBe(
-        "<p>Line1<br>Line2<br>Line3<br>Line4</p>"
+        "<p>Line1<br>Line2<br>Line3<br>Line4</p>",
       );
     });
 
@@ -200,7 +194,7 @@ describe("generateNoteOgpHtml", () => {
 
   it("should include og:site_name (matching Misskey)", () => {
     const html = generateNoteOgpHtml(baseOptions);
-    expect(html).toContain('og:site_name');
+    expect(html).toContain("og:site_name");
     expect(html).toContain("My Instance");
   });
 
@@ -216,9 +210,9 @@ describe("generateNoteOgpHtml", () => {
   it("should not include og:locale or article:* tags", () => {
     const html = generateNoteOgpHtml(baseOptions);
     // Misskey doesn't include these extra tags
-    expect(html).not.toContain('og:locale');
-    expect(html).not.toContain('article:published_time');
-    expect(html).not.toContain('article:author');
+    expect(html).not.toContain("og:locale");
+    expect(html).not.toContain("article:published_time");
+    expect(html).not.toContain("article:author");
   });
 
   it("should include note URL in og:url", () => {
@@ -258,9 +252,7 @@ describe("generateNoteOgpHtml", () => {
       ...baseOptions,
       imageUrl: "https://example.com/image.jpg",
     });
-    expect(html).toContain(
-      '<meta property="og:image" content="https://example.com/image.jpg">'
-    );
+    expect(html).toContain('<meta property="og:image" content="https://example.com/image.jpg">');
   });
 
   it("should not include og:image when imageUrl is null", () => {
@@ -271,7 +263,7 @@ describe("generateNoteOgpHtml", () => {
   it("should not include oEmbed discovery link (matching Misskey)", () => {
     const html = generateNoteOgpHtml(baseOptions);
     // Misskey does not include oEmbed discovery - Discord uses OGP tags only
-    expect(html).not.toContain('application/json+oembed');
+    expect(html).not.toContain("application/json+oembed");
   });
 
   it("should handle content warning", () => {
@@ -356,16 +348,16 @@ describe("generateUserOgpHtml", () => {
   it("should not include og:locale or profile:* tags", () => {
     const html = generateUserOgpHtml(baseOptions);
     // Misskey doesn't include these extra tags
-    expect(html).not.toContain('og:locale');
-    expect(html).not.toContain('profile:username');
+    expect(html).not.toContain("og:locale");
+    expect(html).not.toContain("profile:username");
   });
 
   it("should not include og:image dimension tags", () => {
     const html = generateUserOgpHtml(baseOptions);
     // Minimal approach - no og:image:alt, og:image:width, og:image:height
-    expect(html).not.toContain('og:image:alt');
-    expect(html).not.toContain('og:image:width');
-    expect(html).not.toContain('og:image:height');
+    expect(html).not.toContain("og:image:alt");
+    expect(html).not.toContain("og:image:width");
+    expect(html).not.toContain("og:image:height");
   });
 
   it("should include profile URL in og:url", () => {
@@ -403,9 +395,7 @@ describe("generateUserOgpHtml", () => {
 
   it("should include og:image when avatarUrl is provided", () => {
     const html = generateUserOgpHtml(baseOptions);
-    expect(html).toContain(
-      '<meta property="og:image" content="https://example.com/avatar.jpg">'
-    );
+    expect(html).toContain('<meta property="og:image" content="https://example.com/avatar.jpg">');
   });
 
   it("should not include og:image when avatarUrl is null", () => {

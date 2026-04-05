@@ -197,7 +197,9 @@ export default function AdminQueuePage() {
               <Trans>Queue Not Available</Trans>
             </h2>
             <p className="text-gray-500 dark:text-gray-400">
-              {stats.message || <Trans>The job queue system is not currently configured or running.</Trans>}
+              {stats.message || (
+                <Trans>The job queue system is not currently configured or running.</Trans>
+              )}
             </p>
             <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
               <Trans>ActivityPub delivery is running in synchronous mode.</Trans>
@@ -217,9 +219,7 @@ export default function AdminQueuePage() {
       onReload={handleRefresh}
       isReloading={isRefreshing}
     >
-
       <div className="space-y-6">
-
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -309,9 +309,7 @@ export default function AdminQueuePage() {
                   <div className="space-y-3">
                     {stats.topServers.map((server, index) => (
                       <div key={server.inbox} className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-gray-400 w-6">
-                          #{index + 1}
-                        </span>
+                        <span className="text-sm font-medium text-gray-400 w-6">#{index + 1}</span>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                             {server.host}
@@ -321,7 +319,9 @@ export default function AdminQueuePage() {
                           <span className="text-sm font-semibold text-gray-600 dark:text-gray-300">
                             {formatNumber(server.success + server.failure)}
                           </span>
-                          <span className={`ml-2 text-xs ${getSuccessRateColor(server.successRate)}`}>
+                          <span
+                            className={`ml-2 text-xs ${getSuccessRateColor(server.successRate)}`}
+                          >
                             ({formatPercentage(server.successRate)})
                           </span>
                         </div>
@@ -428,7 +428,10 @@ export default function AdminQueuePage() {
                     </thead>
                     <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                       {metrics.servers.map((server) => (
-                        <tr key={server.inbox} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                        <tr
+                          key={server.inbox}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                        >
                           <td className="py-3 px-2">
                             <span className="font-medium text-gray-900 dark:text-gray-100 truncate block max-w-48">
                               {server.host}

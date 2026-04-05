@@ -41,22 +41,37 @@ export class MysqlOAuthAccountRepository implements IOAuthAccountRepository {
   }
 
   async findById(id: string): Promise<OAuthAccount | null> {
-    const [result] = await this.db.select().from(oauthAccounts).where(eq(oauthAccounts.id, id)).limit(1);
-
-    return result ?? null;
-  }
-
-  async findByProviderAccount(provider: OAuthProvider, providerAccountId: string): Promise<OAuthAccount | null> {
     const [result] = await this.db
       .select()
       .from(oauthAccounts)
-      .where(and(eq(oauthAccounts.provider, provider), eq(oauthAccounts.providerAccountId, providerAccountId)))
+      .where(eq(oauthAccounts.id, id))
       .limit(1);
 
     return result ?? null;
   }
 
-  async findByUserAndProvider(userId: string, provider: OAuthProvider): Promise<OAuthAccount | null> {
+  async findByProviderAccount(
+    provider: OAuthProvider,
+    providerAccountId: string,
+  ): Promise<OAuthAccount | null> {
+    const [result] = await this.db
+      .select()
+      .from(oauthAccounts)
+      .where(
+        and(
+          eq(oauthAccounts.provider, provider),
+          eq(oauthAccounts.providerAccountId, providerAccountId),
+        ),
+      )
+      .limit(1);
+
+    return result ?? null;
+  }
+
+  async findByUserAndProvider(
+    userId: string,
+    provider: OAuthProvider,
+  ): Promise<OAuthAccount | null> {
     const [result] = await this.db
       .select()
       .from(oauthAccounts)
@@ -94,7 +109,11 @@ export class MysqlOAuthAccountRepository implements IOAuthAccountRepository {
       .where(eq(oauthAccounts.id, id));
 
     // MySQL doesn't support RETURNING, fetch the updated record
-    const [result] = await this.db.select().from(oauthAccounts).where(eq(oauthAccounts.id, id)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(oauthAccounts)
+      .where(eq(oauthAccounts.id, id))
+      .limit(1);
 
     if (!result) {
       throw new Error("OAuth account not found");

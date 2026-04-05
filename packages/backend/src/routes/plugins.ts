@@ -58,7 +58,7 @@ plugins.get("/", (c: Context) => {
  */
 plugins.get("/:id", (c: Context) => {
   const pluginLoader = c.get("pluginLoader") as PluginLoader | undefined;
-  const pluginId = c.req.param("id");
+  const pluginId = c.req.param("id")!;
 
   if (!pluginLoader) {
     return c.json({ error: "Plugin system not enabled" }, 503);
@@ -91,7 +91,7 @@ plugins.get("/:id", (c: Context) => {
  */
 plugins.post("/:id/enable", requireAuth(), requireAdmin(), async (c: Context) => {
   const pluginLoader = c.get("pluginLoader") as PluginLoader | undefined;
-  const pluginId = c.req.param("id");
+  const pluginId = c.req.param("id")!;
 
   if (!pluginLoader) {
     return c.json({ error: "Plugin system not enabled" }, 503);
@@ -117,7 +117,7 @@ plugins.post("/:id/enable", requireAuth(), requireAdmin(), async (c: Context) =>
  */
 plugins.post("/:id/disable", requireAuth(), requireAdmin(), async (c: Context) => {
   const pluginLoader = c.get("pluginLoader") as PluginLoader | undefined;
-  const pluginId = c.req.param("id");
+  const pluginId = c.req.param("id")!;
 
   if (!pluginLoader) {
     return c.json({ error: "Plugin system not enabled" }, 503);

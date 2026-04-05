@@ -125,38 +125,44 @@ describe("ActivityPub Federation E2E", () => {
   });
 
   describe("Actor", () => {
-    test.skipIf(SKIP_E2E)("should return Actor document with ActivityPub Accept header", async () => {
-      if (!serverAvailable) return;
-      const res = await fetch(`${BASE_URL}/users/${testUser.username}`, {
-        headers: {
-          Accept: "application/activity+json",
-        },
-      });
+    test.skipIf(SKIP_E2E)(
+      "should return Actor document with ActivityPub Accept header",
+      async () => {
+        if (!serverAvailable) return;
+        const res = await fetch(`${BASE_URL}/users/${testUser.username}`, {
+          headers: {
+            Accept: "application/activity+json",
+          },
+        });
 
-      expect(res.status).toBe(200);
-      expect(res.headers.get("content-type")).toContain("application/activity+json");
+        expect(res.status).toBe(200);
+        expect(res.headers.get("content-type")).toContain("application/activity+json");
 
-      const actor = (await res.json()) as any;
-      expect(actor.type).toBe("Person");
-      expect(actor.preferredUsername).toBe(testUser.username);
-      expect(actor.inbox).toBe(`${BASE_URL}/users/${testUser.username}/inbox`);
-      expect(actor.outbox).toBe(`${BASE_URL}/users/${testUser.username}/outbox`);
-      expect(actor.followers).toBe(`${BASE_URL}/users/${testUser.username}/followers`);
-      expect(actor.following).toBe(`${BASE_URL}/users/${testUser.username}/following`);
-      expect(actor.publicKey).toBeDefined();
-      expect(actor.publicKey.id).toBe(`${BASE_URL}/users/${testUser.username}#main-key`);
-      expect(actor.publicKey.publicKeyPem).toBeDefined();
-    });
+        const actor = (await res.json()) as any;
+        expect(actor.type).toBe("Person");
+        expect(actor.preferredUsername).toBe(testUser.username);
+        expect(actor.inbox).toBe(`${BASE_URL}/users/${testUser.username}/inbox`);
+        expect(actor.outbox).toBe(`${BASE_URL}/users/${testUser.username}/outbox`);
+        expect(actor.followers).toBe(`${BASE_URL}/users/${testUser.username}/followers`);
+        expect(actor.following).toBe(`${BASE_URL}/users/${testUser.username}/following`);
+        expect(actor.publicKey).toBeDefined();
+        expect(actor.publicKey.id).toBe(`${BASE_URL}/users/${testUser.username}#main-key`);
+        expect(actor.publicKey.publicKeyPem).toBeDefined();
+      },
+    );
 
-    test.skipIf(SKIP_E2E)("should redirect to frontend without ActivityPub Accept header", async () => {
-      if (!serverAvailable) return;
-      const res = await fetch(`${BASE_URL}/users/${testUser.username}`, {
-        redirect: "manual",
-      });
+    test.skipIf(SKIP_E2E)(
+      "should redirect to frontend without ActivityPub Accept header",
+      async () => {
+        if (!serverAvailable) return;
+        const res = await fetch(`${BASE_URL}/users/${testUser.username}`, {
+          redirect: "manual",
+        });
 
-      expect(res.status).toBe(302);
-      expect(res.headers.get("location")).toBe(`/@${testUser.username}`);
-    });
+        expect(res.status).toBe(302);
+        expect(res.headers.get("location")).toBe(`/@${testUser.username}`);
+      },
+    );
 
     test.skipIf(SKIP_E2E)("should return 404 for non-existent actor", async () => {
       if (!serverAvailable) return;

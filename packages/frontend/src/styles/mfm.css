@@ -16,11 +16,27 @@
 
 /* Tada - wobble animation */
 @keyframes mfm-tada {
-  0% { transform: scale(1) rotate(0deg); }
-  10%, 20% { transform: scale(0.9) rotate(-3deg); }
-  30%, 50%, 70%, 90% { transform: scale(1.1) rotate(3deg); }
-  40%, 60%, 80% { transform: scale(1.1) rotate(-3deg); }
-  100% { transform: scale(1) rotate(0deg); }
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  10%,
+  20% {
+    transform: scale(0.9) rotate(-3deg);
+  }
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: scale(1.1) rotate(3deg);
+  }
+  40%,
+  60%,
+  80% {
+    transform: scale(1.1) rotate(-3deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 .mfm-tada {
@@ -30,11 +46,21 @@
 
 /* Jelly - squish animation */
 @keyframes mfm-jelly {
-  0% { transform: scaleX(1) scaleY(1); }
-  25% { transform: scaleX(1.25) scaleY(0.75); }
-  50% { transform: scaleX(0.75) scaleY(1.25); }
-  75% { transform: scaleX(1.15) scaleY(0.85); }
-  100% { transform: scaleX(1) scaleY(1); }
+  0% {
+    transform: scaleX(1) scaleY(1);
+  }
+  25% {
+    transform: scaleX(1.25) scaleY(0.75);
+  }
+  50% {
+    transform: scaleX(0.75) scaleY(1.25);
+  }
+  75% {
+    transform: scaleX(1.15) scaleY(0.85);
+  }
+  100% {
+    transform: scaleX(1) scaleY(1);
+  }
 }
 
 .mfm-jelly {
@@ -44,17 +70,39 @@
 
 /* Twitch - rapid shake */
 @keyframes mfm-twitch {
-  0% { transform: translate(0, 0); }
-  10% { transform: translate(-2px, 2px); }
-  20% { transform: translate(2px, -2px); }
-  30% { transform: translate(-2px, -2px); }
-  40% { transform: translate(2px, 2px); }
-  50% { transform: translate(-2px, 2px); }
-  60% { transform: translate(2px, -2px); }
-  70% { transform: translate(-2px, -2px); }
-  80% { transform: translate(2px, 2px); }
-  90% { transform: translate(-2px, 2px); }
-  100% { transform: translate(0, 0); }
+  0% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-2px, 2px);
+  }
+  20% {
+    transform: translate(2px, -2px);
+  }
+  30% {
+    transform: translate(-2px, -2px);
+  }
+  40% {
+    transform: translate(2px, 2px);
+  }
+  50% {
+    transform: translate(-2px, 2px);
+  }
+  60% {
+    transform: translate(2px, -2px);
+  }
+  70% {
+    transform: translate(-2px, -2px);
+  }
+  80% {
+    transform: translate(2px, 2px);
+  }
+  90% {
+    transform: translate(-2px, 2px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
 }
 
 .mfm-twitch {
@@ -64,10 +112,19 @@
 
 /* Shake - horizontal shake */
 @keyframes mfm-shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
 }
 
 .mfm-shake {
@@ -77,23 +134,39 @@
 
 /* Spin - rotation */
 @keyframes mfm-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes mfm-spin-reverse {
-  0% { transform: rotate(360deg); }
-  100% { transform: rotate(0deg); }
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 @keyframes mfm-spin-x {
-  0% { transform: perspective(200px) rotateX(0deg); }
-  100% { transform: perspective(200px) rotateX(360deg); }
+  0% {
+    transform: perspective(200px) rotateX(0deg);
+  }
+  100% {
+    transform: perspective(200px) rotateX(360deg);
+  }
 }
 
 @keyframes mfm-spin-y {
-  0% { transform: perspective(200px) rotateY(0deg); }
-  100% { transform: perspective(200px) rotateY(360deg); }
+  0% {
+    transform: perspective(200px) rotateY(0deg);
+  }
+  100% {
+    transform: perspective(200px) rotateY(360deg);
+  }
 }
 
 .mfm-spin {
@@ -119,8 +192,13 @@
 
 /* Jump - bounce up animation */
 @keyframes mfm-jump {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .mfm-jump {
@@ -130,10 +208,19 @@
 
 /* Bounce - elastic bounce */
 @keyframes mfm-bounce {
-  0%, 100% { transform: translateY(0) scaleY(1); }
-  25% { transform: translateY(-15px) scaleY(0.9); }
-  50% { transform: translateY(0) scaleY(1.1); }
-  75% { transform: translateY(-5px) scaleY(0.95); }
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  25% {
+    transform: translateY(-15px) scaleY(0.9);
+  }
+  50% {
+    transform: translateY(0) scaleY(1.1);
+  }
+  75% {
+    transform: translateY(-5px) scaleY(0.95);
+  }
 }
 
 .mfm-bounce {
@@ -143,13 +230,27 @@
 
 /* Rainbow - color cycling */
 @keyframes mfm-rainbow {
-  0% { color: #ff0000; }
-  16.67% { color: #ff8000; }
-  33.33% { color: #ffff00; }
-  50% { color: #00ff00; }
-  66.67% { color: #0080ff; }
-  83.33% { color: #8000ff; }
-  100% { color: #ff0000; }
+  0% {
+    color: #ff0000;
+  }
+  16.67% {
+    color: #ff8000;
+  }
+  33.33% {
+    color: #ffff00;
+  }
+  50% {
+    color: #00ff00;
+  }
+  66.67% {
+    color: #0080ff;
+  }
+  83.33% {
+    color: #8000ff;
+  }
+  100% {
+    color: #ff0000;
+  }
 }
 
 .mfm-rainbow {
@@ -158,8 +259,15 @@
 
 /* Sparkle - twinkle effect */
 @keyframes mfm-sparkle {
-  0%, 100% { opacity: 1; filter: brightness(1); }
-  50% { opacity: 0.6; filter: brightness(1.5); }
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.6;
+    filter: brightness(1.5);
+  }
 }
 
 .mfm-sparkle {

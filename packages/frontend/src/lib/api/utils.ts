@@ -30,9 +30,7 @@ export interface PaginationOptions {
  * const url = `/api/notes?${params.toString()}`;
  * ```
  */
-export function buildPaginationParams(
-  options: PaginationOptions
-): URLSearchParams {
+export function buildPaginationParams(options: PaginationOptions): URLSearchParams {
   const params = new URLSearchParams();
   if (options.limit) params.set("limit", options.limit.toString());
   if (options.untilId) params.set("untilId", options.untilId);
@@ -54,10 +52,7 @@ export function buildPaginationParams(
  * // Returns: "/api/notes?limit=20"
  * ```
  */
-export function buildUrlWithParams(
-  path: string,
-  params: URLSearchParams
-): string {
+export function buildUrlWithParams(path: string, params: URLSearchParams): string {
   const query = params.toString();
   return query ? `${path}?${query}` : path;
 }

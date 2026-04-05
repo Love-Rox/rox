@@ -92,7 +92,9 @@ export interface IContactRepository {
   /**
    * Count threads matching filters
    */
-  countThreads(options?: Omit<ListContactThreadsOptions, "limit" | "offset" | "sortBy" | "sortOrder">): Promise<number>;
+  countThreads(
+    options?: Omit<ListContactThreadsOptions, "limit" | "offset" | "sortBy" | "sortOrder">,
+  ): Promise<number>;
 
   /**
    * Update thread status
@@ -131,7 +133,10 @@ export interface IContactRepository {
   /**
    * Get messages for a thread
    */
-  getMessages(threadId: string, options?: { limit?: number; offset?: number }): Promise<ContactMessage[]>;
+  getMessages(
+    threadId: string,
+    options?: { limit?: number; offset?: number },
+  ): Promise<ContactMessage[]>;
 
   /**
    * Mark messages as read

@@ -67,17 +67,10 @@ export interface ListEditModalProps {
  * />
  * ```
  */
-export function ListEditModal({
-  isOpen,
-  onClose,
-  list,
-  onUpdated,
-}: ListEditModalProps) {
+export function ListEditModal({ isOpen, onClose, list, onUpdated }: ListEditModalProps) {
   const [name, setName] = useState(list.name);
   const [isPublic, setIsPublic] = useState(list.isPublic);
-  const [notifyLevel, setNotifyLevel] = useState<ListNotifyLevel>(
-    list.notifyLevel
-  );
+  const [notifyLevel, setNotifyLevel] = useState<ListNotifyLevel>(list.notifyLevel);
   const [isLoading, setIsLoading] = useState(false);
   const [, addToast] = useAtom(addToastAtom);
 
@@ -89,9 +82,7 @@ export function ListEditModal({
   }, [list]);
 
   const hasChanges =
-    name !== list.name ||
-    isPublic !== list.isPublic ||
-    notifyLevel !== list.notifyLevel;
+    name !== list.name || isPublic !== list.isPublic || notifyLevel !== list.notifyLevel;
 
   const handleSubmit = async () => {
     if (!name.trim() || !hasChanges) return;
@@ -139,11 +130,7 @@ export function ListEditModal({
       title={<Trans>Edit List</Trans>}
       footer={
         <>
-          <Button
-            variant="secondary"
-            onPress={handleClose}
-            isDisabled={isLoading}
-          >
+          <Button variant="secondary" onPress={handleClose} isDisabled={isLoading}>
             <Trans>Cancel</Trans>
           </Button>
           <Button
@@ -191,11 +178,7 @@ export function ListEditModal({
             <Trans>Anyone can see this list</Trans>
           </p>
         </div>
-        <Switch
-          isSelected={isPublic}
-          onChange={setIsPublic}
-          aria-label="Public list"
-        />
+        <Switch isSelected={isPublic} onChange={setIsPublic} aria-label="Public list" />
       </div>
 
       {/* Notification level select */}

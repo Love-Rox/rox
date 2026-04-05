@@ -73,7 +73,12 @@ export class SqliteRemoteInstanceRepository implements IRemoteInstanceRepository
     }
 
     // Fetch the record
-    const [result] = this.db.select().from(remoteInstances).where(eq(remoteInstances.host, instance.host)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(remoteInstances)
+      .where(eq(remoteInstances.host, instance.host))
+      .limit(1)
+      .all();
 
     if (!result) {
       throw new Error("Failed to upsert remote instance");
@@ -142,7 +147,10 @@ export class SqliteRemoteInstanceRepository implements IRemoteInstanceRepository
   }
 
   async count(): Promise<number> {
-    const [result] = this.db.select({ count: sql<number>`COUNT(*)` }).from(remoteInstances).all();
+    const [result] = this.db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(remoteInstances)
+      .all();
     return Number(result?.count ?? 0);
   }
 

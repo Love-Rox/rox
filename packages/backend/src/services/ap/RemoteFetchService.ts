@@ -111,7 +111,10 @@ export class RemoteFetchService {
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        logger.debug({ url, attempt: attempt + 1, maxRetries: maxRetries + 1, signed: !!signature }, "Fetching remote object");
+        logger.debug(
+          { url, attempt: attempt + 1, maxRetries: maxRetries + 1, signed: !!signature },
+          "Fetching remote object",
+        );
 
         // Build request headers
         let requestHeaders: Record<string, string> = {

@@ -75,9 +75,7 @@ export default function TermsOfServicePage() {
                 <ExternalLink className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 <div>
                   <p className="text-sm text-(--text-primary)">
-                    <Trans>
-                      This instance has a dedicated Terms of Service page:
-                    </Trans>
+                    <Trans>This instance has a dedicated Terms of Service page:</Trans>
                   </p>
                   <a
                     href={instanceInfo.tosUrl}
@@ -119,10 +117,10 @@ export default function TermsOfServicePage() {
               </h2>
               <p className="text-(--text-secondary) leading-relaxed">
                 <Trans>
-                  You are responsible for maintaining the confidentiality of your account credentials
-                  and for all activities that occur under your account. You must be at least 13 years
-                  old to use this service. You agree to provide accurate information when creating
-                  your account.
+                  You are responsible for maintaining the confidentiality of your account
+                  credentials and for all activities that occur under your account. You must be at
+                  least 13 years old to use this service. You agree to provide accurate information
+                  when creating your account.
                 </Trans>
               </p>
             </section>
@@ -135,12 +133,24 @@ export default function TermsOfServicePage() {
                 <Trans>You agree not to use this service to:</Trans>
               </p>
               <ul className="list-disc list-inside text-(--text-secondary) space-y-1">
-                <li><Trans>Post illegal content or engage in illegal activities</Trans></li>
-                <li><Trans>Harass, abuse, or threaten other users</Trans></li>
-                <li><Trans>Impersonate others or spread misinformation</Trans></li>
-                <li><Trans>Distribute spam, malware, or phishing content</Trans></li>
-                <li><Trans>Violate intellectual property rights</Trans></li>
-                <li><Trans>Attempt to gain unauthorized access to systems</Trans></li>
+                <li>
+                  <Trans>Post illegal content or engage in illegal activities</Trans>
+                </li>
+                <li>
+                  <Trans>Harass, abuse, or threaten other users</Trans>
+                </li>
+                <li>
+                  <Trans>Impersonate others or spread misinformation</Trans>
+                </li>
+                <li>
+                  <Trans>Distribute spam, malware, or phishing content</Trans>
+                </li>
+                <li>
+                  <Trans>Violate intellectual property rights</Trans>
+                </li>
+                <li>
+                  <Trans>Attempt to gain unauthorized access to systems</Trans>
+                </li>
               </ul>
             </section>
 
@@ -152,7 +162,8 @@ export default function TermsOfServicePage() {
                 <Trans>
                   You retain ownership of content you create and post. By posting content, you grant
                   this instance a license to store, display, and distribute your content as part of
-                  the service's normal operation, including federation with other ActivityPub servers.
+                  the service's normal operation, including federation with other ActivityPub
+                  servers.
                 </Trans>
               </p>
             </section>
@@ -163,9 +174,9 @@ export default function TermsOfServicePage() {
               </h2>
               <p className="text-(--text-secondary) leading-relaxed">
                 <Trans>
-                  Instance administrators and moderators reserve the right to remove content, suspend
-                  accounts, or take other actions to maintain a safe community. Moderation decisions
-                  are made at the discretion of the moderation team.
+                  Instance administrators and moderators reserve the right to remove content,
+                  suspend accounts, or take other actions to maintain a safe community. Moderation
+                  decisions are made at the discretion of the moderation team.
                 </Trans>
               </p>
             </section>
@@ -190,8 +201,8 @@ export default function TermsOfServicePage() {
               <p className="text-(--text-secondary) leading-relaxed">
                 <Trans>
                   We strive to maintain service availability but do not guarantee uninterrupted
-                  access. The service may be modified, suspended, or discontinued at any time without
-                  notice.
+                  access. The service may be modified, suspended, or discontinued at any time
+                  without notice.
                 </Trans>
               </p>
             </section>
@@ -234,7 +245,8 @@ export default function TermsOfServicePage() {
                     className="text-primary-600 dark:text-primary-400 hover:underline"
                   >
                     contact us through our inquiry form
-                  </SpaLink>.
+                  </SpaLink>
+                  .
                 </Trans>
               </p>
             </section>

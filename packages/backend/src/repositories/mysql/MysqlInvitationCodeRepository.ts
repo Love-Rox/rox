@@ -39,7 +39,11 @@ export class MysqlInvitationCodeRepository implements IInvitationCodeRepository 
     });
 
     // MySQL doesn't support RETURNING, fetch the inserted record
-    const [result] = await this.db.select().from(invitationCodes).where(eq(invitationCodes.id, id)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(invitationCodes)
+      .where(eq(invitationCodes.id, id))
+      .limit(1);
 
     if (!result) {
       throw new Error("Failed to create invitation code");
@@ -124,7 +128,11 @@ export class MysqlInvitationCodeRepository implements IInvitationCodeRepository 
       .where(eq(invitationCodes.code, code));
 
     // MySQL doesn't support RETURNING, fetch the updated record
-    const [updated] = await this.db.select().from(invitationCodes).where(eq(invitationCodes.code, code)).limit(1);
+    const [updated] = await this.db
+      .select()
+      .from(invitationCodes)
+      .where(eq(invitationCodes.code, code))
+      .limit(1);
 
     return updated ?? null;
   }

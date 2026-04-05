@@ -75,7 +75,7 @@ export function createTestPluginNote(overrides: Partial<PluginNote> = {}): Plugi
  * @returns A complete NoteBeforeCreatePayload object
  */
 export function createNoteBeforeCreatePayload(
-  overrides: Partial<NoteBeforeCreatePayload> = {}
+  overrides: Partial<NoteBeforeCreatePayload> = {},
 ): NoteBeforeCreatePayload {
   return {
     text: "Test note content",
@@ -97,7 +97,7 @@ export function createNoteBeforeCreatePayload(
  * @returns A complete NoteAfterCreatePayload object
  */
 export function createNoteAfterCreatePayload(
-  overrides: Partial<NoteAfterCreatePayload> = {}
+  overrides: Partial<NoteAfterCreatePayload> = {},
 ): NoteAfterCreatePayload {
   return {
     note: createTestPluginNote(),

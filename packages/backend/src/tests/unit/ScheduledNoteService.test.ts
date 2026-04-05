@@ -118,9 +118,9 @@ describe("ScheduledNoteService", () => {
 
     test("throws error when quota is exceeded", async () => {
       (mockRoleService.getMaxScheduledNotes as ReturnType<typeof mock>).mockResolvedValue(2);
-      (mockScheduledNoteRepository.countPendingByUserId as ReturnType<typeof mock>).mockResolvedValue(
-        2,
-      );
+      (
+        mockScheduledNoteRepository.countPendingByUserId as ReturnType<typeof mock>
+      ).mockResolvedValue(2);
 
       const scheduledAt = new Date(Date.now() + 3600000);
 
@@ -136,9 +136,9 @@ describe("ScheduledNoteService", () => {
 
     test("allows creation when quota is unlimited (-1)", async () => {
       (mockRoleService.getMaxScheduledNotes as ReturnType<typeof mock>).mockResolvedValue(-1);
-      (mockScheduledNoteRepository.countPendingByUserId as ReturnType<typeof mock>).mockResolvedValue(
-        100,
-      );
+      (
+        mockScheduledNoteRepository.countPendingByUserId as ReturnType<typeof mock>
+      ).mockResolvedValue(100);
 
       const scheduledAt = new Date(Date.now() + 3600000);
       const result = await scheduledNoteService.create({
@@ -395,8 +395,8 @@ describe("ScheduledNoteService", () => {
     test("respects limit parameter", async () => {
       await scheduledNoteService.findPendingToPublish(50);
 
-      const call = (mockScheduledNoteRepository.findPendingToPublish as ReturnType<typeof mock>).mock
-        .calls[0];
+      const call = (mockScheduledNoteRepository.findPendingToPublish as ReturnType<typeof mock>)
+        .mock.calls[0];
       expect(call?.[1]).toBe(50);
     });
   });

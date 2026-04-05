@@ -63,7 +63,7 @@ deck.get("/profiles", requireAuth(), async (c: Context) => {
 deck.get("/profiles/:id", requireAuth(), async (c: Context) => {
   const user = c.get("user")!;
   const repository = getDeckProfileRepository(c);
-  const profileId = c.req.param("id");
+  const profileId = c.req.param("id")!;
 
   try {
     const profile = await repository.findById(profileId);
@@ -93,57 +93,52 @@ deck.get("/profiles/:id", requireAuth(), async (c: Context) => {
  * @body {CreateDeckProfileInput} Profile data
  * @returns {DeckProfile} Created profile
  */
-deck.post(
-  "/profiles",
-  requireAuth(),
-  userRateLimit(RateLimitPresets.write),
-  async (c: Context) => {
-    const user = c.get("user")!;
-    const repository = getDeckProfileRepository(c);
+deck.post("/profiles", requireAuth(), userRateLimit(RateLimitPresets.write), async (c: Context) => {
+  const user = c.get("user")!;
+  const repository = getDeckProfileRepository(c);
 
-    let body: CreateDeckProfileInput;
-    try {
-      body = (await c.req.json()) as CreateDeckProfileInput;
-    } catch {
-      return c.json({ error: "Invalid JSON body" }, 400);
+  let body: CreateDeckProfileInput;
+  try {
+    body = (await c.req.json()) as CreateDeckProfileInput;
+  } catch {
+    return c.json({ error: "Invalid JSON body" }, 400);
+  }
+
+  if (!body.name?.trim()) {
+    return c.json({ error: "name is required" }, 400);
+  }
+
+  try {
+    // Check for duplicate name
+    const exists = await repository.existsByUserIdAndName(user.id, body.name.trim());
+    if (exists) {
+      return c.json({ error: "A profile with this name already exists" }, 400);
     }
 
-    if (!body.name?.trim()) {
-      return c.json({ error: "name is required" }, 400);
+    // Check profile limit (max 10 profiles per user)
+    const profileCount = await repository.countByUserId(user.id);
+    if (profileCount >= 10) {
+      return c.json({ error: "Maximum profile limit reached (10)" }, 400);
     }
 
-    try {
-      // Check for duplicate name
-      const exists = await repository.existsByUserIdAndName(user.id, body.name.trim());
-      if (exists) {
-        return c.json({ error: "A profile with this name already exists" }, 400);
-      }
+    // Make first profile default automatically
+    const isDefault = body.isDefault ?? profileCount === 0;
 
-      // Check profile limit (max 10 profiles per user)
-      const profileCount = await repository.countByUserId(user.id);
-      if (profileCount >= 10) {
-        return c.json({ error: "Maximum profile limit reached (10)" }, 400);
-      }
+    // Repository's create method handles clearing other defaults atomically in a transaction
+    const profile = await repository.create({
+      id: generateProfileId(),
+      userId: user.id,
+      name: body.name.trim(),
+      columns: body.columns ?? [],
+      isDefault,
+    });
 
-      // Make first profile default automatically
-      const isDefault = body.isDefault ?? (profileCount === 0);
-
-      // Repository's create method handles clearing other defaults atomically in a transaction
-      const profile = await repository.create({
-        id: generateProfileId(),
-        userId: user.id,
-        name: body.name.trim(),
-        columns: body.columns ?? [],
-        isDefault,
-      });
-
-      return c.json(profile, 201);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to create profile";
-      return c.json({ error: message }, 500);
-    }
-  },
-);
+    return c.json(profile, 201);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to create profile";
+    return c.json({ error: message }, 500);
+  }
+});
 
 /**
  * PATCH /api/deck/profiles/:id
@@ -162,7 +157,7 @@ deck.patch(
   async (c: Context) => {
     const user = c.get("user")!;
     const repository = getDeckProfileRepository(c);
-    const profileId = c.req.param("id");
+    const profileId = c.req.param("id")!;
 
     let body: UpdateDeckProfileInput;
     try {
@@ -224,7 +219,7 @@ deck.delete(
   async (c: Context) => {
     const user = c.get("user")!;
     const repository = getDeckProfileRepository(c);
-    const profileId = c.req.param("id");
+    const profileId = c.req.param("id")!;
 
     try {
       // Verify ownership

@@ -223,8 +223,7 @@ export function PasskeySection() {
 
   // Check if browser supports WebAuthn
   const supportsWebAuthn =
-    typeof window !== "undefined" &&
-    window.PublicKeyCredential !== undefined;
+    typeof window !== "undefined" && window.PublicKeyCredential !== undefined;
 
   if (!supportsWebAuthn) {
     return (
@@ -255,8 +254,8 @@ export function PasskeySection() {
       <CardContent className="p-6 pt-0 space-y-4">
         <p className="text-sm text-gray-600 dark:text-gray-400">
           <Trans>
-            Passkeys allow you to sign in securely without a password using your device's
-            biometrics or security key.
+            Passkeys allow you to sign in securely without a password using your device's biometrics
+            or security key.
           </Trans>
         </p>
 

@@ -14,7 +14,8 @@ export default function ServiceUnavailablePage() {
       title={<Trans>Service Unavailable</Trans>}
       description={
         <Trans>
-          The server is temporarily unavailable due to maintenance or high load. Please try again in a few minutes.
+          The server is temporarily unavailable due to maintenance or high load. Please try again in
+          a few minutes.
         </Trans>
       }
       showBackButton={false}

@@ -104,7 +104,10 @@ inbox.post(
         actor: activity.actor,
         username,
         activityId: activity.id,
-        objectType: typeof activity.object === "object" ? (activity.object as { type?: string })?.type : "string",
+        objectType:
+          typeof activity.object === "object"
+            ? (activity.object as { type?: string })?.type
+            : "string",
       },
       "Inbox received activity",
     );
@@ -162,7 +165,10 @@ inbox.post(
     // Return 202 immediately and process in background to avoid timeout
     const inboxService = getInboxService();
     inboxService.handleActivity(c, activity, user.id).catch((error) => {
-      logger.error({ err: error, activityType: activity.type, actor: activity.actor }, "Activity handling error");
+      logger.error(
+        { err: error, activityType: activity.type, actor: activity.actor },
+        "Activity handling error",
+      );
     });
 
     // Return 202 Accepted immediately
@@ -230,7 +236,10 @@ inbox.post(
         actor: activity.actor,
         endpoint: "shared",
         activityId: activity.id,
-        objectType: typeof activity.object === "object" ? (activity.object as { type?: string })?.type : "string",
+        objectType:
+          typeof activity.object === "object"
+            ? (activity.object as { type?: string })?.type
+            : "string",
       },
       "Shared inbox received activity",
     );

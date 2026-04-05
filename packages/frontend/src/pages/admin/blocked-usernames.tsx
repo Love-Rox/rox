@@ -67,7 +67,7 @@ export default function AdminBlockedUsernamesPage() {
   const loadPatterns = useCallback(async () => {
     try {
       const response = await api.get<{ patterns: BlockedUsername[] }>(
-        "/api/admin/blocked-usernames"
+        "/api/admin/blocked-usernames",
       );
       setPatterns(response.patterns);
     } catch (err) {
@@ -212,18 +212,21 @@ export default function AdminBlockedUsernamesPage() {
             <div className="text-sm text-(--text-secondary)">
               <p className="mb-2">
                 <Trans>
-                  Blocked usernames prevent users from registering with certain names. There are two types:
+                  Blocked usernames prevent users from registering with certain names. There are two
+                  types:
                 </Trans>
               </p>
               <ul className="list-disc ml-4 space-y-1">
                 <li>
                   <Trans>
-                    <strong>Default reserved names</strong>: System names like "admin", "api", "system" are always blocked and cannot be removed.
+                    <strong>Default reserved names</strong>: System names like "admin", "api",
+                    "system" are always blocked and cannot be removed.
                   </Trans>
                 </li>
                 <li>
                   <Trans>
-                    <strong>Custom patterns</strong>: Admin-defined patterns shown below. These can be exact matches or regular expressions.
+                    <strong>Custom patterns</strong>: Admin-defined patterns shown below. These can
+                    be exact matches or regular expressions.
                   </Trans>
                 </li>
               </ul>
@@ -282,7 +285,8 @@ export default function AdminBlockedUsernamesPage() {
                       <Trans>This username is blocked</Trans>
                     </p>
                     <p className="text-sm mt-1">
-                      <Trans>Source</Trans>: {testResult.source === "default" ? t`Default reserved` : t`Custom pattern`}
+                      <Trans>Source</Trans>:{" "}
+                      {testResult.source === "default" ? t`Default reserved` : t`Custom pattern`}
                     </p>
                     {testResult.reason && (
                       <p className="text-sm">
@@ -362,7 +366,11 @@ export default function AdminBlockedUsernamesPage() {
           </div>
 
           <div className="pt-2">
-            <Button variant="primary" onPress={handleAddPattern} isDisabled={isAdding || !newPattern.trim()}>
+            <Button
+              variant="primary"
+              onPress={handleAddPattern}
+              isDisabled={isAdding || !newPattern.trim()}
+            >
               {isAdding ? <Spinner size="xs" variant="white" /> : <Trans>Add Pattern</Trans>}
             </Button>
           </div>

@@ -4,12 +4,7 @@ import { useMemo } from "react";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { Clock } from "lucide-react";
-import {
-  DialogTrigger,
-  Popover,
-  Dialog,
-  Heading,
-} from "react-aria-components";
+import { DialogTrigger, Popover, Dialog, Heading } from "react-aria-components";
 import { Button } from "../ui/Button";
 import { TextField } from "../ui/TextField";
 import { getModalContainer } from "../../lib/utils/modalContainer";
@@ -80,10 +75,7 @@ export function NoteComposerSchedulePicker({
       >
         <Dialog className="outline-none">
           <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
-            <Heading
-              slot="title"
-              className="text-sm font-medium text-gray-900 dark:text-gray-100"
-            >
+            <Heading slot="title" className="text-sm font-medium text-gray-900 dark:text-gray-100">
               <Trans>Schedule post</Trans>
             </Heading>
           </div>
@@ -98,18 +90,11 @@ export function NoteComposerSchedulePicker({
             />
             {scheduledAt && (
               <div className="text-xs text-gray-500 dark:text-gray-400">
-                <Trans>
-                  Will be posted at {new Date(scheduledAt).toLocaleString()}
-                </Trans>
+                <Trans>Will be posted at {new Date(scheduledAt).toLocaleString()}</Trans>
               </div>
             )}
             <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onPress={onCancel}
-                className="flex-1"
-              >
+              <Button variant="ghost" size="sm" onPress={onCancel} className="flex-1">
                 <Trans>Cancel</Trans>
               </Button>
               <Button

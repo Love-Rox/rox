@@ -13,12 +13,7 @@
 import { useState, useEffect } from "react";
 import { Trans } from "@lingui/react/macro";
 import { X, List as ListIcon, Loader2, Plus, Check } from "lucide-react";
-import {
-  Dialog,
-  Modal,
-  Heading,
-  Button as AriaButton,
-} from "react-aria-components";
+import { Dialog, Modal, Heading, Button as AriaButton } from "react-aria-components";
 import { SafeModalOverlay } from "../ui/SafeModalOverlay";
 import { useAtom, useSetAtom } from "jotai";
 import { listsApi, type ListWithMemberCount, type List } from "../../lib/api/lists";
@@ -63,9 +58,7 @@ function ListItem({ list, isInList, isLoading, onToggle }: ListItemProps) {
     >
       <div
         className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
-          isInList
-            ? "bg-primary-500 border-primary-500"
-            : "border-gray-300 dark:border-gray-600"
+          isInList ? "bg-primary-500 border-primary-500" : "border-gray-300 dark:border-gray-600"
         }`}
       >
         {isLoading ? (
@@ -77,7 +70,8 @@ function ListItem({ list, isInList, isLoading, onToggle }: ListItemProps) {
       <div className="flex-1 min-w-0">
         <p className="font-medium text-(--text-primary) truncate">{list.name}</p>
         <p className="text-sm text-(--text-muted)">
-          {list.memberCount} {list.memberCount === 1 ? <Trans>member</Trans> : <Trans>members</Trans>}
+          {list.memberCount}{" "}
+          {list.memberCount === 1 ? <Trans>member</Trans> : <Trans>members</Trans>}
         </p>
       </div>
     </button>
@@ -103,12 +97,7 @@ function ListItem({ list, isInList, isLoading, onToggle }: ListItemProps) {
  * />
  * ```
  */
-export function AddToListModal({
-  isOpen,
-  onClose,
-  userId,
-  username,
-}: AddToListModalProps) {
+export function AddToListModal({ isOpen, onClose, userId, username }: AddToListModalProps) {
   const [lists, setLists] = useAtom(myListsAtom);
   const addList = useSetAtom(addListAtom);
   const updateMemberCount = useSetAtom(updateListMemberCountAtom);
@@ -275,10 +264,7 @@ export function AddToListModal({
                 <div className="flex items-center justify-between p-4 border-b border-(--border-color)">
                   <div className="flex items-center gap-2">
                     <ListIcon className="w-5 h-5 text-(--text-muted)" />
-                    <Heading
-                      slot="title"
-                      className="text-lg font-semibold text-(--text-primary)"
-                    >
+                    <Heading slot="title" className="text-lg font-semibold text-(--text-primary)">
                       <Trans>Add @{username} to list</Trans>
                     </Heading>
                   </div>

@@ -47,7 +47,9 @@ export const emailSchema = z.string().email("Invalid email address");
  * Password validation rules:
  * - Minimum 8 characters
  */
-export const passwordSchema = z.string().min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`);
+export const passwordSchema = z
+  .string()
+  .min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`);
 
 /**
  * Note ID validation (nanoid format)
@@ -96,7 +98,10 @@ export const registerSchema = z.object({
   username: usernameSchema,
   email: emailSchema,
   password: passwordSchema,
-  name: z.string().max(DISPLAY_NAME_MAX_LENGTH, `Name must be at most ${DISPLAY_NAME_MAX_LENGTH} characters`).optional(),
+  name: z
+    .string()
+    .max(DISPLAY_NAME_MAX_LENGTH, `Name must be at most ${DISPLAY_NAME_MAX_LENGTH} characters`)
+    .optional(),
 });
 
 /**
@@ -116,13 +121,24 @@ export const loginSchema = z.object({
  */
 export const createNoteSchema = z
   .object({
-    text: z.string().max(NOTE_TEXT_MAX_LENGTH, `Note text must be at most ${NOTE_TEXT_MAX_LENGTH} characters`).nullable().optional(),
-    cw: z.string().max(NOTE_CW_MAX_LENGTH, `Content warning must be at most ${NOTE_CW_MAX_LENGTH} characters`).nullable().optional(),
+    text: z
+      .string()
+      .max(NOTE_TEXT_MAX_LENGTH, `Note text must be at most ${NOTE_TEXT_MAX_LENGTH} characters`)
+      .nullable()
+      .optional(),
+    cw: z
+      .string()
+      .max(NOTE_CW_MAX_LENGTH, `Content warning must be at most ${NOTE_CW_MAX_LENGTH} characters`)
+      .nullable()
+      .optional(),
     visibility: visibilitySchema,
     localOnly: z.boolean().default(false),
     replyId: z.string().nullable().optional(),
     renoteId: z.string().nullable().optional(),
-    fileIds: z.array(z.string()).max(NOTE_MAX_FILES, `Maximum ${NOTE_MAX_FILES} files allowed`).default([]),
+    fileIds: z
+      .array(z.string())
+      .max(NOTE_MAX_FILES, `Maximum ${NOTE_MAX_FILES} files allowed`)
+      .default([]),
   })
   .refine((data) => data.text || data.renoteId || (data.fileIds && data.fileIds.length > 0), {
     message: "Note must have text, a renote, or files",
@@ -201,8 +217,17 @@ export const resolveUserQuerySchema = z.object({
  * PATCH /api/users/@me - Update profile
  */
 export const updateProfileSchema = z.object({
-  name: z.string().max(DISPLAY_NAME_MAX_LENGTH, `Display name must be at most ${DISPLAY_NAME_MAX_LENGTH} characters`).optional(),
-  description: z.string().max(BIO_MAX_LENGTH, `Bio must be at most ${BIO_MAX_LENGTH} characters`).optional(),
+  name: z
+    .string()
+    .max(
+      DISPLAY_NAME_MAX_LENGTH,
+      `Display name must be at most ${DISPLAY_NAME_MAX_LENGTH} characters`,
+    )
+    .optional(),
+  description: z
+    .string()
+    .max(BIO_MAX_LENGTH, `Bio must be at most ${BIO_MAX_LENGTH} characters`)
+    .optional(),
   avatarUrl: z.string().url("Invalid avatar URL").optional(),
   bannerUrl: z.string().url("Invalid banner URL").optional(),
   isBot: z.boolean().optional(),
@@ -306,7 +331,11 @@ export const showFileQuerySchema = z.object({
 export const updateFileSchema = z.object({
   fileId: fileIdSchema,
   isSensitive: z.boolean().optional(),
-  comment: z.string().max(FILE_COMMENT_MAX_LENGTH, `Comment must be at most ${FILE_COMMENT_MAX_LENGTH} characters`).nullable().optional(),
+  comment: z
+    .string()
+    .max(FILE_COMMENT_MAX_LENGTH, `Comment must be at most ${FILE_COMMENT_MAX_LENGTH} characters`)
+    .nullable()
+    .optional(),
 });
 
 /**

@@ -79,7 +79,7 @@ export function parsePagination(c: Context, options: PaginationOptions = {}): Pa
 
   const limit = Math.min(
     Number.parseInt(c.req.query("limit") || String(defaultLimit), 10),
-    maxLimit
+    maxLimit,
   );
   const offset = Number.parseInt(c.req.query("offset") || String(defaultOffset), 10);
 
@@ -132,8 +132,7 @@ export interface ErrorResponse {
 export function errorResponse(
   c: Context,
   message: string,
-  status: 400 | 401 | 403 | 404 | 409 | 500 | 503 = 400
+  status: 400 | 401 | 403 | 404 | 409 | 500 | 503 = 400,
 ) {
   return c.json({ error: message } satisfies ErrorResponse, status);
 }
-

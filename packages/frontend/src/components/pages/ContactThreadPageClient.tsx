@@ -29,10 +29,7 @@ import {
   Shield,
 } from "lucide-react";
 
-const statusConfig: Record<
-  string,
-  { icon: React.ReactNode; label: string; color: string }
-> = {
+const statusConfig: Record<string, { icon: React.ReactNode; label: string; color: string }> = {
   open: {
     icon: <Clock className="w-4 h-4" />,
     label: "Open",
@@ -309,7 +306,10 @@ export function ContactThreadPageClient({ threadId }: ContactThreadPageClientPro
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-(--text-muted)">
-                <Trans>This inquiry has been closed. Please create a new inquiry if you need further assistance.</Trans>
+                <Trans>
+                  This inquiry has been closed. Please create a new inquiry if you need further
+                  assistance.
+                </Trans>
               </p>
             </CardContent>
           </Card>

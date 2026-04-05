@@ -11,12 +11,7 @@
 
 import type { ReactNode } from "react";
 import { X } from "lucide-react";
-import {
-  Dialog,
-  Modal,
-  Heading,
-  Button as AriaButton,
-} from "react-aria-components";
+import { Dialog, Modal, Heading, Button as AriaButton } from "react-aria-components";
 import { SafeModalOverlay } from "./SafeModalOverlay";
 
 /**
@@ -98,10 +93,7 @@ export function FormModal({
             <>
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-(--border-color) shrink-0">
-                <Heading
-                  slot="title"
-                  className="text-lg font-semibold text-(--text-primary)"
-                >
+                <Heading slot="title" className="text-lg font-semibold text-(--text-primary)">
                   {title}
                 </Heading>
                 <AriaButton

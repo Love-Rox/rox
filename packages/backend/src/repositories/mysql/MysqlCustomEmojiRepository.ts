@@ -27,7 +27,11 @@ export class MysqlCustomEmojiRepository implements ICustomEmojiRepository {
     await this.db.insert(customEmojis).values(emoji);
 
     // MySQL doesn't support RETURNING, fetch the inserted record
-    const [result] = await this.db.select().from(customEmojis).where(eq(customEmojis.id, emoji.id)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(customEmojis)
+      .where(eq(customEmojis.id, emoji.id))
+      .limit(1);
 
     if (!result) {
       throw new Error("Failed to create custom emoji");
@@ -182,7 +186,11 @@ export class MysqlCustomEmojiRepository implements ICustomEmojiRepository {
       .where(eq(customEmojis.id, id));
 
     // MySQL doesn't support RETURNING, fetch the updated record
-    const [result] = await this.db.select().from(customEmojis).where(eq(customEmojis.id, id)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(customEmojis)
+      .where(eq(customEmojis.id, id))
+      .limit(1);
 
     return result ?? null;
   }
@@ -237,7 +245,9 @@ export class MysqlCustomEmojiRepository implements ICustomEmojiRepository {
       conditions.push(eq(customEmojis.isSensitive, false));
     }
 
-    const query = this.db.select({ count: sql<number>`CAST(COUNT(*) AS SIGNED)` }).from(customEmojis);
+    const query = this.db
+      .select({ count: sql<number>`CAST(COUNT(*) AS SIGNED)` })
+      .from(customEmojis);
 
     const [result] = conditions.length > 0 ? await query.where(and(...conditions)) : await query;
 

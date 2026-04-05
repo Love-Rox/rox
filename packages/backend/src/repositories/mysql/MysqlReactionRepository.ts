@@ -27,7 +27,11 @@ export class MysqlReactionRepository implements IReactionRepository {
     });
 
     // MySQL doesn't support RETURNING, fetch the inserted record
-    const [result] = await this.db.select().from(reactions).where(eq(reactions.id, reaction.id)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(reactions)
+      .where(eq(reactions.id, reaction.id))
+      .limit(1);
 
     if (!result) {
       throw new Error("Failed to create reaction");

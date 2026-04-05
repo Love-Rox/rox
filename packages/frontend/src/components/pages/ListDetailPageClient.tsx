@@ -153,7 +153,10 @@ export function ListDetailPageClient({ listId }: ListDetailPageClientProps) {
             title={<Trans>List not found</Trans>}
             message={error || "The list you're looking for doesn't exist or is private."}
           />
-          <a href="/lists" className="mt-4 inline-flex items-center gap-2 text-primary-600 hover:underline">
+          <a
+            href="/lists"
+            className="mt-4 inline-flex items-center gap-2 text-primary-600 hover:underline"
+          >
             <ArrowLeft className="w-4 h-4" />
             <Trans>Back to lists</Trans>
           </a>
@@ -164,9 +167,7 @@ export function ListDetailPageClient({ listId }: ListDetailPageClientProps) {
 
   // Handle member count changed
   const handleMemberCountChanged = (delta: number) => {
-    setList((prev) =>
-      prev ? { ...prev, memberCount: prev.memberCount + delta } : null,
-    );
+    setList((prev) => (prev ? { ...prev, memberCount: prev.memberCount + delta } : null));
   };
 
   // Build actions - Members button for all users, Edit/Delete for owner only

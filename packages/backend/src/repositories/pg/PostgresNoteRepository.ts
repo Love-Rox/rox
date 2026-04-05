@@ -441,7 +441,6 @@ export class PostgresNoteRepository implements INoteRepository {
     return result?.count ?? 0;
   }
 
-
   async incrementRepliesCount(noteId: string): Promise<void> {
     await this.db
       .update(notes)

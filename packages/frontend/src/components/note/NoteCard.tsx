@@ -146,7 +146,6 @@ function NoteCardComponent({
     }
   }, [note.user.host]);
 
-
   // Sync reactions from props when they change (e.g., from SSE updates)
   useEffect(() => {
     if (note.reactions) {
@@ -295,7 +294,8 @@ function NoteCardComponent({
 
   // Determine card styling based on state
   const cardClassName = (() => {
-    const base = "transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2";
+    const base =
+      "transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2";
     if (isDirectMessage) {
       return `${base} border-l-4 border-l-purple-500 bg-purple-50/30 dark:bg-purple-900/10`;
     }
@@ -367,9 +367,7 @@ function NoteCardComponent({
                   ) : (
                     <Globe className="w-3 h-3" />
                   )}
-                  <span className="truncate">
-                    {remoteInstance?.name || note.user.host}
-                  </span>
+                  <span className="truncate">{remoteInstance?.name || note.user.host}</span>
                 </a>
               </div>
             )}
@@ -416,9 +414,7 @@ function NoteCardComponent({
               title={new Date(note.createdAt).toLocaleString()}
               suppressHydrationWarning
             >
-              <span suppressHydrationWarning>
-                {new Date(note.createdAt).toLocaleString()}
-              </span>
+              <span suppressHydrationWarning>{new Date(note.createdAt).toLocaleString()}</span>
             </SpaLink>
           </div>
         </div>
@@ -514,7 +510,14 @@ function NoteCardComponent({
             {note.renote && (
               <div className="mb-3 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
                 <div className="mb-2 flex items-center gap-2">
-                  <SpaLink to={note.renote.user.host ? `/@${note.renote.user.username}@${note.renote.user.host}` : `/@${note.renote.user.username}`} className="shrink-0">
+                  <SpaLink
+                    to={
+                      note.renote.user.host
+                        ? `/@${note.renote.user.username}@${note.renote.user.host}`
+                        : `/@${note.renote.user.username}`
+                    }
+                    className="shrink-0"
+                  >
                     <Avatar
                       src={note.renote.user.avatarUrl}
                       alt={note.renote.user.name || note.renote.user.username}
@@ -522,7 +525,11 @@ function NoteCardComponent({
                     />
                   </SpaLink>
                   <SpaLink
-                    to={note.renote.user.host ? `/@${note.renote.user.username}@${note.renote.user.host}` : `/@${note.renote.user.username}`}
+                    to={
+                      note.renote.user.host
+                        ? `/@${note.renote.user.username}@${note.renote.user.host}`
+                        : `/@${note.renote.user.username}`
+                    }
                     className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
                   >
                     <UserDisplayName
@@ -532,10 +539,15 @@ function NoteCardComponent({
                     />
                   </SpaLink>
                   <SpaLink
-                    to={note.renote.user.host ? `/@${note.renote.user.username}@${note.renote.user.host}` : `/@${note.renote.user.username}`}
+                    to={
+                      note.renote.user.host
+                        ? `/@${note.renote.user.username}@${note.renote.user.host}`
+                        : `/@${note.renote.user.username}`
+                    }
                     className="text-xs text-gray-500 dark:text-gray-400 hover:underline"
                   >
-                    @{note.renote.user.username}{note.renote.user.host ? `@${note.renote.user.host}` : ""}
+                    @{note.renote.user.username}
+                    {note.renote.user.host ? `@${note.renote.user.host}` : ""}
                   </SpaLink>
                 </div>
                 {note.renote.text && (
@@ -556,7 +568,11 @@ function NoteCardComponent({
                   </div>
                   <div className="flex items-start gap-2">
                     <SpaLink
-                      to={note.reply.user.host ? `/@${note.reply.user.username}@${note.reply.user.host}` : `/@${note.reply.user.username}`}
+                      to={
+                        note.reply.user.host
+                          ? `/@${note.reply.user.username}@${note.reply.user.host}`
+                          : `/@${note.reply.user.username}`
+                      }
                       className="shrink-0"
                     >
                       <Avatar
@@ -568,7 +584,11 @@ function NoteCardComponent({
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <SpaLink
-                          to={note.reply.user.host ? `/@${note.reply.user.username}@${note.reply.user.host}` : `/@${note.reply.user.username}`}
+                          to={
+                            note.reply.user.host
+                              ? `/@${note.reply.user.username}@${note.reply.user.host}`
+                              : `/@${note.reply.user.username}`
+                          }
                           className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:underline"
                         >
                           <UserDisplayName
@@ -578,7 +598,8 @@ function NoteCardComponent({
                           />
                         </SpaLink>
                         <span className="text-xs text-gray-500 dark:text-gray-400">
-                          @{note.reply.user.username}{note.reply.user.host ? `@${note.reply.user.host}` : ""}
+                          @{note.reply.user.username}
+                          {note.reply.user.host ? `@${note.reply.user.host}` : ""}
                         </span>
                       </div>
                       {note.reply.text && (
@@ -628,10 +649,7 @@ function NoteCardComponent({
             <span>{note.renoteCount || 0}</span>
           </Button>
           {/* Reaction button - always shown, allows adding new reactions */}
-          <ReactionButton
-            onReactionSelect={handleReaction}
-            isDisabled={isReacting}
-          />
+          <ReactionButton onReactionSelect={handleReaction} isDisabled={isReacting} />
           {localReactions && Object.keys(localReactions).length > 0 && (
             <div
               className="flex items-center gap-1.5 flex-wrap text-sm text-gray-600 dark:text-gray-400"
@@ -655,15 +673,19 @@ function NoteCardComponent({
                     className={`
                       flex items-center gap-1.5 px-2.5 py-1 rounded-full
                       transition-all
-                      ${isRemoteNote
-                        ? "bg-gray-50 dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-500 cursor-default opacity-80"
-                        : myReactions.includes(emoji)
-                          ? "border border-solid bg-primary-100 dark:bg-primary-900/30 border-primary-400 dark:border-primary-600 cursor-pointer"
-                          : "border border-solid bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 cursor-pointer"}
+                      ${
+                        isRemoteNote
+                          ? "bg-gray-50 dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-500 cursor-default opacity-80"
+                          : myReactions.includes(emoji)
+                            ? "border border-solid bg-primary-100 dark:bg-primary-900/30 border-primary-400 dark:border-primary-600 cursor-pointer"
+                            : "border border-solid bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 cursor-pointer"
+                      }
                     `}
-                    aria-label={isRemoteNote
-                      ? `${emoji} reaction. ${count} ${count === 1 ? "reaction" : "reactions"}`
-                      : `${myReactions.includes(emoji) ? "Remove" : "Add"} ${emoji} reaction. ${count} ${count === 1 ? "reaction" : "reactions"}`}
+                    aria-label={
+                      isRemoteNote
+                        ? `${emoji} reaction. ${count} ${count === 1 ? "reaction" : "reactions"}`
+                        : `${myReactions.includes(emoji) ? "Remove" : "Add"} ${emoji} reaction. ${count} ${count === 1 ? "reaction" : "reactions"}`
+                    }
                     aria-pressed={isRemoteNote ? undefined : myReactions.includes(emoji)}
                   >
                     {isCustomEmoji && customEmojiUrl ? (
@@ -674,9 +696,13 @@ function NoteCardComponent({
                         loading="lazy"
                       />
                     ) : (
-                      <span className="text-2xl leading-none" aria-hidden="true">{emoji}</span>
+                      <span className="text-2xl leading-none" aria-hidden="true">
+                        {emoji}
+                      </span>
                     )}
-                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{count}</span>
+                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                      {count}
+                    </span>
                   </ReactionElement>
                 );
               })}
@@ -726,7 +752,9 @@ function NoteCardComponent({
           onClose={() => setShowDeleteConfirm(false)}
           onConfirm={handleDelete}
           title={<Trans>Delete Note</Trans>}
-          message={<Trans>Are you sure you want to delete this note? This action cannot be undone.</Trans>}
+          message={
+            <Trans>Are you sure you want to delete this note? This action cannot be undone.</Trans>
+          }
           confirmText={<Trans>Delete</Trans>}
           confirmVariant="danger"
           isLoading={isDeleting}

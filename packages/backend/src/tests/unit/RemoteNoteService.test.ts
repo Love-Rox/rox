@@ -21,7 +21,9 @@ describe("RemoteNoteService", () => {
   beforeEach(() => {
     mockNoteRepository = {
       findByUri: mock(() => Promise.resolve(null)),
-      create: mock((note) => Promise.resolve({ ...note, createdAt: new Date(), updatedAt: new Date() })),
+      create: mock((note) =>
+        Promise.resolve({ ...note, createdAt: new Date(), updatedAt: new Date() }),
+      ),
       incrementRepliesCount: mock(() => Promise.resolve()),
     };
 
@@ -51,7 +53,7 @@ describe("RemoteNoteService", () => {
           isBot: false,
           isDeleted: false,
           deletedAt: null,
-    isSystemUser: false,
+          isSystemUser: false,
           followingCount: 0,
           followersCount: 0,
           notesCount: 0,
@@ -79,12 +81,16 @@ describe("RemoteNoteService", () => {
 
     mockCustomEmojiRepository = {
       findByName: mock(() => Promise.resolve(null)),
-      create: mock((emoji) => Promise.resolve({ ...emoji, createdAt: new Date(), updatedAt: new Date() })),
+      create: mock((emoji) =>
+        Promise.resolve({ ...emoji, createdAt: new Date(), updatedAt: new Date() }),
+      ),
       update: mock(() => Promise.resolve(null)),
     };
 
     mockDriveFileRepository = {
-      create: mock((file) => Promise.resolve({ ...file, createdAt: new Date(), updatedAt: new Date() })),
+      create: mock((file) =>
+        Promise.resolve({ ...file, createdAt: new Date(), updatedAt: new Date() }),
+      ),
     };
 
     service = new RemoteNoteService(

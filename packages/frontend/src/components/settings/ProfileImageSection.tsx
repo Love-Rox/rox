@@ -216,7 +216,9 @@ export function ProfileImageSection() {
               <Avatar
                 src={currentUser.avatarUrl}
                 alt={currentUser.displayName || currentUser.username}
-                fallback={(currentUser.displayName || currentUser.username || "?").charAt(0).toUpperCase()}
+                fallback={(currentUser.displayName || currentUser.username || "?")
+                  .charAt(0)
+                  .toUpperCase()}
                 size="xl"
               />
               {currentUser.avatarUrl && (
@@ -284,11 +286,7 @@ export function ProfileImageSection() {
           <div className="relative group">
             <div className="w-full h-32 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
               {currentUser.bannerUrl ? (
-                <img
-                  src={currentUser.bannerUrl}
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
+                <img src={currentUser.bannerUrl} alt="" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
                   <ImageIcon className="w-12 h-12" />

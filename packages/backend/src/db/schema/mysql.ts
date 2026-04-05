@@ -787,7 +787,10 @@ export const scheduledNotes = mysqlTable(
     renoteId: varchar("renote_id", { length: 32 }),
     fileIds: json("file_ids").$type<string[]>().notNull().default([]),
     scheduledAt: datetime("scheduled_at").notNull(),
-    status: varchar("status", { length: 32 }).notNull().default("pending").$type<ScheduledNoteStatus>(),
+    status: varchar("status", { length: 32 })
+      .notNull()
+      .default("pending")
+      .$type<ScheduledNoteStatus>(),
     publishedNoteId: varchar("published_note_id", { length: 32 }).references(() => notes.id, {
       onDelete: "set null",
     }),
@@ -832,11 +835,16 @@ export const contactThreads = mysqlTable(
     // Category for organization (general, bug, feature, abuse, account, etc.)
     category: varchar("category", { length: 64 }).notNull().default("general"),
     // Current status
-    status: varchar("status", { length: 32 }).notNull().default("open").$type<ContactThreadStatus>(),
+    status: varchar("status", { length: 32 })
+      .notNull()
+      .default("open")
+      .$type<ContactThreadStatus>(),
     // Email for non-logged-in users or notification purposes
     email: varchar("email", { length: 256 }),
     // Assigned staff member (for internal tracking, not shown to user)
-    assignedToId: varchar("assigned_to_id", { length: 32 }).references(() => users.id, { onDelete: "set null" }),
+    assignedToId: varchar("assigned_to_id", { length: 32 }).references(() => users.id, {
+      onDelete: "set null",
+    }),
     // Priority level (1 = low, 2 = normal, 3 = high, 4 = urgent)
     priority: int("priority").notNull().default(2),
     // Internal notes (only visible to staff)
@@ -868,7 +876,9 @@ export const contactMessages = mysqlTable(
       .notNull()
       .references(() => contactThreads.id, { onDelete: "cascade" }),
     // Who sent the message (user ID for users, staff ID for staff)
-    senderId: varchar("sender_id", { length: 32 }).references(() => users.id, { onDelete: "set null" }),
+    senderId: varchar("sender_id", { length: 32 }).references(() => users.id, {
+      onDelete: "set null",
+    }),
     // Type of sender (for display purposes - staff shown as "admin" or "moderator")
     senderType: varchar("sender_type", { length: 32 }).notNull().$type<ContactSenderType>(),
     // Message content
@@ -907,7 +917,10 @@ export const userLists = mysqlTable(
       .references(() => users.id, { onDelete: "cascade" }),
     name: varchar("name", { length: 128 }).notNull(),
     isPublic: boolean("is_public").notNull().default(false),
-    notifyLevel: varchar("notify_level", { length: 16 }).notNull().default("none").$type<ListNotifyLevel>(),
+    notifyLevel: varchar("notify_level", { length: 16 })
+      .notNull()
+      .default("none")
+      .$type<ListNotifyLevel>(),
     createdAt: datetime("created_at")
       .notNull()
       .$defaultFn(() => new Date()),

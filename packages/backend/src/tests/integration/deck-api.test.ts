@@ -279,14 +279,11 @@ describe("Deck API Integration", () => {
         return;
       }
 
-      const res = await fetch(
-        `${BASE_URL}/api/deck/profiles/nonexistent-id-12345`,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      );
+      const res = await fetch(`${BASE_URL}/api/deck/profiles/nonexistent-id-12345`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
 
       expect(res.status).toBe(404);
     });
@@ -436,14 +433,11 @@ describe("Deck API Integration", () => {
       expect(updated.isDefault).toBe(true);
 
       // Check profile1 is no longer default
-      const checkRes = await fetch(
-        `${BASE_URL}/api/deck/profiles/${profile1.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      );
+      const checkRes = await fetch(`${BASE_URL}/api/deck/profiles/${profile1.id}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
       const profile1Updated = (await checkRes.json()) as DeckProfile;
       expect(profile1Updated.isDefault).toBe(false);
     });
@@ -483,14 +477,11 @@ describe("Deck API Integration", () => {
       expect(res.status).toBe(200);
 
       // Verify deleted
-      const checkRes = await fetch(
-        `${BASE_URL}/api/deck/profiles/${created.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      );
+      const checkRes = await fetch(`${BASE_URL}/api/deck/profiles/${created.id}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
       expect(checkRes.status).toBe(404);
     });
 
@@ -500,15 +491,12 @@ describe("Deck API Integration", () => {
         return;
       }
 
-      const res = await fetch(
-        `${BASE_URL}/api/deck/profiles/nonexistent-delete-test`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      );
+      const res = await fetch(`${BASE_URL}/api/deck/profiles/nonexistent-delete-test`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
 
       expect(res.status).toBe(404);
     });

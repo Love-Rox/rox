@@ -8,7 +8,10 @@
  */
 
 import { generateId } from "shared";
-import type { IOAuthAccountRepository, OAuthProvider } from "../interfaces/repositories/IOAuthAccountRepository.js";
+import type {
+  IOAuthAccountRepository,
+  OAuthProvider,
+} from "../interfaces/repositories/IOAuthAccountRepository.js";
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
 import type { ISessionRepository } from "../interfaces/repositories/ISessionRepository.js";
 import type { User, OAuthAccount } from "../db/schema/pg.js";
@@ -162,7 +165,8 @@ export class OAuthService {
       this.configs.mastodon = {
         clientId: process.env.MASTODON_CLIENT_ID,
         clientSecret: process.env.MASTODON_CLIENT_SECRET,
-        redirectUri: process.env.MASTODON_REDIRECT_URI || `${process.env.URL}/auth/callback/mastodon`,
+        redirectUri:
+          process.env.MASTODON_REDIRECT_URI || `${process.env.URL}/auth/callback/mastodon`,
         instanceUrl: process.env.MASTODON_INSTANCE_URL,
       };
     }
@@ -293,7 +297,10 @@ export class OAuthService {
     }
   }
 
-  private async exchangeGitHubCode(config: OAuthProviderConfig, code: string): Promise<OAuthTokenResponse> {
+  private async exchangeGitHubCode(
+    config: OAuthProviderConfig,
+    code: string,
+  ): Promise<OAuthTokenResponse> {
     const response = await fetch("https://github.com/login/oauth/access_token", {
       method: "POST",
       headers: {
@@ -320,7 +327,10 @@ export class OAuthService {
     return data as OAuthTokenResponse;
   }
 
-  private async exchangeGoogleCode(config: OAuthProviderConfig, code: string): Promise<OAuthTokenResponse> {
+  private async exchangeGoogleCode(
+    config: OAuthProviderConfig,
+    code: string,
+  ): Promise<OAuthTokenResponse> {
     const response = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
       headers: {
@@ -347,7 +357,10 @@ export class OAuthService {
     return data as OAuthTokenResponse;
   }
 
-  private async exchangeDiscordCode(config: OAuthProviderConfig, code: string): Promise<OAuthTokenResponse> {
+  private async exchangeDiscordCode(
+    config: OAuthProviderConfig,
+    code: string,
+  ): Promise<OAuthTokenResponse> {
     const response = await fetch("https://discord.com/api/oauth2/token", {
       method: "POST",
       headers: {
@@ -374,7 +387,10 @@ export class OAuthService {
     return data as OAuthTokenResponse;
   }
 
-  private async exchangeMastodonCode(config: OAuthProviderConfig, code: string): Promise<OAuthTokenResponse> {
+  private async exchangeMastodonCode(
+    config: OAuthProviderConfig,
+    code: string,
+  ): Promise<OAuthTokenResponse> {
     if (!config.instanceUrl) {
       throw new Error("Mastodon instance URL is required");
     }
@@ -563,14 +579,17 @@ export class OAuthService {
 
     if (existingOAuthAccount) {
       // Update tokens
-      const updatedAccount = await this.oauthAccountRepository.updateTokens(existingOAuthAccount.id, {
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token || null,
-        tokenExpiresAt: tokens.expires_in
-          ? new Date(Date.now() + tokens.expires_in * 1000)
-          : null,
-        scope: tokens.scope || null,
-      });
+      const updatedAccount = await this.oauthAccountRepository.updateTokens(
+        existingOAuthAccount.id,
+        {
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token || null,
+          tokenExpiresAt: tokens.expires_in
+            ? new Date(Date.now() + tokens.expires_in * 1000)
+            : null,
+          scope: tokens.scope || null,
+        },
+      );
 
       const user = await this.userRepository.findById(existingOAuthAccount.userId);
       if (!user) {
@@ -702,11 +721,7 @@ export class OAuthService {
   /**
    * Link OAuth account to existing user
    */
-  async linkAccount(
-    userId: string,
-    provider: OAuthProvider,
-    code: string,
-  ): Promise<OAuthAccount> {
+  async linkAccount(userId: string, provider: OAuthProvider, code: string): Promise<OAuthAccount> {
     // Check if already linked
     const existing = await this.oauthAccountRepository.findByUserAndProvider(userId, provider);
     if (existing) {

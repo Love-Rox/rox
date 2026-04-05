@@ -98,10 +98,7 @@ app.post("/complete", requireOnboardingMode, async (c) => {
 
     // Validate required fields
     if (!admin?.username || !admin?.email || !admin?.password) {
-      return c.json(
-        { error: "Admin username, email, and password are required" },
-        400,
-      );
+      return c.json({ error: "Admin username, email, and password are required" }, 400);
     }
 
     if (!instance?.name) {
@@ -113,7 +110,12 @@ app.post("/complete", requireOnboardingMode, async (c) => {
     const instanceSettingsService = c.get("instanceSettingsService");
     const blockedUsernameService = c.get("blockedUsernameService");
     const eventBus = c.get("eventBus");
-    const authService = new AuthService(userRepository, sessionRepository, blockedUsernameService, eventBus);
+    const authService = new AuthService(
+      userRepository,
+      sessionRepository,
+      blockedUsernameService,
+      eventBus,
+    );
 
     // Check if username or email already exists
     const existingUsername = await userRepository.findByUsername(admin.username);

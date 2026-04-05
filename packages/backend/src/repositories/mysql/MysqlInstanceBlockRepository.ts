@@ -32,7 +32,11 @@ export class MysqlInstanceBlockRepository implements IInstanceBlockRepository {
     });
 
     // MySQL doesn't support RETURNING, fetch the inserted record
-    const [result] = await this.db.select().from(instanceBlocks).where(eq(instanceBlocks.id, id)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(instanceBlocks)
+      .where(eq(instanceBlocks.id, id))
+      .limit(1);
 
     if (!result) {
       throw new Error("Failed to create instance block");
@@ -74,9 +78,7 @@ export class MysqlInstanceBlockRepository implements IInstanceBlockRepository {
       return false;
     }
 
-    await this.db
-      .delete(instanceBlocks)
-      .where(eq(instanceBlocks.host, host.toLowerCase()));
+    await this.db.delete(instanceBlocks).where(eq(instanceBlocks.host, host.toLowerCase()));
 
     return true;
   }

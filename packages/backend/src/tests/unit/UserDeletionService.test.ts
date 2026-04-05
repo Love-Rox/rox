@@ -127,7 +127,7 @@ describe("UserDeletionService", () => {
       mockFollowRepo as IFollowRepository,
       mockSessionRepo as ISessionRepository,
       mockNoteRepo as INoteRepository,
-      mockDeliveryService as ActivityPubDeliveryService
+      mockDeliveryService as ActivityPubDeliveryService,
     );
   });
 
@@ -184,9 +184,7 @@ describe("UserDeletionService", () => {
 
     test("should delete notes when deleteNotes option is true", async () => {
       const mockNotes = [{ id: "note1" }, { id: "note2" }];
-      mockNoteRepo.findByUserId = mock()
-        .mockResolvedValueOnce(mockNotes)
-        .mockResolvedValueOnce([]);
+      mockNoteRepo.findByUserId = mock().mockResolvedValueOnce(mockNotes).mockResolvedValueOnce([]);
 
       const result = await service.deleteLocalUser("local-user-1", { deleteNotes: true });
 
@@ -233,9 +231,7 @@ describe("UserDeletionService", () => {
     });
 
     test("should return success when user is already deleted", async () => {
-      mockUserRepo.findById = mock(() =>
-        Promise.resolve({ ...mockRemoteUser, isDeleted: true })
-      );
+      mockUserRepo.findById = mock(() => Promise.resolve({ ...mockRemoteUser, isDeleted: true }));
 
       const result = await service.deleteRemoteUser("remote-user-1");
 

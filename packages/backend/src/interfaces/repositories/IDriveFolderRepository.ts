@@ -25,10 +25,7 @@ export interface IDriveFolderRepository {
   /**
    * フォルダ情報を更新（名前変更など）
    */
-  update(
-    id: string,
-    data: Partial<Pick<DriveFolder, "name" | "parentId">>,
-  ): Promise<DriveFolder>;
+  update(id: string, data: Partial<Pick<DriveFolder, "name" | "parentId">>): Promise<DriveFolder>;
 
   /**
    * フォルダを削除

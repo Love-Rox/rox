@@ -67,9 +67,9 @@ function rgbToOklch(r: number, g: number, b: number): { l: number; c: number; h:
   const sCbrt = Math.cbrt(s_);
 
   // LMS to OKLab
-  const L = 0.2104542553 * lCbrt + 0.7936177850 * mCbrt - 0.0040720468 * sCbrt;
-  const a = 1.9779984951 * lCbrt - 2.4285922050 * mCbrt + 0.4505937099 * sCbrt;
-  const okb = 0.0259040371 * lCbrt + 0.7827717662 * mCbrt - 0.8086757660 * sCbrt;
+  const L = 0.2104542553 * lCbrt + 0.793617785 * mCbrt - 0.0040720468 * sCbrt;
+  const a = 1.9779984951 * lCbrt - 2.428592205 * mCbrt + 0.4505937099 * sCbrt;
+  const okb = 0.0259040371 * lCbrt + 0.7827717662 * mCbrt - 0.808675766 * sCbrt;
 
   // OKLab to OKLCH
   const c = Math.sqrt(a * a + okb * okb);

@@ -28,10 +28,13 @@ describe("EventBus", () => {
 
       eventBus.on("note:afterCreate", handler, "test-plugin");
 
-      await eventBus.emit("note:afterCreate", createNoteAfterCreatePayload({
-        note: createTestPluginNote({ id: "note1", text: "Hello" }),
-        author: createTestPluginUser({ id: "user1", username: "alice", displayName: "Alice" }),
-      }));
+      await eventBus.emit(
+        "note:afterCreate",
+        createNoteAfterCreatePayload({
+          note: createTestPluginNote({ id: "note1", text: "Hello" }),
+          author: createTestPluginUser({ id: "user1", username: "alice", displayName: "Alice" }),
+        }),
+      );
 
       expect(handler).toHaveBeenCalledTimes(1);
     });
@@ -45,7 +48,7 @@ describe("EventBus", () => {
           callOrder.push(1);
         },
         "plugin1",
-        1
+        1,
       );
       eventBus.on(
         "note:afterCreate",
@@ -53,7 +56,7 @@ describe("EventBus", () => {
           callOrder.push(3);
         },
         "plugin3",
-        3
+        3,
       );
       eventBus.on(
         "note:afterCreate",
@@ -61,7 +64,7 @@ describe("EventBus", () => {
           callOrder.push(2);
         },
         "plugin2",
-        2
+        2,
       );
 
       await eventBus.emit("note:afterCreate", createNoteAfterCreatePayload());
@@ -93,13 +96,16 @@ describe("EventBus", () => {
           cancelled: true,
           cancelReason: "Spam detected",
         }),
-        "spam-filter"
+        "spam-filter",
       );
 
-      const result = await eventBus.emitBefore("note:beforeCreate", createNoteBeforeCreatePayload({
-        text: "Buy now! Click here!",
-        author: createTestPluginUser({ username: "spammer" }),
-      }));
+      const result = await eventBus.emitBefore(
+        "note:beforeCreate",
+        createNoteBeforeCreatePayload({
+          text: "Buy now! Click here!",
+          author: createTestPluginUser({ username: "spammer" }),
+        }),
+      );
 
       expect(result.cancelled).toBe(true);
       expect(result.cancelReason).toBe("Spam detected");
@@ -114,12 +120,15 @@ describe("EventBus", () => {
             text: payload.text?.toUpperCase() || null,
           },
         }),
-        "modifier-plugin"
+        "modifier-plugin",
       );
 
-      const result = await eventBus.emitBefore("note:beforeCreate", createNoteBeforeCreatePayload({
-        text: "hello world",
-      }));
+      const result = await eventBus.emitBefore(
+        "note:beforeCreate",
+        createNoteBeforeCreatePayload({
+          text: "hello world",
+        }),
+      );
 
       expect(result.cancelled).toBeUndefined();
       expect(result.modifiedPayload?.text).toBe("HELLO WORLD");
@@ -135,13 +144,16 @@ describe("EventBus", () => {
           cancelReason: "Blocked",
         }),
         "blocker",
-        2
+        2,
       );
       eventBus.onBefore("note:beforeCreate", handler2, "modifier", 1);
 
-      const result = await eventBus.emitBefore("note:beforeCreate", createNoteBeforeCreatePayload({
-        text: "test",
-      }));
+      const result = await eventBus.emitBefore(
+        "note:beforeCreate",
+        createNoteBeforeCreatePayload({
+          text: "test",
+        }),
+      );
 
       expect(result.cancelled).toBe(true);
       expect(handler2).not.toHaveBeenCalled();

@@ -51,9 +51,10 @@ export default async function NoteDetailPage({ noteId }: PageProps<"/notes/[note
   const noteUrl = `${baseUrl}/notes/${noteId}`;
 
   // Get first image from attachments, or fallback to avatar for og:image
-  const noteImageUrl = note?.fileIds && note.fileIds.length > 0
-    ? `${baseUrl}/api/drive/files/${note.fileIds[0]}`
-    : null;
+  const noteImageUrl =
+    note?.fileIds && note.fileIds.length > 0
+      ? `${baseUrl}/api/drive/files/${note.fileIds[0]}`
+      : null;
 
   // Avatar URL for og:image (Misskey uses avatar when no note image)
   // Normalize to absolute URL - avatarUrl might be relative from remote servers
@@ -88,16 +89,16 @@ export default async function NoteDetailPage({ noteId }: PageProps<"/notes/[note
       <link rel="icon" href={`${baseUrl}/favicon.png`} type="image/png" />
       {/* ActivityPub alternate link for Discord Mastodon-style embeds */}
       <link rel="alternate" href={noteUrl} type="application/activity+json" />
-      <title>{title} | {instanceName}</title>
+      <title>
+        {title} | {instanceName}
+      </title>
       <meta name="description" content={description} />
       <meta property="og:type" content="article" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={noteUrl} />
       {/* og:image: note image if available, otherwise avatar (like Misskey.io) */}
-      {ogImageUrl && (
-        <meta property="og:image" content={ogImageUrl} />
-      )}
+      {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
       <meta property="twitter:card" content={noteImageUrl ? "summary_large_image" : "summary"} />
 
       <NoteDetailPageClient noteId={noteId} />

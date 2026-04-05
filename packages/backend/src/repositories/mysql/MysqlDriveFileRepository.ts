@@ -27,7 +27,11 @@ export class MysqlDriveFileRepository implements IDriveFileRepository {
     });
 
     // MySQL doesn't support RETURNING, fetch the inserted record
-    const [result] = await this.db.select().from(driveFiles).where(eq(driveFiles.id, file.id)).limit(1);
+    const [result] = await this.db
+      .select()
+      .from(driveFiles)
+      .where(eq(driveFiles.id, file.id))
+      .limit(1);
 
     if (!result) {
       throw new Error("Failed to create file");

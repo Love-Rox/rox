@@ -28,19 +28,22 @@ export class SqliteRoleRepository implements IRoleRepository {
   async create(data: CreateRoleInput): Promise<Role> {
     const id = generateId();
 
-    this.db.insert(roles).values({
-      id,
-      name: data.name,
-      description: data.description ?? null,
-      color: data.color ?? null,
-      iconUrl: data.iconUrl ?? null,
-      displayOrder: data.displayOrder ?? 0,
-      isPublic: data.isPublic ?? false,
-      isDefault: data.isDefault ?? false,
-      isAdminRole: data.isAdminRole ?? false,
-      isModeratorRole: data.isModeratorRole ?? false,
-      policies: data.policies ?? {},
-    }).run();
+    this.db
+      .insert(roles)
+      .values({
+        id,
+        name: data.name,
+        description: data.description ?? null,
+        color: data.color ?? null,
+        iconUrl: data.iconUrl ?? null,
+        displayOrder: data.displayOrder ?? 0,
+        isPublic: data.isPublic ?? false,
+        isDefault: data.isDefault ?? false,
+        isAdminRole: data.isAdminRole ?? false,
+        isModeratorRole: data.isModeratorRole ?? false,
+        policies: data.policies ?? {},
+      })
+      .run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
     const [result] = this.db.select().from(roles).where(eq(roles.id, id)).limit(1).all();
@@ -146,7 +149,10 @@ export class SqliteRoleRepository implements IRoleRepository {
   }
 
   async count(): Promise<number> {
-    const [result] = this.db.select({ count: sql<number>`COUNT(*)` }).from(roles).all();
+    const [result] = this.db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(roles)
+      .all();
 
     return result?.count ?? 0;
   }

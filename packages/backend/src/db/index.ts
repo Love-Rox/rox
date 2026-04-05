@@ -104,7 +104,7 @@ export function createDatabase(): Database {
       // For now, throw an error if someone tries to use D1 outside Workers
       throw new Error(
         "D1 database type requires Cloudflare Workers environment. " +
-          "Use createD1Database(d1Binding) instead."
+          "Use createD1Database(d1Binding) instead.",
       );
     }
 

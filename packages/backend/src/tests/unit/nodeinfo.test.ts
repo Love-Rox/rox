@@ -10,7 +10,10 @@ import { Hono } from "hono";
 import nodeinfoApp from "../../routes/ap/nodeinfo.js";
 import type { IUserRepository } from "../../interfaces/repositories/IUserRepository.js";
 import type { INoteRepository } from "../../interfaces/repositories/INoteRepository.js";
-import type { IInstanceSettingsRepository, InstanceSettingKey } from "../../interfaces/repositories/IInstanceSettingsRepository.js";
+import type {
+  IInstanceSettingsRepository,
+  InstanceSettingKey,
+} from "../../interfaces/repositories/IInstanceSettingsRepository.js";
 
 /**
  * NodeInfo response structure for type safety in tests
@@ -50,7 +53,10 @@ interface NodeInfoResponse {
 
 describe("NodeInfo Endpoints", () => {
   let app: Hono;
-  let mockUserRepository: { count: ReturnType<typeof mock>; countActiveLocal: ReturnType<typeof mock> };
+  let mockUserRepository: {
+    count: ReturnType<typeof mock>;
+    countActiveLocal: ReturnType<typeof mock>;
+  };
   let mockNoteRepository: { count: ReturnType<typeof mock> };
   let mockInstanceSettingsRepository: {
     get: ReturnType<typeof mock>;
@@ -100,7 +106,10 @@ describe("NodeInfo Endpoints", () => {
     app.use("*", async (c, next) => {
       c.set("userRepository", mockUserRepository as unknown as IUserRepository);
       c.set("noteRepository", mockNoteRepository as unknown as INoteRepository);
-      c.set("instanceSettingsRepository", mockInstanceSettingsRepository as unknown as IInstanceSettingsRepository);
+      c.set(
+        "instanceSettingsRepository",
+        mockInstanceSettingsRepository as unknown as IInstanceSettingsRepository,
+      );
       await next();
     });
 
@@ -115,20 +124,20 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json() as { links: Array<{ rel: string; href: string }> };
+      const data = (await res.json()) as { links: Array<{ rel: string; href: string }> };
       expect(data.links).toBeDefined();
       expect(data.links).toHaveLength(2);
 
       // Check 2.1 link
       const link21 = data.links.find(
-        (l) => l.rel === "http://nodeinfo.diaspora.software/ns/schema/2.1"
+        (l) => l.rel === "http://nodeinfo.diaspora.software/ns/schema/2.1",
       );
       expect(link21).toBeDefined();
       expect(link21?.href).toContain("/nodeinfo/2.1");
 
       // Check 2.0 link
       const link20 = data.links.find(
-        (l) => l.rel === "http://nodeinfo.diaspora.software/ns/schema/2.0"
+        (l) => l.rel === "http://nodeinfo.diaspora.software/ns/schema/2.0",
       );
       expect(link20).toBeDefined();
       expect(link20?.href).toContain("/nodeinfo/2.0");
@@ -141,7 +150,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json() as NodeInfoResponse;
+      const data = (await res.json()) as NodeInfoResponse;
 
       // Version
       expect(data.version).toBe("2.1");
@@ -173,7 +182,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json() as NodeInfoResponse;
+      const data = (await res.json()) as NodeInfoResponse;
 
       expect(data.metadata.themeColor).toBe("#ff6b6b");
     });
@@ -183,7 +192,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json() as NodeInfoResponse;
+      const data = (await res.json()) as NodeInfoResponse;
 
       expect(data.metadata.nodeName).toBe("Test Instance");
       expect(data.metadata.nodeDescription).toBe("A test ActivityPub server");
@@ -203,7 +212,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json() as NodeInfoResponse;
+      const data = (await res.json()) as NodeInfoResponse;
 
       // Default primary color is #3b82f6 (blue)
       expect(data.metadata.themeColor).toBe("#3b82f6");
@@ -216,7 +225,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json() as NodeInfoResponse;
+      const data = (await res.json()) as NodeInfoResponse;
 
       // Should use nodeInfoThemeColor instead of primaryColor
       expect(data.metadata.themeColor).toBe("#00ff00");
@@ -229,7 +238,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json() as NodeInfoResponse;
+      const data = (await res.json()) as NodeInfoResponse;
 
       // Should fall back to primaryColor (#ff6b6b)
       expect(data.metadata.themeColor).toBe("#ff6b6b");
@@ -245,7 +254,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json() as NodeInfoResponse;
+      const data = (await res.json()) as NodeInfoResponse;
 
       // Should default to 0
       expect(data.usage.users.total).toBe(0);
@@ -259,7 +268,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json() as NodeInfoResponse;
+      const data = (await res.json()) as NodeInfoResponse;
 
       // Version
       expect(data.version).toBe("2.0");
@@ -285,7 +294,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json() as NodeInfoResponse;
+      const data = (await res.json()) as NodeInfoResponse;
 
       expect(data.metadata.themeColor).toBe("#ff6b6b");
     });
@@ -297,7 +306,7 @@ describe("NodeInfo Endpoints", () => {
 
       expect(res.status).toBe(200);
 
-      const data = await res.json() as NodeInfoResponse;
+      const data = (await res.json()) as NodeInfoResponse;
 
       expect(data.openRegistrations).toBe(false);
     });

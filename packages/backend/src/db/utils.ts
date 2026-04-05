@@ -65,9 +65,7 @@ export function getCaseInsensitiveLike(
  * @param result - Raw result from db.execute
  * @returns Normalized result array
  */
-export function normalizeExecuteResult<T>(
-  result: { rows?: T[] } | T[],
-): T[] {
+export function normalizeExecuteResult<T>(result: { rows?: T[] } | T[]): T[] {
   if (Array.isArray(result)) {
     return result;
   }

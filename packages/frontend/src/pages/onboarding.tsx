@@ -10,13 +10,7 @@ import { tokenAtom, currentUserAtom } from "../lib/atoms/auth";
 import { apiClient } from "../lib/api/client";
 import { TextField } from "../components/ui/TextField";
 import { Button } from "../components/ui/Button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "../components/ui/Card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../components/ui/Card";
 import { Spinner } from "../components/ui/Spinner";
 
 interface OnboardingStatus {
@@ -64,9 +58,7 @@ export default function OnboardingPage() {
   useEffect(() => {
     const checkOnboarding = async () => {
       try {
-        const data = await apiClient.get<OnboardingStatus>(
-          "/api/onboarding/status"
-        );
+        const data = await apiClient.get<OnboardingStatus>("/api/onboarding/status");
         setNeedsOnboarding(data.needsOnboarding);
         if (!data.needsOnboarding) {
           // Redirect to login if onboarding is already completed
@@ -181,9 +173,7 @@ export default function OnboardingPage() {
       window.location.href = "/";
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : _(t`Failed to complete setup. Please try again.`)
+        err instanceof Error ? err.message : _(t`Failed to complete setup. Please try again.`),
       );
     } finally {
       setIsSubmitting(false);
@@ -212,10 +202,7 @@ export default function OnboardingPage() {
           </CardHeader>
           <CardContent>
             <div className="text-center">
-              <a
-                href="/login"
-                className="font-medium text-primary-600 hover:text-primary-500"
-              >
+              <a href="/login" className="font-medium text-primary-600 hover:text-primary-500">
                 <Trans>Go to login</Trans>
               </a>
             </div>
@@ -391,9 +378,7 @@ export default function OnboardingPage() {
                   </label>
                 </div>
                 <p className="text-sm text-(--text-secondary)">
-                  <Trans>
-                    You can change these settings later in the admin panel.
-                  </Trans>
+                  <Trans>You can change these settings later in the admin panel.</Trans>
                 </p>
               </>
             )}
@@ -455,11 +440,7 @@ export default function OnboardingPage() {
             {/* Navigation buttons */}
             <div className="flex justify-between pt-4">
               {currentStepIndex > 0 ? (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onPress={goToPreviousStep}
-                >
+                <Button type="button" variant="secondary" onPress={goToPreviousStep}>
                   <Trans>Back</Trans>
                 </Button>
               ) : (

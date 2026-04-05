@@ -12,10 +12,7 @@
 
 import { useEffect, useId } from "react";
 import { useSetAtom } from "jotai";
-import {
-  ModalOverlay,
-  type ModalOverlayProps,
-} from "react-aria-components";
+import { ModalOverlay, type ModalOverlayProps } from "react-aria-components";
 import { registerModalAtom, unregisterModalAtom } from "../../lib/atoms/modals";
 import { getModalContainer } from "../../lib/utils/modalContainer";
 

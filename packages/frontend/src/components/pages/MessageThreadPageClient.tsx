@@ -430,7 +430,11 @@ export function MessageThreadPageClient({ partnerId }: { partnerId: string }) {
 
         {/* Composer - sticky at bottom */}
         <div className="sticky bottom-0 -mx-3 sm:-mx-4 mt-4">
-          <MessageComposer partnerId={partnerId} currentUser={currentUser} onMessageSent={handleMessageSent} />
+          <MessageComposer
+            partnerId={partnerId}
+            currentUser={currentUser}
+            onMessageSent={handleMessageSent}
+          />
         </div>
       </div>
     </Layout>

@@ -11,10 +11,7 @@
 
 import { Hono } from "hono";
 import type { Context } from "hono";
-import {
-  isEmbedCrawler,
-  isActivityPubRequest,
-} from "../../lib/crawlerDetection.js";
+import { isEmbedCrawler, isActivityPubRequest } from "../../lib/crawlerDetection.js";
 import { generateUserOgpHtml, textToHtml } from "../../lib/ogp.js";
 
 const actor = new Hono();

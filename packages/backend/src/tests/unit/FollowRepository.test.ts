@@ -46,27 +46,27 @@ describe("FollowRepository", () => {
           id: follow.id || "new-follow-id",
           createdAt: new Date(),
           updatedAt: new Date(),
-        })
+        }),
       ),
       findById: mock(async (id: string) =>
-        Promise.resolve(allFollows.find((f) => f.id === id) || null)
+        Promise.resolve(allFollows.find((f) => f.id === id) || null),
       ),
       exists: mock(async (followerId: string, followeeId: string) => {
         return Promise.resolve(
-          allFollows.some((f) => f.followerId === followerId && f.followeeId === followeeId)
+          allFollows.some((f) => f.followerId === followerId && f.followeeId === followeeId),
         );
       }),
       findByFolloweeId: mock(async (followeeId: string) =>
-        Promise.resolve(allFollows.filter((f) => f.followeeId === followeeId))
+        Promise.resolve(allFollows.filter((f) => f.followeeId === followeeId)),
       ),
       findByFollowerId: mock(async (followerId: string) =>
-        Promise.resolve(allFollows.filter((f) => f.followerId === followerId))
+        Promise.resolve(allFollows.filter((f) => f.followerId === followerId)),
       ),
       countFollowers: mock(async (userId: string) =>
-        Promise.resolve(allFollows.filter((f) => f.followeeId === userId).length)
+        Promise.resolve(allFollows.filter((f) => f.followeeId === userId).length),
       ),
       countFollowing: mock(async (userId: string) =>
-        Promise.resolve(allFollows.filter((f) => f.followerId === userId).length)
+        Promise.resolve(allFollows.filter((f) => f.followerId === userId).length),
       ),
       delete: mock(async () => Promise.resolve()),
       deleteByUserId: mock(async () => Promise.resolve()),
@@ -97,7 +97,7 @@ describe("FollowRepository", () => {
           id: "generated-id",
           createdAt: new Date(),
           updatedAt: new Date(),
-        })
+        }),
       );
 
       const input = {

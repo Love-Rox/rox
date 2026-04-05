@@ -343,7 +343,12 @@ export class RemoteNoteService {
           logger.info({ recipientUri }, "Resolving DM recipient");
           const recipientUser = await actorService.resolveActor(recipientUri);
           logger.info(
-            { recipientUri, resolvedUserId: recipientUser?.id, resolvedUsername: recipientUser?.username, resolvedHost: recipientUser?.host },
+            {
+              recipientUri,
+              resolvedUserId: recipientUser?.id,
+              resolvedUsername: recipientUser?.username,
+              resolvedHost: recipientUser?.host,
+            },
             "Resolved DM recipient",
           );
           if (recipientUser && !seen.has(recipientUser.id)) {
@@ -354,7 +359,10 @@ export class RemoteNoteService {
               "Added DM recipient to mentions from 'to' array",
             );
           } else if (recipientUser && seen.has(recipientUser.id)) {
-            logger.debug({ recipientUri, userId: recipientUser.id }, "DM recipient already in mentions");
+            logger.debug(
+              { recipientUri, userId: recipientUser.id },
+              "DM recipient already in mentions",
+            );
           }
         } catch (error) {
           // Don't fail note processing if recipient resolution fails
@@ -507,7 +515,12 @@ export class RemoteNoteService {
 
     for (const attachment of attachments) {
       // Only process Document type attachments (images, videos, audio, etc.)
-      if (attachment.type !== "Document" && attachment.type !== "Image" && attachment.type !== "Audio" && attachment.type !== "Video") {
+      if (
+        attachment.type !== "Document" &&
+        attachment.type !== "Image" &&
+        attachment.type !== "Audio" &&
+        attachment.type !== "Video"
+      ) {
         continue;
       }
 
@@ -550,7 +563,10 @@ export class RemoteNoteService {
         });
 
         fileIds.push(fileId);
-        logger.debug({ fileId, url: attachment.url, type: attachment.mediaType }, "Saved remote attachment");
+        logger.debug(
+          { fileId, url: attachment.url, type: attachment.mediaType },
+          "Saved remote attachment",
+        );
       } catch (error) {
         // Don't fail note processing if attachment saving fails
         logger.warn({ err: error, url: attachment.url }, "Failed to save remote attachment");

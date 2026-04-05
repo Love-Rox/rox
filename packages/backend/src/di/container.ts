@@ -228,14 +228,10 @@ export function createContainer(): AppContainer {
   );
 
   // Blocked Username Service for username restrictions
-  const blockedUsernameService = new BlockedUsernameService(
-    repositories.blockedUsernameRepository,
-  );
+  const blockedUsernameService = new BlockedUsernameService(repositories.blockedUsernameRepository);
 
   // System Account Service for server-level operations
-  const systemAccountService = new SystemAccountService(
-    repositories.userRepository,
-  );
+  const systemAccountService = new SystemAccountService(repositories.userRepository);
 
   // Event Bus for plugin system
   const eventBus = new EventBus();
@@ -303,12 +299,12 @@ function createRepositories(db: any, dbType: string) {
       // Repository implementations need to be added to repositories/mysql/
       logger.warn(
         "MySQL database support is not yet fully implemented. " +
-        "Please use PostgreSQL (DB_TYPE=postgres) for production environments."
+          "Please use PostgreSQL (DB_TYPE=postgres) for production environments.",
       );
       throw new Error(
         "MySQL is not yet implemented. " +
-        "The database schema and connection layer are ready, but repository implementations are pending. " +
-        "Please use PostgreSQL (DB_TYPE=postgres) or contribute MySQL repository implementations."
+          "The database schema and connection layer are ready, but repository implementations are pending. " +
+          "Please use PostgreSQL (DB_TYPE=postgres) or contribute MySQL repository implementations.",
       );
 
     case "sqlite":
@@ -318,12 +314,12 @@ function createRepositories(db: any, dbType: string) {
       // Repository implementations need to be added to repositories/sqlite/
       logger.warn(
         "SQLite/D1 database support is not yet fully implemented. " +
-        "Please use PostgreSQL (DB_TYPE=postgres) for production environments."
+          "Please use PostgreSQL (DB_TYPE=postgres) for production environments.",
       );
       throw new Error(
         "SQLite/D1 is not yet implemented. " +
-        "The database schema and connection layer are ready, but repository implementations are pending. " +
-        "Please use PostgreSQL (DB_TYPE=postgres) or contribute SQLite repository implementations."
+          "The database schema and connection layer are ready, but repository implementations are pending. " +
+          "Please use PostgreSQL (DB_TYPE=postgres) or contribute SQLite repository implementations.",
       );
 
     default:

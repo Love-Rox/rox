@@ -112,7 +112,9 @@ export function ListDeleteConfirmDialog({
                 <span className="font-medium text-(--text-secondary)">"{list.name}"</span>
               </p>
               <p className="text-sm text-(--text-muted) text-center mb-6">
-                <Trans>This action cannot be undone. All members will be removed from the list.</Trans>
+                <Trans>
+                  This action cannot be undone. All members will be removed from the list.
+                </Trans>
               </p>
 
               {/* Actions */}

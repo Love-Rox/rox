@@ -10,10 +10,7 @@ import {
   removeColumnNoteAtomFamily,
 } from "../../../lib/atoms/column";
 import { currentUserAtom } from "../../../lib/atoms/auth";
-import {
-  notificationSoundAtom,
-  notificationVolumeAtom,
-} from "../../../lib/atoms/uiSettings";
+import { notificationSoundAtom, notificationVolumeAtom } from "../../../lib/atoms/uiSettings";
 import { notesApi } from "../../../lib/api/notes";
 import { NoteCard } from "../../note/NoteCard";
 import { Button } from "../../ui/Button";
@@ -43,10 +40,7 @@ export interface TimelineColumnContentProps {
  * Uses column-scoped state via atomFamily to allow multiple
  * timeline columns to coexist with independent data.
  */
-export function TimelineColumnContent({
-  columnId,
-  timelineType,
-}: TimelineColumnContentProps) {
+export function TimelineColumnContent({ columnId, timelineType }: TimelineColumnContentProps) {
   const state = useAtomValue(columnNotesStateAtomFamily(columnId));
   const updateState = useAtom(updateColumnStateAtomFamily(columnId))[1];
   const appendNotes = useAtom(appendColumnNotesAtomFamily(columnId))[1];
@@ -70,7 +64,7 @@ export function TimelineColumnContent({
       }
       playNotificationSound(notificationSound, notificationVolume);
     },
-    [currentUser, notificationSound, notificationVolume]
+    [currentUser, notificationSound, notificationVolume],
   );
 
   // Map timeline type to stream type
@@ -189,7 +183,7 @@ export function TimelineColumnContent({
     (noteId: string) => {
       removeNote(noteId);
     },
-    [removeNote]
+    [removeNote],
   );
 
   // Retry on error
@@ -223,21 +217,14 @@ export function TimelineColumnContent({
       )}
 
       {/* Initial Loading */}
-      {!error && loading && notes.length === 0 && (
-        <TimelineSkeleton count={3} />
-      )}
+      {!error && loading && notes.length === 0 && <TimelineSkeleton count={3} />}
 
       {/* Notes List */}
       <AnimatedList
         items={notes}
         keyExtractor={(note) => note.id}
         className="space-y-3"
-        renderItem={(note) => (
-          <NoteCard
-            note={note}
-            onDelete={() => handleNoteDelete(note.id)}
-          />
-        )}
+        renderItem={(note) => <NoteCard note={note} onDelete={() => handleNoteDelete(note.id)} />}
       />
 
       {/* Loading More */}

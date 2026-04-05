@@ -14,21 +14,16 @@ export interface ModalRegistration {
  * Atom storing the registry of all open modals.
  * Maps modal IDs to their registration data.
  */
-export const modalRegistryAtom = atom<Map<string, ModalRegistration>>(
-  new Map()
-);
+export const modalRegistryAtom = atom<Map<string, ModalRegistration>>(new Map());
 
 /**
  * Write-only atom to register a modal in the registry.
  */
-export const registerModalAtom = atom(
-  null,
-  (get, set, registration: ModalRegistration) => {
-    const registry = new Map(get(modalRegistryAtom));
-    registry.set(registration.id, registration);
-    set(modalRegistryAtom, registry);
-  }
-);
+export const registerModalAtom = atom(null, (get, set, registration: ModalRegistration) => {
+  const registry = new Map(get(modalRegistryAtom));
+  registry.set(registration.id, registration);
+  set(modalRegistryAtom, registry);
+});
 
 /**
  * Write-only atom to unregister a modal from the registry.

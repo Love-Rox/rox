@@ -245,13 +245,18 @@ export function registerPluginActivityPubHandlers(
             const pluginContext = {
               events: eventBus,
               logger: {
-                debug: (msg: string, ...args: unknown[]) => pluginLogger.debug({ pluginId, args }, msg),
-                info: (msg: string, ...args: unknown[]) => pluginLogger.info({ pluginId, args }, msg),
-                warn: (msg: string, ...args: unknown[]) => pluginLogger.warn({ pluginId, args }, msg),
-                error: (msg: string, ...args: unknown[]) => pluginLogger.error({ pluginId, args }, msg),
+                debug: (msg: string, ...args: unknown[]) =>
+                  pluginLogger.debug({ pluginId, args }, msg),
+                info: (msg: string, ...args: unknown[]) =>
+                  pluginLogger.info({ pluginId, args }, msg),
+                warn: (msg: string, ...args: unknown[]) =>
+                  pluginLogger.warn({ pluginId, args }, msg),
+                error: (msg: string, ...args: unknown[]) =>
+                  pluginLogger.error({ pluginId, args }, msg),
               },
               config: {
-                get: <T>(key: string, defaultValue?: T) => configStorage.get<T>(pluginId, key, defaultValue),
+                get: <T>(key: string, defaultValue?: T) =>
+                  configStorage.get<T>(pluginId, key, defaultValue),
                 set: <T>(key: string, value: T) => configStorage.set<T>(pluginId, key, value),
                 delete: (key: string) => configStorage.delete(pluginId, key),
               },

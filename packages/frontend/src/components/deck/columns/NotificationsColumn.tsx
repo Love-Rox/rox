@@ -27,18 +27,10 @@ export interface NotificationsColumnContentProps {
 /**
  * Notifications content for deck columns
  */
-export function NotificationsColumnContent({
-  columnId,
-}: NotificationsColumnContentProps) {
-  const state = useAtomValue(
-    columnNotificationsStateAtomFamily(columnId)
-  );
-  const updateState = useAtom(
-    updateNotificationColumnStateAtomFamily(columnId)
-  )[1];
-  const appendNotifications = useAtom(
-    appendColumnNotificationsAtomFamily(columnId)
-  )[1];
+export function NotificationsColumnContent({ columnId }: NotificationsColumnContentProps) {
+  const state = useAtomValue(columnNotificationsStateAtomFamily(columnId));
+  const updateState = useAtom(updateNotificationColumnStateAtomFamily(columnId))[1];
+  const appendNotifications = useAtom(appendColumnNotificationsAtomFamily(columnId))[1];
 
   const currentUser = useAtomValue(currentUserAtom);
   const hasLoadedRef = useRef(false);
@@ -47,30 +39,32 @@ export function NotificationsColumnContent({
   const { notifications, loading, error, hasMore, cursor } = state;
 
   // Load initial data function (extracted for reuse in retry)
-  const loadInitialData = useCallback(async (signal?: AbortSignal) => {
-    updateState({ loading: true, error: null });
+  const loadInitialData = useCallback(
+    async (signal?: AbortSignal) => {
+      updateState({ loading: true, error: null });
 
-    try {
-      const data = await notificationsApi.getNotifications({ limit: 20 });
-      if (signal?.aborted) return;
+      try {
+        const data = await notificationsApi.getNotifications({ limit: 20 });
+        if (signal?.aborted) return;
 
-      const lastItem = data[data.length - 1];
+        const lastItem = data[data.length - 1];
 
-      updateState({
-        notifications: data,
-        loading: false,
-        hasMore: data.length >= 20,
-        cursor: lastItem?.id ?? null,
-      });
-    } catch (err) {
-      if (signal?.aborted) return;
-      updateState({
-        loading: false,
-        error:
-          err instanceof Error ? err.message : "Failed to load notifications",
-      });
-    }
-  }, [updateState]);
+        updateState({
+          notifications: data,
+          loading: false,
+          hasMore: data.length >= 20,
+          cursor: lastItem?.id ?? null,
+        });
+      } catch (err) {
+        if (signal?.aborted) return;
+        updateState({
+          loading: false,
+          error: err instanceof Error ? err.message : "Failed to load notifications",
+        });
+      }
+    },
+    [updateState],
+  );
 
   // Load initial data on mount
   useEffect(() => {
@@ -90,13 +84,7 @@ export function NotificationsColumnContent({
 
   // Reload data when state is reset (notifications become empty while not loading)
   useEffect(() => {
-    if (
-      notifications.length === 0 &&
-      !loading &&
-      !error &&
-      hasLoadedRef.current &&
-      currentUser
-    ) {
+    if (notifications.length === 0 && !loading && !error && hasLoadedRef.current && currentUser) {
       abortControllerRef.current?.abort();
       const controller = new AbortController();
       abortControllerRef.current = controller;
@@ -136,8 +124,7 @@ export function NotificationsColumnContent({
     } catch (err) {
       updateState({
         loading: false,
-        error:
-          err instanceof Error ? err.message : "Failed to load notifications",
+        error: err instanceof Error ? err.message : "Failed to load notifications",
       });
     }
   }, [loading, hasMore, cursor, updateState, appendNotifications]);
@@ -196,10 +183,7 @@ export function NotificationsColumnContent({
       {/* Notifications List */}
       <div className="space-y-1">
         {notifications.map((notification) => (
-          <NotificationItem
-            key={notification.id}
-            notification={notification}
-          />
+          <NotificationItem key={notification.id} notification={notification} />
         ))}
       </div>
 

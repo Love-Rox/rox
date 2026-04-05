@@ -29,17 +29,25 @@ export class SqliteInvitationCodeRepository implements IInvitationCodeRepository
   }): Promise<InvitationCode> {
     const id = generateId();
 
-    this.db.insert(invitationCodes).values({
-      id,
-      code: data.code,
-      createdById: data.createdById,
-      expiresAt: data.expiresAt ?? null,
-      maxUses: data.maxUses ?? 1,
-      useCount: 0,
-    }).run();
+    this.db
+      .insert(invitationCodes)
+      .values({
+        id,
+        code: data.code,
+        createdById: data.createdById,
+        expiresAt: data.expiresAt ?? null,
+        maxUses: data.maxUses ?? 1,
+        useCount: 0,
+      })
+      .run();
 
     // SQLite doesn't support RETURNING, fetch the inserted record
-    const [result] = this.db.select().from(invitationCodes).where(eq(invitationCodes.id, id)).limit(1).all();
+    const [result] = this.db
+      .select()
+      .from(invitationCodes)
+      .where(eq(invitationCodes.id, id))
+      .limit(1)
+      .all();
 
     if (!result) {
       throw new Error("Failed to create invitation code");
@@ -129,7 +137,12 @@ export class SqliteInvitationCodeRepository implements IInvitationCodeRepository
       .run();
 
     // Fetch the updated record
-    const [updated] = this.db.select().from(invitationCodes).where(eq(invitationCodes.code, code)).limit(1).all();
+    const [updated] = this.db
+      .select()
+      .from(invitationCodes)
+      .where(eq(invitationCodes.code, code))
+      .limit(1)
+      .all();
 
     return updated ?? null;
   }

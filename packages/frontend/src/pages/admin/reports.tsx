@@ -248,7 +248,6 @@ export default function AdminReportsPage() {
       subtitle={<Trans>Review and manage user reports</Trans>}
     >
       <div className="max-w-4xl mx-auto">
-
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           <Card>

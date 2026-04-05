@@ -69,9 +69,7 @@ function ConversationItem({ conversation }: { conversation: ConversationPartner 
                 profileEmojis={conversation.partnerProfileEmojis}
               />
             </span>
-            <span className="text-sm text-(--text-muted) truncate">
-              {handle}
-            </span>
+            <span className="text-sm text-(--text-muted) truncate">{handle}</span>
           </div>
           <span className="text-xs text-(--text-muted) whitespace-nowrap">
             {formatRelativeTime(conversation.lastNoteCreatedAt)}
@@ -173,10 +171,7 @@ export default function MessagesPage() {
           ) : (
             <div className="divide-y divide-(--border-color)">
               {conversations.map((conversation) => (
-                <ConversationItem
-                  key={conversation.partnerId}
-                  conversation={conversation}
-                />
+                <ConversationItem key={conversation.partnerId} conversation={conversation} />
               ))}
             </div>
           )}

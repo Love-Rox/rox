@@ -97,7 +97,9 @@ export async function getReactionCountsWithEmojis(
   if (fetchRemote) {
     params.append("fetchRemote", "true");
   }
-  return apiClient.get<ReactionCountsWithEmojis>(`/api/notes/reactions/counts-with-emojis?${params}`);
+  return apiClient.get<ReactionCountsWithEmojis>(
+    `/api/notes/reactions/counts-with-emojis?${params}`,
+  );
 }
 
 /**

@@ -95,7 +95,10 @@ export class UserService {
       if (updatedUser?.username) {
         const usernameKey = `${CachePrefix.USER_BY_USERNAME}:${updatedUser.username}`;
         this.cacheService.delete(usernameKey).catch((error) => {
-          logger.debug({ err: error, username: updatedUser.username }, "Failed to invalidate username cache");
+          logger.debug(
+            { err: error, username: updatedUser.username },
+            "Failed to invalidate username cache",
+          );
         });
       }
     }

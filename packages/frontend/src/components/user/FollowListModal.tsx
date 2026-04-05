@@ -10,12 +10,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Trans } from "@lingui/react/macro";
 import { X, Loader2 } from "lucide-react";
-import {
-  Dialog,
-  Modal,
-  Heading,
-  Button as AriaButton,
-} from "react-aria-components";
+import { Dialog, Modal, Heading, Button as AriaButton } from "react-aria-components";
 import { SafeModalOverlay } from "../ui/SafeModalOverlay";
 import { usersApi, type User, type Follow } from "../../lib/api/users";
 import { Avatar } from "../ui/Avatar";
@@ -43,13 +38,7 @@ export interface FollowListModalProps {
 /**
  * User card in the follow list
  */
-function FollowUserCard({
-  user,
-  onClose,
-}: {
-  user: User;
-  onClose: () => void;
-}) {
+function FollowUserCard({ user, onClose }: { user: User; onClose: () => void }) {
   const displayName = user.displayName || user.name || user.username;
   const handle = user.host ? `@${user.username}@${user.host}` : `@${user.username}`;
   const profileUrl = user.host ? `/@${user.username}@${user.host}` : `/@${user.username}`;
@@ -84,13 +73,7 @@ function FollowUserCard({
  * Modal to display followers or following list
  * Built with React Aria Components for accessibility
  */
-export function FollowListModal({
-  isOpen,
-  onClose,
-  userId,
-  type,
-  username,
-}: FollowListModalProps) {
+export function FollowListModal({ isOpen, onClose, userId, type, username }: FollowListModalProps) {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -101,42 +84,45 @@ export function FollowListModal({
   const limit = 20;
 
   // Fetch users
-  const fetchUsers = useCallback(async (currentOffset = 0) => {
-    if (!isOpen) return;
+  const fetchUsers = useCallback(
+    async (currentOffset = 0) => {
+      if (!isOpen) return;
 
-    try {
-      if (currentOffset > 0) {
-        setLoadingMore(true);
-      } else {
-        setLoading(true);
-        setError(null);
+      try {
+        if (currentOffset > 0) {
+          setLoadingMore(true);
+        } else {
+          setLoading(true);
+          setError(null);
+        }
+
+        const response =
+          type === "followers"
+            ? await usersApi.getFollowers(userId, limit, currentOffset)
+            : await usersApi.getFollowing(userId, limit, currentOffset);
+
+        // Extract users from follow relationships
+        const newUsers = response
+          .map((follow: Follow) => (type === "followers" ? follow.follower : follow.followee))
+          .filter((u): u is User => u !== undefined);
+
+        if (currentOffset > 0) {
+          setUsers((prev) => [...prev, ...newUsers]);
+        } else {
+          setUsers(newUsers);
+        }
+
+        setHasMore(newUsers.length >= limit);
+        setOffset(currentOffset + newUsers.length);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load users");
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
       }
-
-      const response =
-        type === "followers"
-          ? await usersApi.getFollowers(userId, limit, currentOffset)
-          : await usersApi.getFollowing(userId, limit, currentOffset);
-
-      // Extract users from follow relationships
-      const newUsers = response.map((follow: Follow) =>
-        type === "followers" ? follow.follower : follow.followee,
-      ).filter((u): u is User => u !== undefined);
-
-      if (currentOffset > 0) {
-        setUsers((prev) => [...prev, ...newUsers]);
-      } else {
-        setUsers(newUsers);
-      }
-
-      setHasMore(newUsers.length >= limit);
-      setOffset(currentOffset + newUsers.length);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load users");
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  }, [isOpen, userId, type]);
+    },
+    [isOpen, userId, type],
+  );
 
   // Load on open
   useEffect(() => {
@@ -161,10 +147,7 @@ export function FollowListModal({
             <>
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-(--border-color)">
-                <Heading
-                  slot="title"
-                  className="text-lg font-semibold text-(--text-primary)"
-                >
+                <Heading slot="title" className="text-lg font-semibold text-(--text-primary)">
                   {type === "followers" ? (
                     <Trans>{username}'s Followers</Trans>
                   ) : (
@@ -187,9 +170,7 @@ export function FollowListModal({
                     <Loader2 className="w-6 h-6 animate-spin text-(--text-muted)" />
                   </div>
                 ) : error ? (
-                  <div className="text-center py-12 text-red-500">
-                    {error}
-                  </div>
+                  <div className="text-center py-12 text-red-500">{error}</div>
                 ) : users.length === 0 ? (
                   <div className="text-center py-12 text-(--text-muted)">
                     {type === "followers" ? (

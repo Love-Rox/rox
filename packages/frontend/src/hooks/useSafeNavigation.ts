@@ -93,18 +93,14 @@ function closeUncontrolledPopovers(): void {
   });
 
   // Close any open Select/MenuTrigger popovers
-  document
-    .querySelectorAll('[data-open], button[aria-expanded="true"]')
-    .forEach((el) => {
-      el.dispatchEvent(escapeEvent);
-    });
+  document.querySelectorAll('[data-open], button[aria-expanded="true"]').forEach((el) => {
+    el.dispatchEvent(escapeEvent);
+  });
 
   // Close any React Aria top-layer overlays
-  document
-    .querySelectorAll("[data-react-aria-top-layer]")
-    .forEach((el) => {
-      el.dispatchEvent(escapeEvent);
-    });
+  document.querySelectorAll("[data-react-aria-top-layer]").forEach((el) => {
+    el.dispatchEvent(escapeEvent);
+  });
 }
 
 /**
@@ -174,25 +170,25 @@ export function useSafeNavigation(): SafeNavigationResult {
         window.location.href = path;
       }
     },
-    [closeModalsAndWait, router]
+    [closeModalsAndWait, router],
   );
 
   /**
    * Go back in history using full page navigation
    *
-   * Uses window.location.href instead of history.back() to avoid
-   * Waku/React portal cleanup errors during SPA transitions.
+   * Go back to the previous page using SPA navigation.
    */
   const goBack = useCallback(async () => {
     await closeModalsAndWait();
 
-    // Get previous path from our tracked navigation history
     const previousPath = getPreviousPath("/timeline");
 
-    // Use full page navigation to avoid Waku/React cleanup issues
-    // This completely reloads the page, bypassing all portal cleanup
-    window.location.href = previousPath;
-  }, [closeModalsAndWait]);
+    try {
+      router.push(previousPath as `/${string}`);
+    } catch {
+      window.location.href = previousPath;
+    }
+  }, [closeModalsAndWait, router]);
 
   return {
     isNavigating,

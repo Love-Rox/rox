@@ -231,7 +231,9 @@ function AdminSidebar({
       {ADMIN_NAV_CATEGORIES.map((category) => {
         const CategoryIcon = category.icon;
         const isExpanded = expandedCategories.has(category.key);
-        const hasActiveItem = category.items.some((item) => isNavItemActive(item.href, currentPath));
+        const hasActiveItem = category.items.some((item) =>
+          isNavItemActive(item.href, currentPath),
+        );
 
         return (
           <div key={category.key}>

@@ -11,9 +11,7 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
 import { logger } from "../../lib/logger.js";
-import {
-  isActivityPubRequest,
-} from "../../lib/crawlerDetection.js";
+import { isActivityPubRequest } from "../../lib/crawlerDetection.js";
 import { textToHtml } from "../../lib/ogp.js";
 
 const note = new Hono();
@@ -94,13 +92,11 @@ note.get("/notes/:id", async (c: Context) => {
     if (!author.uri) {
       logger.error(
         { userId: author.id, username: author.username, host: author.host },
-        "Remote user missing URI - cannot serve ActivityPub Note without canonical actor URI"
+        "Remote user missing URI - cannot serve ActivityPub Note without canonical actor URI",
       );
-      return c.json(
-        { error: "Remote actor URI unavailable" },
-        500,
-        { "Content-Type": "application/json" }
-      );
+      return c.json({ error: "Remote actor URI unavailable" }, 500, {
+        "Content-Type": "application/json",
+      });
     }
     authorUri = author.uri;
 
@@ -136,7 +132,7 @@ note.get("/notes/:id", async (c: Context) => {
           if (!u.uri) {
             logger.warn(
               { userId: u.id, username: u.username, host: u.host },
-              "Remote mentioned user missing URI - skipping mention tag"
+              "Remote mentioned user missing URI - skipping mention tag",
             );
             continue;
           }
@@ -250,10 +246,7 @@ note.get("/notes/:id", async (c: Context) => {
 
   // Build ActivityPub Note object (matching Misskey.io structure)
   const apNote: any = {
-    "@context": [
-      "https://www.w3.org/ns/activitystreams",
-      "https://w3id.org/security/v1",
-    ],
+    "@context": ["https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"],
     id: noteData.uri || `${baseUrl}/notes/${noteData.id}`,
     type: "Note",
     attributedTo: authorUri,

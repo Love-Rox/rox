@@ -22,7 +22,10 @@ import { ScrollToTop } from "../ui/ScrollToTop";
 import { AnimatedList } from "../ui/AnimatedList";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import { useKeyboardNavigation } from "../../hooks/useKeyboardNavigation";
-import { useTimelineStream, type TimelineType as StreamTimelineType } from "../../hooks/useTimelineStream";
+import {
+  useTimelineStream,
+  type TimelineType as StreamTimelineType,
+} from "../../hooks/useTimelineStream";
 import { playNotificationSound } from "../../lib/utils/notificationSound";
 
 /**
@@ -204,9 +207,7 @@ export function Timeline({ type = "local" }: TimelineProps) {
         items={notes}
         keyExtractor={(note) => note.id}
         className="space-y-4"
-        renderItem={(note) => (
-          <NoteCard note={note} onDelete={() => handleNoteDelete(note.id)} />
-        )}
+        renderItem={(note) => <NoteCard note={note} onDelete={() => handleNoteDelete(note.id)} />}
       />
 
       {/* Loading More Indicator - Show spinner when loading additional notes */}

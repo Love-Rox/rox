@@ -88,7 +88,7 @@ describe("UserRepository", () => {
           id: user.id || "new-user-id",
           createdAt: new Date(),
           updatedAt: new Date(),
-        } as User)
+        } as User),
       ),
       findById: mock(async (id: string) => {
         const users = [mockLocalUser, mockRemoteUser, mockAdminUser];
@@ -101,26 +101,20 @@ describe("UserRepository", () => {
             ? Promise.resolve(mockRemoteUser)
             : Promise.resolve(null);
         }
-        return username === "testuser"
-          ? Promise.resolve(mockLocalUser)
-          : Promise.resolve(null);
+        return username === "testuser" ? Promise.resolve(mockLocalUser) : Promise.resolve(null);
       }),
       findByEmail: mock(async (email: string) =>
-        email === "test@example.com"
-          ? Promise.resolve(mockLocalUser)
-          : Promise.resolve(null)
+        email === "test@example.com" ? Promise.resolve(mockLocalUser) : Promise.resolve(null),
       ),
       findByUri: mock(async (uri: string) =>
-        uri === mockRemoteUser.uri
-          ? Promise.resolve(mockRemoteUser)
-          : Promise.resolve(null)
+        uri === mockRemoteUser.uri ? Promise.resolve(mockRemoteUser) : Promise.resolve(null),
       ),
       update: mock(async (id: string, data: Partial<User>) =>
-        Promise.resolve({ ...mockLocalUser, ...data, id, updatedAt: new Date() })
+        Promise.resolve({ ...mockLocalUser, ...data, id, updatedAt: new Date() }),
       ),
       delete: mock(async () => Promise.resolve()),
       count: mock(async (localOnly?: boolean) =>
-        localOnly ? Promise.resolve(3) : Promise.resolve(5)
+        localOnly ? Promise.resolve(3) : Promise.resolve(5),
       ),
       countRemote: mock(async () => Promise.resolve(2)),
       countActiveLocal: mock(async () => Promise.resolve(2)),
@@ -155,7 +149,7 @@ describe("UserRepository", () => {
         isAdmin: false,
         isDeleted: false,
         deletedAt: null,
-    isSystemUser: false,
+        isSystemUser: false,
         isSuspended: false,
         publicKey: null,
         privateKey: null,
@@ -175,8 +169,8 @@ describe("UserRepository", () => {
         fetchFailureCount: 0,
         lastFetchAttemptAt: null,
         lastFetchError: null,
-    followersCount: 0,
-    followingCount: 0,
+        followersCount: 0,
+        followingCount: 0,
       };
 
       const result = await mockRepo.create(input);
@@ -203,7 +197,7 @@ describe("UserRepository", () => {
         isAdmin: false,
         isDeleted: false,
         deletedAt: null,
-    isSystemUser: false,
+        isSystemUser: false,
         isSuspended: false,
         publicKey: "-----BEGIN PUBLIC KEY-----...",
         privateKey: null,
@@ -223,8 +217,8 @@ describe("UserRepository", () => {
         fetchFailureCount: 0,
         lastFetchAttemptAt: null,
         lastFetchError: null,
-    followersCount: 0,
-    followingCount: 0,
+        followersCount: 0,
+        followingCount: 0,
       };
 
       const result = await mockRepo.create(input);
@@ -394,7 +388,9 @@ describe("UserRepository", () => {
     });
 
     test("should update user avatar", async () => {
-      const result = await mockRepo.update("user1", { avatarUrl: "https://example.com/avatar.png" });
+      const result = await mockRepo.update("user1", {
+        avatarUrl: "https://example.com/avatar.png",
+      });
 
       expect(result.avatarUrl).toBe("https://example.com/avatar.png");
     });
@@ -532,10 +528,12 @@ describe("UserRepository", () => {
       });
 
       test("should support pagination options", async () => {
-        mockRepo.findWithFetchErrors = mock(async (options?: { limit?: number; offset?: number }) => {
-          expect(options?.limit).toBe(50);
-          return Promise.resolve([mockGoneUser]);
-        });
+        mockRepo.findWithFetchErrors = mock(
+          async (options?: { limit?: number; offset?: number }) => {
+            expect(options?.limit).toBe(50);
+            return Promise.resolve([mockGoneUser]);
+          },
+        );
 
         await mockRepo.findWithFetchErrors({ limit: 50 });
 
