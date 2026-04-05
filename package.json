@@ -34,6 +34,7 @@
     "test:backend": "bun run --cwd packages/backend test",
     "test:unit": "bun run --cwd packages/backend test:unit",
     "test:integration": "bun run --cwd packages/backend test:integration",
+    "storybook": "bun run --cwd packages/frontend storybook",
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",
     "format": "vp fmt packages",

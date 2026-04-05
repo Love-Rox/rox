@@ -10,6 +10,7 @@ coverage/
 # Production
 dist/
 build/
+storybook-static/
 
 # TypeScript build cache
 *.tsbuildinfo
