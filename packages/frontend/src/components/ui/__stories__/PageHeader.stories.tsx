@@ -15,12 +15,14 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/** Basic header with title only. */
 export const SimpleTitle: Story = {
   args: {
     title: "Search",
   },
 };
 
+/** Header with subtitle. */
 export const WithSubtitle: Story = {
   args: {
     title: "Timeline",
@@ -28,6 +30,7 @@ export const WithSubtitle: Story = {
   },
 };
 
+/** Header with icon. */
 export const WithIcon: Story = {
   args: {
     title: "Search",
@@ -36,6 +39,7 @@ export const WithIcon: Story = {
   },
 };
 
+/** Header with tab navigation. */
 export const WithTabs: Story = {
   render: () => {
     const [activeTab, setActiveTab] = useState("local");
@@ -50,6 +54,7 @@ export const WithTabs: Story = {
   },
 };
 
+/** Header with action buttons. */
 export const WithActions: Story = {
   render: () => {
     const actions: PageHeaderAction[] = [
@@ -72,6 +77,7 @@ export const WithActions: Story = {
   },
 };
 
+/** Header with back navigation. */
 export const WithBackButton: Story = {
   args: {
     title: "Note Detail",
@@ -80,6 +86,7 @@ export const WithBackButton: Story = {
   },
 };
 
+/** Header with reload functionality. */
 export const WithReload: Story = {
   render: () => {
     const [isReloading, setIsReloading] = useState(false);
@@ -99,6 +106,7 @@ export const WithReload: Story = {
   },
 };
 
+/** All features combined. */
 export const FullFeatured: Story = {
   render: () => {
     const [activeTab, setActiveTab] = useState("local");

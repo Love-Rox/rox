@@ -2,6 +2,9 @@ import type { Preview } from "@storybook/react";
 import { withProviders } from "./decorators";
 import "../src/styles/globals.css";
 
+/**
+ * Storybook preview configuration for global decorators, controls matchers, and theme toolbar options.
+ */
 const preview: Preview = {
   decorators: [withProviders],
   parameters: {

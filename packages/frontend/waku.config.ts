@@ -1,8 +1,6 @@
-import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { lingui } from "@lingui/vite-plugin";
-import babelPlugin from "@rolldown/plugin-babel";
 import { defineConfig } from "waku/config";
+import { getSharedVitePlugins } from "./vite-plugins";
 
 /**
  * Waku configuration
@@ -14,14 +12,7 @@ import { defineConfig } from "waku/config";
 export default defineConfig({
   /** Vite configuration for all environments */
   vite: {
-    plugins: [
-      tailwindcss(),
-      react(),
-      babelPlugin({
-        plugins: ["@lingui/babel-plugin-lingui-macro"],
-      }),
-      lingui(),
-    ],
+    plugins: [...getSharedVitePlugins(), react()],
     /** Proxy API requests to backend server */
     server: {
       port: 3001,

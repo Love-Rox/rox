@@ -17,12 +17,14 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/** Default search field with medium size. */
 export const Default: Story = {
   args: {
     placeholder: "Search...",
   },
 };
 
+/** Small size variant. */
 export const Small: Story = {
   args: {
     size: "sm",
@@ -30,6 +32,7 @@ export const Small: Story = {
   },
 };
 
+/** Medium size variant. */
 export const Medium: Story = {
   args: {
     size: "md",
@@ -37,6 +40,7 @@ export const Medium: Story = {
   },
 };
 
+/** Large size variant. */
 export const Large: Story = {
   args: {
     size: "lg",
@@ -44,6 +48,7 @@ export const Large: Story = {
   },
 };
 
+/** Search field with a visible label. */
 export const WithVisibleLabel: Story = {
   args: {
     label: "Search posts",
@@ -52,6 +57,7 @@ export const WithVisibleLabel: Story = {
   },
 };
 
+/** Search field with a hidden label. */
 export const WithHiddenLabel: Story = {
   args: {
     label: "Search users",
@@ -60,6 +66,7 @@ export const WithHiddenLabel: Story = {
   },
 };
 
+/** Custom placeholder text. */
 export const CustomPlaceholder: Story = {
   args: {
     placeholder: "Type to filter results...",
@@ -67,6 +74,7 @@ export const CustomPlaceholder: Story = {
   },
 };
 
+/** All size variants side by side. */
 export const AllSizes: Story = {
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "320px" }}>

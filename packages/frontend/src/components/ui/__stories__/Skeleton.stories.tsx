@@ -16,6 +16,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/** Basic skeleton with configurable dimensions. */
 export const Default: Story = {
   args: {
     width: "200px",
@@ -23,6 +24,7 @@ export const Default: Story = {
   },
 };
 
+/** Different rounded variants. */
 export const Shapes: Story = {
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -35,10 +37,12 @@ export const Shapes: Story = {
   ),
 };
 
+/** NoteCardSkeleton composition. */
 export const NoteCard: Story = {
   render: () => <NoteCardSkeleton />,
 };
 
+/** TimelineSkeleton with configurable count. */
 export const Timeline: Story = {
   render: () => (
     <div style={{ width: "400px" }}>

@@ -36,6 +36,7 @@ const optionsWithoutCounts = [
   { value: "remote", label: "Remote" },
 ];
 
+/** Default size variant. */
 export const Default: Story = {
   render: () => {
     const [value, setValue] = useState("all");
@@ -50,6 +51,7 @@ export const Default: Story = {
   },
 };
 
+/** Small size variant. */
 export const SmallSize: Story = {
   render: () => {
     const [value, setValue] = useState("all");
@@ -65,6 +67,7 @@ export const SmallSize: Story = {
   },
 };
 
+/** Medium size variant. */
 export const MediumSize: Story = {
   render: () => {
     const [value, setValue] = useState("all");
@@ -80,6 +83,7 @@ export const MediumSize: Story = {
   },
 };
 
+/** Options with count badges. */
 export const WithCountBadges: Story = {
   render: () => {
     const [value, setValue] = useState("all");
@@ -98,6 +102,7 @@ export const WithCountBadges: Story = {
   },
 };
 
+/** Options without counts. */
 export const WithoutCounts: Story = {
   render: () => {
     const [value, setValue] = useState("all");
@@ -112,6 +117,7 @@ export const WithoutCounts: Story = {
   },
 };
 
+/** Visible label display. */
 export const WithVisibleLabel: Story = {
   render: () => {
     const [value, setValue] = useState("all");
