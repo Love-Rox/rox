@@ -90,14 +90,20 @@ export const WithBackButton: Story = {
 export const WithReload: Story = {
   render: () => {
     const [isReloading, setIsReloading] = useState(false);
-    const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-    useEffect(() => () => clearTimeout(timeoutRef.current), []);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    useEffect(
+      () => () => {
+        if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
+      },
+      [],
+    );
     return (
       <PageHeader
         title="Timeline"
         showReload
         isReloading={isReloading}
         onReload={() => {
+          if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
           setIsReloading(true);
           timeoutRef.current = setTimeout(() => setIsReloading(false), 1500);
         }}
@@ -111,8 +117,13 @@ export const FullFeatured: Story = {
   render: () => {
     const [activeTab, setActiveTab] = useState("local");
     const [isReloading, setIsReloading] = useState(false);
-    const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-    useEffect(() => () => clearTimeout(timeoutRef.current), []);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    useEffect(
+      () => () => {
+        if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
+      },
+      [],
+    );
     const tabs: PageHeaderTab[] = [
       { key: "local", label: "Local" },
       { key: "global", label: "Global", icon: <Globe className="w-4 h-4" /> },
@@ -138,6 +149,7 @@ export const FullFeatured: Story = {
         showReload
         isReloading={isReloading}
         onReload={() => {
+          if (timeoutRef.current !== null) clearTimeout(timeoutRef.current);
           setIsReloading(true);
           timeoutRef.current = setTimeout(() => setIsReloading(false), 1500);
         }}
