@@ -7,6 +7,9 @@ const meta = {
   title: "UI/ErrorBoundary",
   component: ErrorBoundary,
   tags: ["autodocs"],
+  args: {
+    children: null,
+  },
 } satisfies Meta<typeof ErrorBoundary>;
 
 export default meta;

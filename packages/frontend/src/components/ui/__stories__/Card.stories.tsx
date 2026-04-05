@@ -23,6 +23,9 @@ const meta = {
     },
     hover: { control: "boolean" },
   },
+  args: {
+    children: null,
+  },
 } satisfies Meta<typeof Card>;
 
 export default meta;

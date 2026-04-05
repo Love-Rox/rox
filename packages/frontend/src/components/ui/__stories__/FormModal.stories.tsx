@@ -8,6 +8,12 @@ const meta = {
   title: "UI/FormModal",
   component: FormModal,
   tags: ["autodocs"],
+  args: {
+    isOpen: false,
+    onClose: () => {},
+    title: "Modal",
+    children: null,
+  },
   argTypes: {
     maxWidth: {
       control: "select",

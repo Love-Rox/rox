@@ -17,6 +17,9 @@ const meta = {
     },
     showPercent: { control: "boolean" },
   },
+  args: {
+    value: 50,
+  },
 } satisfies Meta<typeof ProgressBar>;
 
 export default meta;

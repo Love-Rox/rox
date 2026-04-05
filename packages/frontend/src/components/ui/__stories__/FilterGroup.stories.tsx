@@ -6,6 +6,12 @@ const meta = {
   title: "UI/FilterGroup",
   component: FilterGroup,
   tags: ["autodocs"],
+  args: {
+    options: [],
+    value: "",
+    onChange: () => {},
+    label: "Filter",
+  },
   argTypes: {
     size: {
       control: "select",

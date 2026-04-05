@@ -2,6 +2,8 @@
 @import "./mfm.css";
 @import "katex/dist/katex.min.css";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Primary color palette - dynamically set by ThemeProvider */
   /* Default: Blue (#3b82f6) in OKLCH color space (hue ~264°) */

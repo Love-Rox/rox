@@ -7,6 +7,13 @@ const meta = {
   title: "UI/ConfirmDialog",
   component: ConfirmDialog,
   tags: ["autodocs"],
+  args: {
+    isOpen: false,
+    onClose: () => {},
+    onConfirm: () => {},
+    title: "Confirm",
+    message: "Are you sure?",
+  },
   argTypes: {
     confirmVariant: {
       control: "select",
