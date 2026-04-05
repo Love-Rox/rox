@@ -1,5 +1,5 @@
-import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+import { useArgs } from "storybook/preview-api";
 import { FilterGroup } from "../FilterGroup";
 
 const meta = {
@@ -36,99 +36,77 @@ const optionsWithoutCounts = [
   { value: "remote", label: "Remote" },
 ];
 
+/** Shared render function that syncs FilterGroup value with Storybook Controls. */
+const renderInteractive: Story["render"] = (args) => {
+  const [{ value }, updateArgs] = useArgs();
+  return (
+    <FilterGroup {...args} value={value} onChange={(next: string) => updateArgs({ value: next })} />
+  );
+};
+
 /** Default size variant. */
 export const Default: Story = {
-  render: () => {
-    const [value, setValue] = useState("all");
-    return (
-      <FilterGroup
-        label="Filter by status"
-        options={sampleOptions}
-        value={value}
-        onChange={setValue}
-      />
-    );
+  args: {
+    label: "Filter by status",
+    options: sampleOptions,
+    value: "all",
   },
+  render: renderInteractive,
 };
 
 /** Small size variant. */
 export const SmallSize: Story = {
-  render: () => {
-    const [value, setValue] = useState("all");
-    return (
-      <FilterGroup
-        label="Filter by status"
-        options={sampleOptions}
-        value={value}
-        onChange={setValue}
-        size="sm"
-      />
-    );
+  args: {
+    label: "Filter by status",
+    options: sampleOptions,
+    value: "all",
+    size: "sm",
   },
+  render: renderInteractive,
 };
 
 /** Medium size variant. */
 export const MediumSize: Story = {
-  render: () => {
-    const [value, setValue] = useState("all");
-    return (
-      <FilterGroup
-        label="Filter by status"
-        options={sampleOptions}
-        value={value}
-        onChange={setValue}
-        size="md"
-      />
-    );
+  args: {
+    label: "Filter by status",
+    options: sampleOptions,
+    value: "all",
+    size: "md",
   },
+  render: renderInteractive,
 };
 
 /** Options with count badges. */
 export const WithCountBadges: Story = {
-  render: () => {
-    const [value, setValue] = useState("all");
-    return (
-      <FilterGroup
-        label="Filter users"
-        options={[
-          { value: "all", label: "All", count: 100 },
-          { value: "active", label: "Active", count: 85 },
-          { value: "suspended", label: "Suspended", count: 15 },
-        ]}
-        value={value}
-        onChange={setValue}
-      />
-    );
+  args: {
+    label: "Filter users",
+    options: [
+      { value: "all", label: "All", count: 100 },
+      { value: "active", label: "Active", count: 85 },
+      { value: "suspended", label: "Suspended", count: 15 },
+    ],
+    value: "all",
   },
+  render: renderInteractive,
 };
 
 /** Options without counts. */
 export const WithoutCounts: Story = {
-  render: () => {
-    const [value, setValue] = useState("all");
-    return (
-      <FilterGroup
-        label="Filter by type"
-        options={optionsWithoutCounts}
-        value={value}
-        onChange={setValue}
-      />
-    );
+  args: {
+    label: "Filter by type",
+    options: optionsWithoutCounts,
+    value: "all",
   },
+  render: renderInteractive,
 };
 
 /** Visible label display. */
 export const WithVisibleLabel: Story = {
-  render: () => {
-    const [value, setValue] = useState("all");
-    return (
-      <FilterGroup
-        label="Filter by status"
-        showLabel
-        options={sampleOptions}
-        value={value}
-        onChange={setValue}
-      />
-    );
+  args: {
+    label: "Filter by status",
+    showLabel: true,
+    options: sampleOptions,
+    value: "all",
   },
+  render: renderInteractive,
 };

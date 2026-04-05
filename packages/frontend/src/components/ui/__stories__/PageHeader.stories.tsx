@@ -90,7 +90,7 @@ export const WithBackButton: Story = {
 export const WithReload: Story = {
   render: () => {
     const [isReloading, setIsReloading] = useState(false);
-    const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+    const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
     useEffect(() => () => clearTimeout(timeoutRef.current), []);
     return (
       <PageHeader
@@ -111,7 +111,7 @@ export const FullFeatured: Story = {
   render: () => {
     const [activeTab, setActiveTab] = useState("local");
     const [isReloading, setIsReloading] = useState(false);
-    const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+    const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
     useEffect(() => () => clearTimeout(timeoutRef.current), []);
     const tabs: PageHeaderTab[] = [
       { key: "local", label: "Local" },
