@@ -3,11 +3,12 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ImageModal } from "../ImageModal";
 import { Button } from "../Button";
 
-const PLACEHOLDER_IMAGE = "https://picsum.photos/id/237/800/600";
+const PLACEHOLDER_IMAGE =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400'%3E%3Crect fill='%234a90d9' width='600' height='400'/%3E%3Ctext fill='white' x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-size='24'%3ESample Image%3C/text%3E%3C/svg%3E";
 const PLACEHOLDER_IMAGES = [
-  "https://picsum.photos/id/237/800/600",
-  "https://picsum.photos/id/1025/800/600",
-  "https://picsum.photos/id/1074/800/600",
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400'%3E%3Crect fill='%234a90d9' width='600' height='400'/%3E%3Ctext fill='white' x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-size='24'%3EImage 1%3C/text%3E%3C/svg%3E",
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400'%3E%3Crect fill='%2345b26b' width='600' height='400'/%3E%3Ctext fill='white' x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-size='24'%3EImage 2%3C/text%3E%3C/svg%3E",
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400'%3E%3Crect fill='%23d94a4a' width='600' height='400'/%3E%3Ctext fill='white' x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-size='24'%3EImage 3%3C/text%3E%3C/svg%3E",
 ];
 
 const meta = {
@@ -30,7 +31,7 @@ export const Default: Story = {
     images: [PLACEHOLDER_IMAGE],
     onClose: () => {},
   },
-  render: () => {
+  render: (args) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div style={{ padding: "24px" }}>
@@ -39,9 +40,10 @@ export const Default: Story = {
         </Button>
         {isOpen && (
           <ImageModal
+            {...args}
             images={[PLACEHOLDER_IMAGE]}
             onClose={() => setIsOpen(false)}
-            alt="Sample dog"
+            alt="Sample image"
           />
         )}
       </div>
@@ -57,7 +59,7 @@ export const Gallery: Story = {
     images: PLACEHOLDER_IMAGES,
     onClose: () => {},
   },
-  render: () => {
+  render: (args) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div style={{ padding: "24px" }}>
@@ -66,6 +68,7 @@ export const Gallery: Story = {
         </Button>
         {isOpen && (
           <ImageModal
+            {...args}
             images={PLACEHOLDER_IMAGES}
             onClose={() => setIsOpen(false)}
             alt="Gallery image"
@@ -85,7 +88,7 @@ export const StartAtSecondImage: Story = {
     initialIndex: 1,
     onClose: () => {},
   },
-  render: () => {
+  render: (args) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
       <div style={{ padding: "24px" }}>
@@ -94,6 +97,7 @@ export const StartAtSecondImage: Story = {
         </Button>
         {isOpen && (
           <ImageModal
+            {...args}
             images={PLACEHOLDER_IMAGES}
             initialIndex={1}
             onClose={() => setIsOpen(false)}
