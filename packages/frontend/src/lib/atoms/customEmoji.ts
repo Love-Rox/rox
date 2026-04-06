@@ -107,8 +107,15 @@ export const emojiLoadingAtom = atom<boolean>(false);
 export const emojiErrorAtom = atom<string | null>(null);
 
 /**
+ * In-flight fetch promise for deduplication.
+ * Prevents multiple concurrent fetches from different components.
+ */
+let inFlightFetch: Promise<CustomEmoji[]> | null = null;
+
+/**
  * Fetch emoji list action atom
- * Fetches all emojis with pagination to handle large emoji sets
+ * Fetches all emojis with pagination to handle large emoji sets.
+ * Deduplicates concurrent calls so only one fetch runs at a time.
  */
 export const fetchEmojisAtom = atom(null, async (get, set, forceRefresh = false) => {
   // Check cache validity
@@ -119,42 +126,53 @@ export const fetchEmojisAtom = atom(null, async (get, set, forceRefresh = false)
     return cache.emojis;
   }
 
+  // Deduplicate: if a fetch is already in-flight, wait for it
+  if (inFlightFetch) {
+    return inFlightFetch;
+  }
+
   set(emojiLoadingAtom, true);
   set(emojiErrorAtom, null);
 
-  try {
-    // Fetch emojis with pagination to handle large sets
-    const allEmojis: CustomEmoji[] = [];
-    let offset = 0;
-    const limit = 500; // Fetch in batches of 500
-    let hasMore = true;
+  const doFetch = async (): Promise<CustomEmoji[]> => {
+    try {
+      const allEmojis: CustomEmoji[] = [];
+      let offset = 0;
+      const limit = 500;
+      let hasMore = true;
 
-    while (hasMore) {
-      const response = await apiClient.get<{
-        emojis: CustomEmoji[];
-        total: number;
-        limit: number;
-        offset: number;
-      }>(`/api/emojis?limit=${limit}&offset=${offset}`);
+      while (hasMore) {
+        const response = await apiClient.get<{
+          emojis: CustomEmoji[];
+          total: number;
+          limit: number;
+          offset: number;
+        }>(`/api/emojis?limit=${limit}&offset=${offset}`);
 
-      allEmojis.push(...response.emojis);
-      offset += response.emojis.length;
-      hasMore = offset < response.total;
+        allEmojis.push(...response.emojis);
+        offset += response.emojis.length;
+        hasMore = offset < response.total;
+      }
+
+      // Update cache
+      set(emojiCacheAtom, {
+        emojis: allEmojis,
+        timestamp: Date.now(),
+      });
+
+      set(emojiLoadingAtom, false);
+      return allEmojis;
+    } catch (error) {
+      set(emojiLoadingAtom, false);
+      set(emojiErrorAtom, error instanceof Error ? error.message : "Failed to load emojis");
+      throw error;
+    } finally {
+      inFlightFetch = null;
     }
+  };
 
-    // Update cache
-    set(emojiCacheAtom, {
-      emojis: allEmojis,
-      timestamp: now,
-    });
-
-    set(emojiLoadingAtom, false);
-    return allEmojis;
-  } catch (error) {
-    set(emojiLoadingAtom, false);
-    set(emojiErrorAtom, error instanceof Error ? error.message : "Failed to load emojis");
-    throw error;
-  }
+  inFlightFetch = doFetch();
+  return inFlightFetch;
 });
 
 /**
