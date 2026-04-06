@@ -149,8 +149,13 @@ export const fetchEmojisAtom = atom(null, async (get, set, forceRefresh = false)
           offset: number;
         }>(`/api/emojis?limit=${limit}&offset=${offset}`);
 
+        const fetchedCount = response.emojis.length;
+        if (fetchedCount === 0) {
+          break;
+        }
+
         allEmojis.push(...response.emojis);
-        offset += response.emojis.length;
+        offset += fetchedCount;
         hasMore = offset < response.total;
       }
 
