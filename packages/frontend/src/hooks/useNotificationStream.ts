@@ -448,12 +448,17 @@ export function useNotificationStream(options: UseNotificationStreamOptions): {
     return () => {
       connection.connectionCount--;
 
-      // Disconnect when last subscriber unmounts
+      // Delay disconnect to handle React StrictMode remounts.
+      // StrictMode unmounts and remounts effects, briefly dropping count to 0.
       if (connection.connectionCount <= 0) {
         connection.connectionCount = 0;
-        isInitializedRef.current = false;
-        setTokenGetterForReconnect(null);
-        disconnectNotificationWS(true);
+        setTimeout(() => {
+          if (connection.connectionCount <= 0) {
+            isInitializedRef.current = false;
+            setTokenGetterForReconnect(null);
+            disconnectNotificationWS(true);
+          }
+        }, 100);
       }
     };
   }, [enabled, isAuthenticated]);
