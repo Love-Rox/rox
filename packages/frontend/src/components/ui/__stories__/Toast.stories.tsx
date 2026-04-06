@@ -11,6 +11,8 @@ const meta = {
   component: ToastContainer,
   tags: ["autodocs"],
   decorators: [
+    // Create an isolated Jotai store per story to prevent toast state from leaking between stories.
+    // This intentionally nests inside the global withProviders JotaiProvider; React context uses the nearest Provider.
     (Story: React.ComponentType) => {
       const store = createStore();
       return (

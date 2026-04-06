@@ -26,90 +26,63 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+/**
+ * Reusable wrapper that provides isOpen state and a trigger button for modal stories.
+ */
+function ModalStoryWrapper({
+  args,
+  children,
+}: {
+  args: React.ComponentProps<typeof FormModal>;
+  children: React.ReactNode;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div>
+      <Button variant="primary" onPress={() => setIsOpen(true)}>
+        Open Modal
+      </Button>
+      <FormModal {...args} isOpen={isOpen} onClose={() => setIsOpen(false)}>
+        {children}
+      </FormModal>
+    </div>
+  );
+}
+
 export const Default: Story = {
-  render: (args) => {
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-      <div>
-        <Button variant="primary" onPress={() => setIsOpen(true)}>
-          Open Modal
-        </Button>
-        <FormModal {...args} isOpen={isOpen} onClose={() => setIsOpen(false)} title="Create Item">
-          <TextField label="Name" placeholder="Enter a name" />
-          <TextField label="Description" placeholder="Enter a description" multiline rows={3} />
-        </FormModal>
-      </div>
-    );
-  },
+  render: (args) => (
+    <ModalStoryWrapper args={{ ...args, title: "Create Item" }}>
+      <TextField label="Name" placeholder="Enter a name" />
+      <TextField label="Description" placeholder="Enter a description" multiline rows={3} />
+    </ModalStoryWrapper>
+  ),
 };
 
 export const SmallWidth: Story = {
-  render: (args) => {
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-      <div>
-        <Button variant="secondary" onPress={() => setIsOpen(true)}>
-          Small Modal
-        </Button>
-        <FormModal
-          {...args}
-          isOpen={isOpen}
-          onClose={() => setIsOpen(false)}
-          title="Small Modal"
-          maxWidth="sm"
-        >
-          <TextField label="Email" placeholder="you@example.com" type="email" />
-        </FormModal>
-      </div>
-    );
-  },
+  render: (args) => (
+    <ModalStoryWrapper args={{ ...args, title: "Small Modal", maxWidth: "sm" }}>
+      <TextField label="Email" placeholder="you@example.com" type="email" />
+    </ModalStoryWrapper>
+  ),
 };
 
 export const LargeWidth: Story = {
-  render: (args) => {
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-      <div>
-        <Button variant="secondary" onPress={() => setIsOpen(true)}>
-          Large Modal
-        </Button>
-        <FormModal
-          {...args}
-          isOpen={isOpen}
-          onClose={() => setIsOpen(false)}
-          title="Large Modal"
-          maxWidth="lg"
-        >
-          <TextField label="Title" placeholder="Enter title" />
-          <TextField label="Content" placeholder="Write your content here..." multiline rows={5} />
-        </FormModal>
-      </div>
-    );
-  },
+  render: (args) => (
+    <ModalStoryWrapper args={{ ...args, title: "Large Modal", maxWidth: "lg" }}>
+      <TextField label="Title" placeholder="Enter title" />
+      <TextField label="Content" placeholder="Write your content here..." multiline rows={5} />
+    </ModalStoryWrapper>
+  ),
 };
 
 export const ExtraLargeWidth: Story = {
-  render: (args) => {
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-      <div>
-        <Button variant="secondary" onPress={() => setIsOpen(true)}>
-          XL Modal
-        </Button>
-        <FormModal
-          {...args}
-          isOpen={isOpen}
-          onClose={() => setIsOpen(false)}
-          title="Extra Large Modal"
-          maxWidth="xl"
-        >
-          <TextField label="First Name" placeholder="First name" />
-          <TextField label="Last Name" placeholder="Last name" />
-          <TextField label="Bio" placeholder="Tell us about yourself..." multiline rows={4} />
-        </FormModal>
-      </div>
-    );
-  },
+  render: (args) => (
+    <ModalStoryWrapper args={{ ...args, title: "Extra Large Modal", maxWidth: "xl" }}>
+      <TextField label="First Name" placeholder="First name" />
+      <TextField label="Last Name" placeholder="Last name" />
+      <TextField label="Bio" placeholder="Tell us about yourself..." multiline rows={4} />
+    </ModalStoryWrapper>
+  ),
 };
 
 export const WithFooter: Story = {

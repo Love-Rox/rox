@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { ConfirmDialog } from "../ConfirmDialog";
 import { Button } from "../Button";
@@ -73,6 +73,13 @@ export const Loading: Story = {
   render: () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    useEffect(
+      () => () => {
+        if (timerRef.current !== null) clearTimeout(timerRef.current);
+      },
+      [],
+    );
     return (
       <div>
         <Button variant="danger" onPress={() => setIsOpen(true)}>
@@ -87,7 +94,8 @@ export const Loading: Story = {
           }}
           onConfirm={() => {
             setIsLoading(true);
-            setTimeout(() => {
+            if (timerRef.current !== null) clearTimeout(timerRef.current);
+            timerRef.current = setTimeout(() => {
               setIsLoading(false);
               setIsOpen(false);
             }, 2000);

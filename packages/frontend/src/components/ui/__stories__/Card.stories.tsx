@@ -32,6 +32,13 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const stackedCardContainerStyle = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "16px",
+  width: "300px",
+} as const;
+
 export const Default: Story = {
   args: {
     children: "Basic card content",
@@ -54,7 +61,7 @@ export const WithHeaderAndContent: Story = {
 
 export const PaddingVariants: Story = {
   render: () => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "300px" }}>
+    <div style={stackedCardContainerStyle}>
       <Card padding="none">
         <CardContent>padding: none</CardContent>
       </Card>
@@ -73,7 +80,7 @@ export const PaddingVariants: Story = {
 
 export const ShadowVariants: Story = {
   render: () => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "300px" }}>
+    <div style={stackedCardContainerStyle}>
       <Card shadow="none">
         <CardContent>shadow: none</CardContent>
       </Card>
