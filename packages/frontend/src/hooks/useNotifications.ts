@@ -75,7 +75,11 @@ function connectWSSingleton(
   },
 ) {
   // Already connected or connecting
-  if (wsSocket && wsSocket.readyState === WebSocket.OPEN) return;
+  if (
+    wsSocket &&
+    (wsSocket.readyState === WebSocket.OPEN || wsSocket.readyState === WebSocket.CONNECTING)
+  )
+    return;
 
   // Clear any pending reconnect
   if (wsReconnectTimeout) {
@@ -384,11 +388,17 @@ export function useNotifications() {
       if (isAuthenticated && token) {
         wsConnectionCount--;
 
-        // Only disconnect when last subscriber unmounts
+        // Delay disconnect to handle React StrictMode remounts.
+        // StrictMode unmounts and remounts effects, briefly dropping count to 0.
+        // The timeout allows the remount to increment the count before disconnect fires.
         if (wsConnectionCount <= 0) {
           wsConnectionCount = 0;
-          isInitializedRef.current = false;
-          disconnectWSSingleton(setWsConnected, true);
+          setTimeout(() => {
+            if (wsConnectionCount <= 0) {
+              isInitializedRef.current = false;
+              disconnectWSSingleton(setWsConnected, true);
+            }
+          }, 100);
         }
       }
     };
