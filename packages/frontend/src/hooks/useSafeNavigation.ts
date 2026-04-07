@@ -168,38 +168,15 @@ export function useSafeNavigation(): SafeNavigationResult {
   /**
    * Go back to the previous page.
    *
-   * DEBUG: Tests multiple strategies to isolate root cause.
-   * Strategy is selected via window.__goBackStrategy (set from console).
-   *   1 = closeModals + router.push (same tick) — KNOWN BROKEN
-   *   2 = closeModals then setTimeout(0) then router.push
-   *   3 = router.push only (no closeModals)
-   *   4 = window.location.href (reliable fallback)
+   * Uses window.location.href for reliable back navigation.
+   * Forward navigation (navigate) uses router.push with content
+   * verification fallback.
    */
   const goBack = useCallback(() => {
+    closeModals();
     const previousPath = getPreviousPath("/timeline");
-    const strategy = (window as unknown as Record<string, unknown>).__goBackStrategy as
-      | number
-      | undefined;
-
-    if (strategy === 2) {
-      // Strategy 2: separate ticks
-      closeModals();
-      setTimeout(() => {
-        router.push(previousPath as `/${string}`);
-      }, 0);
-    } else if (strategy === 3) {
-      // Strategy 3: router.push only, no closeModals
-      router.push(previousPath as `/${string}`);
-    } else if (strategy === 1) {
-      // Strategy 1: same tick (known broken)
-      closeModals();
-      router.push(previousPath as `/${string}`);
-    } else {
-      // Default (strategy 4): reliable fallback
-      closeModals();
-      window.location.href = previousPath;
-    }
-  }, [closeModals, router]);
+    window.location.href = previousPath;
+  }, [closeModals]);
 
   return {
     isNavigating,
