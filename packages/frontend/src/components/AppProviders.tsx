@@ -101,9 +101,13 @@ export function AppProviders({ children }: AppProvidersProps) {
     return () => window.removeEventListener("error", handleError);
   }, []);
 
-  // Track navigation history for proper back button functionality
+  // Track navigation history for proper back button functionality.
+  // IMPORTANT: Do NOT monkey-patch history.pushState/replaceState here.
+  // Patching pushState interferes with Waku's internal RSC routing,
+  // causing router.push to update the URL without re-rendering content.
+  // Instead, record navigation via popstate events and a custom event
+  // dispatched after SPA navigations complete.
   useEffect(() => {
-    // Get full path including search params and hash
     const getFullPath = () =>
       window.location.pathname + window.location.search + window.location.hash;
 
@@ -115,26 +119,17 @@ export function AppProviders({ children }: AppProvidersProps) {
       recordNavigation(getFullPath());
     };
 
-    // Listen for pushstate/replacestate by patching history methods
-    const originalPushState = history.pushState.bind(history);
-    const originalReplaceState = history.replaceState.bind(history);
-
-    history.pushState = (...args) => {
-      originalPushState(...args);
+    // Listen for custom navigation event dispatched by SpaLink/router
+    const handleNavigation = () => {
       recordNavigation(getFullPath());
     };
 
-    history.replaceState = (...args) => {
-      originalReplaceState(...args);
-      // Don't record replaceState as it's typically used for in-place updates
-    };
-
     window.addEventListener("popstate", handlePopState);
+    window.addEventListener("rox-navigation", handleNavigation);
 
     return () => {
       window.removeEventListener("popstate", handlePopState);
-      history.pushState = originalPushState;
-      history.replaceState = originalReplaceState;
+      window.removeEventListener("rox-navigation", handleNavigation);
     };
   }, []);
 
