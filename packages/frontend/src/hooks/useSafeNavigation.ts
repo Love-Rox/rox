@@ -174,21 +174,17 @@ export function useSafeNavigation(): SafeNavigationResult {
   );
 
   /**
-   * Go back in history using full page navigation
+   * Go back to the previous page.
    *
-   * Go back to the previous page using SPA navigation.
+   * Uses window.location.href for reliable navigation in production builds
+   * where Waku's router.push may update the URL without re-rendering content.
    */
   const goBack = useCallback(async () => {
     await closeModalsAndWait();
 
     const previousPath = getPreviousPath("/timeline");
-
-    try {
-      router.push(previousPath as `/${string}`);
-    } catch {
-      window.location.href = previousPath;
-    }
-  }, [closeModalsAndWait, router]);
+    window.location.href = previousPath;
+  }, [closeModalsAndWait]);
 
   return {
     isNavigating,
