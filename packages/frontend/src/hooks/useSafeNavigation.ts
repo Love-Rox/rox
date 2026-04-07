@@ -143,13 +143,15 @@ export function useSafeNavigation(): SafeNavigationResult {
           if (urlMatches && newContent === currentContent && currentContent !== "") {
             // URL changed but content didn't — RSC fetch was skipped, fall back
             window.location.href = path;
+          } else {
+            setIsNavigating(false);
           }
         }, 500);
       } catch {
         window.location.href = path;
       }
     },
-    [router],
+    [router, setIsNavigating],
   );
 
   /**
