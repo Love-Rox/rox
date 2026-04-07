@@ -166,13 +166,19 @@ export function useSafeNavigation(): SafeNavigationResult {
   );
 
   /**
-   * Go back to the previous page
+   * Go back to the previous page.
+   *
+   * Uses window.location.href directly for reliable back navigation.
+   * Waku's router.push fails to trigger RSC re-fetch in production builds
+   * when used after modal state changes, so back navigation uses full
+   * page navigation for reliability. Forward navigation (navigate) still
+   * attempts router.push with fallback verification.
    */
   const goBack = useCallback(() => {
     closeModals();
     const previousPath = getPreviousPath("/timeline");
-    navigateWithVerification(previousPath);
-  }, [closeModals, navigateWithVerification]);
+    window.location.href = previousPath;
+  }, [closeModals]);
 
   return {
     isNavigating,
