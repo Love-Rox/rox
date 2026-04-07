@@ -37,14 +37,28 @@ export interface SpaLinkProps extends Omit<ComponentProps<"a">, "href"> {
  * </SpaLink>
  * ```
  */
-export function SpaLink({ to, children, prefetchOnEnter, className, ...props }: SpaLinkProps) {
-  // Cast to 'any' to bypass Waku's strict route typing
-  // This allows dynamic routes like user profiles (/:username)
+export function SpaLink({
+  to,
+  children,
+  prefetchOnEnter,
+  className,
+  onClick,
+  ...props
+}: SpaLinkProps) {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    onClick?.(e);
+    // Notify navigation history tracker after Waku processes the click
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new Event("rox-navigation"));
+    });
+  };
+
   return (
     <Link
       to={to as `/${string}`}
       className={className}
       unstable_prefetchOnEnter={prefetchOnEnter}
+      onClick={handleClick}
       {...props}
     >
       {children}

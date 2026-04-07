@@ -3,17 +3,14 @@
 /**
  * Safe Navigation Hook
  *
- * Provides navigation functions that properly close all modals
- * before navigating to prevent portal cleanup errors.
- *
- * Uses full page navigation to avoid Waku/React portal cleanup issues
- * during SPA transitions.
+ * Provides navigation functions that close modals before navigating.
+ * Avoids flushSync and requestAnimationFrame to prevent interfering
+ * with Waku's RSC routing transitions.
  *
  * @module hooks/useSafeNavigation
  */
 
 import { useCallback, useState } from "react";
-import { flushSync } from "react-dom";
 import { useSetAtom } from "jotai";
 import { closeAllModalsAtom } from "../lib/atoms/modals";
 import { useRouter } from "../components/ui/SpaLink";
@@ -44,25 +41,43 @@ function getNavigationHistory(): string[] {
  */
 function getPreviousPath(fallback: string): string {
   const history = getNavigationHistory();
-  // Use full path including search params and hash for accurate matching
   const currentPath =
     typeof window !== "undefined"
       ? window.location.pathname + window.location.search + window.location.hash
       : "";
 
-  // Find current page in history and get the one before it
   const currentIndex = history.lastIndexOf(currentPath);
 
   if (currentIndex > 0) {
     return history[currentIndex - 1] || fallback;
   }
 
-  // Current page not in history, use last entry if different
   if (history.length > 0 && history[history.length - 1] !== currentPath) {
     return history[history.length - 1] || fallback;
   }
 
   return fallback;
+}
+
+/**
+ * Close all open popovers using DOM events
+ */
+function closeUncontrolledPopovers(): void {
+  const escapeEvent = new KeyboardEvent("keydown", {
+    key: "Escape",
+    code: "Escape",
+    keyCode: 27,
+    bubbles: true,
+    cancelable: true,
+  });
+
+  document.querySelectorAll('[data-open], button[aria-expanded="true"]').forEach((el) => {
+    el.dispatchEvent(escapeEvent);
+  });
+
+  document.querySelectorAll("[data-react-aria-top-layer]").forEach((el) => {
+    el.dispatchEvent(escapeEvent);
+  });
 }
 
 /**
@@ -78,52 +93,14 @@ interface SafeNavigationResult {
 }
 
 /**
- * Close all open popovers using DOM events
+ * Hook for safe navigation that closes modals before navigating.
  *
- * This handles uncontrolled MenuTrigger/Select popovers that aren't
- * in the modal registry. We dispatch an Escape key event to close them.
- */
-function closeUncontrolledPopovers(): void {
-  const escapeEvent = new KeyboardEvent("keydown", {
-    key: "Escape",
-    code: "Escape",
-    keyCode: 27,
-    bubbles: true,
-    cancelable: true,
-  });
-
-  // Close any open Select/MenuTrigger popovers
-  document.querySelectorAll('[data-open], button[aria-expanded="true"]').forEach((el) => {
-    el.dispatchEvent(escapeEvent);
-  });
-
-  // Close any React Aria top-layer overlays
-  document.querySelectorAll("[data-react-aria-top-layer]").forEach((el) => {
-    el.dispatchEvent(escapeEvent);
-  });
-}
-
-/**
- * Hook for safe navigation that closes all modals first
- *
- * This hook ensures that all React Aria modals are properly closed
- * before navigation occurs, preventing the "removeChild" portal
- * cleanup errors that occur when modals are unmounted during navigation.
+ * Closes modals via normal React state updates (no flushSync) to avoid
+ * interfering with Waku's startTransition-based RSC routing. Then uses
+ * router.push for SPA navigation with a content-change check to detect
+ * and recover from failed navigations.
  *
  * @returns Navigation functions and state
- *
- * @example
- * ```tsx
- * function MyComponent() {
- *   const { isNavigating, navigate, goBack } = useSafeNavigation();
- *
- *   return (
- *     <Button onPress={goBack} isDisabled={isNavigating}>
- *       Back
- *     </Button>
- *   );
- * }
- * ```
  */
 export function useSafeNavigation(): SafeNavigationResult {
   const router = useRouter();
@@ -131,60 +108,71 @@ export function useSafeNavigation(): SafeNavigationResult {
   const [isNavigating, setIsNavigating] = useState(false);
 
   /**
-   * Close all modals and wait for DOM updates to complete
+   * Close all modals without blocking React's concurrent rendering.
+   * Uses normal state updates instead of flushSync to preserve
+   * Waku router's startTransition context.
    */
-  const closeModalsAndWait = useCallback((): Promise<void> => {
-    return new Promise((resolve) => {
-      // Use flushSync to force synchronous state updates
-      flushSync(() => {
-        // Close registered modals via modal registry
-        closeAllModals();
-        // Close uncontrolled popovers via DOM events
-        closeUncontrolledPopovers();
-        setIsNavigating(true);
-      });
-
-      // Wait for two animation frames to ensure DOM is updated
-      // First frame: React commits the changes
-      // Second frame: Browser paints the changes
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          resolve();
-        });
-      });
-    });
+  const closeModals = useCallback(() => {
+    closeAllModals();
+    closeUncontrolledPopovers();
+    setIsNavigating(true);
   }, [closeAllModals]);
+
+  /**
+   * Navigate using router.push with content-change verification.
+   * If the page content doesn't change within a timeout, falls back
+   * to window.location.href.
+   */
+  const navigateWithVerification = useCallback(
+    (path: string) => {
+      const currentContent = document.querySelector("main")?.innerHTML || "";
+
+      try {
+        router.push(path as `/${string}`);
+
+        // Notify navigation history tracker
+        requestAnimationFrame(() => {
+          window.dispatchEvent(new Event("rox-navigation"));
+        });
+
+        // Verify navigation actually updated the content
+        setTimeout(() => {
+          const newContent = document.querySelector("main")?.innerHTML || "";
+          const urlMatches = window.location.pathname === path.split("?")[0];
+
+          if (urlMatches && newContent === currentContent && currentContent !== "") {
+            // URL changed but content didn't — RSC fetch was skipped, fall back
+            window.location.href = path;
+          } else {
+            setIsNavigating(false);
+          }
+        }, 500);
+      } catch {
+        window.location.href = path;
+      }
+    },
+    [router, setIsNavigating],
+  );
 
   /**
    * Navigate to a path after closing all modals
    */
   const navigate = useCallback(
-    async (path: string) => {
-      await closeModalsAndWait();
-
-      try {
-        // Cast to any to allow dynamic paths with Waku's router
-        router.push(path as `/${string}`);
-      } catch {
-        // Fallback to full page navigation if SPA navigation fails
-        window.location.href = path;
-      }
+    (path: string) => {
+      closeModals();
+      navigateWithVerification(path);
     },
-    [closeModalsAndWait, router],
+    [closeModals, navigateWithVerification],
   );
 
   /**
-   * Go back to the previous page.
-   *
-   * Uses window.location.href for reliable navigation in production builds
-   * where Waku's router.push may update the URL without re-rendering content.
+   * Go back to the previous page
    */
-  const goBack = useCallback(async () => {
-    await closeModalsAndWait();
-
+  const goBack = useCallback(() => {
+    closeModals();
     const previousPath = getPreviousPath("/timeline");
-    window.location.href = previousPath;
-  }, [closeModalsAndWait]);
+    navigateWithVerification(previousPath);
+  }, [closeModals, navigateWithVerification]);
 
   return {
     isNavigating,
