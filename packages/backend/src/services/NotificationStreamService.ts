@@ -212,7 +212,17 @@ export class NotificationStreamService {
   }
 }
 
-// Export singleton getter
+/**
+ * Module-level singleton instance.
+ * Using a module-scoped variable avoids dual-instance issues
+ * when the module is loaded via different resolution paths.
+ */
+const globalKey = Symbol.for("rox.NotificationStreamService");
+const globalStore = globalThis as Record<symbol, NotificationStreamService>;
+
 export function getNotificationStreamService(): NotificationStreamService {
-  return NotificationStreamService.getInstance();
+  if (!globalStore[globalKey]) {
+    globalStore[globalKey] = NotificationStreamService.getInstance();
+  }
+  return globalStore[globalKey];
 }
