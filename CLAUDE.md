@@ -128,6 +128,7 @@ For detailed guidelines, see `.claude/rules/`:
 | `devcontainer.md` | DevContainer setup |
 | `mcp-servers.md` | MCP server usage |
 | `discord-logger.md` | Discord conversation logging |
+| `git-workflow.md` | Git branching and release workflow |
 
 ## Historical Documentation
 
