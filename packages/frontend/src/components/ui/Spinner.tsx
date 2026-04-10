@@ -42,7 +42,9 @@ export function Spinner({ size = "md", variant = "primary", className = "" }: Sp
 }
 
 /**
- * Loading spinner with text label
+ * Loading spinner with text label.
+ *
+ * @returns A flex container with a spinner and a text label
  */
 export function SpinnerWithLabel({
   label,

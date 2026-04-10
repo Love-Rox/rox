@@ -24,7 +24,10 @@ const STATE_COOKIE_NAME = "oauth_state";
 const STATE_COOKIE_MAX_AGE = 600; // 10 minutes
 
 /**
- * Get OAuth service instance
+ * Get OAuth service instance from the Hono context's DI container.
+ *
+ * @param c - Hono request context
+ * @returns Configured OAuthService instance
  */
 const getOAuthService = (c: Context): OAuthService => {
   const oauthAccountRepository = c.get("oauthAccountRepository");
@@ -34,7 +37,10 @@ const getOAuthService = (c: Context): OAuthService => {
 };
 
 /**
- * Validate OAuth provider parameter
+ * Validate that a string is a supported OAuth provider.
+ *
+ * @param provider - Provider name to validate
+ * @returns True if the provider is supported
  */
 const isValidProvider = (provider: string): provider is OAuthProvider => {
   return ["github", "google", "discord", "mastodon"].includes(provider);

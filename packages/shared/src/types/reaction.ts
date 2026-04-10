@@ -1,5 +1,6 @@
 import type { ID, Timestamps } from "./common.js";
 
+/** A reaction (emoji or custom emoji) attached to a note by a user. */
 export interface Reaction extends Timestamps {
   id: ID;
   userId: ID;
