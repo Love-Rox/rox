@@ -40,7 +40,10 @@ import {
 const EMOJIS_PER_PAGE = 50;
 
 /**
- * Normalize category name for display, replacing sentinel values
+ * Normalize category name for display, replacing sentinel values.
+ *
+ * @param name - Raw category name (may be empty or "__uncategorized__")
+ * @returns Localized display name
  */
 function normalizeCategoryName(name: string): string {
   if (name === "__uncategorized__" || name === "") {
