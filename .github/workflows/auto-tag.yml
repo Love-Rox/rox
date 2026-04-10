@@ -80,9 +80,22 @@ jobs:
         id: prev_tag
         run: |
           CURRENT_TAG="v${{ needs.auto-tag.outputs.version }}"
-          PREV_TAG=$(git describe --tags --abbrev=0 "${CURRENT_TAG}^" 2>/dev/null || echo "")
-          echo "prev_tag=$PREV_TAG" >> $GITHUB_OUTPUT
-          echo "Previous tag: $PREV_TAG"
+          VERSION="${{ needs.auto-tag.outputs.version }}"
+
+          # For stable releases, find the previous stable tag (skip prereleases)
+          # For prereleases, find the previous tag of any kind
+          if [[ "$VERSION" != *"-"* ]]; then
+            # Stable release: find previous stable tag
+            PREV_TAG=$(git tag --sort=-v:refname | grep -v '\-alpha\|\-beta\|\-rc' | grep -v "^${CURRENT_TAG}$" | head -1)
+            echo "Stable release: comparing against previous stable tag"
+          else
+            # Prerelease: find the immediately previous tag
+            PREV_TAG=$(git describe --tags --abbrev=0 "${CURRENT_TAG}^" 2>/dev/null || echo "")
+            echo "Prerelease: comparing against previous tag"
+          fi
+
+          echo "prev_tag=${PREV_TAG:-}" >> $GITHUB_OUTPUT
+          echo "Previous tag: ${PREV_TAG:-none}"
 
       - name: Extract package versions
         id: pkg_versions
