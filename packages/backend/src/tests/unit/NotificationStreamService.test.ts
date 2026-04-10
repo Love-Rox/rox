@@ -14,7 +14,7 @@ import {
   NotificationStreamService,
   getNotificationStreamService,
   type NotificationEvent,
-} from "../../services/NotificationStreamService.js";
+} from "../../services/NotificationStreamService";
 
 describe("NotificationStreamService", () => {
   let service: NotificationStreamService;

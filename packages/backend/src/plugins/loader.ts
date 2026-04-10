@@ -178,8 +178,7 @@ export class PluginLoader {
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      logger.error({ error: message }, "Failed to discover plugins directory");
-      // If plugins dir doesn't exist, that's okay - just no plugins
+      logger.debug({ error: message }, "Plugins directory not found, skipping");
     }
 
     return results;

@@ -6,8 +6,7 @@ import { getSharedVitePlugins } from "./vite-plugins";
  * Waku configuration
  * Configures Vite settings for Tailwind CSS v4 (via Vite plugin) and Lingui integration
  *
- * Note: @vitejs/plugin-react v6 (Vite 8) removed the `babel` option.
- * Lingui macro transformation is now handled via @rolldown/plugin-babel.
+ * Lingui macro transformation is handled via @rolldown/plugin-babel.
  */
 export default defineConfig({
   /** Vite configuration for all environments */

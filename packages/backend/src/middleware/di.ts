@@ -3,14 +3,18 @@ import { getContainer, type AppContainer } from "../di/container.js";
 import type { PluginLoader } from "../plugins/loader.js";
 
 /**
- * DIミドルウェア
- * コンテナの内容をHonoのContextに注入
+ * Dependency injection middleware.
+ *
+ * Injects all DI container bindings into the Hono request context,
+ * making repositories, services, and adapters available to route handlers.
+ *
+ * @returns Hono middleware function
  */
 export function diMiddleware() {
   const container = getContainer();
 
   return async (c: Context, next: Next) => {
-    // コンテナの各プロパティをContextに設定
+    // Set each container property on the Hono context
     c.set("userRepository", container.userRepository);
     c.set("noteRepository", container.noteRepository);
     c.set("driveFileRepository", container.driveFileRepository);
@@ -61,7 +65,7 @@ export function diMiddleware() {
   };
 }
 
-// Hono Context型の拡張
+// Extend Hono's ContextVariableMap with DI container types
 declare module "hono" {
   interface ContextVariableMap extends AppContainer {
     container: AppContainer;

@@ -40,7 +40,10 @@ import {
 const EMOJIS_PER_PAGE = 50;
 
 /**
- * Normalize category name for display, replacing sentinel values
+ * Normalize category name for display, replacing sentinel values.
+ *
+ * @param name - Raw category name (may be empty or "__uncategorized__")
+ * @returns Localized display name
  */
 function normalizeCategoryName(name: string): string {
   if (name === "__uncategorized__" || name === "") {
@@ -68,6 +71,31 @@ export interface EmojiPickerProps {
 }
 
 /**
+ * Sentinel element that triggers a callback when it becomes visible.
+ * Uses IntersectionObserver to detect when the element enters the viewport.
+ *
+ * @param onLoadMore - Callback invoked when the sentinel becomes visible
+ */
+function LoadMoreSentinel({ onLoadMore }: { onLoadMore: () => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) onLoadMore();
+      },
+      { threshold: 0 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onLoadMore]);
+
+  return <div ref={ref} className="h-1" />;
+}
+
+/**
  * Props for the accordion section component
  */
 interface AccordionSectionProps {
@@ -85,6 +113,8 @@ interface AccordionSectionProps {
   visibleCount: number;
   /** Whether there are more emojis */
   hasMore: boolean;
+  /** Callback to load more emojis */
+  onLoadMore?: () => void;
 }
 
 /**
@@ -98,6 +128,7 @@ function AccordionSection({
   onEmojiClick,
   visibleCount,
   hasMore,
+  onLoadMore,
 }: AccordionSectionProps) {
   const displayedEmojis = emojis.slice(0, visibleCount);
 
@@ -126,6 +157,7 @@ function AccordionSection({
               {displayedEmojis.map((emoji, index) => (
                 <Button
                   variant="ghost"
+                  size={null}
                   key={`${emoji}-${index}`}
                   onPress={() => onEmojiClick(emoji)}
                   className="text-xl p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -135,11 +167,7 @@ function AccordionSection({
                 </Button>
               ))}
             </div>
-            {hasMore && (
-              <div className="text-center py-1.5 text-xs text-gray-400">
-                {displayedEmojis.length}/{emojis.length}
-              </div>
-            )}
+            {hasMore && onLoadMore && <LoadMoreSentinel onLoadMore={onLoadMore} />}
           </DisclosurePanel>
         </>
       )}
@@ -165,6 +193,8 @@ interface CustomAccordionSectionProps {
   visibleCount: number;
   /** Whether there are more emojis */
   hasMore: boolean;
+  /** Callback to load more emojis */
+  onLoadMore?: () => void;
 }
 
 /**
@@ -178,6 +208,7 @@ function CustomAccordionSection({
   onEmojiClick,
   visibleCount,
   hasMore,
+  onLoadMore,
 }: CustomAccordionSectionProps) {
   const displayedEmojis = emojis.slice(0, visibleCount);
 
@@ -206,6 +237,7 @@ function CustomAccordionSection({
               {displayedEmojis.map((emoji) => (
                 <Button
                   variant="ghost"
+                  size={null}
                   key={emoji.id}
                   onPress={() => onEmojiClick(emoji)}
                   className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -214,17 +246,13 @@ function CustomAccordionSection({
                   <img
                     src={getProxiedImageUrl(emoji.url) || ""}
                     alt={`:${emoji.name}:`}
-                    className="w-5 h-5 object-contain"
+                    className="w-7 h-7 object-contain"
                     loading="lazy"
                   />
                 </Button>
               ))}
             </div>
-            {hasMore && (
-              <div className="text-center py-1.5 text-xs text-gray-400">
-                {displayedEmojis.length}/{emojis.length}
-              </div>
-            )}
+            {hasMore && onLoadMore && <LoadMoreSentinel onLoadMore={onLoadMore} />}
           </DisclosurePanel>
         </>
       )}
@@ -486,6 +514,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                               .map((emoji) => (
                                 <Button
                                   variant="ghost"
+                                  size={null}
                                   key={emoji.id}
                                   onPress={() => handleCustomEmojiClick(emoji)}
                                   className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -494,7 +523,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                                   <img
                                     src={getProxiedImageUrl(emoji.url) || ""}
                                     alt={`:${emoji.name}:`}
-                                    className="w-5 h-5 object-contain"
+                                    className="w-7 h-7 object-contain"
                                     loading="lazy"
                                   />
                                 </Button>
@@ -516,6 +545,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                               .map((emoji, index) => (
                                 <Button
                                   variant="ghost"
+                                  size={null}
                                   key={`${emoji}-${index}`}
                                   onPress={() => handleEmojiClick(emoji)}
                                   className="text-xl p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -561,6 +591,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                           onEmojiClick={handleCustomEmojiClick}
                           visibleCount={getVisibleCount("custom")}
                           hasMore={getVisibleCount("custom") < customEmojis.length}
+                          onLoadMore={() => loadMore("custom", customEmojis.length)}
                         />
                       )}
 
@@ -591,6 +622,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                               onEmojiClick={handleCustomEmojiClick}
                               visibleCount={getVisibleCount(categoryKey)}
                               hasMore={getVisibleCount(categoryKey) < catEmojis.length}
+                              onLoadMore={() => loadMore(categoryKey, catEmojis.length)}
                             />
                           );
                         })}
@@ -605,6 +637,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                           onEmojiClick={handleEmojiClick}
                           visibleCount={getVisibleCount("recent")}
                           hasMore={getVisibleCount("recent") < recentEmojis.length}
+                          onLoadMore={() => loadMore("recent", recentEmojis.length)}
                         />
                       )}
 
@@ -622,6 +655,9 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                             visibleCount={getVisibleCount(category)}
                             hasMore={
                               getVisibleCount(category) < EMOJI_CATEGORIES[category].emojis.length
+                            }
+                            onLoadMore={() =>
+                              loadMore(category, EMOJI_CATEGORIES[category].emojis.length)
                             }
                           />
                         ))}

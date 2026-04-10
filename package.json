@@ -1,6 +1,6 @@
 {
   "name": "rox",
-  "version": "2026.4.0",
+  "version": "2026.4.1",
   "license": "AGPL-3.0-only",
   "devDependencies": {
     "@playwright/test": "^1.59.1",
@@ -10,10 +10,6 @@
     "typedoc": "^0.28.18",
     "typescript": "^5.9.3",
     "vite-plus": "^0.1.15"
-  },
-  "overrides": {
-    "vite": "^8.0.0",
-    "@vitejs/plugin-react": "^6.0.0"
   },
   "description": "Lightweight ActivityPub server & client with Misskey API compatibility",
   "engines": {
@@ -55,5 +51,8 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "waku": "^1.0.0-alpha.7"
+  }
 }

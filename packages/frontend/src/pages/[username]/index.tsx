@@ -55,8 +55,8 @@ export default async function UserPage({ username: usernameParam }: PageProps<"/
     user = await import("../../lib/api/users").then((m) =>
       m.usersApi.getByUsername(username, host),
     );
-  } catch (error) {
-    console.error("[SSR] Failed to fetch user for OGP:", error);
+  } catch {
+    // User not found or fetch failed — continue with fallback OGP tags
   }
 
   // Generate OGP meta tags if user data is available

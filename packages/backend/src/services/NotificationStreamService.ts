@@ -70,6 +70,8 @@ export class NotificationStreamService {
 
   /**
    * Get singleton instance
+   *
+   * @returns The shared NotificationStreamService instance
    */
   static getInstance(): NotificationStreamService {
     if (!NotificationStreamService.instance) {
@@ -151,6 +153,8 @@ export class NotificationStreamService {
 
   /**
    * Get total number of active connections
+   *
+   * @returns Sum of all user connection counts
    */
   getTotalConnections(): number {
     let total = 0;
@@ -212,7 +216,11 @@ export class NotificationStreamService {
   }
 }
 
-// Export singleton getter
+/**
+ * Get the singleton NotificationStreamService instance.
+ *
+ * @returns The shared NotificationStreamService instance
+ */
 export function getNotificationStreamService(): NotificationStreamService {
   return NotificationStreamService.getInstance();
 }

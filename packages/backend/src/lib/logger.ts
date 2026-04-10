@@ -70,13 +70,13 @@ function createLoggerConfig(config: LoggerConfig = {}): pino.LoggerOptions {
  */
 function createTransport(config: LoggerConfig = {}): pino.TransportSingleOptions | undefined {
   const isProduction = process.env.NODE_ENV === "production";
-  const pretty = config.pretty ?? !isProduction;
+  const pretty = config.pretty ?? true;
 
   if (pretty) {
     return {
       target: "pino-pretty",
       options: {
-        colorize: true,
+        colorize: !isProduction,
         translateTime: "SYS:standard",
         ignore: "pid,hostname,env",
       },

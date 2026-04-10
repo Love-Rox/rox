@@ -1,5 +1,6 @@
 import type { ID, Timestamps, Visibility } from "./common.js";
 
+/** A note (post) created by a user, supporting content warnings, visibility, and soft deletion. */
 export interface Note extends Timestamps {
   id: ID;
   userId: ID;
@@ -24,6 +25,7 @@ export interface Note extends Timestamps {
   deletionReason: string | null;
 }
 
+/** A note with eagerly loaded relations such as author, files, and reactions. */
 export interface NoteWithRelations extends Note {
   user?: {
     id: ID;

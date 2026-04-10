@@ -9,6 +9,7 @@ export interface ProfileEmoji {
   url: string;
 }
 
+/** A local or remote user account with authentication, ActivityPub, and profile fields. */
 export interface User extends Timestamps {
   id: ID;
   username: string;
@@ -56,6 +57,7 @@ export interface User extends Timestamps {
   followingCount: number;
 }
 
+/** Public-facing user profile with a subset of fields safe for display. */
 export interface UserProfile {
   id: ID;
   username: string;
@@ -67,6 +69,7 @@ export interface UserProfile {
   createdAt: Date;
 }
 
+/** A follow relationship between two users. */
 export interface Follow extends Timestamps {
   id: ID;
   followerId: ID;

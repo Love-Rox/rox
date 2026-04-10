@@ -34,12 +34,18 @@ export interface SearchUsersOptions {
 
 export interface IUserRepository {
   /**
-   * ユーザーを作成
+   * Create a new user.
+   *
+   * @param user - User data excluding auto-generated timestamps
+   * @returns Created user record
    */
   create(user: Omit<User, "createdAt" | "updatedAt">): Promise<User>;
 
   /**
-   * IDでユーザーを取得
+   * Find a user by their ID.
+   *
+   * @param id - User ID
+   * @returns User if found, null otherwise
    */
   findById(id: string): Promise<User | null>;
 
@@ -52,14 +58,19 @@ export interface IUserRepository {
   findAll(options?: ListUsersOptions): Promise<User[]>;
 
   /**
-   * ユーザー名でユーザーを取得
-   * @param username ユーザー名
-   * @param host ホスト名（nullの場合はローカルユーザー）
+   * Find a user by username and host.
+   *
+   * @param username - Username to search for
+   * @param host - Host domain (null for local users)
+   * @returns User if found, null otherwise
    */
   findByUsername(username: string, host?: string | null): Promise<User | null>;
 
   /**
-   * メールアドレスでユーザーを取得
+   * Find a user by email address.
+   *
+   * @param email - Email address to search for
+   * @returns User if found, null otherwise
    */
   findByEmail(email: string): Promise<User | null>;
 
@@ -75,23 +86,33 @@ export interface IUserRepository {
   findByUri(uri: string): Promise<User | null>;
 
   /**
-   * ユーザー情報を更新
+   * Update a user's data.
+   *
+   * @param id - User ID
+   * @param data - Partial user data to update
+   * @returns Updated user record
    */
   update(id: string, data: Partial<Omit<User, "id" | "createdAt">>): Promise<User>;
 
   /**
-   * ユーザーを削除
+   * Delete a user by ID.
+   *
+   * @param id - User ID
    */
   delete(id: string): Promise<void>;
 
   /**
-   * ユーザー数を取得
-   * @param localOnly ローカルユーザーのみをカウントする場合はtrue
+   * Get the total number of users.
+   *
+   * @param localOnly - If true, count only local users
+   * @returns Total user count
    */
   count(localOnly?: boolean): Promise<number>;
 
   /**
-   * リモートユーザー数を取得
+   * Get the total number of remote users.
+   *
+   * @returns Remote user count
    */
   countRemote(): Promise<number>;
 
