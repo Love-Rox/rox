@@ -30,9 +30,8 @@ export default async function NoteDetailPage({ noteId }: PageProps<"/notes/[note
     if (note?.user?.id) {
       user = await usersApi.getById(note.user.id);
     }
-  } catch (error) {
-    console.error("[SSR] Failed to fetch note for OGP:", error);
-    // Continue without fetched data - OGP will use fallback values
+  } catch {
+    // Note not found or fetch failed — continue with fallback OGP tags
   }
 
   // Generate OGP meta tags if note data is available
