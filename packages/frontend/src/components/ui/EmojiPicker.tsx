@@ -126,6 +126,7 @@ function AccordionSection({
               {displayedEmojis.map((emoji, index) => (
                 <Button
                   variant="ghost"
+                  size={null}
                   key={`${emoji}-${index}`}
                   onPress={() => onEmojiClick(emoji)}
                   className="text-xl p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -206,6 +207,7 @@ function CustomAccordionSection({
               {displayedEmojis.map((emoji) => (
                 <Button
                   variant="ghost"
+                  size={null}
                   key={emoji.id}
                   onPress={() => onEmojiClick(emoji)}
                   className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -214,7 +216,7 @@ function CustomAccordionSection({
                   <img
                     src={getProxiedImageUrl(emoji.url) || ""}
                     alt={`:${emoji.name}:`}
-                    className="w-5 h-5 object-contain"
+                    className="w-7 h-7 object-contain"
                     loading="lazy"
                   />
                 </Button>
@@ -486,6 +488,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                               .map((emoji) => (
                                 <Button
                                   variant="ghost"
+                                  size={null}
                                   key={emoji.id}
                                   onPress={() => handleCustomEmojiClick(emoji)}
                                   className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -494,7 +497,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                                   <img
                                     src={getProxiedImageUrl(emoji.url) || ""}
                                     alt={`:${emoji.name}:`}
-                                    className="w-5 h-5 object-contain"
+                                    className="w-7 h-7 object-contain"
                                     loading="lazy"
                                   />
                                 </Button>
@@ -516,6 +519,7 @@ export function EmojiPicker({ onEmojiSelect, trigger, isDisabled }: EmojiPickerP
                               .map((emoji, index) => (
                                 <Button
                                   variant="ghost"
+                                  size={null}
                                   key={`${emoji}-${index}`}
                                   onPress={() => handleEmojiClick(emoji)}
                                   className="text-xl p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
