@@ -10,14 +10,6 @@ import type { INotificationRepository } from "../../interfaces/repositories/INot
 import type { IUserRepository } from "../../interfaces/repositories/IUserRepository.js";
 import type { Notification, NotificationType } from "../../db/schema/pg.js";
 
-// Mock the NotificationStreamService module
-mock.module("../../services/NotificationStreamService.js", () => ({
-  getNotificationStreamService: () => ({
-    pushNotification: () => {},
-    pushUnreadCount: () => {},
-  }),
-}));
-
 describe("NotificationService", () => {
   let notificationService: NotificationService;
   let mockNotificationRepository: INotificationRepository;
