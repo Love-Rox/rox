@@ -34,6 +34,10 @@ export default defineConfig({
       /** Suppress chunk size warnings (500kB -> 1MB threshold) */
       chunkSizeWarningLimit: 1000,
       rolldownOptions: {
+        /** Suppress plugin timing warnings (all listed plugins are required framework plugins) */
+        checks: {
+          pluginTimings: false,
+        },
         output: {
           /** Manual chunk splitting for better caching (Rolldown requires function form) */
           manualChunks: (id: string) => {
