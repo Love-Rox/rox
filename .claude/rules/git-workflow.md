@@ -18,7 +18,8 @@ feature/* ──PR──> dev ──PR──> main (release only)
 ### 2. PRs always target `dev`
 - All feature branch PRs merge into `dev`
 - Wait for CI to pass before merging
-- Delete the feature branch after merge
+- After merge, delete the feature branch (use `gh pr merge --delete-branch` or delete manually)
+- Also delete the local branch: `git checkout dev && git pull && git branch -d <branch>`
 
 ### 3. Releases merge `dev` into `main`
 - Only create a `dev` → `main` PR for stable version releases
