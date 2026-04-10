@@ -212,7 +212,11 @@ export class NotificationStreamService {
   }
 }
 
-// Export singleton getter
+/**
+ * Get the singleton NotificationStreamService instance.
+ *
+ * @returns The shared NotificationStreamService instance
+ */
 export function getNotificationStreamService(): NotificationStreamService {
   return NotificationStreamService.getInstance();
 }

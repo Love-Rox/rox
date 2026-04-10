@@ -68,7 +68,10 @@ export interface EmojiPickerProps {
 }
 
 /**
- * Sentinel element that triggers a callback when it becomes visible
+ * Sentinel element that triggers a callback when it becomes visible.
+ * Uses IntersectionObserver to detect when the element enters the viewport.
+ *
+ * @param onLoadMore - Callback invoked when the sentinel becomes visible
  */
 function LoadMoreSentinel({ onLoadMore }: { onLoadMore: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
