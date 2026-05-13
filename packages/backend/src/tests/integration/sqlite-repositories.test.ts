@@ -390,8 +390,8 @@ describe("SQLite Repository Integration Tests", () => {
     });
 
     beforeEach(() => {
-      // Clean up notes table before each test
-      sqlite.exec(`DELETE FROM notes WHERE user_id != '${testUserId}'`);
+      // Clean up notes table before each test to ensure isolation.
+      sqlite.exec("DELETE FROM notes");
     });
 
     test("should create a note", async () => {
