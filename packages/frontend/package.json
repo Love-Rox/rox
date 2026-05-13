@@ -19,7 +19,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@lingui/core": "^5.9.5",
-    "@lingui/message-utils": "^5.9.5",
+    "@lingui/message-utils": "^6.0.1",
     "@lingui/react": "^5.9.5",
     "@rolldown/plugin-babel": "^0.2.3",
     "@simplewebauthn/browser": "^13.3.0",
