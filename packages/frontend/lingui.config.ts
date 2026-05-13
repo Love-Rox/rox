@@ -1,4 +1,5 @@
 import { defineConfig } from "@lingui/cli";
+import { formatter } from "@lingui/format-po";
 
 export default defineConfig({
   locales: ["en", "ja"],
@@ -10,6 +11,6 @@ export default defineConfig({
       exclude: ["**/node_modules/**", "**/entries.tsx"],
     },
   ],
-  format: "po",
+  format: formatter(),
   compileNamespace: "ts",
 });
