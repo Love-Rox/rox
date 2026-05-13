@@ -7,7 +7,7 @@
 
 import webpush from "web-push";
 import { eq, and } from "drizzle-orm";
-import { generateId } from "../../../shared/src/utils/id.js";
+import { generateId } from "shared";
 import { logger } from "../lib/logger.js";
 import type { Database } from "../db/index.js";
 import type { PushSubscription, NewPushSubscription, NotificationType } from "../db/schema/pg.js";

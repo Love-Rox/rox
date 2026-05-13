@@ -7,8 +7,7 @@
  * @module plugins/utils
  */
 
-import type { User } from "../../../shared/src/types/user.js";
-import type { Note } from "../../../shared/src/types/note.js";
+import type { User, Note } from "shared";
 import type { PluginUser, PluginNote } from "./types.js";
 
 /**

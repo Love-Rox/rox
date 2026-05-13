@@ -6,7 +6,7 @@
 
 import { describe, test, expect, mock, beforeEach } from "bun:test";
 import type { IFollowRepository } from "../../interfaces/repositories/IFollowRepository.js";
-import type { Follow } from "../../../../shared/src/types/user.js";
+import type { Follow } from "shared";
 
 describe("FollowRepository", () => {
   // Mock follow data

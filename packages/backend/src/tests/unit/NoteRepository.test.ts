@@ -10,7 +10,7 @@ import type {
   NoteCreateInput,
   TimelineOptions,
 } from "../../interfaces/repositories/INoteRepository.js";
-import type { Note } from "../../../../shared/src/types/note.js";
+import type { Note } from "shared";
 
 describe("NoteRepository", () => {
   // Mock note data (matches actual Note type from shared/types/note.ts)

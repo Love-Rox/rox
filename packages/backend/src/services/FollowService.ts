@@ -9,8 +9,7 @@
 
 import type { IFollowRepository } from "../interfaces/repositories/IFollowRepository.js";
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
-import type { Follow } from "../../../shared/src/types/user.js";
-import { generateId } from "../../../shared/src/utils/id.js";
+import { type Follow, generateId } from "shared";
 import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
 import type { NotificationService } from "./NotificationService.js";
 import { logger } from "../lib/logger.js";

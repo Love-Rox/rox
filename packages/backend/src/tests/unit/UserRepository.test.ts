@@ -10,7 +10,7 @@ import type {
   ListUsersOptions,
   SearchUsersOptions,
 } from "../../interfaces/repositories/IUserRepository.js";
-import type { User } from "../../../../shared/src/types/user.js";
+import type { User } from "shared";
 
 describe("UserRepository", () => {
   // Mock user data (matches actual User type from shared/types/user.ts)
