@@ -6,7 +6,8 @@ import {
   type SearchFieldProps as AriaSearchFieldProps,
 } from "react-aria-components";
 import { Search, X } from "lucide-react";
-import { t, Trans } from "@lingui/macro";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 
 /**
  * Size-based styling configuration for SearchField
