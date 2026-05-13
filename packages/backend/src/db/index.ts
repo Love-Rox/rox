@@ -140,7 +140,7 @@ export function createDatabase(): Database {
  * };
  * ```
  */
-export function createD1Database(d1Binding: D1Database): D1DatabaseInstance {
+export function createD1Database(d1Binding: D1Database) {
   // Dynamic import to avoid loading d1 driver in non-Workers environment
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { drizzle: drizzleD1 } = require("drizzle-orm/d1");
@@ -179,8 +179,12 @@ interface D1ExecResult {
 
 /**
  * D1 Database Instance Type
+ *
+ * Inferred from the drizzle-orm/d1 driver return type to keep the public
+ * type in sync with what `createD1Database` actually produces (rather than
+ * the bun:sqlite type, which is a different driver).
  */
-export type D1DatabaseInstance = BunSQLiteDatabase<typeof sqliteSchema>;
+export type D1DatabaseInstance = ReturnType<typeof createD1Database>;
 
 /**
  * Drizzle ORM Database Instance Type

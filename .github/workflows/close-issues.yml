@@ -31,6 +31,18 @@ jobs:
 
             for (const issueNumber of issueNumbers) {
               try {
+                // PRs are also issues in GitHub's data model. Skip them so we
+                // don't accidentally close a PR referenced via "Closes #N".
+                const target = await github.rest.issues.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                });
+                if (target.data.pull_request) {
+                  console.log(`Skipping #${issueNumber}: target is a pull request, not an issue.`);
+                  continue;
+                }
+
                 await github.rest.issues.update({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
