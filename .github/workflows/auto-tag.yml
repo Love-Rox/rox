@@ -8,17 +8,19 @@ on:
       - "package.json"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   auto-tag:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     outputs:
       tag_created: ${{ steps.create_tag.outputs.created }}
       version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
         with:
           fetch-depth: 0
 
@@ -70,9 +72,11 @@ jobs:
     needs: [auto-tag, call-ci]
     if: needs.auto-tag.outputs.tag_created == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
         with:
           fetch-depth: 0
 
@@ -254,7 +258,7 @@ jobs:
           cat CHANGELOG.md
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
         with:
           tag_name: v${{ needs.auto-tag.outputs.version }}
           name: "Rox ${{ needs.auto-tag.outputs.version }}"
