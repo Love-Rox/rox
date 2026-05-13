@@ -11,8 +11,7 @@ import type { ScheduledNote, ScheduledNoteStatus } from "../db/schema/pg.js";
 import type { IScheduledNoteRepository } from "../interfaces/repositories/IScheduledNoteRepository.js";
 import type { RoleService } from "./RoleService.js";
 import type { NoteService, NoteCreateInput } from "./NoteService.js";
-import { generateId } from "../../../shared/src/utils/id.js";
-import type { Visibility } from "../../../shared/src/types/common.js";
+import { type Visibility, generateId } from "shared";
 
 /**
  * Input for creating a scheduled note

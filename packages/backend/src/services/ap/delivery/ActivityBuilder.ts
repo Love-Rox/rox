@@ -7,8 +7,7 @@
  * @module services/ap/delivery/ActivityBuilder
  */
 
-import type { Note } from "../../../../../shared/src/types/note.js";
-import type { User } from "../../../../../shared/src/types/user.js";
+import type { Note, User } from "shared";
 import { logger } from "../../../lib/logger.js";
 import { textToHtml } from "../../../lib/ogp.js";
 
