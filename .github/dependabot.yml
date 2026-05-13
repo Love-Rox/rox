@@ -1,0 +1,93 @@
+# Dependabot configuration
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # GitHub Actions versions
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+      include: scope
+
+  # npm dependencies - root
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore"
+      include: scope
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  # npm dependencies - backend
+  - package-ecosystem: npm
+    directory: "/packages/backend"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 10
+    labels:
+      - backend
+    commit-message:
+      prefix: "chore"
+      include: scope
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  # npm dependencies - frontend
+  - package-ecosystem: npm
+    directory: "/packages/frontend"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 10
+    labels:
+      - frontend
+    commit-message:
+      prefix: "chore"
+      include: scope
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  # npm dependencies - shared
+  - package-ecosystem: npm
+    directory: "/packages/shared"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Tokyo
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+      include: scope
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch

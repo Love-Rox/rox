@@ -7,13 +7,13 @@
  */
 
 import { eq, and, sql, desc, lt, gt, inArray, isNull } from "drizzle-orm";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import { driveFiles } from "../../db/schema/sqlite.js";
 import type * as sqliteSchema from "../../db/schema/sqlite.js";
 import type { IDriveFileRepository } from "../../interfaces/repositories/IDriveFileRepository.js";
 import type { DriveFile } from "shared";
 
-type SqliteDatabase = BetterSQLite3Database<typeof sqliteSchema>;
+type SqliteDatabase = BunSQLiteDatabase<typeof sqliteSchema>;
 
 /**
  * SQLite implementation of drive file repository

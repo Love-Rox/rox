@@ -7,13 +7,13 @@
  */
 
 import { eq, and, desc, lt, gt, inArray, sql } from "drizzle-orm";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import { notifications, type Notification, type NotificationType } from "../../db/schema/sqlite.js";
 import type * as sqliteSchema from "../../db/schema/sqlite.js";
 import type { INotificationRepository } from "../../interfaces/repositories/INotificationRepository.js";
 import { generateId } from "shared";
 
-type SqliteDatabase = BetterSQLite3Database<typeof sqliteSchema>;
+type SqliteDatabase = BunSQLiteDatabase<typeof sqliteSchema>;
 
 /**
  * SQLite implementation of notification repository

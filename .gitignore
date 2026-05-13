@@ -94,5 +94,9 @@ docker/certs/*-key.pem
 # cipher data
 cipherdata/
 cipher.yml
+
 # Jujutsu
 .jj/
+
+# Playwright MCP snapshots / screenshots (test artifacts)
+.playwright-mcp/

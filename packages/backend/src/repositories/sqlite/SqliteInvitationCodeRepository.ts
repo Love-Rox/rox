@@ -7,13 +7,13 @@
  */
 
 import { eq, sql, desc, and, gt, or, isNull, lt } from "drizzle-orm";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import { invitationCodes, type InvitationCode } from "../../db/schema/sqlite.js";
 import type * as sqliteSchema from "../../db/schema/sqlite.js";
 import type { IInvitationCodeRepository } from "../../interfaces/repositories/IInvitationCodeRepository.js";
 import { generateId } from "shared";
 
-type SqliteDatabase = BetterSQLite3Database<typeof sqliteSchema>;
+type SqliteDatabase = BunSQLiteDatabase<typeof sqliteSchema>;
 
 /**
  * SQLite implementation of Invitation Code Repository

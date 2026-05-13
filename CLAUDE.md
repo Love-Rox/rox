@@ -129,6 +129,10 @@ For detailed guidelines, see `.claude/rules/`:
 | `mcp-servers.md` | MCP server usage |
 | `discord-logger.md` | Discord conversation logging |
 
+## Development Workflow
+
+See `.claude/workflows/github-workflow.md` for the complete issue-driven development and release workflow.
+
 ## Historical Documentation
 
 - `docs/implementation/` - Phase-by-phase implementation records

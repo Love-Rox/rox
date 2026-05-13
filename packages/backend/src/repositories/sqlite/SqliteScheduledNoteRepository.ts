@@ -7,7 +7,7 @@
  */
 
 import { eq, and, desc, lt, sql } from "drizzle-orm";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import {
   scheduledNotes,
   type ScheduledNote,
@@ -17,7 +17,7 @@ import {
 import type * as sqliteSchema from "../../db/schema/sqlite.js";
 import type { IScheduledNoteRepository } from "../../interfaces/repositories/IScheduledNoteRepository.js";
 
-type SqliteDatabase = BetterSQLite3Database<typeof sqliteSchema>;
+type SqliteDatabase = BunSQLiteDatabase<typeof sqliteSchema>;
 
 /**
  * SQLite implementation of scheduled note repository

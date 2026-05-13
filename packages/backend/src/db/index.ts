@@ -9,13 +9,18 @@
 
 import { drizzle as drizzlePg, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { drizzle as drizzleMysql } from "drizzle-orm/mysql2";
-import { drizzle as drizzleSqlite, type BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import { drizzle as drizzleSqlite, type BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import { Pool } from "pg";
 import mysql from "mysql2/promise";
-import BetterSqlite3 from "better-sqlite3";
+import { Database as BunSqlite } from "bun:sqlite";
 import * as pgSchema from "./schema/pg.js";
 import * as mysqlSchema from "./schema/mysql.js";
 import * as sqliteSchema from "./schema/sqlite.js";
+
+/**
+ * SQLite Drizzle database instance type (shared by all SQLite repositories).
+ */
+export type SqliteDatabase = BunSQLiteDatabase<typeof sqliteSchema>;
 
 /**
  * Supported Database Types
@@ -92,9 +97,9 @@ export function createDatabase(): Database {
       }
       // Remove sqlite:// prefix if present
       const dbPath = databaseUrl.replace(/^sqlite:\/\//, "");
-      const sqlite = new BetterSqlite3(dbPath);
+      const sqlite = new BunSqlite(dbPath);
       // Enable WAL mode for better concurrent access
-      sqlite.pragma("journal_mode = WAL");
+      sqlite.exec("PRAGMA journal_mode = WAL");
       return drizzleSqlite(sqlite, { schema: sqliteSchema }) as unknown as Database;
     }
 
@@ -135,7 +140,7 @@ export function createDatabase(): Database {
  * };
  * ```
  */
-export function createD1Database(d1Binding: D1Database): D1DatabaseInstance {
+export function createD1Database(d1Binding: D1Database) {
   // Dynamic import to avoid loading d1 driver in non-Workers environment
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { drizzle: drizzleD1 } = require("drizzle-orm/d1");
@@ -174,8 +179,12 @@ interface D1ExecResult {
 
 /**
  * D1 Database Instance Type
+ *
+ * Inferred from the drizzle-orm/d1 driver return type to keep the public
+ * type in sync with what `createD1Database` actually produces (rather than
+ * the bun:sqlite type, which is a different driver).
  */
-export type D1DatabaseInstance = BetterSQLite3Database<typeof sqliteSchema>;
+export type D1DatabaseInstance = ReturnType<typeof createD1Database>;
 
 /**
  * Drizzle ORM Database Instance Type
