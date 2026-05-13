@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: sync-dev-with-main
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
