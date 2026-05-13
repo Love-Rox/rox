@@ -106,16 +106,11 @@ jobs:
         with:
           bun-version: ${{ env.BUN_VERSION }}
 
-      - name: Setup Node.js (for native module compatibility)
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.0.0
-        with:
-          node-version: "24"
-
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
       - name: Run SQLite integration tests
-        run: bunx vitest run src/tests/node/sqlite-repositories.test.ts
+        run: bun test src/tests/integration/sqlite-repositories.test.ts
         working-directory: packages/backend
         env:
           DB_TYPE: sqlite

@@ -7,7 +7,7 @@
  */
 
 import { eq, and, desc, lt, gt, inArray, isNull, sql, or } from "drizzle-orm";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import { notes, users } from "../../db/schema/sqlite.js";
 import type * as sqliteSchema from "../../db/schema/sqlite.js";
 import type {
@@ -17,7 +17,7 @@ import type {
 } from "../../interfaces/repositories/INoteRepository.js";
 import type { Note } from "shared";
 
-type SqliteDatabase = BetterSQLite3Database<typeof sqliteSchema>;
+type SqliteDatabase = BunSQLiteDatabase<typeof sqliteSchema>;
 
 /**
  * SQLite implementation of note repository

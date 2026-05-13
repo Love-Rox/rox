@@ -7,13 +7,13 @@
  */
 
 import { eq, lt, sql } from "drizzle-orm";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import { sessions } from "../../db/schema/sqlite.js";
 import type * as sqliteSchema from "../../db/schema/sqlite.js";
 import type { ISessionRepository } from "../../interfaces/repositories/ISessionRepository.js";
 import type { Session } from "shared";
 
-type SqliteDatabase = BetterSQLite3Database<typeof sqliteSchema>;
+type SqliteDatabase = BunSQLiteDatabase<typeof sqliteSchema>;
 
 /**
  * SQLite implementation of session repository
