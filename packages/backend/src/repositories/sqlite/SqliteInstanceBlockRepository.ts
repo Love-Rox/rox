@@ -7,13 +7,13 @@
  */
 
 import { eq, sql, desc } from "drizzle-orm";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import { instanceBlocks, type InstanceBlock } from "../../db/schema/sqlite.js";
 import type * as sqliteSchema from "../../db/schema/sqlite.js";
 import type { IInstanceBlockRepository } from "../../interfaces/repositories/IInstanceBlockRepository.js";
 import { generateId } from "shared";
 
-type SqliteDatabase = BetterSQLite3Database<typeof sqliteSchema>;
+type SqliteDatabase = BunSQLiteDatabase<typeof sqliteSchema>;
 
 /**
  * SQLite implementation of Instance Block Repository

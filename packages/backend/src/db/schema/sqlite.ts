@@ -1,7 +1,7 @@
 /**
  * SQLite/D1 Database Schema
  *
- * This schema is designed to work with both local SQLite (via better-sqlite3)
+ * This schema is designed to work with both local SQLite (via bun:sqlite)
  * and Cloudflare D1 (via drizzle-orm/d1).
  *
  * Key differences from PostgreSQL:

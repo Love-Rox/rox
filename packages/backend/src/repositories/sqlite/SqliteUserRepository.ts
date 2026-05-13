@@ -7,7 +7,7 @@
  */
 
 import { eq, and, isNull, isNotNull, sql, desc, or } from "drizzle-orm";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import { users, type User } from "../../db/schema/sqlite.js";
 import type * as sqliteSchema from "../../db/schema/sqlite.js";
 import type {
@@ -16,7 +16,7 @@ import type {
   SearchUsersOptions,
 } from "../../interfaces/repositories/IUserRepository.js";
 
-type SqliteDatabase = BetterSQLite3Database<typeof sqliteSchema>;
+type SqliteDatabase = BunSQLiteDatabase<typeof sqliteSchema>;
 
 export class SqliteUserRepository implements IUserRepository {
   constructor(private db: SqliteDatabase) {}
@@ -32,7 +32,7 @@ export class SqliteUserRepository implements IUserRepository {
       })
       .run();
 
-    // SQLite with better-sqlite3 is synchronous, fetch the inserted record
+    // bun:sqlite is synchronous, fetch the inserted record
     const [result] = this.db.select().from(users).where(eq(users.id, user.id)).limit(1).all();
 
     if (!result) {

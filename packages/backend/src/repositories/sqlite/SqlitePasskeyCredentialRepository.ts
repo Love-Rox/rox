@@ -7,7 +7,7 @@
  */
 
 import { eq, sql } from "drizzle-orm";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import {
   passkeyCredentials,
   type PasskeyCredential,
@@ -16,7 +16,7 @@ import {
 import type * as sqliteSchema from "../../db/schema/sqlite.js";
 import type { IPasskeyCredentialRepository } from "../../interfaces/repositories/IPasskeyCredentialRepository.js";
 
-type SqliteDatabase = BetterSQLite3Database<typeof sqliteSchema>;
+type SqliteDatabase = BunSQLiteDatabase<typeof sqliteSchema>;
 
 /**
  * SQLite implementation of Passkey Credential Repository

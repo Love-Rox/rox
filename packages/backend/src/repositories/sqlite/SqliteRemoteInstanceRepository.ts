@@ -7,13 +7,13 @@
  */
 
 import { eq, lt, inArray, sql } from "drizzle-orm";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import { remoteInstances } from "../../db/schema/sqlite.js";
 import type * as sqliteSchema from "../../db/schema/sqlite.js";
 import type { IRemoteInstanceRepository } from "../../interfaces/repositories/IRemoteInstanceRepository.js";
 import type { RemoteInstance } from "shared";
 
-type SqliteDatabase = BetterSQLite3Database<typeof sqliteSchema>;
+type SqliteDatabase = BunSQLiteDatabase<typeof sqliteSchema>;
 
 export class SqliteRemoteInstanceRepository implements IRemoteInstanceRepository {
   constructor(private db: SqliteDatabase) {}

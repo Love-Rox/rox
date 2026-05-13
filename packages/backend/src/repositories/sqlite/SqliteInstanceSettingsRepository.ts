@@ -7,7 +7,7 @@
  */
 
 import { eq, inArray } from "drizzle-orm";
-import type { BetterSQLite3Database } from "drizzle-orm/better-sqlite3";
+import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import { instanceSettings, type InstanceSetting } from "../../db/schema/sqlite.js";
 import type * as sqliteSchema from "../../db/schema/sqlite.js";
 import type {
@@ -15,7 +15,7 @@ import type {
   InstanceSettingKey,
 } from "../../interfaces/repositories/IInstanceSettingsRepository.js";
 
-type SqliteDatabase = BetterSQLite3Database<typeof sqliteSchema>;
+type SqliteDatabase = BunSQLiteDatabase<typeof sqliteSchema>;
 
 /**
  * SQLite implementation of Instance Settings Repository
