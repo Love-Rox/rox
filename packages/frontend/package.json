@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@lingui/babel-plugin-lingui-macro": "^5.9.5",
-    "@lingui/cli": "^5.9.5",
+    "@lingui/cli": "^6.0.1",
     "@lingui/macro": "^5.9.5",
     "@lingui/vite-plugin": "^5.9.5",
     "@storybook/addon-a11y": "^10.3.6",
