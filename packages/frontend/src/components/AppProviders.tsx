@@ -15,6 +15,9 @@ import { tokenAtom } from "../lib/atoms/auth";
 import { apiClient } from "../lib/api/client";
 import type { ThemeSettings } from "../lib/types/instance";
 import { recordNavigation } from "../hooks/useNavigationHistory";
+// `lib/sentry` calls `initSentry()` at module load time (browser-only) so
+// error boundaries firing during the first render can still report.
+import { captureException } from "../lib/sentry";
 
 /**
  * Check if an error message indicates a portal cleanup error.
@@ -51,7 +54,13 @@ class GlobalErrorBoundary extends Component<{ children: ReactNode }, { hasError:
       console.warn("Portal cleanup error detected, attempting recovery...");
       this.setState({ hasError: false });
     } else {
-      // Rethrow non-portal errors to propagate to higher-level handlers
+      // Capture explicitly first — React 19's rethrow only propagates to
+      // window.onerror while this stays the outermost boundary. A wrapper
+      // boundary added later would silently swallow it. Sentry's
+      // dedupeIntegration handles any duplicate from globalHandlers.
+      captureException(error, { tags: { source: "GlobalErrorBoundary" } });
+      // Rethrow so React unmounts the broken subtree (preserves the original
+      // behavior of this boundary).
       throw error;
     }
   }

@@ -166,15 +166,25 @@ GET /health/ready    → { status: 'ok'|'degraded'|'unhealthy', checks: { databa
 
 ---
 
-### 2.3 Error Tracking (Medium Priority)
+### 2.3 Error Tracking (Medium Priority) ✅ COMPLETE
 
 **Tasks:**
-- [ ] Integrate error tracking (Sentry recommended)
-- [ ] Add breadcrumbs for debugging
+- [x] Integrate error tracking (Sentry)
+- [x] Add breadcrumbs for debugging
 - [ ] Configure source maps for production builds
 - [ ] Set up alert rules for critical errors
 
-**Estimated Impact:** Faster incident response
+**Implementation:**
+- Backend: `@sentry/bun` initialized in `packages/backend/src/index.ts` before other imports. Errors are captured in the `errorHandler` middleware and flushed during graceful shutdown.
+- Frontend: `@sentry/react` initialized in `AppProviders` (client). Both the explicit `ErrorBoundary` and the `GlobalErrorBoundary` forward caught errors via `captureException`.
+- When `SENTRY_DSN` / `VITE_SENTRY_DSN` is unset, the integration is a complete no-op so self-hosted operators are not forced to use Sentry.
+- Configurable via `SENTRY_ENVIRONMENT`, `SENTRY_TRACES_SAMPLE_RATE`, `SENTRY_RELEASE` (and their `VITE_*` counterparts). See `.env.example`.
+
+**Remaining work (tracked separately):**
+- Source map upload during CI for the frontend build
+- Sentry alert/notification rules (Sentry-side configuration)
+
+**Estimated Impact:** Faster incident response ✅ Achieved
 
 ---
 
@@ -449,9 +459,9 @@ GET /health/ready    → { status: 'ok'|'degraded'|'unhealthy', checks: { databa
     - Environment variables reference
     - Troubleshooting guide
 
-12. **Error Tracking** (2.3) - Deferred
-    - Requires Sentry account setup
-    - Can be added post-launch
+12. **Error Tracking** (2.3) ✅
+    - Sentry integration for backend (`@sentry/bun`) and frontend (`@sentry/react`)
+    - No-op when DSN is unset; source map upload tracked separately
 
 ---
 

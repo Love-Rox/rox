@@ -9,6 +9,7 @@
 
 import type { ScheduledNoteService } from "./ScheduledNoteService.js";
 import { createLogger } from "../lib/logger.js";
+import { withMonitor } from "../lib/sentry.js";
 
 const logger = createLogger({ name: "ScheduledNotePublisher" });
 
@@ -85,16 +86,32 @@ export class ScheduledNotePublisher {
     );
 
     // Run immediately on start
-    this.processScheduledNotes().catch((error) => {
+    this.runMonitored().catch((error) => {
       logger.error({ err: error }, "Initial scheduled note processing failed");
     });
 
     // Schedule periodic processing
     this.intervalId = setInterval(() => {
-      this.processScheduledNotes().catch((error) => {
+      this.runMonitored().catch((error) => {
         logger.error({ err: error }, "Scheduled note processing failed");
       });
     }, this.config.intervalMs);
+  }
+
+  /**
+   * Run one processing pass wrapped in a Sentry cron check-in (no-op when
+   * Sentry is disabled). Sentry's interval-based monitors have a minimum
+   * granularity of 1 minute; the publisher fires more frequently than that,
+   * which is harmless — Sentry just sees multiple check-ins per window.
+   *
+   * @private
+   */
+  private runMonitored(): Promise<number> {
+    return withMonitor(
+      "rox-scheduled-note-publisher",
+      () => this.processScheduledNotes(),
+      { type: "interval", value: 1, unit: "minute" },
+    );
   }
 
   /**
