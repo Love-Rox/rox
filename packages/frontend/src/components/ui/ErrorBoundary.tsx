@@ -55,10 +55,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     // Log error to console for debugging
     console.error("ErrorBoundary caught an error:", error, errorInfo);
 
-    // Report to Sentry (no-op when DSN is unset)
+    // Report to Sentry (no-op when DSN is unset). This boundary does NOT
+    // rethrow, so globalHandlersIntegration won't see the error — explicit
+    // capture is required.
     captureException(error, {
-      source: "ErrorBoundary",
-      componentStack: errorInfo.componentStack,
+      tags: { source: "ErrorBoundary" },
+      extras: { componentStack: errorInfo.componentStack },
     });
 
     // Call optional error callback

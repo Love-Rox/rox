@@ -12,6 +12,19 @@ import * as Sentry from "@sentry/react";
 let initialized = false;
 
 /**
+ * Optional context attached to a captured exception.
+ *
+ * Kept structurally identical to the backend helper so the same call shape
+ * works in both environments.
+ */
+export interface CaptureContext {
+  /** Indexed tags (low cardinality, suitable for filtering in Sentry UI). */
+  tags?: Record<string, string>;
+  /** Free-form extras (high cardinality OK, not indexed for search). */
+  extras?: Record<string, unknown>;
+}
+
+/**
  * Initialize Sentry from Vite env. Safe to call multiple times.
  *
  * Reads:
@@ -48,13 +61,18 @@ export function initSentry(): void {
  * Capture an exception in Sentry. No-op when Sentry is not initialized.
  *
  * @param error - The error to capture
- * @param context - Optional extras merged into the event
+ * @param context - Optional tags (indexed) and extras (free-form) for the event
  */
-export function captureException(error: unknown, context?: Record<string, unknown>): void {
+export function captureException(error: unknown, context?: CaptureContext): void {
   if (!initialized) return;
   Sentry.withScope((scope) => {
-    if (context) {
-      for (const [key, value] of Object.entries(context)) {
+    if (context?.tags) {
+      for (const [key, value] of Object.entries(context.tags)) {
+        scope.setTag(key, value);
+      }
+    }
+    if (context?.extras) {
+      for (const [key, value] of Object.entries(context.extras)) {
         scope.setExtra(key, value);
       }
     }
@@ -69,6 +87,14 @@ export function isSentryEnabled(): boolean {
   return initialized;
 }
 
+/**
+ * Parse the `VITE_SENTRY_TRACES_SAMPLE_RATE` env var into a value Sentry accepts.
+ *
+ * Returns `0` for unset / non-numeric input, and clamps to `[0, 1]`.
+ *
+ * @param raw - Raw env var value
+ * @returns Sample rate in `[0, 1]`
+ */
 function parseSampleRate(raw: string | undefined): number {
   if (!raw) return 0;
   const parsed = Number.parseFloat(raw);
@@ -77,3 +103,8 @@ function parseSampleRate(raw: string | undefined): number {
   if (parsed > 1) return 1;
   return parsed;
 }
+
+// Initialize on module load so error boundaries firing during the first
+// render phase (which runs synchronously before any useEffect) can still
+// report. The function short-circuits during SSR (`typeof window`).
+initSentry();

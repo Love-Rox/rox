@@ -11,6 +11,7 @@ import { getDatabase } from "../db/index.js";
 import { receivedActivities } from "../db/schema/pg.js";
 import { lt } from "drizzle-orm";
 import { logger } from "../lib/logger.js";
+import { withMonitor } from "../lib/sentry.js";
 
 /**
  * Cleanup configuration
@@ -80,16 +81,31 @@ export class ReceivedActivitiesCleanupService {
     );
 
     // Run cleanup immediately on start
-    this.cleanup().catch((error) => {
+    this.runMonitored().catch((error) => {
       logger.error({ err: error }, "Initial cleanup failed");
     });
 
     // Schedule periodic cleanup
     this.intervalId = setInterval(() => {
-      this.cleanup().catch((error) => {
+      this.runMonitored().catch((error) => {
         logger.error({ err: error }, "Scheduled cleanup failed");
       });
     }, this.config.intervalMs);
+  }
+
+  /**
+   * Run one cleanup pass wrapped in a Sentry cron check-in (no-op when Sentry
+   * is disabled).
+   *
+   * @private
+   */
+  private runMonitored(): Promise<number> {
+    const intervalMinutes = Math.max(1, Math.round(this.config.intervalMs / 60_000));
+    return withMonitor(
+      "rox-received-activities-cleanup",
+      () => this.cleanup(),
+      { type: "interval", value: intervalMinutes, unit: "minute" },
+    );
   }
 
   /**

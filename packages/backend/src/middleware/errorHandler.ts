@@ -7,6 +7,7 @@
  */
 import type { Context, Next } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { routePath } from "hono/route";
 import { logger } from "../lib/logger.js";
 import { captureException } from "../lib/sentry.js";
 
@@ -41,8 +42,24 @@ export async function errorHandler(c: Context, next: Next) {
 
     // その他のエラーはログに記録して500エラーを返す
     logger.error({ err: error }, "Unhandled error");
+    // `route` is the Hono route template (low cardinality) which makes a
+    // useful tag. The resolved path can have unbounded cardinality (UUIDs,
+    // proxied URLs, ...), so it goes into extras. We deliberately use
+    // `c.req.path` (no query string) — `c.req.url` would leak OAuth `code`,
+    // session tokens, and other secrets that `beforeSend` strips from
+    // `event.request.query_string`.
+    //
+    // `routePath(c)` reads Hono's match result, which may not be populated
+    // when an error fires before routing completes. Fall back gracefully.
+    let route = "<unmatched>";
+    try {
+      route = routePath(c) || route;
+    } catch {
+      // Match result not available yet — leave the placeholder.
+    }
     captureException(error, {
-      tags: { method: c.req.method, path: new URL(c.req.url).pathname },
+      tags: { method: c.req.method, route },
+      extras: { path: c.req.path },
     });
 
     return c.json(

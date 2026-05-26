@@ -1,9 +1,12 @@
+// Initialize Sentry BEFORE any other imports so OpenTelemetry-based
+// auto-instrumentation can hook the modules below as they are loaded.
+// ESM evaluates imports top-down; isolating init in `./instrument.js` keeps
+// this ordering correct (a bare `initSentry()` call after other imports would
+// run too late).
+import "./instrument.js";
+
 // Set process title for top/ps visibility
 process.title = "hono-rox";
-
-// Initialize Sentry as early as possible so subsequent imports can be instrumented.
-import { initSentry, flushSentry } from "./lib/sentry.js";
-initSentry();
 
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -15,6 +18,7 @@ import {
   metricsMiddleware,
 } from "./middleware/index.js";
 import { logger } from "./lib/logger.js";
+import { flushSentry } from "./lib/sentry.js";
 import metricsRoute from "./routes/metrics.js";
 import usersRoute from "./routes/users.js";
 import authRoute from "./routes/auth.js";
@@ -258,8 +262,11 @@ async function gracefulShutdown(signal: string): Promise<void> {
   isShuttingDown = true;
   logger.info({ signal }, "Starting graceful shutdown");
 
-  const shutdownTimeout = setTimeout(() => {
+  const shutdownTimeout = setTimeout(async () => {
     logger.error("Shutdown timeout exceeded, forcing exit");
+    // Best-effort flush with a short budget so we don't extend the deadline
+    // significantly when the rest of shutdown is already stuck.
+    await flushSentry(500);
     process.exit(1);
   }, 30000); // 30 second timeout
 
@@ -293,6 +300,8 @@ async function gracefulShutdown(signal: string): Promise<void> {
     process.exit(0);
   } catch (error) {
     logger.error({ err: error }, "Error during shutdown");
+    // Try to ship the shutdown error itself plus any earlier queued events.
+    await flushSentry();
     clearTimeout(shutdownTimeout);
     process.exit(1);
   }
