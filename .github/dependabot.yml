@@ -1,11 +1,17 @@
 # Dependabot configuration
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+#
+# All updates target the `dev` branch. The project's release flow is
+# `feature → dev → main` (main only receives stable-release PRs), so
+# dependency PRs landing directly on main would break `sync-dev.yml`
+# (which relies on `git merge main --ff-only` from dev).
 
 version: 2
 updates:
   # GitHub Actions versions
   - package-ecosystem: github-actions
     directory: "/"
+    target-branch: dev
     schedule:
       interval: weekly
       day: monday
@@ -19,6 +25,7 @@ updates:
   # npm dependencies - root
   - package-ecosystem: npm
     directory: "/"
+    target-branch: dev
     schedule:
       interval: weekly
       day: monday
@@ -37,6 +44,7 @@ updates:
   # npm dependencies - backend
   - package-ecosystem: npm
     directory: "/packages/backend"
+    target-branch: dev
     schedule:
       interval: weekly
       day: monday
@@ -57,6 +65,7 @@ updates:
   # npm dependencies - frontend
   - package-ecosystem: npm
     directory: "/packages/frontend"
+    target-branch: dev
     schedule:
       interval: weekly
       day: monday
@@ -77,6 +86,7 @@ updates:
   # npm dependencies - shared
   - package-ecosystem: npm
     directory: "/packages/shared"
+    target-branch: dev
     schedule:
       interval: weekly
       day: monday
