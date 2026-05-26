@@ -52,6 +52,25 @@ export function initSentry(): void {
     release: env.VITE_SENTRY_RELEASE as string | undefined,
     tracesSampleRate,
     sendDefaultPii: false,
+    beforeSend(event) {
+      // Drop request bodies, cookies, headers, and query strings to minimize
+      // PII exposure (Authorization headers, session cookies, OAuth `code` /
+      // `state` in query strings, etc.) — mirrors the backend hook.
+      if (event.request) {
+        delete event.request.cookies;
+        delete event.request.data;
+        delete event.request.headers;
+        delete event.request.query_string;
+      }
+      // `sendDefaultPii: false` already suppresses IP/UA, but defensively
+      // drop email / username / ip if a future call site adds them.
+      if (event.user) {
+        delete event.user.email;
+        delete event.user.username;
+        delete event.user.ip_address;
+      }
+      return event;
+    },
   });
 
   initialized = true;
