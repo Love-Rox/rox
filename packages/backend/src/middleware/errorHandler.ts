@@ -8,6 +8,7 @@
 import type { Context, Next } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { logger } from "../lib/logger.js";
+import { captureException } from "../lib/sentry.js";
 
 /**
  * Global Error Handler
@@ -40,6 +41,9 @@ export async function errorHandler(c: Context, next: Next) {
 
     // その他のエラーはログに記録して500エラーを返す
     logger.error({ err: error }, "Unhandled error");
+    captureException(error, {
+      tags: { method: c.req.method, path: new URL(c.req.url).pathname },
+    });
 
     return c.json(
       {

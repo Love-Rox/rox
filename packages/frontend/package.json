@@ -23,6 +23,7 @@
     "@lingui/message-utils": "^6.0.1",
     "@lingui/react": "^6.0.1",
     "@rolldown/plugin-babel": "^0.2.3",
+    "@sentry/react": "^10.54.0",
     "@simplewebauthn/browser": "^13.3.0",
     "@tailwindcss/vite": "^4.2.0",
     "class-variance-authority": "^0.7.1",

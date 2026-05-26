@@ -1,6 +1,10 @@
 // Set process title for top/ps visibility
 process.title = "hono-rox";
 
+// Initialize Sentry as early as possible so subsequent imports can be instrumented.
+import { initSentry, flushSentry } from "./lib/sentry.js";
+initSentry();
+
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import {
@@ -279,6 +283,10 @@ async function gracefulShutdown(signal: string): Promise<void> {
     // Shutdown activity delivery queue (drains pending jobs)
     logger.info("Shutting down activity delivery queue");
     await container.activityDeliveryQueue.shutdown();
+
+    // Flush any pending Sentry events before exiting
+    logger.info("Flushing Sentry events");
+    await flushSentry();
 
     logger.info("Graceful shutdown complete");
     clearTimeout(shutdownTimeout);
