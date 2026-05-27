@@ -4,6 +4,7 @@ import { Component, type ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "./Button";
+import { captureException } from "../../lib/sentry";
 
 /**
  * Props for the ErrorBoundary component
@@ -53,6 +54,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     // Log error to console for debugging
     console.error("ErrorBoundary caught an error:", error, errorInfo);
+
+    // Report to Sentry (no-op when DSN is unset). This boundary does NOT
+    // rethrow, so globalHandlersIntegration won't see the error — explicit
+    // capture is required.
+    captureException(error, {
+      tags: { source: "ErrorBoundary" },
+      extras: { componentStack: errorInfo.componentStack },
+    });
 
     // Call optional error callback
     this.props.onError?.(error, errorInfo);

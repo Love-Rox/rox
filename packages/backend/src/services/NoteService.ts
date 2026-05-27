@@ -13,10 +13,7 @@ import type { IFollowRepository } from "../interfaces/repositories/IFollowReposi
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
 import type { IListRepository } from "../interfaces/repositories/IListRepository.js";
 import type { ICacheService } from "../interfaces/ICacheService.js";
-import type { Note } from "../../../shared/src/types/note.js";
-import type { User } from "../../../shared/src/types/user.js";
-import type { Visibility } from "../../../shared/src/types/common.js";
-import { generateId } from "../../../shared/src/utils/id.js";
+import { type Note, type User, type Visibility, generateId } from "shared";
 import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
 import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.js";
 import type { NotificationService } from "./NotificationService.js";

@@ -1,6 +1,7 @@
 import type { IRemoteInstanceRepository } from "../interfaces/repositories/IRemoteInstanceRepository.js";
 import { logger } from "../lib/logger.js";
 import { fetchInstanceIcon } from "../lib/instance-icon.js";
+import { withMonitor } from "../lib/sentry.js";
 
 /**
  * NodeInfo 2.0/2.1 response structure
@@ -120,16 +121,31 @@ export class RemoteInstanceRefreshService {
     );
 
     // Run refresh immediately on start
-    this.refresh().catch((error) => {
+    this.runMonitored().catch((error) => {
       logger.error({ err: error }, "Initial remote instance refresh failed");
     });
 
     // Schedule periodic refresh
     this.intervalId = setInterval(() => {
-      this.refresh().catch((error) => {
+      this.runMonitored().catch((error) => {
         logger.error({ err: error }, "Scheduled remote instance refresh failed");
       });
     }, this.config.intervalMs);
+  }
+
+  /**
+   * Run one refresh pass wrapped in a Sentry cron check-in (no-op when Sentry
+   * is disabled).
+   *
+   * @private
+   */
+  private runMonitored(): Promise<number> {
+    const intervalMinutes = Math.max(1, Math.round(this.config.intervalMs / 60_000));
+    return withMonitor(
+      "rox-remote-instance-refresh",
+      () => this.refresh(),
+      { type: "interval", value: intervalMinutes, unit: "minute" },
+    );
   }
 
   /**

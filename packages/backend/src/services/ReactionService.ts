@@ -11,8 +11,7 @@ import type { IReactionRepository } from "../interfaces/repositories/IReactionRe
 import type { INoteRepository } from "../interfaces/repositories/INoteRepository.js";
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
 import type { ICustomEmojiRepository } from "../interfaces/repositories/ICustomEmojiRepository.js";
-import type { Reaction } from "../../../shared/src/types/reaction.js";
-import { generateId } from "../../../shared/src/utils/id.js";
+import { type Reaction, generateId } from "shared";
 import type { ActivityPubDeliveryService } from "./ap/ActivityPubDeliveryService.js";
 import type { NotificationService } from "./NotificationService.js";
 import { getTimelineStreamService } from "./TimelineStreamService.js";

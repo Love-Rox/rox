@@ -14,15 +14,15 @@ import type {
   INoteRepository,
   TimelineOptions,
 } from "../interfaces/repositories/INoteRepository.js";
-import type {
-  List,
-  ListMember,
-  ListWithMemberCount,
-  ListMembership,
-  ListNotifyLevel,
+import {
+  type List,
+  type ListMember,
+  type ListWithMemberCount,
+  type ListMembership,
+  type ListNotifyLevel,
+  type Note,
+  generateId,
 } from "shared";
-import type { Note } from "shared";
-import { generateId } from "../../../shared/src/utils/id.js";
 import type { NoteService } from "./NoteService.js";
 import type { SystemAccountService } from "./SystemAccountService.js";
 import { logger } from "../lib/logger.js";

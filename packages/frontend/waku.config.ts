@@ -24,11 +24,11 @@ export default defineConfig({
     },
     ssr: {
       /** Allow Lingui macros to work with SSR by not externalizing them */
-      noExternal: ["@lingui/macro", "babel-plugin-macros"],
+      noExternal: ["@lingui/react", "@lingui/core"],
     },
     optimizeDeps: {
       /** Optimize Lingui macro for ESM compatibility */
-      include: ["@lingui/macro", "@lingui/react", "babel-plugin-macros"],
+      include: ["@lingui/react", "@lingui/core"],
     },
     build: {
       /** Suppress chunk size warnings (500kB -> 1MB threshold) */

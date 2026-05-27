@@ -6,7 +6,7 @@
 
 import { describe, test, expect, mock, beforeEach } from "bun:test";
 import type { IUserRepository } from "../../interfaces/repositories/IUserRepository.js";
-import type { User } from "../../../../shared/src/types/user.js";
+import type { User } from "shared";
 
 describe("Admin Gone Users API", () => {
   const baseUser: User = {
