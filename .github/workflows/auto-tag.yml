@@ -23,6 +23,10 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
         with:
           fetch-depth: 0
+          # Use RELEASE_PAT so that:
+          #   - the tag push escapes the default GITHUB_TOKEN's ruleset constraints
+          #   - the tag push fires downstream workflow events (GITHUB_TOKEN does not)
+          token: ${{ secrets.RELEASE_PAT }}
 
       - name: Get version from package.json
         id: version
@@ -81,6 +85,10 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
         with:
           fetch-depth: 0
+          # Use RELEASE_PAT so that:
+          #   - the tag push escapes the default GITHUB_TOKEN's ruleset constraints
+          #   - the tag push fires downstream workflow events (GITHUB_TOKEN does not)
+          token: ${{ secrets.RELEASE_PAT }}
 
       - name: Get previous tag
         id: prev_tag
