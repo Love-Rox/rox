@@ -8,6 +8,7 @@
  */
 
 import * as Sentry from "@sentry/react";
+import { makeFetchTransport, makeMultiplexedTransport } from "@sentry/react";
 
 let initialized = false;
 
@@ -29,6 +30,9 @@ export interface CaptureContext {
  *
  * Reads:
  * - `VITE_SENTRY_DSN`: Project DSN. Required; if missing, initialization is skipped.
+ * - `VITE_SENTRY_SECONDARY_DSN`: Optional additional DSN. When set, every
+ *   event is sent to BOTH DSNs via a multiplexed transport — useful for A/B
+ *   comparing error-tracking backends (e.g. GlitchTip vs Sentry vs Bugsink).
  * - `VITE_SENTRY_ENVIRONMENT`: Environment tag (falls back to `MODE`).
  * - `VITE_SENTRY_TRACES_SAMPLE_RATE`: Float in `[0, 1]`. Defaults to `0`.
  * - `VITE_SENTRY_RELEASE`: Release identifier. Optional.
@@ -45,12 +49,20 @@ export function initSentry(): void {
     env.VITE_SENTRY_TRACES_SAMPLE_RATE as string | undefined,
   );
 
+  // Fan-out to a second backend when configured. Each destination keeps its
+  // own retry queue, so a slow secondary does not block primary delivery.
+  const secondaryDsn = env.VITE_SENTRY_SECONDARY_DSN as string | undefined;
+  const routes = [dsn, ...(secondaryDsn ? [secondaryDsn] : [])];
+  const transport =
+    routes.length > 1 ? makeMultiplexedTransport(makeFetchTransport, () => routes) : undefined;
+
   Sentry.init({
     dsn,
     environment:
       (env.VITE_SENTRY_ENVIRONMENT as string | undefined) || (env.MODE as string) || "development",
     release: env.VITE_SENTRY_RELEASE as string | undefined,
     tracesSampleRate,
+    transport,
     sendDefaultPii: false,
     beforeSend(event) {
       // Drop request bodies, cookies, headers, and query strings to minimize
