@@ -9,6 +9,8 @@
  */
 
 import * as Sentry from "@sentry/bun";
+import { makeNodeTransport } from "@sentry/bun";
+import { makeMultiplexedTransport } from "@sentry/core";
 import { logger } from "./logger.js";
 
 let initialized = false;
@@ -28,6 +30,10 @@ export interface CaptureContext {
  *
  * Reads:
  * - `SENTRY_DSN`: Project DSN. Required; if missing, initialization is skipped.
+ * - `SENTRY_SECONDARY_DSN`: Optional additional DSN. When set, every event is
+ *   sent to BOTH DSNs via a multiplexed transport. Useful for A/B comparing
+ *   error-tracking backends (e.g. GlitchTip vs Sentry vs Bugsink) without
+ *   duplicating the SDK setup.
  * - `SENTRY_ENVIRONMENT`: Environment tag (falls back to `NODE_ENV`).
  * - `SENTRY_TRACES_SAMPLE_RATE`: Float in `[0, 1]`. Defaults to `0` (no tracing).
  * - `SENTRY_RELEASE`: Release identifier. Optional.
@@ -44,11 +50,20 @@ export function initSentry(): void {
 
   const tracesSampleRate = parseSampleRate(process.env.SENTRY_TRACES_SAMPLE_RATE);
 
+  // Optional fan-out: send every event to a second backend too (e.g. for
+  // comparing GlitchTip / Sentry / Bugsink side by side). Each destination
+  // gets its own retry queue, so a flaky secondary does not block primary.
+  const secondaryDsn = process.env.SENTRY_SECONDARY_DSN;
+  const routes = [dsn, ...(secondaryDsn ? [secondaryDsn] : [])];
+  const transport =
+    routes.length > 1 ? makeMultiplexedTransport(makeNodeTransport, () => routes) : undefined;
+
   Sentry.init({
     dsn,
     environment: process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || "development",
     release: process.env.SENTRY_RELEASE,
     tracesSampleRate,
+    transport,
     // Suppress the default server_name. Passing an empty string is NOT
     // enough — Sentry treats it as falsy and falls back to
     // `SENTRY_NAME` env / `os.hostname()`. `includeServerName: false` is
@@ -74,6 +89,7 @@ export function initSentry(): void {
     {
       environment: process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || "development",
       tracesSampleRate,
+      destinations: routes.length,
     },
     "Sentry initialized",
   );
