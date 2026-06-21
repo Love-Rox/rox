@@ -56,8 +56,13 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      # TypeDoc does not yet support TypeScript 7 (native compiler), so it runs
+      # from an isolated install pinned to TypeScript 6 under tools/apidocs.
+      - name: Install TypeDoc tooling (pinned to TypeScript 6)
+        run: cd tools/apidocs && bun install --frozen-lockfile
+
       - name: Generate TypeDoc documentation
-        run: npx typedoc
+        run: tools/apidocs/node_modules/.bin/typedoc
 
       - name: Setup Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
