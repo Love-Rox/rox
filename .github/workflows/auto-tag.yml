@@ -206,6 +206,17 @@ jobs:
             echo "| Waku Rox (Frontend) | \`${{ steps.pkg_versions.outputs.frontend_version }}\` |"
             echo "| Shared | \`${{ steps.pkg_versions.outputs.shared_version }}\` |"
             echo ""
+
+            # Optional per-version upgrade notes. If docs/release-notes/<tag>.md
+            # exists, prepend it as an "Upgrade Notes" section. Absent file = no-op.
+            NOTES_FILE="docs/release-notes/${CURRENT_TAG}.md"
+            if [ -f "$NOTES_FILE" ]; then
+              echo "## ⚠️ Upgrade Notes"
+              echo ""
+              cat "$NOTES_FILE"
+              echo ""
+            fi
+
             echo "## What's Changed"
             echo ""
 
