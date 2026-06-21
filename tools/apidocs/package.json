@@ -1,0 +1,9 @@
+{
+  "name": "rox-typedoc",
+  "private": true,
+  "description": "Isolated TypeDoc tooling pinned to TypeScript 6. TypeDoc does not yet support TypeScript 7 (the native compiler), so the docs pipeline keeps its own TS6 install separate from the workspace's TS7 toolchain.",
+  "devDependencies": {
+    "typedoc": "^0.28.19",
+    "typescript": "6.0.3"
+  }
+}
