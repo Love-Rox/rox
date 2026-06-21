@@ -20,9 +20,13 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.0
         with:
           fetch-depth: 0
+          # Use RELEASE_PAT so that:
+          #   - the tag push escapes the default GITHUB_TOKEN's ruleset constraints
+          #   - the tag push fires downstream workflow events (GITHUB_TOKEN does not)
+          token: ${{ secrets.RELEASE_PAT }}
 
       - name: Get version from package.json
         id: version
@@ -78,9 +82,13 @@ jobs:
       attestations: write   # for actions/attest-build-provenance
     steps:
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.0
         with:
           fetch-depth: 0
+          # Use RELEASE_PAT so that:
+          #   - the tag push escapes the default GITHUB_TOKEN's ruleset constraints
+          #   - the tag push fires downstream workflow events (GITHUB_TOKEN does not)
+          token: ${{ secrets.RELEASE_PAT }}
 
       - name: Get previous tag
         id: prev_tag
@@ -198,6 +206,17 @@ jobs:
             echo "| Waku Rox (Frontend) | \`${{ steps.pkg_versions.outputs.frontend_version }}\` |"
             echo "| Shared | \`${{ steps.pkg_versions.outputs.shared_version }}\` |"
             echo ""
+
+            # Optional per-version upgrade notes. If docs/release-notes/<tag>.md
+            # exists, prepend it as an "Upgrade Notes" section. Absent file = no-op.
+            NOTES_FILE="docs/release-notes/${CURRENT_TAG}.md"
+            if [ -f "$NOTES_FILE" ]; then
+              echo "## ⚠️ Upgrade Notes"
+              echo ""
+              cat "$NOTES_FILE"
+              echo ""
+            fi
+
             echo "## What's Changed"
             echo ""
 
