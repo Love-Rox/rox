@@ -25,7 +25,6 @@
     "@rolldown/plugin-babel": "^0.2.3",
     "@sentry/react": "^10.59.0",
     "@simplewebauthn/browser": "^13.3.0",
-    "@tailwindcss/vite": "^4.2.0",
     "class-variance-authority": "^0.7.1",
     "date-fns": "^4.4.0",
     "jotai": "^2.20.1",
