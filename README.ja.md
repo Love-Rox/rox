@@ -19,8 +19,8 @@
     <img src="https://img.shields.io/github/v/release/Love-Rox/rox?include_prereleases&color=green" alt="Release" />
   </a>
   <img src="https://img.shields.io/badge/runtime-Bun-f9f1e1?logo=bun&logoColor=black" alt="Bun" />
-  <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/tests-800%2B-brightgreen" alt="Tests" />
+  <img src="https://img.shields.io/badge/TypeScript-7.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/tests-1000%2B-brightgreen" alt="Tests" />
 </p>
 
 <p align="center">
@@ -151,8 +151,8 @@ rox/
 | `bun run dev` | 全ての開発サーバーを起動 |
 | `bun run build` | 全てのパッケージをビルド |
 | `bun run test` | テストを実行 |
-| `bun run lint` | oxlintでコードをリント |
-| `bun run format` | oxlintでコードをフォーマット |
+| `bun run lint` | vp (oxc) でコードをリント |
+| `bun run format` | vp (oxc) でコードをフォーマット |
 | `bun run typecheck` | 全パッケージの型チェック |
 | `bun run db:generate` | データベースマイグレーションを生成 |
 | `bun run db:migrate` | データベースマイグレーションを実行 |

@@ -19,8 +19,8 @@
     <img src="https://img.shields.io/github/v/release/Love-Rox/rox?include_prereleases&color=green" alt="Release" />
   </a>
   <img src="https://img.shields.io/badge/runtime-Bun-f9f1e1?logo=bun&logoColor=black" alt="Bun" />
-  <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/tests-800%2B-brightgreen" alt="Tests" />
+  <img src="https://img.shields.io/badge/TypeScript-7.x-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/tests-1000%2B-brightgreen" alt="Tests" />
 </p>
 
 <p align="center">
@@ -151,8 +151,8 @@ rox/
 | `bun run dev` | Start all development servers |
 | `bun run build` | Build all packages |
 | `bun run test` | Run tests |
-| `bun run lint` | Lint code with oxlint |
-| `bun run format` | Format code with oxlint |
+| `bun run lint` | Lint code with vp (oxc) |
+| `bun run format` | Format code with vp (oxc) |
 | `bun run typecheck` | Type check all packages |
 | `bun run db:generate` | Generate database migrations |
 | `bun run db:migrate` | Run database migrations |
