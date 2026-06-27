@@ -10,7 +10,7 @@ WORKDIR /app
 
 # Copy package files. All workspace package.json files are required so
 # `bun install --frozen-lockfile` can validate the workspace lockfile.
-COPY package.json bun.lock ./
+COPY package.json bun.lock bunfig.toml ./
 COPY packages/frontend/package.json ./packages/frontend/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/backend/package.json ./packages/backend/
