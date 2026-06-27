@@ -46,6 +46,7 @@ spec:
         # Apply DB migrations before the app starts (idempotent; safe per boot).
         - name: migrate
           image: ghcr.io/love-rox/rox-backend:dev
+          imagePullPolicy: Always
           workingDir: /app/packages/backend
           command: ["bun", "run", "dist/migrate.js"]
           envFrom:
@@ -60,6 +61,7 @@ spec:
       containers:
         - name: rox-backend
           image: ghcr.io/love-rox/rox-backend:dev
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
           envFrom:
