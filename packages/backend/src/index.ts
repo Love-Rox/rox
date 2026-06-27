@@ -65,6 +65,10 @@ import { RemoteInstanceRefreshService } from "./services/RemoteInstanceRefreshSe
 import { ScheduledNotePublisher } from "./services/ScheduledNotePublisher.js";
 import { ScheduledNoteService } from "./services/ScheduledNoteService.js";
 import { NoteService } from "./services/NoteService.js";
+import { ChartCollectorService } from "./services/ChartCollectorService.js";
+import chartsRoute from "./routes/charts.js";
+import { isTimescaleAvailable, applyTimescalePolicies } from "./db/charts/timescale.js";
+import { PostgresChartRepository, TimescaleChartRepository } from "./repositories/pg/index.js";
 import { getContainer } from "./di/container.js";
 import { initializePluginSystem, type PluginSystem } from "./plugins/init.js";
 import { getDatabase } from "./db/index.js";
@@ -117,6 +121,7 @@ app.route("/api/mod", moderatorRoute);
 app.route("/api/reports", reportsRoute);
 app.route("/api/invitations", invitationsRoute);
 app.route("/api/instance", instanceRoute);
+app.route("/api/charts", chartsRoute);
 app.route("/api/startup-image", startupImageRoute);
 app.route("/api/emojis", emojisRoute);
 app.route("/api/i/migration", migrationRoute);
@@ -208,6 +213,50 @@ const scheduledNotePublisher = new ScheduledNotePublisher(scheduledNoteService, 
 });
 scheduledNotePublisher.start();
 
+// Charts subsystem (optional, gated by CHARTS_ENABLED). Resolves the backend
+// (auto-detecting TimescaleDB) and starts the periodic snapshot collector.
+let chartCollector: ChartCollectorService | null = null;
+let chartsStatus = "disabled";
+if (process.env.CHARTS_ENABLED === "true") {
+  const chartsDb = getDatabase();
+  const preference = (process.env.CHARTS_BACKEND || "auto").toLowerCase();
+  let resolvedBackend: "postgres" | "timescale" = "postgres";
+
+  if (preference === "timescale" || preference === "auto") {
+    if (await isTimescaleAvailable(chartsDb)) {
+      try {
+        await applyTimescalePolicies(chartsDb);
+        resolvedBackend = "timescale";
+      } catch (error) {
+        logger.error(
+          { err: error },
+          "Failed to apply TimescaleDB chart policies; falling back to postgres",
+        );
+      }
+    } else if (preference === "timescale") {
+      logger.warn(
+        "CHARTS_BACKEND=timescale but the timescaledb extension was not found; falling back to postgres",
+      );
+    }
+  }
+
+  container.chartRepository =
+    resolvedBackend === "timescale"
+      ? new TimescaleChartRepository(chartsDb)
+      : new PostgresChartRepository(chartsDb);
+
+  chartCollector = new ChartCollectorService({
+    chartRepository: container.chartRepository,
+    userRepository: container.userRepository,
+    noteRepository: container.noteRepository,
+    remoteInstanceRepository: container.remoteInstanceRepository,
+    driveFileRepository: container.driveFileRepository,
+  });
+  chartCollector.start();
+  chartsStatus = resolvedBackend;
+  logger.info({ backend: resolvedBackend }, "Charts subsystem enabled");
+}
+
 // Initialize plugin system synchronously to avoid race conditions
 if (pluginsEnabled) {
   try {
@@ -247,6 +296,7 @@ console.log(`Storage:      ${process.env.STORAGE_TYPE || "local"}`);
 console.log(`Queue:        ${queueMode}`);
 console.log(`Cache:        ${cacheMode}`);
 console.log(`Plugins:      ${pluginsEnabled ? "enabled" : "disabled"}`);
+console.log(`Charts:       ${chartsStatus}`);
 console.log(`System:       @system (server account)`);
 console.log("══════════════════════════════════════════════════");
 
@@ -280,6 +330,11 @@ async function gracefulShutdown(signal: string): Promise<void> {
 
     logger.info("Stopping scheduled note publisher");
     scheduledNotePublisher.stop();
+
+    if (chartCollector) {
+      logger.info("Stopping chart collector");
+      chartCollector.stop();
+    }
 
     // Shutdown plugin system
     if (pluginSystem) {

@@ -23,3 +23,5 @@ export * from "./PostgresOAuthAccountRepository.js";
 export * from "./PostgresBlockedUsernameRepository.js";
 export * from "./PostgresListRepository.js";
 export * from "./PostgresDeckProfileRepository.js";
+export * from "./PostgresChartRepository.js";
+export * from "./TimescaleChartRepository.js";

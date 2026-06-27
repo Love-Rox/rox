@@ -60,6 +60,7 @@
 - **完全なActivityPubサポート** - Mastodon、Misskey、GoToSocialなどと連携
 - **ロールベース権限** - Misskeyスタイルのポリシーシステムできめ細かいアクセス制御
 - **プラグインシステム** - イベントフック、カスタムルート、フロントエンドスロットによる拡張可能なアーキテクチャ
+- **時系列チャート** - TimescaleDBを自動検出するオプションの統計サブシステム
 - **国際化対応** - 英語と日本語をすぐに利用可能
 
 ## スクリーンショット
@@ -188,6 +189,38 @@ DATABASE_URL=mysql://rox:rox_dev_password@localhost:3306/rox
 DB_TYPE=sqlite
 DATABASE_URL=sqlite://./rox.db
 ```
+</details>
+
+### チャート / 時系列統計
+
+<details>
+<summary><b>オプションのチャートサブシステム（TimescaleDB対応）</b></summary>
+
+チャートサブシステムは、インスタンスの統計情報（ユーザー、ノート、アクティブ
+ユーザー、連合、ドライブ）を時間単位・日単位のスナップショットとして記録します。
+デフォルトでは無効です。
+
+```bash
+# サブシステムを有効化
+CHARTS_ENABLED=true
+
+# バックエンドの選択: auto | postgres | timescale
+# `auto` は起動時にTimescaleDB拡張を検出し、利用可能なら使用、
+# 無ければ通常のPostgreSQLにフォールバックします。
+CHARTS_BACKEND=auto
+```
+
+TimescaleDBはオプションです。ローカルで利用するには `timescale` プロファイルを
+起動し、`DATABASE_URL` をそのサービス（ポート `5433`）に向けます。
+
+```bash
+docker compose -f docker/compose.dev.yml --profile timescale up -d
+DATABASE_URL=postgresql://rox:rox_dev_password@localhost:5433/rox
+bun run db:migrate
+```
+
+`CHARTS_BACKEND=auto` のままにしておけば、拡張は自動的に検出されるため追加の
+設定は不要です。
 </details>
 
 ### ストレージ設定

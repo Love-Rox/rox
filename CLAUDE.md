@@ -86,6 +86,10 @@ NODE_ENV=development|production
 URL=<public-url>
 ENABLE_REGISTRATION=true|false
 SESSION_EXPIRY_DAYS=30
+
+# Charts / time-series statistics (optional)
+CHARTS_ENABLED=true|false                # default false
+CHARTS_BACKEND=auto|postgres|timescale   # default auto (detects TimescaleDB)
 ```
 
 ## Supported Infrastructure
