@@ -34,7 +34,11 @@ spec:
       containers:
         - name: dragonfly
           image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.25.1
-          args: ["--dir", "/data"]
+          # Constrain threads/memory: Dragonfly otherwise sizes itself to the
+          # node's CPU count (requiring ~256MiB per io thread) and crashes when
+          # that exceeds the container limit. One thread + a small maxmemory is
+          # plenty for this instance's cache/queue use.
+          args: ["--dir", "/data", "--proactor_threads=1", "--maxmemory=300mb"]
           ports:
             - containerPort: 6379
           volumeMounts:
