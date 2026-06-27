@@ -10,7 +10,7 @@ WORKDIR /app
 
 # Copy package files. All workspace package.json files are required so
 # `bun install --frozen-lockfile` can validate the workspace lockfile.
-COPY package.json bun.lock ./
+COPY package.json bun.lock bunfig.toml ./
 COPY packages/backend/package.json ./packages/backend/
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/frontend/package.json ./packages/frontend/
@@ -55,7 +55,10 @@ RUN groupadd -g 1001 rox && \
 
 WORKDIR /app
 
-# Copy built files and dependencies
+# Copy built files and dependencies. With the hoisted node_modules linker
+# (bunfig.toml), this single flat node_modules contains every dependency —
+# including native ones like sharp's `@img/sharp-linux-x64`, which the bundle
+# resolves at runtime.
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/backend/dist ./packages/backend/dist
 COPY --from=builder /app/packages/backend/package.json ./packages/backend/
