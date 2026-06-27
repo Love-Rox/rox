@@ -47,7 +47,7 @@ spec:
         - name: migrate
           image: ghcr.io/love-rox/rox-backend:dev
           workingDir: /app/packages/backend
-          command: ["bun", "run", "src/db/migrate.ts"]
+          command: ["bun", "run", "dist/migrate.js"]
           envFrom:
             - secretRef:
                 name: rox-config
