@@ -44,6 +44,7 @@ spec:
       containers:
         - name: rox-frontend
           image: ghcr.io/love-rox/rox-frontend:dev
+          imagePullPolicy: Always
           ports:
             - containerPort: 3001
           envFrom:
