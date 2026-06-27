@@ -246,9 +246,17 @@ export function DeckLayout({ showAddColumn = true, showProfileSwitcher = true }:
               items={columns.map((col) => col.id)}
               strategy={horizontalListSortingStrategy}
             >
+              {/*
+                NOTE: do not add `scroll-smooth` here. With smooth scroll
+                behavior, the programmatic `scrollLeft = 0` reset (and the
+                snap-mandatory layout settling) on mount/profile change is
+                animated, which makes the deck visibly slide to the right for a
+                moment on appear. Horizontal deck scrolling is intentionally
+                instant.
+              */}
               <div
                 ref={scrollContainerRef}
-                className="flex h-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth gap-1 p-2"
+                className="flex h-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory gap-1 p-2"
                 style={{ scrollbarWidth: "thin" }}
               >
                 {columns.map((column) => (

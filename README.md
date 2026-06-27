@@ -60,6 +60,7 @@
 - **Full ActivityPub Support** - Federation with Mastodon, Misskey, GoToSocial, and more
 - **Role-Based Permissions** - Misskey-style policy system with granular access control
 - **Plugin System** - Extensible architecture with event hooks, custom routes, and frontend slots
+- **Time-Series Charts** - Optional statistics subsystem with automatic TimescaleDB detection
 - **Internationalization** - English and Japanese support out of the box
 
 ## Screenshots
@@ -188,6 +189,37 @@ DATABASE_URL=mysql://rox:rox_dev_password@localhost:3306/rox
 DB_TYPE=sqlite
 DATABASE_URL=sqlite://./rox.db
 ```
+</details>
+
+### Charts / Time-Series Statistics
+
+<details>
+<summary><b>Optional charts subsystem (with TimescaleDB)</b></summary>
+
+The charts subsystem records hourly/daily snapshots of instance statistics
+(users, notes, active users, federation, drive). It is disabled by default.
+
+```bash
+# Enable the subsystem
+CHARTS_ENABLED=true
+
+# Backend selection: auto | postgres | timescale
+# `auto` detects the TimescaleDB extension at startup and uses it when
+# available, otherwise falls back to plain PostgreSQL.
+CHARTS_BACKEND=auto
+```
+
+TimescaleDB is optional. To run it locally, start the `timescale` profile and
+point `DATABASE_URL` at it (port `5433`):
+
+```bash
+docker compose -f docker/compose.dev.yml --profile timescale up -d
+DATABASE_URL=postgresql://rox:rox_dev_password@localhost:5433/rox
+bun run db:migrate
+```
+
+With `CHARTS_BACKEND=auto`, the extension is detected automatically — no extra
+configuration required.
 </details>
 
 ### Storage Configuration

@@ -74,6 +74,7 @@ const ADMIN_NAV_CATEGORIES: NavCategory[] = [
     label: msg`General`,
     icon: Settings,
     items: [
+      { href: "/admin/dashboard", icon: LayoutDashboard, label: msg`Dashboard` },
       // Settings sub-tabs as direct items
       { href: "/admin/settings?tab=instance", icon: Building, label: msg`Instance` },
       { href: "/admin/settings?tab=registration", icon: UserPlus, label: msg`Registration` },

@@ -23,3 +23,4 @@ export * from "./IOAuthAccountRepository.js";
 export * from "./IBlockedUsernameRepository.js";
 export * from "./IListRepository.js";
 export * from "./IDeckProfileRepository.js";
+export * from "./IChartRepository.js";

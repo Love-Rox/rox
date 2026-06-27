@@ -4,9 +4,11 @@ import {
   timestamp,
   boolean,
   integer,
+  bigint,
   jsonb,
   index,
   uniqueIndex,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import type { DeckColumn } from "shared";
@@ -954,6 +956,37 @@ export const pluginConfigs = pgTable(
   }),
 );
 
+/**
+ * Chart snapshots table (time-series statistics).
+ *
+ * Long-format store for the optional charts subsystem: one row per
+ * (metric, span, bucket). Shared by the plain PostgreSQL and TimescaleDB
+ * chart repositories. On TimescaleDB this table is promoted to a hypertable
+ * with compression/retention policies via a separate, guarded migration; on
+ * plain PostgreSQL it is an ordinary table. The composite primary key includes
+ * `bucket` so it remains valid as a hypertable partitioning key.
+ */
+export const chartSnapshots = pgTable(
+  "chart_snapshots",
+  {
+    metric: text("metric").notNull(),
+    span: text("span").notNull(), // "hour" | "day"
+    bucket: timestamp("bucket", { withTimezone: true }).notNull(),
+    value: bigint("value", { mode: "number" }).notNull().default(0),
+    delta: bigint("delta", { mode: "number" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.metric, table.span, table.bucket] }),
+    spanBucketIdx: index("chart_span_bucket_idx").on(table.span, table.bucket),
+    metricSpanBucketIdx: index("chart_metric_span_bucket_idx").on(
+      table.metric,
+      table.span,
+      table.bucket,
+    ),
+  }),
+);
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -1009,3 +1042,5 @@ export type DeckProfileRow = typeof deckProfiles.$inferSelect;
 export type NewDeckProfile = typeof deckProfiles.$inferInsert;
 export type PluginConfig = typeof pluginConfigs.$inferSelect;
 export type NewPluginConfig = typeof pluginConfigs.$inferInsert;
+export type ChartSnapshot = typeof chartSnapshots.$inferSelect;
+export type NewChartSnapshot = typeof chartSnapshots.$inferInsert;

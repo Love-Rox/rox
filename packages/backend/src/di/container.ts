@@ -25,6 +25,7 @@ import type {
   IOAuthAccountRepository,
   IListRepository,
   IDeckProfileRepository,
+  IChartRepository,
 } from "../interfaces/repositories/index.js";
 import type { IContactRepository } from "../interfaces/repositories/IContactRepository.js";
 import type { IBlockedUsernameRepository } from "../interfaces/repositories/IBlockedUsernameRepository.js";
@@ -55,6 +56,7 @@ import {
   PostgresOAuthAccountRepository,
   PostgresListRepository,
   PostgresDeckProfileRepository,
+  PostgresChartRepository,
 } from "../repositories/pg/index.js";
 import { PostgresContactRepository } from "../repositories/pg/PostgresContactRepository.js";
 import { PostgresBlockedUsernameRepository } from "../repositories/pg/PostgresBlockedUsernameRepository.js";
@@ -104,6 +106,14 @@ export interface AppContainer {
   blockedUsernameRepository: IBlockedUsernameRepository;
   listRepository: IListRepository;
   deckProfileRepository: IDeckProfileRepository;
+  /**
+   * Optional charts subsystem repository.
+   *
+   * `null` when `CHARTS_ENABLED` is not `true`. Initialized to the PostgreSQL
+   * implementation here and may be upgraded to {@link TimescaleChartRepository}
+   * at startup once the timescaledb extension is detected.
+   */
+  chartRepository: IChartRepository | null;
   fileStorage: IFileStorage;
   cacheService: ICacheService;
   activityDeliveryQueue: ActivityDeliveryQueue;
@@ -236,8 +246,17 @@ export function createContainer(): AppContainer {
   // Event Bus for plugin system
   const eventBus = new EventBus();
 
+  // Charts subsystem (optional; gated by CHARTS_ENABLED). Defaults to the
+  // PostgreSQL implementation. index.ts may upgrade it to the TimescaleDB
+  // implementation at startup after detecting the timescaledb extension.
+  const chartsEnabled = process.env.CHARTS_ENABLED === "true";
+  const chartRepository: IChartRepository | null = chartsEnabled
+    ? new PostgresChartRepository(db)
+    : null;
+
   return {
     ...repositories,
+    chartRepository,
     fileStorage,
     cacheService,
     activityDeliveryQueue,

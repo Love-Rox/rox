@@ -33,6 +33,11 @@ msgstr "{0} / {1} MB ({2}%)"
 msgid "{0} categories"
 msgstr "{0} categories"
 
+#. placeholder {0}: card.title
+#: src/pages/admin/dashboard.tsx:334
+msgid "{0} daily trend chart"
+msgstr "{0} daily trend chart"
+
 #. placeholder {0}: usage.fileCount.total
 #: src/components/settings/StorageSection.tsx:218
 msgid "{0} files total"
@@ -301,6 +306,10 @@ msgstr "Action Log"
 msgid "Actions"
 msgstr "Actions"
 
+#: src/pages/admin/dashboard.tsx:146
+msgid "Active Users"
+msgstr "Active Users"
+
 #: src/pages/admin/queue.tsx:205
 msgid "ActivityPub delivery is running in synchronous mode."
 msgstr "ActivityPub delivery is running in synchronous mode."
@@ -407,7 +416,7 @@ msgstr "Admin"
 msgid "Admin Account"
 msgstr "Admin Account"
 
-#: src/components/admin/AdminLayout.tsx:316
+#: src/components/admin/AdminLayout.tsx:317
 msgid "Admin Menu"
 msgstr "Admin Menu"
 
@@ -513,7 +522,7 @@ msgstr "Already have an account? Sign in"
 msgid "Also delete all notes by this user"
 msgstr "Also delete all notes by this user"
 
-#: src/components/ui/ErrorBoundary.tsx:99
+#: src/components/ui/ErrorBoundary.tsx:108
 msgid "An unexpected error occurred. Try refreshing the page or going back."
 msgstr "An unexpected error occurred. Try refreshing the page or going back."
 
@@ -581,7 +590,7 @@ msgstr "Are you sure you want to remove this instance from the cache?"
 msgid "Are you sure you want to unfollow <0>@{0}{1}</0>?"
 msgstr "Are you sure you want to unfollow <0>@{0}{1}</0>?"
 
-#: src/components/admin/AdminLayout.tsx:81
+#: src/components/admin/AdminLayout.tsx:82
 msgid "Assets"
 msgstr "Assets"
 
@@ -707,6 +716,7 @@ msgstr "Blocked at:"
 
 #: src/pages/admin/blocks.tsx:206
 #: src/pages/admin/blocks.tsx:288
+#: src/pages/admin/dashboard.tsx:261
 #: src/pages/mod/instances.tsx:247
 #: src/pages/mod/instances.tsx:328
 msgid "Blocked Instances"
@@ -717,7 +727,7 @@ msgstr "Blocked Instances"
 msgid "Blocked on {0}"
 msgstr "Blocked on {0}"
 
-#: src/components/admin/AdminLayout.tsx:93
+#: src/components/admin/AdminLayout.tsx:94
 #: src/pages/admin/blocked-usernames.tsx:202
 msgid "Blocked Usernames"
 msgstr "Blocked Usernames"
@@ -734,7 +744,7 @@ msgstr "Blocked:"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 
-#: src/components/admin/AdminLayout.tsx:120
+#: src/components/admin/AdminLayout.tsx:121
 msgid "Blocks"
 msgstr "Blocks"
 
@@ -758,7 +768,7 @@ msgstr "Browser tab icon, recommended 32x32 or 64x64 (max 512KB)"
 msgid "Bulk Edit"
 msgstr "Bulk Edit"
 
-#: src/components/admin/AdminLayout.tsx:105
+#: src/components/admin/AdminLayout.tsx:106
 msgid "Bulk Import"
 msgstr "Bulk Import"
 
@@ -969,11 +979,11 @@ msgstr "Contact thread details"
 msgid "Contact Us"
 msgstr "Contact Us"
 
-#: src/components/admin/AdminLayout.tsx:121
+#: src/components/admin/AdminLayout.tsx:122
 msgid "Contacts"
 msgstr "Contacts"
 
-#: src/components/admin/AdminLayout.tsx:99
+#: src/components/admin/AdminLayout.tsx:100
 msgid "Content"
 msgstr "Content"
 
@@ -1165,6 +1175,13 @@ msgstr "Dark"
 #: src/pages/admin/settings.tsx:825
 msgid "Dark Mode Icon"
 msgstr "Dark Mode Icon"
+
+#: src/components/admin/AdminLayout.tsx:77
+#: src/pages/admin/dashboard.tsx:153
+#: src/pages/admin/dashboard.tsx:167
+#: src/pages/admin/dashboard.tsx:178
+msgid "Dashboard"
+msgstr "Dashboard"
 
 #: src/components/settings/DataExportSection.tsx:81
 msgid "Data Export"
@@ -1622,7 +1639,7 @@ msgstr "Enter your password"
 msgid "Enter your server to follow"
 msgstr "Enter your server to follow"
 
-#: src/components/ui/ErrorBoundary.tsx:113
+#: src/components/ui/ErrorBoundary.tsx:122
 msgid "Error details"
 msgstr "Error details"
 
@@ -2010,7 +2027,7 @@ msgstr "Favicon URL"
 msgid "Federated"
 msgstr "Federated"
 
-#: src/components/admin/AdminLayout.tsx:115
+#: src/components/admin/AdminLayout.tsx:116
 #: src/pages/admin/federation.tsx:204
 #: src/pages/admin/federation.tsx:218
 #: src/pages/admin/federation.tsx:231
@@ -2195,7 +2212,7 @@ msgstr "Go to Timeline"
 msgid "Gone"
 msgstr "Gone"
 
-#: src/components/admin/AdminLayout.tsx:94
+#: src/components/admin/AdminLayout.tsx:95
 #: src/pages/admin/gone-users.tsx:164
 #: src/pages/admin/gone-users.tsx:177
 msgid "Gone Users"
@@ -2327,7 +2344,7 @@ msgstr "In reply to"
 msgid "Initiate Migration"
 msgstr "Initiate Migration"
 
-#: src/components/admin/AdminLayout.tsx:78
+#: src/components/admin/AdminLayout.tsx:79
 #: src/pages/onboarding.tsx:403
 msgid "Instance"
 msgstr "Instance"
@@ -2389,6 +2406,12 @@ msgstr "Instance name is required"
 msgid "Instance Overview"
 msgstr "Instance Overview"
 
+#: src/pages/admin/dashboard.tsx:154
+#: src/pages/admin/dashboard.tsx:168
+#: src/pages/admin/dashboard.tsx:179
+msgid "Instance overview and statistics"
+msgstr "Instance overview and statistics"
+
 #: src/pages/admin/federation.tsx:158
 msgid "Instance removed from cache"
 msgstr "Instance removed from cache"
@@ -2447,9 +2470,15 @@ msgstr "Invitation code is required"
 msgid "Invitation Codes"
 msgstr "Invitation Codes"
 
-#: src/components/admin/AdminLayout.tsx:92
+#: src/components/admin/AdminLayout.tsx:93
 msgid "Invitations"
 msgstr "Invitations"
+
+#. placeholder {0}: formatNumber(stats.invitations.total)
+#. placeholder {1}: formatNumber(stats.invitations.unused)
+#: src/pages/admin/dashboard.tsx:293
+msgid "Invitations: {0} total, {1} unused"
+msgstr "Invitations: {0} total, {1} unused"
 
 #: src/pages/admin/roles.tsx:618
 msgid "Invite"
@@ -2534,7 +2563,7 @@ msgstr "Leave empty for a permanent warning"
 msgid "Leave empty for auto-generated code"
 msgstr "Leave empty for auto-generated code"
 
-#: src/components/admin/AdminLayout.tsx:82
+#: src/components/admin/AdminLayout.tsx:83
 msgid "Legal"
 msgstr "Legal"
 
@@ -2667,13 +2696,17 @@ msgstr "Local"
 msgid "Local (loaded)"
 msgstr "Local (loaded)"
 
-#: src/components/admin/AdminLayout.tsx:103
+#: src/components/admin/AdminLayout.tsx:104
 msgid "Local Emojis"
 msgstr "Local Emojis"
 
 #: src/pages/search.tsx:385
 msgid "Local only"
 msgstr "Local only"
+
+#: src/pages/admin/dashboard.tsx:213
+msgid "Local Users"
+msgstr "Local Users"
 
 #: src/components/pages/ContactThreadPageClient.tsx:160
 msgid "Log in"
@@ -2867,7 +2900,7 @@ msgstr "mentioned you"
 msgid "Mentions"
 msgstr "Mentions"
 
-#: src/components/admin/AdminLayout.tsx:412
+#: src/components/admin/AdminLayout.tsx:413
 msgid "Menu"
 msgstr "Menu"
 
@@ -3033,6 +3066,10 @@ msgstr "No custom emojis yet"
 #: src/pages/admin/blocked-usernames.tsx:393
 msgid "No custom patterns defined yet."
 msgstr "No custom patterns defined yet."
+
+#: src/pages/admin/dashboard.tsx:338
+msgid "No data"
+msgstr "No data"
 
 #: src/pages/mod/notes.tsx:190
 msgid "No deleted notes"
@@ -3278,6 +3315,7 @@ msgstr "Note: Remote users can only be searched by username, not display name, u
 msgid "Note: Some CSS properties may be restricted for security."
 msgstr "Note: Some CSS properties may be restricted for security."
 
+#: src/pages/admin/dashboard.tsx:145
 #: src/pages/mod/audit-logs.tsx:257
 msgid "Notes"
 msgstr "Notes"
@@ -3488,6 +3526,7 @@ msgstr "Pattern is required"
 msgid "Pending"
 msgstr "Pending"
 
+#: src/pages/admin/dashboard.tsx:277
 #: src/pages/admin/reports.tsx:262
 #: src/pages/mod/reports.tsx:249
 msgid "Pending Reports"
@@ -3764,11 +3803,11 @@ msgstr "Queue Health"
 msgid "Queue Not Available"
 msgstr "Queue Not Available"
 
-#: src/components/admin/AdminLayout.tsx:118
+#: src/components/admin/AdminLayout.tsx:119
 msgid "Queue Overview"
 msgstr "Queue Overview"
 
-#: src/components/admin/AdminLayout.tsx:119
+#: src/components/admin/AdminLayout.tsx:120
 msgid "Queue Servers"
 msgstr "Queue Servers"
 
@@ -3890,7 +3929,7 @@ msgstr "Refresh List"
 msgid "Refresh page"
 msgstr "Refresh page"
 
-#: src/components/ui/ErrorBoundary.tsx:107
+#: src/components/ui/ErrorBoundary.tsx:116
 msgid "Refresh Page"
 msgstr "Refresh Page"
 
@@ -3906,7 +3945,7 @@ msgstr "Registered devices"
 msgid "Registering..."
 msgstr "Registering..."
 
-#: src/components/admin/AdminLayout.tsx:79
+#: src/components/admin/AdminLayout.tsx:80
 #: src/components/settings/AboutSection.tsx:130
 #: src/pages/onboarding.tsx:412
 msgid "Registration"
@@ -3970,7 +4009,7 @@ msgstr "Remote"
 msgid "Remote (loaded)"
 msgstr "Remote (loaded)"
 
-#: src/components/admin/AdminLayout.tsx:104
+#: src/components/admin/AdminLayout.tsx:105
 msgid "Remote Emojis"
 msgstr "Remote Emojis"
 
@@ -3985,6 +4024,10 @@ msgstr "Remote emojis will appear here when users from other servers react with 
 #: src/pages/admin/federation.tsx:331
 msgid "Remote Instances"
 msgstr "Remote Instances"
+
+#: src/pages/admin/dashboard.tsx:229
+msgid "Remote Users"
+msgstr "Remote Users"
 
 #: src/components/admin/AssetUploadCard.tsx:82
 #: src/pages/admin/federation.tsx:445
@@ -4143,7 +4186,7 @@ msgstr "Reporter"
 msgid "Reporting"
 msgstr "Reporting"
 
-#: src/components/admin/AdminLayout.tsx:106
+#: src/components/admin/AdminLayout.tsx:107
 #: src/pages/admin/reports.tsx:220
 #: src/pages/admin/reports.tsx:234
 #: src/pages/admin/reports.tsx:247
@@ -4236,7 +4279,7 @@ msgstr "Restore"
 msgid "Restore Note"
 msgstr "Restore Note"
 
-#: src/components/ui/ErrorBoundary.tsx:85
+#: src/components/ui/ErrorBoundary.tsx:94
 #: src/components/ui/ErrorMessage.tsx:89
 msgid "Retry"
 msgstr "Retry"
@@ -4282,7 +4325,7 @@ msgstr "Role name"
 msgid "Role updated"
 msgstr "Role updated"
 
-#: src/components/admin/AdminLayout.tsx:91
+#: src/components/admin/AdminLayout.tsx:92
 #: src/pages/admin/roles.tsx:571
 msgid "Roles"
 msgstr "Roles"
@@ -4673,8 +4716,8 @@ msgstr "Social"
 msgid "Software"
 msgstr "Software"
 
-#: src/components/ui/ErrorBoundary.tsx:82
-#: src/components/ui/ErrorBoundary.tsx:96
+#: src/components/ui/ErrorBoundary.tsx:91
+#: src/components/ui/ErrorBoundary.tsx:105
 msgid "Something went wrong"
 msgstr "Something went wrong"
 
@@ -4702,6 +4745,10 @@ msgstr "Standard Emojis"
 msgid "Start a conversation by composing a direct message"
 msgstr "Start a conversation by composing a direct message"
 
+#: src/pages/admin/dashboard.tsx:351
+msgid "Statistics collection is disabled"
+msgstr "Statistics collection is disabled"
+
 #: src/pages/admin/emojis.tsx:1569
 msgid "Status"
 msgstr "Status"
@@ -4712,7 +4759,7 @@ msgstr "Status"
 msgid "Step {0} of {1}"
 msgstr "Step {0} of {1}"
 
-#: src/components/admin/AdminLayout.tsx:114
+#: src/components/admin/AdminLayout.tsx:115
 #: src/components/settings/StorageSection.tsx:157
 #: src/components/settings/StorageSection.tsx:177
 #: src/pages/settings.tsx:155
@@ -4788,7 +4835,7 @@ msgstr "Swipe to navigate"
 msgid "Synced"
 msgstr "Synced"
 
-#: src/components/admin/AdminLayout.tsx:111
+#: src/components/admin/AdminLayout.tsx:112
 #: src/pages/admin/settings.tsx:641
 msgid "System"
 msgstr "System"
@@ -4798,7 +4845,7 @@ msgstr "System"
 msgid "System Files"
 msgstr "System Files"
 
-#: src/components/admin/AdminLayout.tsx:116
+#: src/components/admin/AdminLayout.tsx:117
 #: src/pages/admin/system-follows.tsx:300
 msgid "System Follows"
 msgstr "System Follows"
@@ -4890,7 +4937,7 @@ msgstr "The server is temporarily unavailable due to maintenance or high load. P
 msgid "The user @{username} doesn't exist or may have been deleted."
 msgstr "The user @{username} doesn't exist or may have been deleted."
 
-#: src/components/admin/AdminLayout.tsx:80
+#: src/components/admin/AdminLayout.tsx:81
 #: src/components/settings/UISettingsSection.tsx:323
 msgid "Theme"
 msgstr "Theme"
@@ -5012,6 +5059,10 @@ msgstr "This username is allowed"
 msgid "This username is blocked"
 msgstr "This username is blocked"
 
+#: src/pages/admin/dashboard.tsx:354
+msgid "Time-series charts are not available because the charts subsystem is not enabled on this instance."
+msgstr "Time-series charts are not available because the charts subsystem is not enabled on this instance."
+
 #: src/components/deck/AddColumnDialog.tsx:92
 #: src/components/deck/DeckColumn.tsx:152
 #: src/pages/timeline.tsx:122
@@ -5056,6 +5107,10 @@ msgstr "Total Deliveries"
 msgid "Total Files"
 msgstr "Total Files"
 
+#: src/pages/admin/dashboard.tsx:245
+msgid "Total Notes"
+msgstr "Total Notes"
+
 #: src/pages/admin/reports.tsx:277
 #: src/pages/mod/reports.tsx:264
 msgid "Total Reports"
@@ -5069,6 +5124,10 @@ msgstr "Total Roles"
 msgid "Total Size"
 msgstr "Total Size"
 
+#: src/pages/admin/dashboard.tsx:197
+msgid "Total Users"
+msgstr "Total Users"
+
 #. placeholder {0}: remoteEmojis.length
 #. placeholder {1}: remoteHosts.length
 #: src/pages/admin/emojis.tsx:1419
@@ -5078,6 +5137,10 @@ msgstr "Total: {0} remote emojis from {1} servers"
 #: src/pages/admin/emojis.tsx:1277
 msgid "Total: {totalEmojis} emojis"
 msgstr "Total: {totalEmojis} emojis"
+
+#: src/pages/admin/dashboard.tsx:307
+msgid "Trends (daily)"
+msgstr "Trends (daily)"
 
 #: src/pages/search.tsx:434
 msgid "Try a different search term or check the spelling"
@@ -5098,7 +5161,7 @@ msgstr "Try adjusting your filters"
 msgid "Try again"
 msgstr "Try again"
 
-#: src/components/ui/ErrorBoundary.tsx:103
+#: src/components/ui/ErrorBoundary.tsx:112
 msgid "Try Again"
 msgstr "Try Again"
 
@@ -5343,8 +5406,9 @@ msgstr "Username is required"
 msgid "Username must be at least 3 characters"
 msgstr "Username must be at least 3 characters"
 
-#: src/components/admin/AdminLayout.tsx:87
-#: src/components/admin/AdminLayout.tsx:90
+#: src/components/admin/AdminLayout.tsx:88
+#: src/components/admin/AdminLayout.tsx:91
+#: src/pages/admin/dashboard.tsx:144
 #: src/pages/admin/federation.tsx:392
 #: src/pages/admin/users.tsx:280
 #: src/pages/mod/audit-logs.tsx:258

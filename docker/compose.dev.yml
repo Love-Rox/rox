@@ -6,9 +6,16 @@
 # This starts PostgreSQL, MariaDB, and Dragonfly for local development.
 # Run the Rox backend separately with: bun run dev
 #
+# TimescaleDB is available behind the `timescale` profile for working on the
+# charts subsystem:
+#   docker compose -f docker/compose.dev.yml --profile timescale up -d
+# Point DATABASE_URL at it (port 5433) and keep CHARTS_BACKEND=auto; the
+# TimescaleDB extension is detected automatically at startup.
+#
 # Database connection URLs:
-#   PostgreSQL: postgresql://rox:rox_dev_password@localhost:5432/rox
-#   MariaDB:    mysql://rox:rox_dev_password@localhost:3306/rox
+#   PostgreSQL:  postgresql://rox:rox_dev_password@localhost:5432/rox
+#   MariaDB:     mysql://rox:rox_dev_password@localhost:3306/rox
+#   TimescaleDB: postgresql://rox:rox_dev_password@localhost:5433/rox
 
 services:
   # ============================================
@@ -55,6 +62,33 @@ services:
       retries: 3
 
   # ============================================
+  # TimescaleDB Database (Optional - use --profile timescale)
+  # ============================================
+  # Drop-in PostgreSQL replacement with the TimescaleDB extension for working
+  # on the charts subsystem. Exposed on port 5433 to avoid colliding with the
+  # default postgres service. Point DATABASE_URL at it and keep
+  # CHARTS_BACKEND=auto; the extension is detected automatically at startup.
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: rox-timescaledb
+    restart: unless-stopped
+    profiles:
+      - timescale
+    environment:
+      - POSTGRES_USER=rox
+      - POSTGRES_PASSWORD=rox_dev_password
+      - POSTGRES_DB=rox
+    ports:
+      - "5433:5432"
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rox -d rox"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
   # MariaDB Database
   # ============================================
   mariadb:
@@ -81,5 +115,7 @@ volumes:
     name: rox-dev-postgres-data
   mariadb-data:
     name: rox-dev-mariadb-data
+  timescale-data:
+    name: rox-dev-timescale-data
   dragonfly-data:
     name: rox-dev-dragonfly-data
