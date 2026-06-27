@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rox-dragonfly
+  namespace: rox
+  labels:
+    app: rox-dragonfly
+spec:
+  selector:
+    app: rox-dragonfly
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: 6379
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rox-dragonfly
+  namespace: rox
+spec:
+  serviceName: rox-dragonfly
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rox-dragonfly
+  template:
+    metadata:
+      labels:
+        app: rox-dragonfly
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: sakura
+      containers:
+        - name: dragonfly
+          image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.25.1
+          # Constrain threads/memory: Dragonfly otherwise sizes itself to the
+          # node's CPU count (requiring ~256MiB per io thread) and crashes when
+          # that exceeds the container limit. One thread + a small maxmemory is
+          # plenty for this instance's cache/queue use.
+          args: ["--dir", "/data", "--proactor_threads=1", "--maxmemory=300mb"]
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 1Gi

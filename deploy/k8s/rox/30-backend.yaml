@@ -1,0 +1,109 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rox-backend
+  namespace: rox
+  labels:
+    app: rox-backend
+spec:
+  selector:
+    app: rox-backend
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rox-backend
+  namespace: rox
+  annotations:
+    # keel auto-updates this deployment when the :dev tag's digest changes.
+    keel.sh/policy: force
+    keel.sh/trigger: poll
+    keel.sh/pollSchedule: "@every 3m"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: rox-backend
+  template:
+    metadata:
+      labels:
+        app: rox-backend
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: sakura
+      terminationGracePeriodSeconds: 45
+      initContainers:
+        # Apply DB migrations before the app starts (idempotent; safe per boot).
+        - name: migrate
+          image: ghcr.io/love-rox/rox-backend:dev
+          imagePullPolicy: Always
+          workingDir: /app/packages/backend
+          command: ["bun", "run", "dist/migrate.js"]
+          envFrom:
+            - secretRef:
+                name: rox-config
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+      containers:
+        - name: rox-backend
+          image: ghcr.io/love-rox/rox-backend:dev
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: rox-config
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: PORT
+              value: "3000"
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/uploads
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 10"]
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            periodSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 3000
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            periodSeconds: 30
+            failureThreshold: 5
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: rox-uploads

@@ -70,7 +70,10 @@ function createLoggerConfig(config: LoggerConfig = {}): pino.LoggerOptions {
  */
 function createTransport(config: LoggerConfig = {}): pino.TransportSingleOptions | undefined {
   const isProduction = process.env.NODE_ENV === "production";
-  const pretty = config.pretty ?? true;
+  // Pretty printing (via the pino-pretty transport) is for development only.
+  // In production we emit structured JSON, which also avoids requiring the
+  // pino-pretty module at runtime (it isn't bundled into the production image).
+  const pretty = config.pretty ?? !isProduction;
 
   if (pretty) {
     return {

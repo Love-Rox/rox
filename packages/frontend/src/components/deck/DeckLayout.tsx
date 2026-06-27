@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useCallback, useRef, useState, useEffect } from "react";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useRef, useEffect } from "react";
+import { useAtom, useAtomValue } from "jotai";
 import {
   DndContext,
   closestCenter,
@@ -17,7 +17,7 @@ import {
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Trans } from "@lingui/react/macro";
-import { mobileActiveColumnIndexAtom, setMobileActiveColumnAtom } from "../../lib/atoms/deck";
+import { mobileActiveColumnIndexAtom } from "../../lib/atoms/deck";
 import { currentUserAtom } from "../../lib/atoms/auth";
 import { useDeckProfiles } from "../../hooks/useDeckProfiles";
 import { sidebarCollapsedAtom } from "../../lib/atoms/sidebar";
@@ -66,7 +66,6 @@ export function DeckLayout({ showAddColumn = true, showProfileSwitcher = true }:
   const { activeProfile, updateActiveColumns } = useDeckProfiles();
   const columns = activeProfile?.columns ?? [];
   const [mobileColumnIndex, setMobileColumnIndex] = useAtom(mobileActiveColumnIndexAtom);
-  const setMobileColumn = useSetAtom(setMobileActiveColumnAtom);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -107,27 +106,34 @@ export function DeckLayout({ showAddColumn = true, showProfileSwitcher = true }:
     [columns, updateActiveColumns],
   );
 
-  // Handle mobile swipe
-  const handleMobileSwipe = useCallback(
-    (direction: "left" | "right") => {
-      if (direction === "left" && mobileColumnIndex < columns.length - 1) {
-        setMobileColumn(mobileColumnIndex + 1);
-      } else if (direction === "right" && mobileColumnIndex > 0) {
-        setMobileColumn(mobileColumnIndex - 1);
+  // Mobile carousel: a native CSS scroll-snap track. The browser handles the
+  // finger-following swipe, momentum, axis locking (vertical scroll inside a
+  // column vs horizontal swipe between columns) and snapping — far smoother
+  // than the previous custom touch handlers.
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const mobileScrollRaf = useRef<number | null>(null);
+
+  // Derive the active column index from the carousel scroll position.
+  // rAF-throttled so rapid scroll events don't thrash React state.
+  const handleMobileScroll = useCallback(() => {
+    if (mobileScrollRaf.current != null) return;
+    mobileScrollRaf.current = requestAnimationFrame(() => {
+      mobileScrollRaf.current = null;
+      const el = mobileScrollRef.current;
+      if (!el || el.clientWidth === 0) return;
+      const index = Math.round(el.scrollLeft / el.clientWidth);
+      if (index >= 0 && index < columns.length && index !== mobileColumnIndex) {
+        setMobileColumnIndex(index);
       }
-    },
-    [mobileColumnIndex, columns.length, setMobileColumn],
-  );
+    });
+  }, [columns.length, mobileColumnIndex, setMobileColumnIndex]);
 
-  // Mobile touch handling with visual feedback
-  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
-  const [swipeOffset, setSwipeOffset] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-
-  // Reset swipe offset when column index changes
-  useEffect(() => {
-    setSwipeOffset(0);
-  }, [mobileColumnIndex]);
+  // Smoothly scroll the carousel to a column (used by the indicator dots).
+  const scrollToColumn = useCallback((index: number) => {
+    const el = mobileScrollRef.current;
+    if (!el) return;
+    el.scrollTo({ left: index * el.clientWidth, behavior: "smooth" });
+  }, []);
 
   // Ensure mobile index stays within bounds when columns change
   useEffect(() => {
@@ -136,74 +142,17 @@ export function DeckLayout({ showAddColumn = true, showProfileSwitcher = true }:
     }
   }, [columns.length, mobileColumnIndex, setMobileColumnIndex]);
 
-  // Reset scroll position to start when profile changes or on initial load
+  // Reset scroll position to start when the profile changes or on initial load.
+  // Instant (no smooth) so the carousel does not visibly slide on appear.
   useEffect(() => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollLeft = 0;
     }
-    // Also reset mobile column index to first column
+    if (mobileScrollRef.current) {
+      mobileScrollRef.current.scrollLeft = 0;
+    }
     setMobileColumnIndex(0);
   }, [activeProfile?.id, setMobileColumnIndex]);
-
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    if (touch) {
-      touchStartRef.current = { x: touch.clientX, y: touch.clientY };
-      setIsTransitioning(false);
-    }
-  }, []);
-
-  const handleTouchMove = useCallback(
-    (e: React.TouchEvent) => {
-      if (!touchStartRef.current) return;
-
-      const touch = e.touches[0];
-      if (!touch) return;
-
-      const deltaX = touch.clientX - touchStartRef.current.x;
-      const deltaY = touch.clientY - touchStartRef.current.y;
-
-      // Only handle horizontal swipes (with some tolerance)
-      if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        // Limit swipe offset at edges
-        const canSwipeLeft = mobileColumnIndex < columns.length - 1;
-        const canSwipeRight = mobileColumnIndex > 0;
-
-        let offset = deltaX;
-        if (deltaX < 0 && !canSwipeLeft) {
-          offset = deltaX * 0.2; // Resistance at edge
-        } else if (deltaX > 0 && !canSwipeRight) {
-          offset = deltaX * 0.2; // Resistance at edge
-        }
-
-        setSwipeOffset(offset);
-      }
-    },
-    [mobileColumnIndex, columns.length],
-  );
-
-  const handleTouchEnd = useCallback(
-    (e: React.TouchEvent) => {
-      if (!touchStartRef.current) return;
-
-      const touch = e.changedTouches[0];
-      if (!touch) return;
-
-      const deltaX = touch.clientX - touchStartRef.current.x;
-      const deltaY = touch.clientY - touchStartRef.current.y;
-
-      // Only handle horizontal swipes
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-        setIsTransitioning(true);
-        handleMobileSwipe(deltaX > 0 ? "right" : "left");
-      }
-
-      // Reset offset with animation
-      setSwipeOffset(0);
-      touchStartRef.current = null;
-    },
-    [handleMobileSwipe],
-  );
 
   // Sidebar margin for desktop
   const sidebarMarginClass = currentUser ? (isCollapsed ? "lg:ml-16" : "lg:ml-64") : "";
@@ -279,24 +228,29 @@ export function DeckLayout({ showAddColumn = true, showProfileSwitcher = true }:
           </DndContext>
         </div>
 
-        {/* Mobile: Single column with swipe */}
-        {/* Uses flex-1 to fill remaining space, accounting for mobile app bar */}
+        {/* Mobile: native scroll-snap carousel (one column per screen).
+            The browser handles finger-following swipe, momentum and snapping;
+            overscroll-x-contain prevents the horizontal swipe from triggering
+            the browser's back/forward navigation. */}
         <div
-          className="lg:hidden flex-1 min-h-0 overflow-hidden"
+          className="lg:hidden flex-1 min-h-0"
           style={{
             // Subtract the mobile app bar height (3.5rem + safe-area)
             marginBottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px))",
           }}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
         >
-          {columns.length > 0 && columns[mobileColumnIndex] ? (
+          {columns.length > 0 ? (
             <div
-              className={`h-full ${isTransitioning ? "transition-transform duration-200 ease-out" : ""}`}
-              style={{ transform: `translateX(${swipeOffset}px)` }}
+              ref={mobileScrollRef}
+              onScroll={handleMobileScroll}
+              className="flex h-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory overscroll-x-contain"
+              style={{ scrollbarWidth: "none" }}
             >
-              <DeckColumn column={columns[mobileColumnIndex]} isMobile />
+              {columns.map((column) => (
+                <div key={column.id} className="w-full shrink-0 snap-start h-full">
+                  <DeckColumn column={column} isMobile />
+                </div>
+              ))}
             </div>
           ) : (
             /* Empty state when no columns */
@@ -319,7 +273,7 @@ export function DeckLayout({ showAddColumn = true, showProfileSwitcher = true }:
               {columns.map((col, index) => (
                 <button
                   key={col.id}
-                  onClick={() => setMobileColumnIndex(index)}
+                  onClick={() => scrollToColumn(index)}
                   className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
                     index === mobileColumnIndex
                       ? "bg-(--accent-color) scale-110"

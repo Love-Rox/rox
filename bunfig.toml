@@ -1,0 +1,10 @@
+# Use the hoisted (flat) node_modules layout instead of bun's isolated layout.
+#
+# The production container images bundle the app with `bun build` and then run
+# the bundle against a node_modules copied from the build stage. Native deps
+# (e.g. sharp -> @img/sharp-linux-x64) are required dynamically at runtime, and
+# the isolated `.bun` symlink layout does not survive the multi-stage COPY in a
+# way the bundle can resolve. A hoisted, flat node_modules is portable across
+# the COPY and keeps every dependency resolvable from the top level.
+[install]
+linker = "hoisted"

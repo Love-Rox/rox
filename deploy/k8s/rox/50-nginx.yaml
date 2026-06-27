@@ -1,0 +1,345 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rox-nginx
+  namespace: rox
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes auto;
+    error_log /var/log/nginx/error.log warn;
+    pid /var/run/nginx.pid;
+
+    events {
+        worker_connections 1024;
+        use epoll;
+        multi_accept on;
+    }
+
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+
+        log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                        '$status $body_bytes_sent "$http_referer" '
+                        '"$http_user_agent" "$http_x_forwarded_for"';
+        access_log /var/log/nginx/access.log main;
+
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 65;
+        types_hash_max_size 2048;
+
+        # Resolve service names for variable-based proxy_pass (/notes/, /@user).
+        resolver 10.43.0.10 valid=30s ipv6=off;
+
+        gzip on;
+        gzip_vary on;
+        gzip_proxied any;
+        gzip_comp_level 6;
+        gzip_types text/plain text/css text/xml application/json application/javascript
+                   application/rss+xml application/atom+xml image/svg+xml
+                   application/activity+json application/ld+json;
+
+        limit_req_zone $binary_remote_addr zone=api_limit:10m rate=50r/s;
+        limit_req_zone $binary_remote_addr zone=auth_limit:10m rate=10r/m;
+        limit_req_zone $binary_remote_addr zone=inbox_zone:10m rate=10r/s;
+
+        map $http_accept $is_activitypub_request {
+            default                          0;
+            "~*application/activity\+json"   1;
+            "~*application/ld\+json"         1;
+        }
+
+        map $is_activitypub_request $notes_upstream {
+            default                          rox-frontend:3001;
+            1                                rox-backend:3000;
+        }
+
+        map $is_activitypub_request $user_profile_upstream {
+            default                          rox-frontend:3001;
+            1                                rox-backend:3000;
+        }
+
+        include /etc/nginx/conf.d/*.conf;
+    }
+  default.conf: |
+    upstream rox_backend {
+        server rox-backend:3000;
+        keepalive 64;
+    }
+
+    upstream rox_frontend {
+        server rox-frontend:3001;
+        keepalive 32;
+    }
+
+    server {
+        listen 80;
+        server_name _;
+        client_max_body_size 50M;
+
+        location ~ ^(.+)/$ {
+            return 301 $scheme://$host$1$is_args$args;
+        }
+
+        location = /api/notifications/stream {
+            proxy_pass http://rox_backend;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_buffering off;
+            proxy_cache off;
+            proxy_connect_timeout 60s;
+            proxy_send_timeout 3600s;
+            proxy_read_timeout 3600s;
+            proxy_set_header Connection "";
+            chunked_transfer_encoding on;
+        }
+
+        location /api/ {
+            limit_req zone=api_limit burst=50 nodelay;
+            limit_req_status 429;
+            proxy_pass http://rox_backend;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_connect_timeout 60s;
+            proxy_send_timeout 120s;
+            proxy_read_timeout 120s;
+            proxy_buffering off;
+            proxy_set_header Connection "";
+        }
+
+        location /api/auth/ {
+            limit_req zone=auth_limit burst=5 nodelay;
+            proxy_pass http://rox_backend;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_connect_timeout 60s;
+            proxy_send_timeout 120s;
+            proxy_read_timeout 120s;
+            proxy_buffering off;
+            proxy_set_header Connection "";
+        }
+
+        location /ws/ {
+            proxy_pass http://rox_backend;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_read_timeout 86400s;
+            proxy_send_timeout 86400s;
+            proxy_buffering off;
+        }
+
+        location ~ ^/users/[^/]+/inbox$ {
+            limit_req zone=inbox_zone burst=20 nodelay;
+            limit_req_status 429;
+            proxy_pass http://rox_backend;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_connect_timeout 60s;
+            proxy_send_timeout 120s;
+            proxy_read_timeout 120s;
+            proxy_buffering off;
+            proxy_set_header Connection "";
+        }
+
+        location /.well-known/ {
+            proxy_pass http://rox_backend;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_buffering off;
+            proxy_set_header Connection "";
+        }
+
+        location /nodeinfo/ {
+            proxy_pass http://rox_backend;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_buffering off;
+        }
+
+        location /oembed {
+            proxy_pass http://rox_backend;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_buffering off;
+            add_header Cache-Control "public, max-age=300";
+        }
+
+        location /users/ {
+            proxy_pass http://rox_backend;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_buffering off;
+        }
+
+        # Accept-header routing (ActivityPub vs HTML). Uses variable upstream,
+        # which requires the resolver configured in nginx.conf.
+        location /notes/ {
+            proxy_pass http://$notes_upstream;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Connection "";
+        }
+
+        location ~ ^/@[^/]+$ {
+            proxy_pass http://$user_profile_upstream;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Connection "";
+        }
+
+        location /health {
+            proxy_pass http://rox_backend;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_buffering off;
+        }
+
+        location /uploads/ {
+            alias /app/uploads/;
+            expires 30d;
+            add_header Cache-Control "public, immutable";
+            location ~ \.(php|cgi|pl|py)$ {
+                deny all;
+            }
+        }
+
+        location / {
+            proxy_pass http://rox_frontend;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_connect_timeout 120s;
+            proxy_send_timeout 120s;
+            proxy_read_timeout 120s;
+            proxy_buffer_size 16k;
+            proxy_buffers 16 16k;
+            proxy_busy_buffers_size 32k;
+        }
+
+        error_page 502 503 504 /50x.html;
+        location = /50x.html {
+            root /usr/share/nginx/html;
+            internal;
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rox-nginx
+  namespace: rox
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rox-nginx
+  template:
+    metadata:
+      labels:
+        app: rox-nginx
+      annotations:
+        # Roll the nginx pod when the config changes (set by `kubectl rollout
+        # restart` after editing the ConfigMap).
+        rox.love-rox.cc/config-version: "1"
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: sakura
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+              readOnly: true
+            - name: uploads
+              mountPath: /app/uploads
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: rox-nginx
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: rox-uploads
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rox-nginx
+  namespace: rox
+  labels:
+    app: rox-nginx
+spec:
+  type: NodePort
+  externalTrafficPolicy: Local
+  selector:
+    app: rox-nginx
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      nodePort: 30091
