@@ -120,6 +120,38 @@ Register app in your Mastodon instance: Settings > Development > New Application
 | `DRAGONFLY_URL` | Redis-compatible connection URL | `redis://localhost:6379` |
 | `USE_QUEUE` | Enable BullMQ job queue | `true` (when Redis available) |
 
+## Charts / Time-Series Statistics
+
+Optional subsystem that records hourly/daily snapshots of instance statistics
+(users, notes, active users, federation, drive).
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `CHARTS_ENABLED` | Enable the charts subsystem | `false` |
+| `CHARTS_BACKEND` | Storage backend: `auto`, `postgres`, or `timescale` | `auto` |
+
+### CHARTS_BACKEND Values
+
+- `auto` - Detect the TimescaleDB extension at startup; use it when available, otherwise fall back to plain PostgreSQL
+- `postgres` - Always use plain PostgreSQL tables
+- `timescale` - Always use TimescaleDB (requires the extension to be installed)
+
+### Using TimescaleDB
+
+TimescaleDB is optional. A `timescale` Docker Compose profile provides a
+drop-in PostgreSQL replacement with the extension preinstalled:
+
+```bash
+# Development (exposed on port 5433)
+docker compose -f docker/compose.dev.yml --profile timescale up -d
+
+# Production
+docker compose -f docker/compose.yml --profile timescale up -d
+```
+
+Point `DATABASE_URL` at the TimescaleDB service, run `bun run db:migrate`, and
+keep `CHARTS_BACKEND=auto` — the extension is detected automatically.
+
 ## Logging
 
 | Variable | Description | Default |

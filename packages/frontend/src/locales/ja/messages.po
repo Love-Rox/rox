@@ -33,6 +33,11 @@ msgstr "{0} / {1} MB ({2}%)"
 msgid "{0} categories"
 msgstr "{0}カテゴリ"
 
+#. placeholder {0}: card.title
+#: src/pages/admin/dashboard.tsx:334
+msgid "{0} daily trend chart"
+msgstr "{0}の日次トレンドチャート"
+
 #. placeholder {0}: usage.fileCount.total
 #: src/components/settings/StorageSection.tsx:218
 msgid "{0} files total"
@@ -301,6 +306,10 @@ msgstr "アクションログ"
 msgid "Actions"
 msgstr "アクション"
 
+#: src/pages/admin/dashboard.tsx:146
+msgid "Active Users"
+msgstr "アクティブユーザー"
+
 #: src/pages/admin/queue.tsx:205
 msgid "ActivityPub delivery is running in synchronous mode."
 msgstr "ActivityPub配信は同期モードで実行されています。"
@@ -407,7 +416,7 @@ msgstr "管理"
 msgid "Admin Account"
 msgstr "管理者アカウント"
 
-#: src/components/admin/AdminLayout.tsx:316
+#: src/components/admin/AdminLayout.tsx:317
 msgid "Admin Menu"
 msgstr "管理メニュー"
 
@@ -513,7 +522,7 @@ msgstr "すでにアカウントをお持ちですか？サインイン"
 msgid "Also delete all notes by this user"
 msgstr "このユーザーの全ての投稿も削除する"
 
-#: src/components/ui/ErrorBoundary.tsx:99
+#: src/components/ui/ErrorBoundary.tsx:108
 msgid "An unexpected error occurred. Try refreshing the page or going back."
 msgstr ""
 
@@ -581,7 +590,7 @@ msgstr "このインスタンスをキャッシュから削除してもよろし
 msgid "Are you sure you want to unfollow <0>@{0}{1}</0>?"
 msgstr "<0>@{0}{1}</0> のフォローを解除しますか？"
 
-#: src/components/admin/AdminLayout.tsx:81
+#: src/components/admin/AdminLayout.tsx:82
 msgid "Assets"
 msgstr "素材"
 
@@ -707,6 +716,7 @@ msgstr "ブロック日時:"
 
 #: src/pages/admin/blocks.tsx:206
 #: src/pages/admin/blocks.tsx:288
+#: src/pages/admin/dashboard.tsx:261
 #: src/pages/mod/instances.tsx:247
 #: src/pages/mod/instances.tsx:328
 msgid "Blocked Instances"
@@ -717,7 +727,7 @@ msgstr "ブロック中のインスタンス"
 msgid "Blocked on {0}"
 msgstr "{0}にブロック"
 
-#: src/components/admin/AdminLayout.tsx:93
+#: src/components/admin/AdminLayout.tsx:94
 #: src/pages/admin/blocked-usernames.tsx:202
 msgid "Blocked Usernames"
 msgstr "禁止ユーザー名"
@@ -734,7 +744,7 @@ msgstr "ブロック:"
 msgid "Blocking an instance will prevent all federation with that server. Users from blocked instances cannot interact with this server."
 msgstr "インスタンスをブロックすると、そのサーバーとの連携がすべて停止されます。ブロックされたインスタンスのユーザーはこのサーバーとやり取りできなくなります。"
 
-#: src/components/admin/AdminLayout.tsx:120
+#: src/components/admin/AdminLayout.tsx:121
 msgid "Blocks"
 msgstr "ブロック"
 
@@ -758,7 +768,7 @@ msgstr "ブラウザタブのアイコン、32x32または64x64推奨（最大51
 msgid "Bulk Edit"
 msgstr "一括編集"
 
-#: src/components/admin/AdminLayout.tsx:105
+#: src/components/admin/AdminLayout.tsx:106
 msgid "Bulk Import"
 msgstr "一括インポート"
 
@@ -969,11 +979,11 @@ msgstr "お問い合わせスレッドの詳細"
 msgid "Contact Us"
 msgstr "お問い合わせ"
 
-#: src/components/admin/AdminLayout.tsx:121
+#: src/components/admin/AdminLayout.tsx:122
 msgid "Contacts"
 msgstr "お問い合わせ"
 
-#: src/components/admin/AdminLayout.tsx:99
+#: src/components/admin/AdminLayout.tsx:100
 msgid "Content"
 msgstr "コンテンツ"
 
@@ -1165,6 +1175,13 @@ msgstr "ダーク"
 #: src/pages/admin/settings.tsx:825
 msgid "Dark Mode Icon"
 msgstr "ダークモードアイコン"
+
+#: src/components/admin/AdminLayout.tsx:77
+#: src/pages/admin/dashboard.tsx:153
+#: src/pages/admin/dashboard.tsx:167
+#: src/pages/admin/dashboard.tsx:178
+msgid "Dashboard"
+msgstr "ダッシュボード"
 
 #: src/components/settings/DataExportSection.tsx:81
 msgid "Data Export"
@@ -1622,7 +1639,7 @@ msgstr "パスワードを入力してください"
 msgid "Enter your server to follow"
 msgstr "フォローするにはあなたのサーバーを入力"
 
-#: src/components/ui/ErrorBoundary.tsx:113
+#: src/components/ui/ErrorBoundary.tsx:122
 msgid "Error details"
 msgstr ""
 
@@ -2010,7 +2027,7 @@ msgstr "ファビコンURL"
 msgid "Federated"
 msgstr "分散型"
 
-#: src/components/admin/AdminLayout.tsx:115
+#: src/components/admin/AdminLayout.tsx:116
 #: src/pages/admin/federation.tsx:204
 #: src/pages/admin/federation.tsx:218
 #: src/pages/admin/federation.tsx:231
@@ -2195,7 +2212,7 @@ msgstr "タイムラインへ"
 msgid "Gone"
 msgstr "削除済み"
 
-#: src/components/admin/AdminLayout.tsx:94
+#: src/components/admin/AdminLayout.tsx:95
 #: src/pages/admin/gone-users.tsx:164
 #: src/pages/admin/gone-users.tsx:177
 msgid "Gone Users"
@@ -2327,7 +2344,7 @@ msgstr "返信元"
 msgid "Initiate Migration"
 msgstr "引っ越しを開始"
 
-#: src/components/admin/AdminLayout.tsx:78
+#: src/components/admin/AdminLayout.tsx:79
 #: src/pages/onboarding.tsx:403
 msgid "Instance"
 msgstr "インスタンス"
@@ -2389,6 +2406,12 @@ msgstr "インスタンス名は必須です"
 msgid "Instance Overview"
 msgstr "インスタンス概要"
 
+#: src/pages/admin/dashboard.tsx:154
+#: src/pages/admin/dashboard.tsx:168
+#: src/pages/admin/dashboard.tsx:179
+msgid "Instance overview and statistics"
+msgstr "インスタンスの概要と統計"
+
 #: src/pages/admin/federation.tsx:158
 msgid "Instance removed from cache"
 msgstr "インスタンスをキャッシュから削除しました"
@@ -2447,9 +2470,15 @@ msgstr "招待コードを入力してください"
 msgid "Invitation Codes"
 msgstr "招待コード"
 
-#: src/components/admin/AdminLayout.tsx:92
+#: src/components/admin/AdminLayout.tsx:93
 msgid "Invitations"
 msgstr "招待"
+
+#. placeholder {0}: formatNumber(stats.invitations.total)
+#. placeholder {1}: formatNumber(stats.invitations.unused)
+#: src/pages/admin/dashboard.tsx:293
+msgid "Invitations: {0} total, {1} unused"
+msgstr "招待コード: 合計{0}件、未使用{1}件"
 
 #: src/pages/admin/roles.tsx:618
 msgid "Invite"
@@ -2534,7 +2563,7 @@ msgstr "永続的な警告の場合は空のままにしてください"
 msgid "Leave empty for auto-generated code"
 msgstr "空欄にすると自動生成されます"
 
-#: src/components/admin/AdminLayout.tsx:82
+#: src/components/admin/AdminLayout.tsx:83
 msgid "Legal"
 msgstr "法的文書"
 
@@ -2667,13 +2696,17 @@ msgstr "ローカル"
 msgid "Local (loaded)"
 msgstr "ローカル（表示中）"
 
-#: src/components/admin/AdminLayout.tsx:103
+#: src/components/admin/AdminLayout.tsx:104
 msgid "Local Emojis"
 msgstr "ローカル絵文字"
 
 #: src/pages/search.tsx:385
 msgid "Local only"
 msgstr "ローカルのみ"
+
+#: src/pages/admin/dashboard.tsx:213
+msgid "Local Users"
+msgstr "ローカルユーザー"
 
 #: src/components/pages/ContactThreadPageClient.tsx:160
 msgid "Log in"
@@ -2867,7 +2900,7 @@ msgstr "があなたにメンションしました"
 msgid "Mentions"
 msgstr "メンション"
 
-#: src/components/admin/AdminLayout.tsx:412
+#: src/components/admin/AdminLayout.tsx:413
 msgid "Menu"
 msgstr "メニュー"
 
@@ -3033,6 +3066,10 @@ msgstr "カスタム絵文字がまだありません"
 #: src/pages/admin/blocked-usernames.tsx:393
 msgid "No custom patterns defined yet."
 msgstr "カスタムパターンはまだ定義されていません。"
+
+#: src/pages/admin/dashboard.tsx:338
+msgid "No data"
+msgstr "データなし"
 
 #: src/pages/mod/notes.tsx:190
 msgid "No deleted notes"
@@ -3278,6 +3315,7 @@ msgstr "注意: リモートユーザーは、このサーバーに以前キャ�
 msgid "Note: Some CSS properties may be restricted for security."
 msgstr "注意: セキュリティのため一部のCSSプロパティは制限されます。"
 
+#: src/pages/admin/dashboard.tsx:145
 #: src/pages/mod/audit-logs.tsx:257
 msgid "Notes"
 msgstr "ノート"
@@ -3488,6 +3526,7 @@ msgstr "パターンは必須です"
 msgid "Pending"
 msgstr "保留中"
 
+#: src/pages/admin/dashboard.tsx:277
 #: src/pages/admin/reports.tsx:262
 #: src/pages/mod/reports.tsx:249
 msgid "Pending Reports"
@@ -3764,11 +3803,11 @@ msgstr "キューの状態"
 msgid "Queue Not Available"
 msgstr "キューは利用できません"
 
-#: src/components/admin/AdminLayout.tsx:118
+#: src/components/admin/AdminLayout.tsx:119
 msgid "Queue Overview"
 msgstr "キュー概要"
 
-#: src/components/admin/AdminLayout.tsx:119
+#: src/components/admin/AdminLayout.tsx:120
 msgid "Queue Servers"
 msgstr "キューサーバー"
 
@@ -3890,7 +3929,7 @@ msgstr "リストを更新"
 msgid "Refresh page"
 msgstr "ページを更新"
 
-#: src/components/ui/ErrorBoundary.tsx:107
+#: src/components/ui/ErrorBoundary.tsx:116
 msgid "Refresh Page"
 msgstr ""
 
@@ -3906,7 +3945,7 @@ msgstr "登録済みデバイス"
 msgid "Registering..."
 msgstr "登録中..."
 
-#: src/components/admin/AdminLayout.tsx:79
+#: src/components/admin/AdminLayout.tsx:80
 #: src/components/settings/AboutSection.tsx:130
 #: src/pages/onboarding.tsx:412
 msgid "Registration"
@@ -3970,7 +4009,7 @@ msgstr "リモート"
 msgid "Remote (loaded)"
 msgstr "リモート（表示中）"
 
-#: src/components/admin/AdminLayout.tsx:104
+#: src/components/admin/AdminLayout.tsx:105
 msgid "Remote Emojis"
 msgstr "リモート絵文字"
 
@@ -3985,6 +4024,10 @@ msgstr "他のサーバーのユーザーがカスタム絵文字でリアクシ
 #: src/pages/admin/federation.tsx:331
 msgid "Remote Instances"
 msgstr "リモートインスタンス"
+
+#: src/pages/admin/dashboard.tsx:229
+msgid "Remote Users"
+msgstr "リモートユーザー"
 
 #: src/components/admin/AssetUploadCard.tsx:82
 #: src/pages/admin/federation.tsx:445
@@ -4143,7 +4186,7 @@ msgstr "報告者"
 msgid "Reporting"
 msgstr "報告対象"
 
-#: src/components/admin/AdminLayout.tsx:106
+#: src/components/admin/AdminLayout.tsx:107
 #: src/pages/admin/reports.tsx:220
 #: src/pages/admin/reports.tsx:234
 #: src/pages/admin/reports.tsx:247
@@ -4236,7 +4279,7 @@ msgstr "復元"
 msgid "Restore Note"
 msgstr "ノートを復元"
 
-#: src/components/ui/ErrorBoundary.tsx:85
+#: src/components/ui/ErrorBoundary.tsx:94
 #: src/components/ui/ErrorMessage.tsx:89
 msgid "Retry"
 msgstr "再試行"
@@ -4282,7 +4325,7 @@ msgstr "ロール名"
 msgid "Role updated"
 msgstr "ロールを更新しました"
 
-#: src/components/admin/AdminLayout.tsx:91
+#: src/components/admin/AdminLayout.tsx:92
 #: src/pages/admin/roles.tsx:571
 msgid "Roles"
 msgstr "ロール"
@@ -4673,8 +4716,8 @@ msgstr "ソーシャル"
 msgid "Software"
 msgstr "ソフトウェア"
 
-#: src/components/ui/ErrorBoundary.tsx:82
-#: src/components/ui/ErrorBoundary.tsx:96
+#: src/components/ui/ErrorBoundary.tsx:91
+#: src/components/ui/ErrorBoundary.tsx:105
 msgid "Something went wrong"
 msgstr ""
 
@@ -4702,6 +4745,10 @@ msgstr "標準絵文字"
 msgid "Start a conversation by composing a direct message"
 msgstr "ダイレクトメッセージを送信して会話を始めましょう"
 
+#: src/pages/admin/dashboard.tsx:351
+msgid "Statistics collection is disabled"
+msgstr "統計の収集は無効です"
+
 #: src/pages/admin/emojis.tsx:1569
 msgid "Status"
 msgstr "ステータス"
@@ -4712,7 +4759,7 @@ msgstr "ステータス"
 msgid "Step {0} of {1}"
 msgstr "ステップ {0} / {1}"
 
-#: src/components/admin/AdminLayout.tsx:114
+#: src/components/admin/AdminLayout.tsx:115
 #: src/components/settings/StorageSection.tsx:157
 #: src/components/settings/StorageSection.tsx:177
 #: src/pages/settings.tsx:155
@@ -4788,7 +4835,7 @@ msgstr "スワイプでナビゲート"
 msgid "Synced"
 msgstr "同期済み"
 
-#: src/components/admin/AdminLayout.tsx:111
+#: src/components/admin/AdminLayout.tsx:112
 #: src/pages/admin/settings.tsx:641
 msgid "System"
 msgstr "システム"
@@ -4798,7 +4845,7 @@ msgstr "システム"
 msgid "System Files"
 msgstr "システムファイル"
 
-#: src/components/admin/AdminLayout.tsx:116
+#: src/components/admin/AdminLayout.tsx:117
 #: src/pages/admin/system-follows.tsx:300
 msgid "System Follows"
 msgstr "システムフォロー"
@@ -4890,7 +4937,7 @@ msgstr "メンテナンスまたは高負荷のため、サーバーは一時的
 msgid "The user @{username} doesn't exist or may have been deleted."
 msgstr "@{username} というユーザーは存在しないか、削除された可能性があります。"
 
-#: src/components/admin/AdminLayout.tsx:80
+#: src/components/admin/AdminLayout.tsx:81
 #: src/components/settings/UISettingsSection.tsx:323
 msgid "Theme"
 msgstr "テーマ"
@@ -5012,6 +5059,10 @@ msgstr "このユーザー名は使用可能です"
 msgid "This username is blocked"
 msgstr "このユーザー名はブロックされています"
 
+#: src/pages/admin/dashboard.tsx:354
+msgid "Time-series charts are not available because the charts subsystem is not enabled on this instance."
+msgstr "このインスタンスではチャート機能が有効化されていないため、時系列チャートは利用できません。"
+
 #: src/components/deck/AddColumnDialog.tsx:92
 #: src/components/deck/DeckColumn.tsx:152
 #: src/pages/timeline.tsx:122
@@ -5056,6 +5107,10 @@ msgstr "総配信数"
 msgid "Total Files"
 msgstr "総ファイル数"
 
+#: src/pages/admin/dashboard.tsx:245
+msgid "Total Notes"
+msgstr "総ノート数"
+
 #: src/pages/admin/reports.tsx:277
 #: src/pages/mod/reports.tsx:264
 msgid "Total Reports"
@@ -5069,6 +5124,10 @@ msgstr "ロール総数"
 msgid "Total Size"
 msgstr "総サイズ"
 
+#: src/pages/admin/dashboard.tsx:197
+msgid "Total Users"
+msgstr "総ユーザー数"
+
 #. placeholder {0}: remoteEmojis.length
 #. placeholder {1}: remoteHosts.length
 #: src/pages/admin/emojis.tsx:1419
@@ -5078,6 +5137,10 @@ msgstr "合計: {1}サーバーから{0}件のリモート絵文字"
 #: src/pages/admin/emojis.tsx:1277
 msgid "Total: {totalEmojis} emojis"
 msgstr "合計: {totalEmojis}個の絵文字"
+
+#: src/pages/admin/dashboard.tsx:307
+msgid "Trends (daily)"
+msgstr "トレンド(日次)"
 
 #: src/pages/search.tsx:434
 msgid "Try a different search term or check the spelling"
@@ -5098,7 +5161,7 @@ msgstr "フィルターを調整してみてください"
 msgid "Try again"
 msgstr "再試行"
 
-#: src/components/ui/ErrorBoundary.tsx:103
+#: src/components/ui/ErrorBoundary.tsx:112
 msgid "Try Again"
 msgstr ""
 
@@ -5343,8 +5406,9 @@ msgstr "ユーザー名を入力してください"
 msgid "Username must be at least 3 characters"
 msgstr "ユーザー名は3文字以上必要です"
 
-#: src/components/admin/AdminLayout.tsx:87
-#: src/components/admin/AdminLayout.tsx:90
+#: src/components/admin/AdminLayout.tsx:88
+#: src/components/admin/AdminLayout.tsx:91
+#: src/pages/admin/dashboard.tsx:144
 #: src/pages/admin/federation.tsx:392
 #: src/pages/admin/users.tsx:280
 #: src/pages/mod/audit-logs.tsx:258
