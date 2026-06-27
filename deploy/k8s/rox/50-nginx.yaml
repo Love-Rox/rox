@@ -235,6 +235,11 @@ data:
             proxy_buffering off;
         }
 
+        # NOTE: /metrics is intentionally NOT proxied here — it would become
+        # publicly reachable via the Cloudflare tunnel. Prometheus scrapes the
+        # backend's metrics over the internal node/Tailscale network via the
+        # rox-backend NodePort (30092) instead.
+
         location /uploads/ {
             alias /app/uploads/;
             expires 30d;

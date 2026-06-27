@@ -6,12 +6,18 @@ metadata:
   labels:
     app: rox-backend
 spec:
+  # NodePort so an out-of-cluster Prometheus (on the monitoring host, reachable
+  # over the node/Tailscale network) can scrape the backend's /metrics directly
+  # — mirroring the old bare-metal setup (backend on an internal port), without
+  # exposing /metrics through the public Cloudflare tunnel.
+  type: NodePort
   selector:
     app: rox-backend
   ports:
     - name: http
       port: 3000
       targetPort: 3000
+      nodePort: 30092
 ---
 apiVersion: apps/v1
 kind: Deployment
