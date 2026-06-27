@@ -1,0 +1,14 @@
+# Shared uploads volume (local storage). Written by rox-backend, served by nginx.
+# local-path is node-local + ReadWriteOnce, so both consumers are pinned to the
+# sakura node (RWO permits multiple pods on the same node).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rox-uploads
+  namespace: rox
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 10Gi

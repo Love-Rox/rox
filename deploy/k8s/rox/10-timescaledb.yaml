@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rox-timescaledb
+  namespace: rox
+  labels:
+    app: rox-timescaledb
+spec:
+  clusterIP: None
+  selector:
+    app: rox-timescaledb
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rox-timescaledb
+  namespace: rox
+spec:
+  serviceName: rox-timescaledb
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rox-timescaledb
+  template:
+    metadata:
+      labels:
+        app: rox-timescaledb
+    spec:
+      # Pin to the sakura node: local-path storage is node-local and the
+      # production data lives on this node.
+      nodeSelector:
+        kubernetes.io/hostname: sakura
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: timescaledb
+          # TimescaleDB on PostgreSQL 16 (matches the bare-metal PG16 dump).
+          image: timescale/timescaledb:2.17.2-pg16
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: rox-config
+          env:
+            # PGDATA in a subdir so the PVC root (with lost+found) isn't used directly.
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "rox", "-d", "rox"]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 5Gi

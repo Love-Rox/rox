@@ -53,6 +53,13 @@ COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
 COPY --from=builder /app/packages/shared/package.json ./packages/shared/
 COPY --from=builder /app/package.json ./
 
+# Include the migration runner and SQL migrations so an init container can run
+# `bun run src/db/migrate.ts` against the database before the app starts.
+# migrate.ts only depends on drizzle-orm + pg (already in node_modules), so it
+# runs standalone without the rest of the source tree.
+COPY --from=builder /app/packages/backend/src/db/migrate.ts ./packages/backend/src/db/migrate.ts
+COPY --from=builder /app/packages/backend/drizzle ./packages/backend/drizzle
+
 # Create uploads directory with proper permissions
 RUN mkdir -p /app/uploads && chown -R rox:rox /app
 
