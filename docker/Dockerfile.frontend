@@ -4,7 +4,7 @@
 # ============================================
 # Stage 1: Build
 # ============================================
-FROM oven/bun:1.3-alpine AS builder
+FROM oven/bun:1.3 AS builder
 
 WORKDIR /app
 
@@ -23,26 +23,28 @@ COPY packages/frontend ./packages/frontend
 COPY packages/shared ./packages/shared
 COPY tsconfig.json ./
 
-# Build shared package
-WORKDIR /app/packages/shared
-RUN bun run build
+# Set production AFTER install (so devDeps are available for the build) and
+# BEFORE building, so any build-time NODE_ENV inlining reflects production.
+ENV NODE_ENV=production
 
-# Build frontend (Waku)
+# Build frontend (Waku). The shared package is consumed from source (its
+# package.json `main` points at src/index.ts) and the bundler inlines it, so
+# there is no separate shared build/dist step.
 WORKDIR /app/packages/frontend
 RUN bun run build
 
 # ============================================
 # Stage 2: Production
 # ============================================
-FROM oven/bun:1.3-alpine AS production
+FROM oven/bun:1.3 AS production
 
-# Install security updates
-RUN apk update && apk upgrade && \
-    rm -rf /var/cache/apk/*
+# Install security updates (Debian/glibc base, consistent with the backend)
+RUN apt-get update && apt-get upgrade -y && \
+    rm -rf /var/lib/apt/lists/*
 
 # Create non-root user for security
-RUN addgroup -g 1001 -S rox && \
-    adduser -S -D -H -u 1001 -s /sbin/nologin -G rox rox
+RUN groupadd -g 1001 rox && \
+    useradd -r -u 1001 -g rox -s /usr/sbin/nologin rox
 
 WORKDIR /app
 
@@ -51,7 +53,6 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/frontend/dist ./packages/frontend/dist
 COPY --from=builder /app/packages/frontend/package.json ./packages/frontend/
 COPY --from=builder /app/packages/frontend/start.ts ./packages/frontend/
-COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
 COPY --from=builder /app/packages/shared/package.json ./packages/shared/
 COPY --from=builder /app/package.json ./
 
