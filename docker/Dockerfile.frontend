@@ -4,14 +4,16 @@
 # ============================================
 # Stage 1: Build
 # ============================================
-FROM oven/bun:1.1-alpine AS builder
+FROM oven/bun:1.3-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files. All workspace package.json files are required so
+# `bun install --frozen-lockfile` can validate the workspace lockfile.
 COPY package.json bun.lock ./
 COPY packages/frontend/package.json ./packages/frontend/
 COPY packages/shared/package.json ./packages/shared/
+COPY packages/backend/package.json ./packages/backend/
 
 # Install dependencies
 RUN bun install --frozen-lockfile
@@ -32,7 +34,7 @@ RUN bun run build
 # ============================================
 # Stage 2: Production
 # ============================================
-FROM oven/bun:1.1-alpine AS production
+FROM oven/bun:1.3-alpine AS production
 
 # Install security updates
 RUN apk update && apk upgrade && \

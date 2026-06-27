@@ -4,14 +4,16 @@
 # ============================================
 # Stage 1: Build
 # ============================================
-FROM oven/bun:1.1-alpine AS builder
+FROM oven/bun:1.3-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files. All workspace package.json files are required so
+# `bun install --frozen-lockfile` can validate the workspace lockfile.
 COPY package.json bun.lock ./
 COPY packages/backend/package.json ./packages/backend/
 COPY packages/shared/package.json ./packages/shared/
+COPY packages/frontend/package.json ./packages/frontend/
 
 # Install dependencies
 RUN bun install --frozen-lockfile
@@ -25,14 +27,18 @@ COPY tsconfig.json ./
 WORKDIR /app/packages/shared
 RUN bun run build
 
-# Build backend
+# Build backend (app entrypoint)
 WORKDIR /app/packages/backend
 RUN bun run build
+
+# Also bundle the migration runner so it can run standalone (deps inlined),
+# without relying on the workspace node_modules layout at runtime.
+RUN bun build src/db/migrate.ts --outdir dist --target bun
 
 # ============================================
 # Stage 2: Production
 # ============================================
-FROM oven/bun:1.1-alpine AS production
+FROM oven/bun:1.3-alpine AS production
 
 # Install security updates and required packages
 RUN apk update && apk upgrade && \
@@ -53,11 +59,9 @@ COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
 COPY --from=builder /app/packages/shared/package.json ./packages/shared/
 COPY --from=builder /app/package.json ./
 
-# Include the migration runner and SQL migrations so an init container can run
-# `bun run src/db/migrate.ts` against the database before the app starts.
-# migrate.ts only depends on drizzle-orm + pg (already in node_modules), so it
-# runs standalone without the rest of the source tree.
-COPY --from=builder /app/packages/backend/src/db/migrate.ts ./packages/backend/src/db/migrate.ts
+# Include the SQL migrations so an init container can run the bundled migration
+# runner (dist/migrate.js, already included with dist above) against the
+# database before the app starts. The migrator reads these SQL files at runtime.
 COPY --from=builder /app/packages/backend/drizzle ./packages/backend/drizzle
 
 # Create uploads directory with proper permissions
