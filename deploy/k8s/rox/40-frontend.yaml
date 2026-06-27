@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rox-frontend
+  namespace: rox
+  labels:
+    app: rox-frontend
+spec:
+  selector:
+    app: rox-frontend
+  ports:
+    - name: http
+      port: 3001
+      targetPort: 3001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rox-frontend
+  namespace: rox
+  annotations:
+    keel.sh/policy: force
+    keel.sh/trigger: poll
+    keel.sh/pollSchedule: "@every 3m"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: rox-frontend
+  template:
+    metadata:
+      labels:
+        app: rox-frontend
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: sakura
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: rox-frontend
+          image: ghcr.io/love-rox/rox-frontend:dev
+          ports:
+            - containerPort: 3001
+          envFrom:
+            - secretRef:
+                name: rox-config
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: FRONTEND_PORT
+              value: "3001"
+            - name: INTERNAL_API_URL
+              value: http://rox-backend:3000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 100m
+              memory: 192Mi
+            limits:
+              memory: 512Mi
