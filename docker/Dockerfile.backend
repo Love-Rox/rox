@@ -33,8 +33,10 @@ ENV NODE_ENV=production
 # runtime reads.
 ARG ROX_BUILD_SHA=local
 ARG ROX_BUILD_CHANNEL=local
+ARG ROX_BUILD_NUMBER=local
 ENV ROX_BUILD_SHA=${ROX_BUILD_SHA} \
-    ROX_BUILD_CHANNEL=${ROX_BUILD_CHANNEL}
+    ROX_BUILD_CHANNEL=${ROX_BUILD_CHANNEL} \
+    ROX_BUILD_NUMBER=${ROX_BUILD_NUMBER}
 
 # Build backend (app entrypoint). The shared package is consumed from source
 # (its package.json `main` points at src/index.ts) and bun bundles it into the
@@ -94,11 +96,13 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Set environment defaults
 ARG ROX_BUILD_SHA=local
 ARG ROX_BUILD_CHANNEL=local
+ARG ROX_BUILD_NUMBER=local
 ENV NODE_ENV=production \
     PORT=3000 \
     DB_TYPE=postgres \
     ROX_BUILD_SHA=${ROX_BUILD_SHA} \
-    ROX_BUILD_CHANNEL=${ROX_BUILD_CHANNEL}
+    ROX_BUILD_CHANNEL=${ROX_BUILD_CHANNEL} \
+    ROX_BUILD_NUMBER=${ROX_BUILD_NUMBER}
 
 # Run the application
 CMD ["bun", "run", "packages/backend/dist/index.js"]

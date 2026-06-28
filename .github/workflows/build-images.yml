@@ -77,3 +77,4 @@ jobs:
           build-args: |
             ROX_BUILD_SHA=${{ github.sha }}
             ROX_BUILD_CHANNEL=${{ github.ref_name }}
+            ROX_BUILD_NUMBER=${{ github.run_number }}

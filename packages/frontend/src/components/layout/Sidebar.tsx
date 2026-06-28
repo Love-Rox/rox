@@ -293,7 +293,7 @@ export function Sidebar() {
             to="/settings?tab=advanced"
             onClick={handleNavClick}
             className="flex items-center gap-1 text-xs text-(--text-muted) hover:text-(--text-secondary) transition-colors"
-            title={`${instanceInfo.software.name} v${instanceInfo.software.version}${instanceInfo.software.channel && instanceInfo.software.channel !== "local" ? ` · ${instanceInfo.software.channel}` : ""}${instanceInfo.software.build && instanceInfo.software.build !== "local" ? ` · build ${instanceInfo.software.build}` : ""}`}
+            title={`${instanceInfo.software.name} v${instanceInfo.software.version}${instanceInfo.software.channel && instanceInfo.software.channel !== "local" ? ` · ${instanceInfo.software.channel}` : ""}${instanceInfo.software.buildNumber && instanceInfo.software.buildNumber !== "local" ? ` · build #${instanceInfo.software.buildNumber}` : ""}${instanceInfo.software.build && instanceInfo.software.build !== "local" ? ` · ${instanceInfo.software.build}` : ""}`}
           >
             <span>v{instanceInfo.software.version}</span>
             {instanceInfo.software.channel === "dev" && (
@@ -301,9 +301,11 @@ export function Sidebar() {
                 dev
               </span>
             )}
-            {instanceInfo.software.build && instanceInfo.software.build !== "local" && (
+            {instanceInfo.software.buildNumber && instanceInfo.software.buildNumber !== "local" ? (
+              <span className="opacity-70">#{instanceInfo.software.buildNumber}</span>
+            ) : instanceInfo.software.build && instanceInfo.software.build !== "local" ? (
               <span className="opacity-70">{instanceInfo.software.build}</span>
-            )}
+            ) : null}
           </SpaLink>
         </div>
       )}
@@ -480,7 +482,7 @@ export function Sidebar() {
           <SpaLink
             to="/settings?tab=advanced"
             className="flex items-center justify-center gap-1 text-xs text-(--text-muted) hover:text-(--text-secondary) transition-colors"
-            title={`${instanceInfo.software.name} v${instanceInfo.software.version}${instanceInfo.software.channel && instanceInfo.software.channel !== "local" ? ` · ${instanceInfo.software.channel}` : ""}${instanceInfo.software.build && instanceInfo.software.build !== "local" ? ` · build ${instanceInfo.software.build}` : ""}`}
+            title={`${instanceInfo.software.name} v${instanceInfo.software.version}${instanceInfo.software.channel && instanceInfo.software.channel !== "local" ? ` · ${instanceInfo.software.channel}` : ""}${instanceInfo.software.buildNumber && instanceInfo.software.buildNumber !== "local" ? ` · build #${instanceInfo.software.buildNumber}` : ""}${instanceInfo.software.build && instanceInfo.software.build !== "local" ? ` · ${instanceInfo.software.build}` : ""}`}
           >
             {isCollapsed ? (
               <span>
@@ -497,9 +499,11 @@ export function Sidebar() {
                     dev
                   </span>
                 )}
-                {instanceInfo.software.build && instanceInfo.software.build !== "local" && (
+                {instanceInfo.software.buildNumber && instanceInfo.software.buildNumber !== "local" ? (
+                  <span className="opacity-70">#{instanceInfo.software.buildNumber}</span>
+                ) : instanceInfo.software.build && instanceInfo.software.build !== "local" ? (
                   <span className="opacity-70">{instanceInfo.software.build}</span>
-                )}
+                ) : null}
               </>
             )}
           </SpaLink>
