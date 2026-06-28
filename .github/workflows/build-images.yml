@@ -74,3 +74,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           provenance: false
+          build-args: |
+            ROX_BUILD_SHA=${{ github.sha }}
+            ROX_BUILD_CHANNEL=${{ github.ref_name }}

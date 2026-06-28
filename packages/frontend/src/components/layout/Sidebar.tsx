@@ -292,10 +292,18 @@ export function Sidebar() {
           <SpaLink
             to="/settings?tab=advanced"
             onClick={handleNavClick}
-            className="text-xs text-(--text-muted) hover:text-(--text-secondary) transition-colors"
-            title={`${instanceInfo.software.name} v${instanceInfo.software.version}`}
+            className="flex items-center gap-1 text-xs text-(--text-muted) hover:text-(--text-secondary) transition-colors"
+            title={`${instanceInfo.software.name} v${instanceInfo.software.version}${instanceInfo.software.channel && instanceInfo.software.channel !== "local" ? ` · ${instanceInfo.software.channel}` : ""}${instanceInfo.software.build && instanceInfo.software.build !== "local" ? ` · build ${instanceInfo.software.build}` : ""}`}
           >
-            v{instanceInfo.software.version}
+            <span>v{instanceInfo.software.version}</span>
+            {instanceInfo.software.channel === "dev" && (
+              <span className="rounded bg-amber-500/20 px-1 text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
+                dev
+              </span>
+            )}
+            {instanceInfo.software.build && instanceInfo.software.build !== "local" && (
+              <span className="opacity-70">{instanceInfo.software.build}</span>
+            )}
           </SpaLink>
         </div>
       )}
@@ -471,12 +479,29 @@ export function Sidebar() {
         >
           <SpaLink
             to="/settings?tab=advanced"
-            className="text-xs text-(--text-muted) hover:text-(--text-secondary) transition-colors"
-            title={`${instanceInfo.software.name} v${instanceInfo.software.version}`}
+            className="flex items-center justify-center gap-1 text-xs text-(--text-muted) hover:text-(--text-secondary) transition-colors"
+            title={`${instanceInfo.software.name} v${instanceInfo.software.version}${instanceInfo.software.channel && instanceInfo.software.channel !== "local" ? ` · ${instanceInfo.software.channel}` : ""}${instanceInfo.software.build && instanceInfo.software.build !== "local" ? ` · build ${instanceInfo.software.build}` : ""}`}
           >
-            {isCollapsed
-              ? `v${instanceInfo.software.version.split(".")[0] || instanceInfo.software.version}`
-              : `v${instanceInfo.software.version}`}
+            {isCollapsed ? (
+              <span>
+                v{instanceInfo.software.version.split(".")[0] || instanceInfo.software.version}
+                {instanceInfo.software.channel === "dev" && (
+                  <span className="ml-0.5 text-amber-600 dark:text-amber-400">·dev</span>
+                )}
+              </span>
+            ) : (
+              <>
+                <span>v{instanceInfo.software.version}</span>
+                {instanceInfo.software.channel === "dev" && (
+                  <span className="rounded bg-amber-500/20 px-1 text-[10px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
+                    dev
+                  </span>
+                )}
+                {instanceInfo.software.build && instanceInfo.software.build !== "local" && (
+                  <span className="opacity-70">{instanceInfo.software.build}</span>
+                )}
+              </>
+            )}
           </SpaLink>
         </div>
       )}
