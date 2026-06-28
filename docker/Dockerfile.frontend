@@ -69,6 +69,7 @@ EXPOSE 3001
 # shared CI build-args don't warn; the build identity is served by the backend.
 ARG ROX_BUILD_SHA=local
 ARG ROX_BUILD_CHANNEL=local
+ARG ROX_BUILD_NUMBER=local
 ENV NODE_ENV=production \
     FRONTEND_PORT=3001
 
