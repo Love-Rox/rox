@@ -28,6 +28,14 @@ COPY tsconfig.json ./
 # must be "production" here for the bundle to behave as production at runtime.
 ENV NODE_ENV=production
 
+# Build identity (short git SHA + source ref), injected by CI. Set before the
+# bundle in case bun inlines the values, and again in the production stage for
+# runtime reads.
+ARG ROX_BUILD_SHA=local
+ARG ROX_BUILD_CHANNEL=local
+ENV ROX_BUILD_SHA=${ROX_BUILD_SHA} \
+    ROX_BUILD_CHANNEL=${ROX_BUILD_CHANNEL}
+
 # Build backend (app entrypoint). The shared package is consumed from source
 # (its package.json `main` points at src/index.ts) and bun bundles it into the
 # output, so there is no separate shared build/dist step.
@@ -84,9 +92,13 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:3000/health || exit 1
 
 # Set environment defaults
+ARG ROX_BUILD_SHA=local
+ARG ROX_BUILD_CHANNEL=local
 ENV NODE_ENV=production \
     PORT=3000 \
-    DB_TYPE=postgres
+    DB_TYPE=postgres \
+    ROX_BUILD_SHA=${ROX_BUILD_SHA} \
+    ROX_BUILD_CHANNEL=${ROX_BUILD_CHANNEL}
 
 # Run the application
 CMD ["bun", "run", "packages/backend/dist/index.js"]

@@ -27,6 +27,10 @@ export interface RegistrationSettings {
 export interface SoftwareInfo {
   name: string;
   version: string;
+  /** Short git SHA of the build (e.g. "a1b2c3d"); "local" for non-CI builds. */
+  build?: string;
+  /** Source ref the build came from (e.g. "dev", "main", a tag); "local" otherwise. */
+  channel?: string;
   repository: string;
 }
 
