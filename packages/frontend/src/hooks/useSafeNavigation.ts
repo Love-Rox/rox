@@ -40,20 +40,26 @@ function getNavigationHistory(): string[] {
  * Get the previous path from navigation history
  */
 function getPreviousPath(fallback: string): string {
+  if (typeof window === "undefined") return fallback;
   const history = getNavigationHistory();
-  const currentPath =
-    typeof window !== "undefined"
-      ? window.location.pathname + window.location.search + window.location.hash
-      : "";
+  const currentFull = window.location.pathname + window.location.search + window.location.hash;
+  const currentPathname = window.location.pathname;
 
-  const currentIndex = history.lastIndexOf(currentPath);
+  // Start from the most recent occurrence of the current page (or the end of
+  // history if it hasn't been recorded yet) and walk backwards for the first
+  // entry on a DIFFERENT pathname. This makes "back" actually leave the current
+  // page instead of just toggling its query/hash (e.g. profile tabs) or
+  // reloading the same page — the patterns where back appeared to "do nothing".
+  let startIndex = history.lastIndexOf(currentFull);
+  if (startIndex === -1) startIndex = history.length;
 
-  if (currentIndex > 0) {
-    return history[currentIndex - 1] || fallback;
-  }
-
-  if (history.length > 0 && history[history.length - 1] !== currentPath) {
-    return history[history.length - 1] || fallback;
+  for (let i = startIndex - 1; i >= 0; i--) {
+    const entry = history[i];
+    if (!entry) continue;
+    const entryPathname = entry.split("?")[0]?.split("#")[0] ?? entry;
+    if (entryPathname !== currentPathname) {
+      return entry;
+    }
   }
 
   return fallback;
@@ -168,15 +174,18 @@ export function useSafeNavigation(): SafeNavigationResult {
   /**
    * Go back to the previous page.
    *
-   * Uses window.location.href for reliable back navigation.
-   * Forward navigation (navigate) uses router.push with content
-   * verification fallback.
+   * Resolves the previous entry on a different pathname from tracked history,
+   * then navigates client-side (router.push) via the same content-verified path
+   * as forward navigation — falling back to a full load only if the SPA
+   * navigation doesn't take. Previously this did an unconditional full reload,
+   * which was janky and, when the computed path matched the current page, looked
+   * like the button did nothing.
    */
   const goBack = useCallback(() => {
     closeModals();
     const previousPath = getPreviousPath("/timeline");
-    window.location.href = previousPath;
-  }, [closeModals]);
+    navigateWithVerification(previousPath);
+  }, [closeModals, navigateWithVerification]);
 
   return {
     isNavigating,
