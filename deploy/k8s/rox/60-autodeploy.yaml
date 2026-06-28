@@ -1,0 +1,104 @@
+# Deterministic auto-deploy for the Rox deployments (replaces keel).
+#
+# Every 5 minutes, fetch the digest of the `:dev` tag for each image directly
+# from GHCR (anonymous pull token) and, if it differs from the running pod,
+# `kubectl set image ...@<digest>`. This pins to the exact `:dev` tag (no tag
+# resolution ambiguity) and uses a ServiceAccount scoped to the `rox` namespace
+# (keel's SA lacked RBAC here and mis-resolved the tag).
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rox-autodeploy
+  namespace: rox
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: rox-autodeploy
+  namespace: rox
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "patch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rox-autodeploy
+  namespace: rox
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: rox-autodeploy
+subjects:
+  - kind: ServiceAccount
+    name: rox-autodeploy
+    namespace: rox
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: rox-autodeploy
+  namespace: rox
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 120
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 120
+      template:
+        spec:
+          serviceAccountName: rox-autodeploy
+          restartPolicy: Never
+          # Pin to a node that can reach GHCR and the API server.
+          nodeSelector:
+            kubernetes.io/hostname: sakura
+          containers:
+            - name: autodeploy
+              image: alpine/k8s:1.31.1
+              imagePullPolicy: IfNotPresent
+              resources:
+                requests: { cpu: 10m, memory: 32Mi }
+                limits: { cpu: 200m, memory: 128Mi }
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -eu
+                  TAG=dev
+                  # deployment:container:repo (container name == deployment name here)
+                  for ENTRY in \
+                    "rox-backend:rox-backend:love-rox/rox-backend" \
+                    "rox-frontend:rox-frontend:love-rox/rox-frontend"; do
+                    DEP="${ENTRY%%:*}"; REST="${ENTRY#*:}"
+                    CONTAINER="${REST%%:*}"; REPO="${REST#*:}"
+                    IMG="ghcr.io/${REPO}"
+                    echo "[autodeploy] checking ${IMG}:${TAG}"
+                    TOKEN=$(curl -fsSL "https://ghcr.io/token?scope=repository:${REPO}:pull" | jq -r .token)
+                    LATEST=$(curl -fsSL -o /dev/null -D - \
+                      -H "Authorization: Bearer ${TOKEN}" \
+                      -H "Accept: application/vnd.docker.distribution.manifest.v2+json,application/vnd.oci.image.manifest.v1+json,application/vnd.oci.image.index.v1+json" \
+                      "https://ghcr.io/v2/${REPO}/manifests/${TAG}" \
+                      | grep -i '^docker-content-digest:' | awk '{print $2}' | tr -d '\r')
+                    case "$LATEST" in
+                      sha256:*) : ;;
+                      *) echo "[autodeploy] digest fetch failed for ${REPO}: '${LATEST}'"; continue ;;
+                    esac
+                    RUNNING=$(kubectl -n rox get pods -l app="${DEP}" \
+                      -o jsonpath='{range .items[*]}{.status.containerStatuses[0].imageID}{"\n"}{end}' \
+                      | grep -oE 'sha256:[a-f0-9]+' | head -1 || true)
+                    echo "[autodeploy] ${DEP}: latest=${LATEST} running=${RUNNING}"
+                    if [ "$RUNNING" = "$LATEST" ]; then
+                      echo "[autodeploy] ${DEP} up to date"
+                    else
+                      echo "[autodeploy] updating ${DEP} -> ${IMG}@${LATEST}"
+                      kubectl -n rox set image "deployment/${DEP}" "${CONTAINER}=${IMG}@${LATEST}"
+                    fi
+                  done

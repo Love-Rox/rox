@@ -2,8 +2,8 @@
 
 Manifests for running Rox on the existing K3S cluster (control-plane
 `samurai-watch`, worker `sakura` which holds the public IP and storage),
-mirroring the ikaskey operational pattern: images on GHCR, auto-updated by
-**keel** tracking the `:dev` tag.
+mirroring the ikaskey operational pattern: images on GHCR, auto-updated by a
+**digest-diff CronJob** tracking the `:dev` tag.
 
 ## Components (namespace `rox`, all pinned to node `sakura`)
 
@@ -14,13 +14,18 @@ mirroring the ikaskey operational pattern: images on GHCR, auto-updated by
 | `10-timescaledb.yaml` | TimescaleDB (PG16) StatefulSet + headless Service (charts backend) |
 | `20-dragonfly.yaml` | Dragonfly (Redis-compatible) for cache/queue |
 | `25-uploads-pvc.yaml` | shared local-path PVC for uploads (backend rw, nginx ro) |
-| `30-backend.yaml` | `hono_rox` Deployment (initContainer runs migrations) + Service; keel-managed |
-| `40-frontend.yaml` | `waku_rox` Deployment + Service; keel-managed |
+| `30-backend.yaml` | `hono_rox` Deployment (initContainer runs migrations) + NodePort Service (`30092`, metrics) |
+| `40-frontend.yaml` | `waku_rox` Deployment + Service |
 | `50-nginx.yaml` | nginx reverse proxy (path + Accept-header routing) + NodePort `30091` |
+| `60-autodeploy.yaml` | CronJob (+ SA/Role) that auto-updates the deployments from `:dev` |
 
-Auto-update: the existing cluster-wide keel (ns `ikaskey-gatekeeper`) polls the
-`:dev` images every 3 min and rolls the backend/frontend Deployments on digest
-change. The backend initContainer applies DB migrations on each boot.
+Auto-update: the `rox-autodeploy` CronJob (`60-autodeploy.yaml`) runs every 5
+minutes, fetches the digest of each image's `:dev` tag from GHCR, and runs
+`kubectl set image ...@<digest>` when it differs from the running pod. This is
+deterministic (pinned to the exact `:dev` tag) and uses a ServiceAccount scoped
+to the `rox` namespace. (keel was tried first but mis-resolved the `:dev` tag
+among sibling tags and its SA lacked RBAC here.) The backend initContainer
+applies DB migrations on each boot.
 
 ## Images
 
