@@ -18,7 +18,12 @@ kind: Deployment
 metadata:
   name: rox-frontend
   namespace: rox
-  # Auto-update is handled by the rox-autodeploy CronJob (60-autodeploy.yaml).
+  annotations:
+    # Auto-updated by the cluster-wide keel. matchTag pins to the :dev digest.
+    keel.sh/policy: force
+    keel.sh/matchTag: "true"
+    keel.sh/trigger: poll
+    keel.sh/pollSchedule: "@every 3m"
 spec:
   replicas: 1
   revisionHistoryLimit: 3
