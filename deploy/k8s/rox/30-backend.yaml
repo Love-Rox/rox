@@ -24,11 +24,9 @@ kind: Deployment
 metadata:
   name: rox-backend
   namespace: rox
-  annotations:
-    # keel auto-updates this deployment when the :dev tag's digest changes.
-    keel.sh/policy: force
-    keel.sh/trigger: poll
-    keel.sh/pollSchedule: "@every 3m"
+  # Auto-update is handled by the rox-autodeploy CronJob (60-autodeploy.yaml),
+  # not keel: keel mis-resolved the :dev tag among sibling tags and its
+  # ServiceAccount lacks RBAC in this namespace.
 spec:
   replicas: 1
   revisionHistoryLimit: 3

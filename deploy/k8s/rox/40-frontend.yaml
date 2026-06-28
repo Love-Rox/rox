@@ -18,10 +18,7 @@ kind: Deployment
 metadata:
   name: rox-frontend
   namespace: rox
-  annotations:
-    keel.sh/policy: force
-    keel.sh/trigger: poll
-    keel.sh/pollSchedule: "@every 3m"
+  # Auto-update is handled by the rox-autodeploy CronJob (60-autodeploy.yaml).
 spec:
   replicas: 1
   revisionHistoryLimit: 3
