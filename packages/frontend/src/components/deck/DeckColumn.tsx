@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useMemo } from "react";
+import { memo, useCallback, useState, useMemo } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -110,7 +110,7 @@ interface WidthOption {
  *
  * Supports drag-and-drop reordering, width adjustment, and removal.
  */
-export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
+function DeckColumnImpl({ column, isMobile = false }: DeckColumnProps) {
   const { t } = useLingui();
   const { activeProfile, updateActiveColumns } = useDeckProfiles();
   const columns = activeProfile?.columns ?? [];
@@ -311,3 +311,10 @@ export function DeckColumn({ column, isMobile = false }: DeckColumnProps) {
     </div>
   );
 }
+
+/**
+ * Memoized so the deck re-rendering (e.g. when the mobile active-column index
+ * settles) doesn't reconcile every column's subtree — only columns whose props
+ * actually change re-render.
+ */
+export const DeckColumn = memo(DeckColumnImpl);
