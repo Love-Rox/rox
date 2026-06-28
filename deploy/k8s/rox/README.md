@@ -2,8 +2,8 @@
 
 Manifests for running Rox on the existing K3S cluster (control-plane
 `samurai-watch`, worker `sakura` which holds the public IP and storage),
-mirroring the ikaskey operational pattern: images on GHCR, auto-updated by a
-**digest-diff CronJob** tracking the `:dev` tag.
+mirroring the ikaskey operational pattern: images on GHCR, auto-updated by
+**keel** tracking the `:dev` tag.
 
 ## Components (namespace `rox`, all pinned to node `sakura`)
 
@@ -17,15 +17,18 @@ mirroring the ikaskey operational pattern: images on GHCR, auto-updated by a
 | `30-backend.yaml` | `hono_rox` Deployment (initContainer runs migrations) + NodePort Service (`30092`, metrics) |
 | `40-frontend.yaml` | `waku_rox` Deployment + Service |
 | `50-nginx.yaml` | nginx reverse proxy (path + Accept-header routing) + NodePort `30091` |
-| `60-autodeploy.yaml` | CronJob (+ SA/Role) that auto-updates the deployments from `:dev` |
+| `60-keel-rbac.yaml` | Role/RoleBinding letting the keel SA update deployments in ns `rox` |
 
-Auto-update: the `rox-autodeploy` CronJob (`60-autodeploy.yaml`) runs every 5
-minutes, fetches the digest of each image's `:dev` tag from GHCR, and runs
-`kubectl set image ...@<digest>` when it differs from the running pod. This is
-deterministic (pinned to the exact `:dev` tag) and uses a ServiceAccount scoped
-to the `rox` namespace. (keel was tried first but mis-resolved the `:dev` tag
-among sibling tags and its SA lacked RBAC here.) The backend initContainer
-applies DB migrations on each boot.
+Auto-update: the cluster-wide keel (ns `ikaskey-gatekeeper`) polls the `:dev`
+images every 3 min and rolls the backend/frontend Deployments when the digest
+changes. The deployments carry `keel.sh/policy: force` with
+`keel.sh/matchTag: "true"` so keel only follows the exact `:dev` tag's digest
+(never a sibling tag like `main`/`latest`/`sha-*`/`v*`); `60-keel-rbac.yaml`
+grants keel the RBAC to patch deployments in this namespace. The backend
+initContainer applies DB migrations on each boot.
+
+(A deterministic digest-diff CronJob is the fallback if keel ever mis-behaves;
+see git history for `60-autodeploy.yaml`.)
 
 ## Images
 
