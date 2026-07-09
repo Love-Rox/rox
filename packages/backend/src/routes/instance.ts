@@ -16,6 +16,14 @@ import rootPackageJson from "../../../../package.json";
 // Get version from root package.json
 const ROX_VERSION = rootPackageJson.version;
 
+// Build identity, injected at image build time (see docker/Dockerfile.backend).
+// `buildNumber` is the CI build counter (a human-friendly incrementing integer);
+// `build` is the short git SHA (precise reference); `channel` is the source ref
+// (e.g. "dev", "main", a tag). All fall back to "local" for non-CI builds.
+const ROX_BUILD = (process.env.ROX_BUILD_SHA || "").slice(0, 7) || "local";
+const ROX_CHANNEL = process.env.ROX_BUILD_CHANNEL || "local";
+const ROX_BUILD_NUMBER = process.env.ROX_BUILD_NUMBER || "local";
+
 const app = new Hono();
 
 /**
@@ -71,6 +79,9 @@ app.get("/", async (c: Context) => {
     software: {
       name: "rox",
       version: ROX_VERSION,
+      buildNumber: ROX_BUILD_NUMBER,
+      build: ROX_BUILD,
+      channel: ROX_CHANNEL,
       repository: "https://github.com/Love-rox/rox",
     },
   });

@@ -1,0 +1,30 @@
+# Let the cluster-wide keel ServiceAccount (which runs in ns ikaskey-gatekeeper
+# and watches all namespaces) update deployments in the rox namespace. Mirrors
+# ikaskey-gatekeeper's keel-manage Role/RoleBinding. Without this, keel can watch
+# but not patch rox deployments ("forbidden"), so auto-updates never apply.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: keel-manage
+  namespace: rox
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: keel-manage
+  namespace: rox
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: keel-manage
+subjects:
+  - kind: ServiceAccount
+    name: keel
+    namespace: ikaskey-gatekeeper

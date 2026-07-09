@@ -6,12 +6,18 @@ metadata:
   labels:
     app: rox-backend
 spec:
+  # NodePort so an out-of-cluster Prometheus (on the monitoring host, reachable
+  # over the node/Tailscale network) can scrape the backend's /metrics directly
+  # — mirroring the old bare-metal setup (backend on an internal port), without
+  # exposing /metrics through the public Cloudflare tunnel.
+  type: NodePort
   selector:
     app: rox-backend
   ports:
     - name: http
       port: 3000
       targetPort: 3000
+      nodePort: 30092
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -19,8 +25,11 @@ metadata:
   name: rox-backend
   namespace: rox
   annotations:
-    # keel auto-updates this deployment when the :dev tag's digest changes.
+    # Auto-updated by the cluster-wide keel (ns ikaskey-gatekeeper). matchTag
+    # pins it to the exact :dev tag's digest so it never switches to a sibling
+    # tag (main/latest/sha/v*). RBAC is granted by 60-keel-rbac.yaml.
     keel.sh/policy: force
+    keel.sh/matchTag: "true"
     keel.sh/trigger: poll
     keel.sh/pollSchedule: "@every 3m"
 spec:

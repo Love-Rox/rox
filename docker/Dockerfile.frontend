@@ -65,7 +65,11 @@ USER rox
 # Expose port
 EXPOSE 3001
 
-# Set environment defaults
+# Set environment defaults. ROX_BUILD_* are accepted (and ignored) here so the
+# shared CI build-args don't warn; the build identity is served by the backend.
+ARG ROX_BUILD_SHA=local
+ARG ROX_BUILD_CHANNEL=local
+ARG ROX_BUILD_NUMBER=local
 ENV NODE_ENV=production \
     FRONTEND_PORT=3001
 

@@ -19,7 +19,9 @@ metadata:
   name: rox-frontend
   namespace: rox
   annotations:
+    # Auto-updated by the cluster-wide keel. matchTag pins to the :dev digest.
     keel.sh/policy: force
+    keel.sh/matchTag: "true"
     keel.sh/trigger: poll
     keel.sh/pollSchedule: "@every 3m"
 spec:

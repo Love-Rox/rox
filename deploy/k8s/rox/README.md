@@ -14,13 +14,21 @@ mirroring the ikaskey operational pattern: images on GHCR, auto-updated by
 | `10-timescaledb.yaml` | TimescaleDB (PG16) StatefulSet + headless Service (charts backend) |
 | `20-dragonfly.yaml` | Dragonfly (Redis-compatible) for cache/queue |
 | `25-uploads-pvc.yaml` | shared local-path PVC for uploads (backend rw, nginx ro) |
-| `30-backend.yaml` | `hono_rox` Deployment (initContainer runs migrations) + Service; keel-managed |
-| `40-frontend.yaml` | `waku_rox` Deployment + Service; keel-managed |
+| `30-backend.yaml` | `hono_rox` Deployment (initContainer runs migrations) + NodePort Service (`30092`, metrics) |
+| `40-frontend.yaml` | `waku_rox` Deployment + Service |
 | `50-nginx.yaml` | nginx reverse proxy (path + Accept-header routing) + NodePort `30091` |
+| `60-keel-rbac.yaml` | Role/RoleBinding letting the keel SA update deployments in ns `rox` |
 
-Auto-update: the existing cluster-wide keel (ns `ikaskey-gatekeeper`) polls the
-`:dev` images every 3 min and rolls the backend/frontend Deployments on digest
-change. The backend initContainer applies DB migrations on each boot.
+Auto-update: the cluster-wide keel (ns `ikaskey-gatekeeper`) polls the `:dev`
+images every 3 min and rolls the backend/frontend Deployments when the digest
+changes. The deployments carry `keel.sh/policy: force` with
+`keel.sh/matchTag: "true"` so keel only follows the exact `:dev` tag's digest
+(never a sibling tag like `main`/`latest`/`sha-*`/`v*`); `60-keel-rbac.yaml`
+grants keel the RBAC to patch deployments in this namespace. The backend
+initContainer applies DB migrations on each boot.
+
+(A deterministic digest-diff CronJob is the fallback if keel ever mis-behaves;
+see git history for `60-autodeploy.yaml`.)
 
 ## Images
 

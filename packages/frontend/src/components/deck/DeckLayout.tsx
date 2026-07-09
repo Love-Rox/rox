@@ -111,22 +111,31 @@ export function DeckLayout({ showAddColumn = true, showProfileSwitcher = true }:
   // column vs horizontal swipe between columns) and snapping — far smoother
   // than the previous custom touch handlers.
   const mobileScrollRef = useRef<HTMLDivElement>(null);
-  const mobileScrollRaf = useRef<number | null>(null);
+  const mobileScrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Derive the active column index from the carousel scroll position.
-  // rAF-throttled so rapid scroll events don't thrash React state.
+  // Update the active column index only AFTER the swipe settles. Updating React
+  // state mid-scroll re-renders the deck during the gesture and makes the snap
+  // stutter; debouncing to scroll-end keeps the swipe itself purely native and
+  // CSS-smooth, and the (cheap) index update lands once the motion has stopped.
   const handleMobileScroll = useCallback(() => {
-    if (mobileScrollRaf.current != null) return;
-    mobileScrollRaf.current = requestAnimationFrame(() => {
-      mobileScrollRaf.current = null;
+    if (mobileScrollTimer.current != null) clearTimeout(mobileScrollTimer.current);
+    mobileScrollTimer.current = setTimeout(() => {
+      mobileScrollTimer.current = null;
       const el = mobileScrollRef.current;
       if (!el || el.clientWidth === 0) return;
       const index = Math.round(el.scrollLeft / el.clientWidth);
       if (index >= 0 && index < columns.length && index !== mobileColumnIndex) {
         setMobileColumnIndex(index);
       }
-    });
+    }, 140);
   }, [columns.length, mobileColumnIndex, setMobileColumnIndex]);
+
+  // Clear any pending scroll-settle timer on unmount.
+  useEffect(() => {
+    return () => {
+      if (mobileScrollTimer.current != null) clearTimeout(mobileScrollTimer.current);
+    };
+  }, []);
 
   // Smoothly scroll the carousel to a column (used by the indicator dots).
   const scrollToColumn = useCallback((index: number) => {
@@ -244,10 +253,10 @@ export function DeckLayout({ showAddColumn = true, showProfileSwitcher = true }:
               ref={mobileScrollRef}
               onScroll={handleMobileScroll}
               className="flex h-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory overscroll-x-contain"
-              style={{ scrollbarWidth: "none" }}
+              style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
             >
               {columns.map((column) => (
-                <div key={column.id} className="w-full shrink-0 snap-start h-full">
+                <div key={column.id} className="w-full shrink-0 snap-start snap-always h-full">
                   <DeckColumn column={column} isMobile />
                 </div>
               ))}
