@@ -28,7 +28,7 @@
     "class-variance-authority": "^0.7.1",
     "date-fns": "^4.4.0",
     "jotai": "^2.20.1",
-    "katex": "^0.17.0",
+    "katex": "^0.18.1",
     "lucide-react": "^1.23.0",
     "mfm-js": "^0.26.0",
     "qrcode.react": "^4.2.0",
