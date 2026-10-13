@@ -21,7 +21,7 @@ This project includes a fully configured DevContainer for VS Code and Cursor.
 ## Pre-installed Tools
 
 - **Bun** - JavaScript runtime and package manager
-- **Node.js 20** - For npm packages requiring Node
+- **Node.js 24** - For npm packages requiring Node
 - **Claude Code CLI** - AI-powered coding assistant
 - **mkcert** - Local HTTPS certificate generation
 
