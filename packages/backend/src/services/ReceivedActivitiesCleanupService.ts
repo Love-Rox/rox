@@ -101,11 +101,11 @@ export class ReceivedActivitiesCleanupService {
    */
   private runMonitored(): Promise<number> {
     const intervalMinutes = Math.max(1, Math.round(this.config.intervalMs / 60_000));
-    return withMonitor(
-      "rox-received-activities-cleanup",
-      () => this.cleanup(),
-      { type: "interval", value: intervalMinutes, unit: "minute" },
-    );
+    return withMonitor("rox-received-activities-cleanup", () => this.cleanup(), {
+      type: "interval",
+      value: intervalMinutes,
+      unit: "minute",
+    });
   }
 
   /**

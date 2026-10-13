@@ -107,11 +107,11 @@ export class ScheduledNotePublisher {
    * @private
    */
   private runMonitored(): Promise<number> {
-    return withMonitor(
-      "rox-scheduled-note-publisher",
-      () => this.processScheduledNotes(),
-      { type: "interval", value: 1, unit: "minute" },
-    );
+    return withMonitor("rox-scheduled-note-publisher", () => this.processScheduledNotes(), {
+      type: "interval",
+      value: 1,
+      unit: "minute",
+    });
   }
 
   /**
