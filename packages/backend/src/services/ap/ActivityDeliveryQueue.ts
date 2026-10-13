@@ -149,7 +149,9 @@ export class ActivityDeliveryQueue {
       return;
     }
 
-    const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
+    // docker/compose.yml と K8s secret は DRAGONFLY_URL を設定しているため両方を受け付ける
+    const redisUrl =
+      process.env.REDIS_URL || process.env.DRAGONFLY_URL || "redis://localhost:6379";
 
     try {
       // Attempt to connect to Redis
@@ -200,7 +202,7 @@ export class ActivityDeliveryQueue {
 
       this.useQueue = true;
     } catch (error) {
-      logger.debug({ err: error }, "Redis not available, using synchronous delivery fallback");
+      logger.warn({ err: error }, "Redis not available, using synchronous delivery fallback");
       this.useQueue = false;
 
       // Clean up failed connection

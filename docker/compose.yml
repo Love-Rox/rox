@@ -190,11 +190,13 @@ services:
     image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
     container_name: rox-dragonfly
     restart: unless-stopped
+    # --default_lua_flags=allow-undeclared-keys: BullMQ の Lua スクリプトは宣言外のキーにアクセスするため必須
     command: >
       dragonfly
       --maxmemory=256mb
       --proactor_threads=2
       --cache_mode=true
+      --default_lua_flags=allow-undeclared-keys
     volumes:
       - dragonfly-data:/data
     networks:
