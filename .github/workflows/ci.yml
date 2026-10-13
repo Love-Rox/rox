@@ -21,7 +21,7 @@ env:
   URL: http://localhost:3000
   NODE_ENV: test
   # Pinned tool versions. Bump explicitly; do not use "latest".
-  BUN_VERSION: "1.3.14"
+  BUN_VERSION: "1.4.3"
 
 jobs:
   dependency-review:

@@ -57,7 +57,8 @@ export function SpaLink({
     <Link
       to={to as `/${string}`}
       className={className}
-      unstable_prefetchOnEnter={prefetchOnEnter}
+      // Waku 1.0 rc では boolean ではなく PrefetchOptions を受け取る（指定時に有効化）
+      unstable_prefetchOnEnter={prefetchOnEnter ? {} : undefined}
       onClick={handleClick}
       {...props}
     >
