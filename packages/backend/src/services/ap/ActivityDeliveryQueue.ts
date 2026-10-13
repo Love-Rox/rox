@@ -7,10 +7,12 @@
  * @module services/ap/ActivityDeliveryQueue
  */
 
+import { createHash } from "node:crypto";
 import { Queue, Worker, type Job } from "bullmq";
-import { Redis } from "ioredis";
+import type { Redis } from "ioredis";
 import { ActivityDeliveryService } from "./ActivityDeliveryService.js";
 import { logger } from "../../lib/logger.js";
+import { createRedisClient, waitForRedisReady } from "../../lib/redis.js";
 
 /**
  * Job priority levels
@@ -149,32 +151,18 @@ export class ActivityDeliveryQueue {
       return;
     }
 
-    // docker/compose.yml と K8s secret は DRAGONFLY_URL を設定しているため両方を受け付ける
-    const redisUrl = process.env.REDIS_URL || process.env.DRAGONFLY_URL || "redis://localhost:6379";
-
     try {
-      // Attempt to connect to Redis
       // Note: maxRetriesPerRequest must be null for BullMQ compatibility
       // BullMQ handles its own retry logic and requires this setting
-      this.redis = new Redis(redisUrl, {
+      this.redis = createRedisClient("queue", {
         maxRetriesPerRequest: null, // Required for BullMQ
-        // ioredis v6 は既定で RESP3 になったため、v5 と同じ RESP2 を明示（Dragonfly/BullMQ 互換性のため）
-        protocol: 2,
-        retryStrategy: (times) => {
-          if (times > 3) return null; // Give up after 3 attempts
-          return Math.min(times * 100, 1000); // Exponential backoff up to 1 second
-        },
-        connectTimeout: 5000,
-        enableOfflineQueue: false, // Fail fast if connection is not ready
+        enableOfflineQueue: false, // Fail fast (and fall back to sync) while disconnected
       });
 
-      // Wait for connection to be ready
-      await new Promise<void>((resolve, reject) => {
-        this.redis!.once("ready", () => resolve());
-        this.redis!.once("error", (err) => reject(err));
-      });
+      // 起動直後は Dragonfly がまだ接続を受け付けていないことがあるため、一定時間は再試行を待つ
+      await waitForRedisReady(this.redis);
 
-      logger.debug("Redis connected, using BullMQ for delivery queue");
+      logger.info("Redis connected, using BullMQ for delivery queue");
 
       // Initialize queue
       // Note: Using simple prefix without hash tags for Dragonfly compatibility
@@ -356,7 +344,7 @@ export class ActivityDeliveryQueue {
           removeOnFail: {
             age: 24 * 3600, // Keep failed jobs for 24 hours
           },
-          // Deduplication: if same activity to same inbox within 5 seconds, skip
+          // Deduplication: skipped while a job for the same activity and inbox exists
           jobId: this.generateJobId(data),
         });
 
@@ -364,7 +352,7 @@ export class ActivityDeliveryQueue {
       } catch (error) {
         // Queue operation failed (e.g., Dragonfly cluster mode issue)
         // Fall back to synchronous delivery
-        logger.debug({ err: error }, "Queue operation failed, falling back to sync delivery");
+        logger.warn({ err: error }, "Queue operation failed, falling back to sync delivery");
         await this.deliverSync(data);
       }
     } else {
@@ -386,10 +374,12 @@ export class ActivityDeliveryQueue {
   /**
    * Generate unique job ID for deduplication
    *
-   * Creates a job ID based on activity ID and inbox URL to prevent
-   * duplicate deliveries within a short time window.
-   * Uses a simple numeric hash to avoid special characters that may
-   * cause issues with Dragonfly's Lua scripts.
+   * Creates a job ID based on activity ID and inbox URL so the same activity
+   * is not queued twice for the same inbox while a job with that ID exists.
+   * Uses a truncated SHA-256 hex digest (128 bits) to make collisions between
+   * different deliveries practically impossible, with a `d-` prefix so the ID
+   * is never all digits (BullMQ rejects integer-like custom IDs). Hex
+   * characters only, which is safe for Dragonfly's Lua scripts.
    *
    * @param data - Delivery job data
    * @returns Job ID for deduplication
@@ -398,16 +388,8 @@ export class ActivityDeliveryQueue {
    */
   private generateJobId(data: DeliveryJobData): string {
     const activityId = data.activity.id || JSON.stringify(data.activity);
-    // Use a simple hash that avoids special characters
-    // Create a numeric hash from the string for cluster-safe job ID
-    const input = `${activityId}-${data.inboxUrl}`;
-    let hash = 0;
-    for (let i = 0; i < input.length; i++) {
-      const char = input.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return `${Math.abs(hash).toString(36)}`;
+    const digest = createHash("sha256").update(`${activityId}\n${data.inboxUrl}`).digest("hex");
+    return `d-${digest.slice(0, 32)}`;
   }
 
   /**
