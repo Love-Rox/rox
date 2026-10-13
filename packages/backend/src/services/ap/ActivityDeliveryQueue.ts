@@ -150,8 +150,7 @@ export class ActivityDeliveryQueue {
     }
 
     // docker/compose.yml と K8s secret は DRAGONFLY_URL を設定しているため両方を受け付ける
-    const redisUrl =
-      process.env.REDIS_URL || process.env.DRAGONFLY_URL || "redis://localhost:6379";
+    const redisUrl = process.env.REDIS_URL || process.env.DRAGONFLY_URL || "redis://localhost:6379";
 
     try {
       // Attempt to connect to Redis
