@@ -38,7 +38,13 @@ spec:
           # node's CPU count (requiring ~256MiB per io thread) and crashes when
           # that exceeds the container limit. One thread + a small maxmemory is
           # plenty for this instance's cache/queue use.
-          args: ["--dir", "/data", "--proactor_threads=1", "--maxmemory=300mb"]
+          args:
+            - "--dir"
+            - "/data"
+            - "--proactor_threads=1"
+            - "--maxmemory=300mb"
+            # Required by BullMQ: its Lua scripts touch keys not declared in KEYS[].
+            - "--default_lua_flags=allow-undeclared-keys"
           ports:
             - containerPort: 6379
           volumeMounts:

@@ -61,11 +61,14 @@ export class DragonflyCacheAdapter implements ICacheService {
    * Initialize Redis connection
    */
   private async initialize(): Promise<void> {
-    const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
+    // docker/compose.yml と K8s secret は DRAGONFLY_URL を設定しているため両方を受け付ける
+    const redisUrl = process.env.REDIS_URL || process.env.DRAGONFLY_URL || "redis://localhost:6379";
 
     try {
       this.redis = new Redis(redisUrl, {
         maxRetriesPerRequest: 3,
+        // ioredis v6 は既定で RESP3 になったため、v5 と同じ RESP2 を明示（Dragonfly/BullMQ 互換性のため）
+        protocol: 2,
         retryStrategy: (times) => {
           if (times > 3) return null;
           return Math.min(times * 100, 1000);
@@ -81,7 +84,7 @@ export class DragonflyCacheAdapter implements ICacheService {
       this.available = true;
       logger.debug("Dragonfly cache connected");
     } catch (error) {
-      logger.debug({ err: error }, "Dragonfly cache not available, caching disabled");
+      logger.warn({ err: error }, "Dragonfly cache not available, caching disabled");
       this.available = false;
       this.redis = null;
     }

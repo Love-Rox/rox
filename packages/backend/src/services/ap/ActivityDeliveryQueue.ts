@@ -149,7 +149,8 @@ export class ActivityDeliveryQueue {
       return;
     }
 
-    const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
+    // docker/compose.yml と K8s secret は DRAGONFLY_URL を設定しているため両方を受け付ける
+    const redisUrl = process.env.REDIS_URL || process.env.DRAGONFLY_URL || "redis://localhost:6379";
 
     try {
       // Attempt to connect to Redis
@@ -157,6 +158,8 @@ export class ActivityDeliveryQueue {
       // BullMQ handles its own retry logic and requires this setting
       this.redis = new Redis(redisUrl, {
         maxRetriesPerRequest: null, // Required for BullMQ
+        // ioredis v6 は既定で RESP3 になったため、v5 と同じ RESP2 を明示（Dragonfly/BullMQ 互換性のため）
+        protocol: 2,
         retryStrategy: (times) => {
           if (times > 3) return null; // Give up after 3 attempts
           return Math.min(times * 100, 1000); // Exponential backoff up to 1 second
@@ -200,7 +203,7 @@ export class ActivityDeliveryQueue {
 
       this.useQueue = true;
     } catch (error) {
-      logger.debug({ err: error }, "Redis not available, using synchronous delivery fallback");
+      logger.warn({ err: error }, "Redis not available, using synchronous delivery fallback");
       this.useQueue = false;
 
       // Clean up failed connection

@@ -4,7 +4,7 @@
 # ============================================
 # Stage 1: Build
 # ============================================
-FROM oven/bun:1.3 AS builder
+FROM oven/bun:1.4 AS builder
 
 WORKDIR /app
 
@@ -36,7 +36,7 @@ RUN bun run build
 # ============================================
 # Stage 2: Production
 # ============================================
-FROM oven/bun:1.3 AS production
+FROM oven/bun:1.4 AS production
 
 # Install security updates (Debian/glibc base, consistent with the backend)
 RUN apt-get update && apt-get upgrade -y && \
