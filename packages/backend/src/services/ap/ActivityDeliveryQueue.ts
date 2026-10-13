@@ -159,6 +159,8 @@ export class ActivityDeliveryQueue {
       // BullMQ handles its own retry logic and requires this setting
       this.redis = new Redis(redisUrl, {
         maxRetriesPerRequest: null, // Required for BullMQ
+        // ioredis v6 は既定で RESP3 になったため、v5 と同じ RESP2 を明示（Dragonfly/BullMQ 互換性のため）
+        protocol: 2,
         retryStrategy: (times) => {
           if (times > 3) return null; // Give up after 3 attempts
           return Math.min(times * 100, 1000); // Exponential backoff up to 1 second

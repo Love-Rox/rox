@@ -499,7 +499,8 @@ export function Sidebar() {
                     dev
                   </span>
                 )}
-                {instanceInfo.software.buildNumber && instanceInfo.software.buildNumber !== "local" ? (
+                {instanceInfo.software.buildNumber &&
+                instanceInfo.software.buildNumber !== "local" ? (
                   <span className="opacity-70">#{instanceInfo.software.buildNumber}</span>
                 ) : instanceInfo.software.build && instanceInfo.software.build !== "local" ? (
                   <span className="opacity-70">{instanceInfo.software.build}</span>

@@ -141,11 +141,11 @@ export class RemoteInstanceRefreshService {
    */
   private runMonitored(): Promise<number> {
     const intervalMinutes = Math.max(1, Math.round(this.config.intervalMs / 60_000));
-    return withMonitor(
-      "rox-remote-instance-refresh",
-      () => this.refresh(),
-      { type: "interval", value: intervalMinutes, unit: "minute" },
-    );
+    return withMonitor("rox-remote-instance-refresh", () => this.refresh(), {
+      type: "interval",
+      value: intervalMinutes,
+      unit: "minute",
+    });
   }
 
   /**

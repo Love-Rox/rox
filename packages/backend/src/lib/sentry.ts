@@ -72,7 +72,19 @@ export function initSentry(): void {
     // Strip request bodies, cookies, headers, and query strings by default to
     // minimize PII exposure. ActivityPub payloads and Authorization /
     // Cookie / Signature headers can all contain secrets.
-    sendDefaultPii: false,
+    // Sentry v11 で sendDefaultPii は廃止され、dataCollection は既定で全収集になったため明示的に無効化する
+    dataCollection: {
+      userInfo: false,
+      cookies: false,
+      httpHeaders: false,
+      httpBodies: [],
+      urlQueryParams: false,
+      databaseQueryData: false,
+      queues: false,
+      stackFrameVariables: false,
+      graphQL: { document: false, variables: false },
+      genAI: { inputs: false, outputs: false },
+    },
     beforeSend(event) {
       if (event.request) {
         delete event.request.cookies;
@@ -135,7 +147,11 @@ export function isSentryEnabled(): boolean {
  */
 export type MonitorSchedule =
   | { type: "crontab"; value: string }
-  | { type: "interval"; value: number; unit: "minute" | "hour" | "day" | "week" | "month" | "year" };
+  | {
+      type: "interval";
+      value: number;
+      unit: "minute" | "hour" | "day" | "week" | "month" | "year";
+    };
 
 /**
  * Run a callback under a Sentry cron check-in. The callback runs unconditionally;
