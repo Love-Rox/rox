@@ -5,7 +5,7 @@
  * This allows multiple columns of the same type to coexist with independent data.
  */
 import { atom } from "jotai";
-import { atomFamily } from "jotai/utils";
+import { atomFamily } from "jotai-family";
 import type { Note } from "../types/note";
 import type { Notification } from "../types/notification";
 

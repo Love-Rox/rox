@@ -63,7 +63,17 @@ export function initSentry(): void {
     release: env.VITE_SENTRY_RELEASE as string | undefined,
     tracesSampleRate,
     transport,
-    sendDefaultPii: false,
+    // Sentry v11 で sendDefaultPii は廃止され、dataCollection は既定で全収集になったため明示的に無効化する
+    dataCollection: {
+      userInfo: false,
+      cookies: false,
+      httpHeaders: false,
+      httpBodies: [],
+      urlQueryParams: false,
+      stackFrameVariables: false,
+      graphQL: { document: false, variables: false },
+      genAI: { inputs: false, outputs: false },
+    },
     beforeSend(event) {
       // Drop request bodies, cookies, headers, and query strings to minimize
       // PII exposure (Authorization headers, session cookies, OAuth `code` /
@@ -74,7 +84,7 @@ export function initSentry(): void {
         delete event.request.headers;
         delete event.request.query_string;
       }
-      // `sendDefaultPii: false` already suppresses IP/UA, but defensively
+      // `dataCollection.userInfo: false` already suppresses IP/UA, but defensively
       // drop email / username / ip if a future call site adds them.
       if (event.user) {
         delete event.user.email;

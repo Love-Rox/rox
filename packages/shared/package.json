@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "vite-plus": "^0.2.9"
+    "vite-plus": "^1.1.0"
   },
   "devDependencies": {
     "bun-types": "^1.4.3",

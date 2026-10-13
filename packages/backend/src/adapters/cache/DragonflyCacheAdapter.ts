@@ -66,6 +66,8 @@ export class DragonflyCacheAdapter implements ICacheService {
     try {
       this.redis = new Redis(redisUrl, {
         maxRetriesPerRequest: 3,
+        // ioredis v6 は既定で RESP3 になったため、v5 と同じ RESP2 を明示（Dragonfly/BullMQ 互換性のため）
+        protocol: 2,
         retryStrategy: (times) => {
           if (times > 3) return null;
           return Math.min(times * 100, 1000);

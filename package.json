@@ -8,7 +8,7 @@
     "bun-types": "^1.4.3",
     "playwright": "^1.64.0",
     "typescript": "7.0.2",
-    "vite-plus": "^0.2.9"
+    "vite-plus": "^1.1.0"
   },
   "description": "Lightweight ActivityPub server & client with Misskey API compatibility",
   "engines": {
@@ -52,12 +52,6 @@
   "workspaces": [
     "packages/*"
   ],
-  "overrides": {
-    "ioredis": "5.11.1",
-    "tinypool": "^2.2.0",
-    "vitest": "4.1.11",
-    "@vitest/mocker": "4.1.11"
-  },
   "dependencies": {
     "waku": "^1.0.0-rc.3"
   }
