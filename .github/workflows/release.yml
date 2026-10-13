@@ -3,7 +3,7 @@ name: Manual Release
 # Manual release workflow for:
 # - Hotfix releases (bypassing normal dev -> main flow)
 # - Re-creating failed releases
-# - Creating releases from manually pushed tags
+# - Creating releases from manually pushed tags (tags pushed by auto-tag.yml are skipped)
 #
 # For normal releases, use auto-tag.yml (triggered by version bump in package.json)
 
@@ -29,15 +29,49 @@ permissions:
   contents: read
 
 jobs:
+  # 0. Skip tags pushed by auto-tag.yml. auto-tag pushes with RELEASE_PAT, which
+  #    (unlike GITHUB_TOKEN) fires this workflow too; without this guard both
+  #    workflows create the same release and race on the SBOM upload (#278).
+  #    auto-tag creates annotated tags as github-actions[bot], so the tagger
+  #    tells them apart from tags pushed by hand.
+  guard:
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+      - name: Check tagger
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [ "${{ github.event_name }}" != "push" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          read -r TYPE SHA < <(gh api "repos/${{ github.repository }}/git/ref/tags/${TAG}" --jq '.object.type + " " + .object.sha')
+          TAGGER=""
+          if [ "$TYPE" = "tag" ]; then
+            TAGGER=$(gh api "repos/${{ github.repository }}/git/tags/${SHA}" --jq '.tagger.name')
+          fi
+          echo "Tag ${TAG}: type=${TYPE}, tagger=${TAGGER:-<none>}"
+          if [ "$TAGGER" = "github-actions[bot]" ]; then
+            echo "Tag was created by auto-tag.yml, which handles the release. Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
   # 1. Run CI workflow first (unless skipped)
   call-ci:
-    if: ${{ github.event_name == 'push' || !inputs.skip_ci }}
+    needs: guard
+    if: ${{ needs.guard.outputs.skip != 'true' && (github.event_name == 'push' || !inputs.skip_ci) }}
     uses: ./.github/workflows/ci.yml
 
   # 2. Create release after CI passes
   create-release:
-    needs: call-ci
-    if: ${{ always() && (needs.call-ci.result == 'success' || needs.call-ci.result == 'skipped') }}
+    needs: [guard, call-ci]
+    if: ${{ always() && needs.guard.result == 'success' && needs.guard.outputs.skip != 'true' && (needs.call-ci.result == 'success' || needs.call-ci.result == 'skipped') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
