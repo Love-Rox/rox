@@ -14,9 +14,9 @@ import {
   verifyAuthenticationResponse,
   type VerifiedRegistrationResponse,
   type VerifiedAuthenticationResponse,
+  type AuthenticatorTransport,
 } from "@simplewebauthn/server";
 import { isoBase64URL } from "@simplewebauthn/server/helpers";
-import type { AuthenticatorTransportFuture } from "@simplewebauthn/types";
 import type { IPasskeyCredentialRepository } from "../interfaces/repositories/IPasskeyCredentialRepository.js";
 import type { IPasskeyChallengeRepository } from "../interfaces/repositories/IPasskeyChallengeRepository.js";
 import type { IUserRepository } from "../interfaces/repositories/IUserRepository.js";
@@ -144,7 +144,7 @@ export class PasskeyService {
       attestationType: "none", // Don't require attestation
       excludeCredentials: existingPasskeys.map((passkey) => ({
         id: passkey.credentialId,
-        transports: (passkey.transports as AuthenticatorTransportFuture[]) || undefined,
+        transports: (passkey.transports as AuthenticatorTransport[]) || undefined,
       })),
       authenticatorSelection: {
         residentKey: "required", // Required for passkeys
@@ -283,9 +283,7 @@ export class PasskeyService {
    * @returns Authentication options to pass to browser
    */
   async generateAuthenticationOptions(username?: string): Promise<AuthenticationOptionsResponse> {
-    let allowCredentials:
-      | Array<{ id: string; transports?: AuthenticatorTransportFuture[] }>
-      | undefined;
+    let allowCredentials: Array<{ id: string; transports?: AuthenticatorTransport[] }> | undefined;
 
     if (username) {
       const user = await this.userRepository.findByUsername(username);
@@ -294,7 +292,7 @@ export class PasskeyService {
         if (passkeys.length > 0) {
           allowCredentials = passkeys.map((passkey) => ({
             id: passkey.credentialId,
-            transports: (passkey.transports as AuthenticatorTransportFuture[]) || undefined,
+            transports: (passkey.transports as AuthenticatorTransport[]) || undefined,
           }));
         }
       }
@@ -395,7 +393,7 @@ export class PasskeyService {
           id: passkey.credentialId,
           publicKey: isoBase64URL.toBuffer(passkey.publicKey),
           counter: passkey.counter,
-          transports: passkey.transports as AuthenticatorTransportFuture[] | undefined,
+          transports: passkey.transports as AuthenticatorTransport[] | undefined,
         },
         requireUserVerification: false,
       });

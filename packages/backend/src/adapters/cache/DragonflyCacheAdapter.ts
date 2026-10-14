@@ -2,14 +2,15 @@
  * Dragonfly Cache Adapter
  *
  * Implements ICacheService using Dragonfly (Redis-compatible) as the backend.
- * Uses ioredis for connection management.
+ * Uses ioredis for connection management (see lib/redis.ts).
  *
  * @module adapters/cache/DragonflyCacheAdapter
  */
 
-import { Redis } from "ioredis";
+import type { Redis } from "ioredis";
 import type { ICacheService, CacheSetOptions } from "../../interfaces/ICacheService.js";
 import { logger } from "../../lib/logger.js";
+import { createRedisClient, waitForRedisReady } from "../../lib/redis.js";
 import { recordCacheOperation } from "../../lib/metrics.js";
 
 /**
@@ -61,31 +62,22 @@ export class DragonflyCacheAdapter implements ICacheService {
    * Initialize Redis connection
    */
   private async initialize(): Promise<void> {
-    // docker/compose.yml と K8s secret は DRAGONFLY_URL を設定しているため両方を受け付ける
-    const redisUrl = process.env.REDIS_URL || process.env.DRAGONFLY_URL || "redis://localhost:6379";
-
     try {
-      this.redis = new Redis(redisUrl, {
+      this.redis = createRedisClient("cache", {
         maxRetriesPerRequest: 3,
-        // ioredis v6 は既定で RESP3 になったため、v5 と同じ RESP2 を明示（Dragonfly/BullMQ 互換性のため）
-        protocol: 2,
-        retryStrategy: (times) => {
-          if (times > 3) return null;
-          return Math.min(times * 100, 1000);
-        },
-        connectTimeout: 5000,
-        enableOfflineQueue: false,
-        lazyConnect: true,
+        enableOfflineQueue: false, // Cache misses while disconnected instead of queueing commands
       });
 
-      await this.redis.connect();
-      await this.redis.ping();
+      // 起動直後は Dragonfly がまだ接続を受け付けていないことがあるため、一定時間は再試行を待つ
+      await waitForRedisReady(this.redis);
 
       this.available = true;
-      logger.debug("Dragonfly cache connected");
+      logger.info("Dragonfly cache connected");
     } catch (error) {
       logger.warn({ err: error }, "Dragonfly cache not available, caching disabled");
       this.available = false;
+      // 失敗した接続が裏で再接続を続けないように切断する
+      this.redis?.disconnect();
       this.redis = null;
     }
   }

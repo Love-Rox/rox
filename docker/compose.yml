@@ -41,7 +41,7 @@ services:
       postgres:
         condition: service_healthy
       dragonfly:
-        condition: service_started
+        condition: service_healthy
     environment:
       - NODE_ENV=production
       - PORT=3000
@@ -195,7 +195,6 @@ services:
       dragonfly
       --maxmemory=256mb
       --proactor_threads=2
-      --cache_mode=true
       --default_lua_flags=allow-undeclared-keys
     volumes:
       - dragonfly-data:/data
