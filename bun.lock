@@ -18,7 +18,7 @@
     },
     "packages/backend": {
       "name": "hono_rox",
-      "version": "1.10.1",
+      "version": "1.10.2",
       "dependencies": {
         "@aws-sdk/client-s3": "^3.1150.0",
         "@hono/zod-validator": "^0.9.1",
@@ -55,7 +55,7 @@
     },
     "packages/frontend": {
       "name": "waku_rox",
-      "version": "1.10.1",
+      "version": "1.10.2",
       "dependencies": {
         "@dnd-kit/core": "^6.3.1",
         "@dnd-kit/sortable": "^10.0.0",
@@ -105,7 +105,7 @@
     },
     "packages/shared": {
       "name": "shared",
-      "version": "1.10.1",
+      "version": "1.10.2",
       "dependencies": {
         "vite-plus": "^1.1.0",
       },
