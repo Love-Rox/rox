@@ -16,6 +16,10 @@ import {
   type DeliveryJobData,
 } from "../../services/ap/ActivityDeliveryQueue";
 
+// These tests cover synchronous delivery mode. Disable the queue explicitly so
+// the queue does not wait for a Redis connection during initialization.
+process.env.USE_QUEUE = "false";
+
 // Mock the ActivityDeliveryService
 mock.module("../../services/ap/ActivityDeliveryService", () => ({
   ActivityDeliveryService: class {
@@ -329,11 +333,24 @@ describe("ActivityDeliveryQueue job ID generation", () => {
       privateKey: "secret",
     };
 
-    // Should not throw and return a valid base36 string
+    // Should not throw and return a hex digest with the "d-" prefix
     const id = generateJobId(jobData);
-    expect(typeof id).toBe("string");
-    expect(id.length).toBeGreaterThan(0);
-    // Verify it's a valid base36 string (alphanumeric, no special characters)
-    expect(/^[0-9a-z]+$/.test(id)).toBe(true);
+    expect(id).toMatch(/^d-[0-9a-f]{32}$/);
+  });
+
+  test("should never generate an integer-like job ID", () => {
+    const queue = new ActivityDeliveryQueue(false);
+    const generateJobId = (queue as any).generateJobId.bind(queue);
+
+    // BullMQ rejects custom job IDs that parse as integers
+    for (let i = 0; i < 1000; i++) {
+      const id: string = generateJobId({
+        activity: { id: `https://local.example/activities/${i}`, type: "Create" },
+        inboxUrl: "https://remote.example/inbox",
+        keyId: "key",
+        privateKey: "secret",
+      });
+      expect(String(Number.parseInt(id, 10))).not.toBe(id);
+    }
   });
 });

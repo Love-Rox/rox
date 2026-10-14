@@ -55,7 +55,9 @@ jobs:
           echo "Creating tag: $TAG"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "$TAG" -m "Release $TAG"
+          # The "[auto-tag]" marker in the tag message tells release.yml to skip
+          # this tag (#278, #282). Keep it in sync with the guard job there.
+          git tag -a "$TAG" -m "Release $TAG [auto-tag]"
           git push origin "$TAG"
           echo "Successfully created and pushed tag: $TAG"
           echo "created=true" >> $GITHUB_OUTPUT

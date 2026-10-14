@@ -51,7 +51,6 @@ services:
       dragonfly
       --maxmemory=128mb
       --proactor_threads=1
-      --cache_mode=true
       --default_lua_flags=allow-undeclared-keys
     ports:
       - "6379:6379"
