@@ -7,7 +7,7 @@
  * @module utils/activityValidation
  */
 
-import { isLocalUrl } from "./federationUrl.js";
+import { isHttpUrl, isLocalUrl, isSameOrigin } from "./federationUrl.js";
 
 /**
  * Validation error types
@@ -179,6 +179,19 @@ export function validateRequiredFields(activity: any): ValidationResult {
       field: "actor",
       message: "Actor must be a valid HTTP(S) URI",
     });
+  }
+
+  // Activity id (when present) must be an http(s) URI on the actor's origin.
+  // Prevents `javascript:` ids and squatting of other servers' activity ids
+  // (which are persisted as note URIs and used for deduplication).
+  if (activity.id !== undefined && activity.id !== null) {
+    if (!isHttpUrl(activity.id) || (actorUri && !isSameOrigin(activity.id, actorUri))) {
+      errors.push({
+        type: ValidationErrorType.INVALID_URI,
+        field: "id",
+        message: "Activity id must be an HTTP(S) URI on the actor's origin",
+      });
+    }
   }
 
   // Type-specific validation

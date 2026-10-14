@@ -14,7 +14,7 @@
 
 import { signRequest, getSignedHeaders } from "../../utils/crypto.js";
 import { logger } from "../../lib/logger.js";
-import { safeFetch, UnsafeUrlError } from "../../lib/safeFetch.js";
+import { safeFetchWithFinalUrl, UnsafeUrlError } from "../../lib/safeFetch.js";
 
 /**
  * Content types accepted for ActivityPub object responses by default.
@@ -55,6 +55,13 @@ export interface RemoteFetchOptions {
    * Defaults to {@link ACTIVITYPUB_CONTENT_TYPES}.
    */
   allowedContentTypes?: string[];
+  /**
+   * Allow redirects to a different origin than the requested URL (default: false).
+   * ActivityPub objects are trusted by their URL's origin, so cross-origin
+   * redirects are rejected unless explicitly allowed (e.g. WebFinger on
+   * split-domain setups).
+   */
+  allowCrossOriginRedirect?: boolean;
 }
 
 /**
@@ -63,6 +70,8 @@ export interface RemoteFetchOptions {
 export interface RemoteFetchResult<T = any> {
   success: boolean;
   data?: T;
+  /** URL the response was actually served from (after redirects), on success */
+  finalUrl?: string;
   error?: {
     type: "timeout" | "network" | "rate_limit" | "server_error" | "invalid_response";
     message: string;
@@ -121,6 +130,7 @@ export class RemoteFetchService {
       headers = {},
       signature,
       allowedContentTypes = ACTIVITYPUB_CONTENT_TYPES,
+      allowCrossOriginRedirect = false,
     } = options;
 
     let lastError: RemoteFetchResult<T>["error"];
@@ -161,6 +171,7 @@ export class RemoteFetchService {
           timeout,
           requestHeaders,
           allowedContentTypes,
+          allowCrossOriginRedirect,
         );
 
         if (result.success) {
@@ -220,6 +231,7 @@ export class RemoteFetchService {
    * @param timeout - Timeout in milliseconds
    * @param headers - HTTP headers
    * @param allowedContentTypes - Accepted response media types
+   * @param allowCrossOriginRedirect - Whether the final URL may differ in origin from `url`
    * @returns Fetch result
    *
    * @private
@@ -229,6 +241,7 @@ export class RemoteFetchService {
     timeout: number,
     headers: Record<string, string>,
     allowedContentTypes: string[],
+    allowCrossOriginRedirect = false,
   ): Promise<RemoteFetchResult<T>> {
     try {
       // Create abort controller for timeout
@@ -236,12 +249,13 @@ export class RemoteFetchService {
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
       let response: Response;
+      let finalUrl: URL;
       try {
         // SSRF protection: blocks private destinations and re-validates redirects
-        response = await safeFetch(url, {
+        ({ response, finalUrl } = await safeFetchWithFinalUrl(url, {
           headers,
           signal: controller.signal,
-        });
+        }));
       } catch (error) {
         if (error instanceof UnsafeUrlError) {
           return {
@@ -255,6 +269,18 @@ export class RemoteFetchService {
         throw error;
       } finally {
         clearTimeout(timeoutId);
+      }
+
+      // Reject cross-origin redirects: the content would be attributed to the requested origin
+      if (!allowCrossOriginRedirect && finalUrl.origin !== new URL(url).origin) {
+        await response.body?.cancel().catch(() => {});
+        return {
+          success: false,
+          error: {
+            type: "invalid_response",
+            message: `Cross-origin redirect rejected: ${finalUrl.origin}`,
+          },
+        };
       }
 
       // Handle HTTP errors
@@ -331,6 +357,7 @@ export class RemoteFetchService {
       return {
         success: true,
         data,
+        finalUrl: finalUrl.href,
       };
     } catch (error) {
       // Timeout or network error

@@ -15,10 +15,33 @@
  */
 export function getLocalHostname(): string {
   try {
-    return new URL(process.env.URL || "http://localhost:3000").hostname;
+    return normalizeHostname(new URL(process.env.URL || "http://localhost:3000").hostname);
   } catch {
     return "localhost";
   }
+}
+
+/**
+ * Normalize a hostname for comparison (lowercase, trailing dot removed).
+ *
+ * `example.com.` is the fully-qualified form of `example.com` and resolves to
+ * the same host, so both must compare equal.
+ *
+ * @param hostname - Hostname to normalize
+ * @returns Normalized hostname
+ */
+export function normalizeHostname(hostname: string): string {
+  return hostname.toLowerCase().replace(/\.+$/, "");
+}
+
+/**
+ * Check whether a hostname refers to this instance.
+ *
+ * @param hostname - Hostname to check (e.g. from `new URL(x).hostname`)
+ * @returns True if it equals the local hostname after normalization
+ */
+export function isLocalHostname(hostname: string): boolean {
+  return normalizeHostname(hostname) === getLocalHostname();
 }
 
 /**
@@ -60,7 +83,7 @@ export function isHttpUrl(value: unknown): value is string {
  */
 export function isLocalUrl(value: unknown): boolean {
   const url = parseHttpUrl(value);
-  return url !== null && url.hostname === getLocalHostname();
+  return url !== null && isLocalHostname(url.hostname);
 }
 
 /**

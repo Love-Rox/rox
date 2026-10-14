@@ -8,11 +8,13 @@
 import { describe, test, expect, beforeEach } from "bun:test";
 import {
   clearFetchFailureCache,
-  extractVerifiedPublicKey,
   getFetchFailureCacheStats,
+  type KeyDocumentFetcher,
+  resolveVerifiedPublicKey,
   validateKeyId,
 } from "../../middleware/verifySignature.js";
 import { validateActivity, ValidationErrorType } from "../../utils/activityValidation.js";
+import { isLocalHostname, isLocalUrl } from "../../utils/federationUrl.js";
 
 describe("verifySignature fetch failure cache", () => {
   beforeEach(() => {
@@ -73,171 +75,208 @@ describe("validateKeyId", () => {
   });
 });
 
-describe("extractVerifiedPublicKey", () => {
+describe("resolveVerifiedPublicKey", () => {
   const pem = "-----BEGIN PUBLIC KEY-----\nAAA\n-----END PUBLIC KEY-----";
+  const otherPem = "-----BEGIN PUBLIC KEY-----\nBBB\n-----END PUBLIC KEY-----";
 
-  test("accepts Mastodon/Misskey-style actor document", () => {
-    const result = extractVerifiedPublicKey(
-      "https://remote.example/users/bob#main-key",
-      "https://remote.example/users/bob",
-      {
-        id: "https://remote.example/users/bob",
-        type: "Person",
-        publicKey: {
-          id: "https://remote.example/users/bob#main-key",
-          owner: "https://remote.example/users/bob",
-          publicKeyPem: pem,
-        },
-      },
-    );
-    expect(result).toEqual({ publicKeyPem: pem, owner: "https://remote.example/users/bob" });
+  beforeEach(() => {
+    process.env.URL = "http://localhost:3000";
   });
 
-  test("defaults owner to the document id when publicKey.owner is missing", () => {
-    const result = extractVerifiedPublicKey(
+  /**
+   * Build a fetcher from a URL → document map. Documents are served from the
+   * requested URL unless `redirects` maps the URL to a different final URL.
+   */
+  const makeFetcher = (
+    docs: Record<string, unknown>,
+    redirects: Record<string, string> = {},
+  ): KeyDocumentFetcher & { calls: string[] } => {
+    const calls: string[] = [];
+    const fetcher = (async (url: string) => {
+      calls.push(url);
+      if (!(url in docs)) throw new Error(`404 ${url}`);
+      return { data: docs[url], finalUrl: redirects[url] ?? url };
+    }) as KeyDocumentFetcher & { calls: string[] };
+    fetcher.calls = calls;
+    return fetcher;
+  };
+
+  const actorDoc = (id: string, keyId: string, keyPem = pem, owner: string | undefined = id) => ({
+    id,
+    type: "Person",
+    publicKey: { id: keyId, ...(owner ? { owner } : {}), publicKeyPem: keyPem },
+  });
+
+  test("accepts Mastodon/Misskey actor document without a second fetch", async () => {
+    const fetcher = makeFetcher({
+      "https://remote.example/users/bob": actorDoc(
+        "https://remote.example/users/bob",
+        "https://remote.example/users/bob#main-key",
+      ),
+    });
+    const result = await resolveVerifiedPublicKey(
       "https://remote.example/users/bob#main-key",
       "https://remote.example/users/bob",
-      {
-        id: "https://remote.example/users/bob",
-        publicKey: { id: "https://remote.example/users/bob#main-key", publicKeyPem: pem },
-      },
+      fetcher,
+    );
+    expect(result).toEqual({ publicKeyPem: pem, owner: "https://remote.example/users/bob" });
+    expect(fetcher.calls).toHaveLength(1);
+  });
+
+  test("defaults owner to the document id when publicKey.owner is missing", async () => {
+    const fetcher = makeFetcher({
+      "https://remote.example/users/bob": actorDoc(
+        "https://remote.example/users/bob",
+        "https://remote.example/users/bob#main-key",
+        pem,
+        undefined,
+      ),
+    });
+    const result = await resolveVerifiedPublicKey(
+      "https://remote.example/users/bob#main-key",
+      "https://remote.example/users/bob",
+      fetcher,
     );
     expect(result.owner).toBe("https://remote.example/users/bob");
   });
 
-  test("finds the matching key in a publicKey array", () => {
-    const result = extractVerifiedPublicKey(
-      "https://remote.example/users/bob#key-2",
-      "https://remote.example/users/bob",
-      {
-        id: "https://remote.example/users/bob",
-        publicKey: [
-          { id: "https://remote.example/users/bob#key-1", publicKeyPem: "other" },
-          { id: "https://remote.example/users/bob#key-2", publicKeyPem: pem },
-        ],
-      },
-    );
-    expect(result.publicKeyPem).toBe(pem);
+  test("accepts GoToSocial stub via a separate owner fetch", async () => {
+    const keyId = "https://gts.example/users/bob/main-key";
+    const fetcher = makeFetcher({
+      [keyId]: actorDoc("https://gts.example/users/bob", keyId),
+      "https://gts.example/users/bob": actorDoc("https://gts.example/users/bob", keyId),
+    });
+    const result = await resolveVerifiedPublicKey(keyId, keyId, fetcher);
+    expect(result.owner).toBe("https://gts.example/users/bob");
+    expect(fetcher.calls).toEqual([keyId, "https://gts.example/users/bob"]);
   });
 
-  test("accepts a standalone Key document on a different path (/publickey)", () => {
-    const result = extractVerifiedPublicKey(
-      "https://remote.example/users/bob/publickey",
-      "https://remote.example/users/bob/publickey",
-      {
-        id: "https://remote.example/users/bob/publickey",
+  test("accepts a standalone Key document when the owner actor lists the key", async () => {
+    const keyId = "https://remote.example/users/bob/publickey";
+    const fetcher = makeFetcher({
+      [keyId]: {
+        id: keyId,
         type: "Key",
         owner: "https://remote.example/users/bob",
         publicKeyPem: pem,
       },
-    );
+      "https://remote.example/users/bob": actorDoc("https://remote.example/users/bob", keyId),
+    });
+    const result = await resolveVerifiedPublicKey(keyId, keyId, fetcher);
     expect(result.owner).toBe("https://remote.example/users/bob");
   });
 
-  test("rejects a document whose publicKey.id does not match keyId", () => {
-    expect(() =>
-      extractVerifiedPublicKey(
+  test("rejects same-origin attacker Key document when owner's PEM differs", async () => {
+    // e.g. user-uploaded JSON on the victim's origin claiming bob's ownership
+    const keyId = "https://victim.example/files/evil.json";
+    const fetcher = makeFetcher({
+      [keyId]: {
+        id: keyId,
+        owner: "https://victim.example/users/bob",
+        publicKeyPem: otherPem,
+      },
+      "https://victim.example/users/bob": actorDoc(
+        "https://victim.example/users/bob",
+        "https://victim.example/users/bob#main-key",
+      ),
+    });
+    await expect(resolveVerifiedPublicKey(keyId, keyId, fetcher)).rejects.toThrow();
+  });
+
+  test("rejects when the owner lists the keyId but with a different PEM", async () => {
+    const keyId = "https://gts.example/users/bob/main-key";
+    const fetcher = makeFetcher({
+      [keyId]: actorDoc("https://gts.example/users/bob", keyId, otherPem),
+      "https://gts.example/users/bob": actorDoc("https://gts.example/users/bob", keyId, pem),
+    });
+    await expect(resolveVerifiedPublicKey(keyId, keyId, fetcher)).rejects.toThrow();
+  });
+
+  test("rejects a redirected key fetch unless the owner document confirms it", async () => {
+    // keyId URL redirects (open redirect) to an attacker document claiming bob
+    const keyId = "https://victim.example/users/bob#main-key";
+    const fetcher = makeFetcher(
+      {
+        "https://victim.example/users/bob": actorDoc(
+          "https://victim.example/users/bob",
+          keyId,
+          otherPem,
+        ),
+      },
+      { "https://victim.example/users/bob": "https://victim.example/redirect-target" },
+    );
+    await expect(
+      resolveVerifiedPublicKey(keyId, "https://victim.example/users/bob", fetcher),
+    ).rejects.toThrow();
+  });
+
+  test("rejects when the owner actor document itself was redirected", async () => {
+    const keyId = "https://gts.example/users/bob/main-key";
+    const fetcher = makeFetcher(
+      {
+        [keyId]: actorDoc("https://gts.example/users/bob", keyId),
+        "https://gts.example/users/bob": actorDoc("https://gts.example/users/bob", keyId),
+      },
+      { "https://gts.example/users/bob": "https://gts.example/elsewhere" },
+    );
+    await expect(resolveVerifiedPublicKey(keyId, keyId, fetcher)).rejects.toThrow();
+  });
+
+  test("rejects owner mismatch (attacker doc claiming a victim owner)", async () => {
+    const keyId = "https://evil.example/users/eve#main-key";
+    const fetcher = makeFetcher({
+      "https://evil.example/users/eve": actorDoc(
+        "https://evil.example/users/eve",
+        keyId,
+        pem,
+        "https://victim.example/users/bob",
+      ),
+      "https://victim.example/users/bob": actorDoc(
+        "https://victim.example/users/bob",
+        "https://victim.example/users/bob#main-key",
+        otherPem,
+      ),
+    });
+    await expect(
+      resolveVerifiedPublicKey(keyId, "https://evil.example/users/eve", fetcher),
+    ).rejects.toThrow();
+  });
+
+  test("rejects a document whose publicKey.id does not match keyId", async () => {
+    const fetcher = makeFetcher({
+      "https://remote.example/users/bob2": actorDoc(
+        "https://remote.example/users/bob2",
+        "https://remote.example/users/bob2#other-key",
+      ),
+    });
+    await expect(
+      resolveVerifiedPublicKey(
         "https://remote.example/users/bob2#main-key",
         "https://remote.example/users/bob2",
-        {
-          id: "https://remote.example/users/bob2",
-          publicKey: {
-            id: "https://remote.example/users/bob2#other-key",
-            owner: "https://remote.example/users/bob2",
-            publicKeyPem: pem,
-          },
-        },
+        fetcher,
       ),
-    ).toThrow();
+    ).rejects.toThrow();
   });
 
-  test("accepts GoToSocial-style stub actor served at the key path", () => {
-    const result = extractVerifiedPublicKey(
-      "https://gts.example/users/bob/main-key",
-      "https://gts.example/users/bob/main-key",
-      {
-        id: "https://gts.example/users/bob",
-        type: "Person",
-        publicKey: {
-          id: "https://gts.example/users/bob/main-key",
-          owner: "https://gts.example/users/bob",
-          publicKeyPem: pem,
-        },
-      },
-    );
-    expect(result.owner).toBe("https://gts.example/users/bob");
+  test("rejects a key owner on the local host", async () => {
+    const keyId = "https://evil.example/keys/1";
+    const fetcher = makeFetcher({
+      [keyId]: { id: keyId, owner: "http://localhost:3000/users/alice", publicKeyPem: pem },
+    });
+    await expect(resolveVerifiedPublicKey(keyId, keyId, fetcher)).rejects.toThrow();
   });
 
-  test("rejects an actor document whose id is on a different origin", () => {
-    expect(() =>
-      extractVerifiedPublicKey(
-        "https://evil.example/users/eve#main-key",
-        "https://evil.example/users/eve",
-        {
-          id: "https://victim.example/users/bob",
-          publicKey: {
-            id: "https://evil.example/users/eve#main-key",
-            owner: "https://victim.example/users/bob",
-            publicKeyPem: pem,
-          },
-        },
-      ),
-    ).toThrow();
-  });
-
-  test("dot-segment keyId resolves to the normalized target's owner, never the prefix actor", () => {
-    // Even if validateKeyId were bypassed, the verified owner is eve (the document
-    // actually fetched), so activity.actor === bob would fail the binding check.
-    const result = extractVerifiedPublicKey(
-      "https://victim.example/users/bob/../eve#main-key",
-      "https://victim.example/users/bob/../eve",
-      {
-        id: "https://victim.example/users/eve",
-        publicKey: {
-          id: "https://victim.example/users/eve#main-key",
-          owner: "https://victim.example/users/eve",
-          publicKeyPem: pem,
-        },
-      },
-    );
-    expect(result.owner).toBe("https://victim.example/users/eve");
-  });
-
-  test("rejects owner mismatch in actor document", () => {
-    expect(() =>
-      extractVerifiedPublicKey(
-        "https://evil.example/users/eve#main-key",
-        "https://evil.example/users/eve",
-        {
-          id: "https://evil.example/users/eve",
-          publicKey: {
-            id: "https://evil.example/users/eve#main-key",
-            owner: "https://victim.example/users/bob",
-            publicKeyPem: pem,
-          },
-        },
-      ),
-    ).toThrow();
-  });
-
-  test("rejects cross-origin owner in standalone Key document", () => {
-    expect(() =>
-      extractVerifiedPublicKey("https://evil.example/keys/1", "https://evil.example/keys/1", {
-        id: "https://evil.example/keys/1",
-        owner: "https://victim.example/users/bob",
-        publicKeyPem: pem,
-      }),
-    ).toThrow();
-  });
-
-  test("rejects document without a public key", () => {
-    expect(() =>
-      extractVerifiedPublicKey(
+  test("rejects document without a public key", async () => {
+    const fetcher = makeFetcher({
+      "https://remote.example/users/bob": { id: "https://remote.example/users/bob" },
+    });
+    await expect(
+      resolveVerifiedPublicKey(
         "https://remote.example/users/bob#main-key",
         "https://remote.example/users/bob",
-        { id: "https://remote.example/users/bob" },
+        fetcher,
       ),
-    ).toThrow();
+    ).rejects.toThrow();
   });
 });
 
@@ -307,5 +346,58 @@ describe("validateActivity actor binding", () => {
     );
     expect(result.valid).toBe(false);
     expect(result.errors[0]?.type).toBe(ValidationErrorType.ACTOR_MISMATCH);
+  });
+
+  test("rejects activities from a trailing-dot local hostname", () => {
+    const result = validateActivity(
+      activity("http://LOCALHOST.:3000/users/alice"),
+      "http://LOCALHOST.:3000/users/alice#main-key",
+      "http://LOCALHOST.:3000/users/alice",
+    );
+    expect(result.valid).toBe(false);
+  });
+
+  test("rejects a javascript: activity id", () => {
+    const actor = "https://remote.example/users/bob";
+    const result = validateActivity(
+      { ...activity(actor), id: "javascript:alert(1)" },
+      `${actor}#main-key`,
+      actor,
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "id")).toBe(true);
+  });
+
+  test("rejects an activity id on another origin than the actor", () => {
+    const actor = "https://remote.example/users/bob";
+    const result = validateActivity(
+      { ...activity(actor), id: "https://victim.example/users/alice/statuses/1/activity" },
+      `${actor}#main-key`,
+      actor,
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "id")).toBe(true);
+  });
+});
+
+describe("federationUrl local host detection", () => {
+  beforeEach(() => {
+    process.env.URL = "https://rox.example.com";
+  });
+
+  test("treats trailing-dot and uppercase hostnames as local", () => {
+    expect(isLocalUrl("https://rox.example.com./users/alice")).toBe(true);
+    expect(isLocalUrl("https://ROX.Example.COM/users/alice")).toBe(true);
+    expect(isLocalHostname("rox.example.com.")).toBe(true);
+  });
+
+  test("does not treat other hosts as local", () => {
+    expect(isLocalUrl("https://rox.example.com.evil.example/users/alice")).toBe(false);
+    expect(isLocalHostname("other.example.com")).toBe(false);
+  });
+
+  test("normalizes a trailing dot in the configured URL", () => {
+    process.env.URL = "https://rox.example.com.";
+    expect(isLocalUrl("https://rox.example.com/users/alice")).toBe(true);
   });
 });
