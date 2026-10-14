@@ -33,6 +33,23 @@ export function getRedisUrl(): string {
 }
 
 /**
+ * Strip credentials from a Redis URL so it can be logged safely.
+ *
+ * @param url - Redis connection URL (may contain `user:password@`)
+ * @returns URL with username and password replaced by `***`
+ */
+export function redactRedisUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    if (parsed.username) parsed.username = "***";
+    if (parsed.password) parsed.password = "***";
+    return parsed.toString();
+  } catch {
+    return "<invalid redis url>";
+  }
+}
+
+/**
  * Create an ioredis client with the shared defaults.
  *
  * Defaults:
@@ -109,7 +126,7 @@ export async function waitForRedisReady(
     };
     const timer = setTimeout(() => {
       cleanup();
-      reject(new Error(`Redis not ready within ${timeoutMs}ms (${getRedisUrl()})`));
+      reject(new Error(`Redis not ready within ${timeoutMs}ms (${redactRedisUrl(getRedisUrl())})`));
     }, timeoutMs);
     const cleanup = () => {
       clearTimeout(timer);
