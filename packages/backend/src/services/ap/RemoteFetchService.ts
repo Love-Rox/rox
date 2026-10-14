@@ -14,6 +14,17 @@
 
 import { signRequest, getSignedHeaders } from "../../utils/crypto.js";
 import { logger } from "../../lib/logger.js";
+import { safeFetch, UnsafeUrlError } from "../../lib/safeFetch.js";
+
+/**
+ * Content types accepted for ActivityPub object responses by default.
+ * Some servers respond with plain `application/json`, which is accepted too.
+ */
+export const ACTIVITYPUB_CONTENT_TYPES = [
+  "application/activity+json",
+  "application/ld+json",
+  "application/json",
+];
 
 /**
  * Signature configuration for authenticated fetches
@@ -39,6 +50,11 @@ export interface RemoteFetchOptions {
   headers?: Record<string, string>;
   /** HTTP Signature configuration for authenticated requests */
   signature?: SignatureConfig;
+  /**
+   * Accepted response media types (without parameters).
+   * Defaults to {@link ACTIVITYPUB_CONTENT_TYPES}.
+   */
+  allowedContentTypes?: string[];
 }
 
 /**
@@ -104,6 +120,7 @@ export class RemoteFetchService {
       initialRetryDelay = RemoteFetchService.DEFAULT_INITIAL_RETRY_DELAY,
       headers = {},
       signature,
+      allowedContentTypes = ACTIVITYPUB_CONTENT_TYPES,
     } = options;
 
     let lastError: RemoteFetchResult<T>["error"];
@@ -139,7 +156,12 @@ export class RemoteFetchService {
           };
         }
 
-        const result = await this.performFetch<T>(url, timeout, requestHeaders);
+        const result = await this.performFetch<T>(
+          url,
+          timeout,
+          requestHeaders,
+          allowedContentTypes,
+        );
 
         if (result.success) {
           return result;
@@ -197,6 +219,7 @@ export class RemoteFetchService {
    * @param url - URL to fetch
    * @param timeout - Timeout in milliseconds
    * @param headers - HTTP headers
+   * @param allowedContentTypes - Accepted response media types
    * @returns Fetch result
    *
    * @private
@@ -205,6 +228,7 @@ export class RemoteFetchService {
     url: string,
     timeout: number,
     headers: Record<string, string>,
+    allowedContentTypes: string[],
   ): Promise<RemoteFetchResult<T>> {
     try {
       // Create abort controller for timeout
@@ -213,10 +237,22 @@ export class RemoteFetchService {
 
       let response: Response;
       try {
-        response = await fetch(url, {
+        // SSRF protection: blocks private destinations and re-validates redirects
+        response = await safeFetch(url, {
           headers,
           signal: controller.signal,
         });
+      } catch (error) {
+        if (error instanceof UnsafeUrlError) {
+          return {
+            success: false,
+            error: {
+              type: "invalid_response",
+              message: `URL rejected: ${error.message}`,
+            },
+          };
+        }
+        throw error;
       } finally {
         clearTimeout(timeoutId);
       }
@@ -255,6 +291,23 @@ export class RemoteFetchService {
           error: {
             type: "invalid_response",
             message: `HTTP error: ${response.status} ${response.statusText}`,
+            statusCode: response.status,
+          },
+        };
+      }
+
+      // Validate content type before parsing
+      const contentType = (response.headers.get("content-type") ?? "")
+        .split(";")[0]!
+        .trim()
+        .toLowerCase();
+      if (!allowedContentTypes.includes(contentType)) {
+        await response.body?.cancel().catch(() => {});
+        return {
+          success: false,
+          error: {
+            type: "invalid_response",
+            message: `Unexpected content type: ${contentType || "(none)"}`,
             statusCode: response.status,
           },
         };

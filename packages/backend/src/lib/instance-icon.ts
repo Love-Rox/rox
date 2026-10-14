@@ -7,6 +7,7 @@
  */
 
 import { logger } from "./logger.js";
+import { safeFetch } from "./safeFetch.js";
 
 /**
  * Try to fetch instance icon from software-specific APIs, then fall back to favicon
@@ -56,7 +57,7 @@ export async function fetchInstanceIconFromApi(
       normalizedName === "calckey" ||
       normalizedName === "cherrypick"
     ) {
-      const response = await fetch(`https://${host}/api/meta`, {
+      const response = await safeFetch(`https://${host}/api/meta`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +86,7 @@ export async function fetchInstanceIconFromApi(
       normalizedName === "glitch" ||
       normalizedName === "kmyblue"
     ) {
-      const response = await fetch(`https://${host}/api/v2/instance`, {
+      const response = await safeFetch(`https://${host}/api/v2/instance`, {
         headers: {
           Accept: "application/json",
         },
@@ -102,7 +103,7 @@ export async function fetchInstanceIconFromApi(
       }
 
       // Fall back to v1 API for older Mastodon versions
-      const v1Response = await fetch(`https://${host}/api/v1/instance`, {
+      const v1Response = await safeFetch(`https://${host}/api/v1/instance`, {
         headers: {
           Accept: "application/json",
         },
@@ -119,7 +120,7 @@ export async function fetchInstanceIconFromApi(
 
     // Pleroma / Akkoma
     if (normalizedName === "pleroma" || normalizedName === "akkoma") {
-      const response = await fetch(`https://${host}/api/v1/instance`, {
+      const response = await safeFetch(`https://${host}/api/v1/instance`, {
         headers: {
           Accept: "application/json",
         },
@@ -136,7 +137,7 @@ export async function fetchInstanceIconFromApi(
 
     // GoToSocial
     if (normalizedName === "gotosocial") {
-      const response = await fetch(`https://${host}/api/v1/instance`, {
+      const response = await safeFetch(`https://${host}/api/v1/instance`, {
         headers: {
           Accept: "application/json",
         },
@@ -155,7 +156,7 @@ export async function fetchInstanceIconFromApi(
     if (!normalizedName) {
       // Try Mastodon API first (most common)
       try {
-        const response = await fetch(`https://${host}/api/v1/instance`, {
+        const response = await safeFetch(`https://${host}/api/v1/instance`, {
           headers: { Accept: "application/json" },
           signal: AbortSignal.timeout(5000),
         });
@@ -172,7 +173,7 @@ export async function fetchInstanceIconFromApi(
 
       // Try Misskey API
       try {
-        const response = await fetch(`https://${host}/api/meta`, {
+        const response = await safeFetch(`https://${host}/api/meta`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -217,7 +218,7 @@ export async function fetchFavicon(host: string): Promise<string | null> {
   for (const path of faviconPaths) {
     try {
       const url = `https://${host}${path}`;
-      const response = await fetch(url, {
+      const response = await safeFetch(url, {
         method: "HEAD",
         signal: AbortSignal.timeout(5000),
       });

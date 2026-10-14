@@ -6,6 +6,15 @@
  * - Reduce load on remote servers
  * - Provide content-type validation for security
  *
+ * Security notes:
+ * - Outbound requests go through {@link safeFetch}, which blocks private /
+ *   loopback / link-local destinations and re-validates every redirect hop
+ * - Only raster image, audio and video MIME types are allowed. SVG is
+ *   intentionally excluded because it can carry script and would execute on
+ *   the application origin
+ * - Every proxied response carries a restrictive sandboxed CSP so that even a
+ *   mislabeled payload cannot run script on the application origin
+ *
  * @module routes/proxy
  */
 
@@ -13,37 +22,55 @@ import { Hono } from "hono";
 import type { Context } from "hono";
 import { createHash } from "node:crypto";
 import { logger } from "../lib/logger.js";
+import { safeFetch, UnsafeUrlError } from "../lib/safeFetch.js";
+import type { ICacheService } from "../interfaces/ICacheService.js";
 
 const proxy = new Hono();
 
 /**
- * Allowed MIME types for proxying
+ * Allowed MIME types for proxying, mapped to the file extension used in the
+ * `Content-Disposition` filename.
+ *
+ * `image/svg+xml` is deliberately NOT allowed (stored XSS on the app origin).
  */
-const ALLOWED_MIME_TYPES = new Set([
+const ALLOWED_MIME_TYPES = new Map<string, string>([
   // Images
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp",
-  "image/avif",
-  "image/svg+xml",
-  "image/x-icon",
-  "image/vnd.microsoft.icon",
+  ["image/jpeg", "jpg"],
+  ["image/png", "png"],
+  ["image/gif", "gif"],
+  ["image/webp", "webp"],
+  ["image/avif", "avif"],
+  ["image/x-icon", "ico"],
+  ["image/vnd.microsoft.icon", "ico"],
   // Audio
-  "audio/mpeg",
-  "audio/ogg",
-  "audio/wav",
-  "audio/webm",
+  ["audio/mpeg", "mp3"],
+  ["audio/ogg", "ogg"],
+  ["audio/wav", "wav"],
+  ["audio/webm", "webm"],
   // Video
-  "video/mp4",
-  "video/webm",
-  "video/ogg",
+  ["video/mp4", "mp4"],
+  ["video/webm", "webm"],
+  ["video/ogg", "ogv"],
 ]);
+
+/**
+ * Content Security Policy applied to every proxy response.
+ *
+ * `sandbox` prevents script execution and gives the document an opaque
+ * origin even if it is navigated to directly.
+ */
+export const PROXY_CSP =
+  "default-src 'none'; img-src 'self' data:; media-src 'self'; style-src 'unsafe-inline'; sandbox";
 
 /**
  * Maximum file size for proxying (10MB)
  */
 const MAX_PROXY_SIZE = 10 * 1024 * 1024;
+
+/**
+ * Upstream request timeout (10 seconds)
+ */
+const PROXY_TIMEOUT = 10000;
 
 /**
  * Cache duration headers (1 day for success, 1 hour for errors)
@@ -56,6 +83,161 @@ const CACHE_ERROR = "public, max-age=3600";
  */
 function getCacheKey(url: string): string {
   return createHash("sha256").update(url).digest("hex");
+}
+
+/**
+ * Apply security headers shared by every proxy response.
+ *
+ * @param c - Hono context
+ * @param contentType - Content type of the body (if it is media)
+ */
+function applyProxySecurityHeaders(c: Context, contentType?: string): void {
+  c.header("Content-Security-Policy", PROXY_CSP);
+  c.header("X-Content-Type-Options", "nosniff");
+  if (contentType) {
+    const ext = ALLOWED_MIME_TYPES.get(contentType) ?? "bin";
+    c.header("Content-Disposition", `inline; filename="media.${ext}"`);
+  }
+}
+
+/**
+ * Result of fetching media for the proxy.
+ */
+type ProxyMediaResult =
+  | { ok: true; buffer: Buffer; contentType: string; cacheHit: boolean }
+  | { ok: false; status: 400 | 403 | 413 | 415 | 502 | 504; error: string };
+
+/**
+ * Fetch (or load from cache) remote media with validation.
+ *
+ * @param url - Remote media URL
+ * @param cacheService - Optional cache service
+ * @returns Media buffer and content type, or an error description safe to return to clients
+ */
+async function fetchProxiedMedia(
+  url: string,
+  cacheService: ICacheService | undefined,
+): Promise<ProxyMediaResult> {
+  // Validate URL format
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(url);
+  } catch {
+    return { ok: false, status: 400, error: "Invalid URL format" };
+  }
+
+  // Only allow http/https
+  if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+    return { ok: false, status: 400, error: "Only HTTP/HTTPS URLs are allowed" };
+  }
+
+  const cacheKey = `proxy:${getCacheKey(url)}`;
+
+  // Check cache first
+  if (cacheService?.isAvailable()) {
+    const cached = await cacheService.get<{
+      data: string; // Base64 encoded
+      contentType: string;
+    }>(cacheKey);
+
+    // Re-validate the cached content type: entries written before the
+    // allowlist was tightened (e.g. SVG) must not be served.
+    if (cached && ALLOWED_MIME_TYPES.has(cached.contentType)) {
+      return {
+        ok: true,
+        buffer: Buffer.from(cached.data, "base64"),
+        contentType: cached.contentType,
+        cacheHit: true,
+      };
+    }
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), PROXY_TIMEOUT);
+
+  try {
+    let response: Response;
+    try {
+      response = await safeFetch(url, {
+        signal: controller.signal,
+        headers: {
+          "User-Agent": "Rox/1.0 (ActivityPub; +https://github.com/Love-Rox/rox)",
+          Accept: "image/*,video/*,audio/*",
+        },
+      });
+    } catch (error) {
+      if (error instanceof UnsafeUrlError) {
+        return { ok: false, status: 403, error: "URL is not allowed" };
+      }
+      throw error;
+    }
+
+    if (!response.ok) {
+      await response.body?.cancel().catch(() => {});
+      return { ok: false, status: 502, error: "Failed to fetch remote media" };
+    }
+
+    // Validate content type
+    const rawContentType = response.headers.get("content-type") || "";
+    const contentType = (rawContentType.split(";")[0] ?? "").trim().toLowerCase();
+    if (!contentType || !ALLOWED_MIME_TYPES.has(contentType)) {
+      await response.body?.cancel().catch(() => {});
+      return { ok: false, status: 415, error: "Unsupported media type" };
+    }
+
+    // Check content length
+    const contentLength = response.headers.get("content-length");
+    if (contentLength && parseInt(contentLength, 10) > MAX_PROXY_SIZE) {
+      await response.body?.cancel().catch(() => {});
+      return { ok: false, status: 413, error: "File too large" };
+    }
+
+    // Read body with size limit
+    const chunks: Uint8Array[] = [];
+    let totalSize = 0;
+    const reader = response.body?.getReader();
+
+    if (!reader) {
+      return { ok: false, status: 502, error: "Failed to fetch remote media" };
+    }
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      totalSize += value.length;
+      if (totalSize > MAX_PROXY_SIZE) {
+        await reader.cancel();
+        return { ok: false, status: 413, error: "File too large" };
+      }
+
+      chunks.push(value);
+    }
+
+    const buffer = Buffer.concat(chunks);
+
+    // Cache the result
+    if (cacheService?.isAvailable()) {
+      await cacheService.set(
+        cacheKey,
+        {
+          data: buffer.toString("base64"),
+          contentType,
+        },
+        { ttl: 86400 }, // 24 hours
+      );
+    }
+
+    return { ok: true, buffer, contentType, cacheHit: false };
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      return { ok: false, status: 504, error: "Request timeout" };
+    }
+    logger.error({ err: error, url }, "Proxy fetch error");
+    return { ok: false, status: 502, error: "Failed to fetch remote media" };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 /**
@@ -72,149 +254,26 @@ function getCacheKey(url: string): string {
 proxy.get("/", async (c: Context) => {
   const url = c.req.query("url");
 
+  applyProxySecurityHeaders(c);
+
   if (!url) {
     return c.json({ error: "url parameter is required" }, 400);
   }
 
-  // Validate URL format
-  let parsedUrl: URL;
-  try {
-    parsedUrl = new URL(url);
-  } catch {
-    return c.json({ error: "Invalid URL format" }, 400);
-  }
+  const result = await fetchProxiedMedia(url, c.get("cacheService"));
 
-  // Only allow http/https
-  if (!["http:", "https:"].includes(parsedUrl.protocol)) {
-    return c.json({ error: "Only HTTP/HTTPS URLs are allowed" }, 400);
-  }
-
-  // Block localhost/private IPs for security
-  const hostname = parsedUrl.hostname.toLowerCase();
-  if (
-    hostname === "localhost" ||
-    hostname === "127.0.0.1" ||
-    hostname === "::1" ||
-    hostname.startsWith("192.168.") ||
-    hostname.startsWith("10.") ||
-    hostname.startsWith("172.") ||
-    hostname.endsWith(".local")
-  ) {
-    return c.json({ error: "Private addresses are not allowed" }, 403);
-  }
-
-  const cacheService = c.get("cacheService");
-  const cacheKey = `proxy:${getCacheKey(url)}`;
-
-  // Check cache first
-  if (cacheService?.isAvailable()) {
-    const cached = await cacheService.get<{
-      data: string; // Base64 encoded
-      contentType: string;
-    }>(cacheKey);
-
-    if (cached) {
-      const buffer = Buffer.from(cached.data, "base64");
-      c.header("Content-Type", cached.contentType);
-      c.header("Cache-Control", CACHE_SUCCESS);
-      c.header("X-Cache", "HIT");
-      return c.body(buffer);
-    }
-  }
-
-  // Fetch from remote
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
-
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        "User-Agent": "Rox/1.0 (ActivityPub; +https://github.com/example/rox)",
-        Accept: "image/*,video/*,audio/*",
-      },
-    });
-
-    clearTimeout(timeout);
-
-    if (!response.ok) {
+  if (!result.ok) {
+    if (result.status !== 400) {
       c.header("Cache-Control", CACHE_ERROR);
-      return c.json(
-        { error: `Remote server returned ${response.status}` },
-        response.status as 400 | 404 | 500,
-      );
     }
-
-    // Validate content type
-    const rawContentType = response.headers.get("content-type") || "";
-    const contentType = (rawContentType.split(";")[0] ?? "").trim();
-    if (!contentType || !ALLOWED_MIME_TYPES.has(contentType)) {
-      c.header("Cache-Control", CACHE_ERROR);
-      return c.json({ error: `Content type not allowed: ${contentType}` }, 415);
-    }
-
-    // Check content length
-    const contentLength = response.headers.get("content-length");
-    if (contentLength && parseInt(contentLength, 10) > MAX_PROXY_SIZE) {
-      c.header("Cache-Control", CACHE_ERROR);
-      return c.json({ error: "File too large" }, 413);
-    }
-
-    // Read body with size limit
-    const chunks: Uint8Array[] = [];
-    let totalSize = 0;
-    const reader = response.body?.getReader();
-
-    if (!reader) {
-      return c.json({ error: "Failed to read response" }, 500);
-    }
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      totalSize += value.length;
-      if (totalSize > MAX_PROXY_SIZE) {
-        reader.cancel();
-        c.header("Cache-Control", CACHE_ERROR);
-        return c.json({ error: "File too large" }, 413);
-      }
-
-      chunks.push(value);
-    }
-
-    // Combine chunks
-    const buffer = Buffer.concat(chunks);
-
-    // Cache the result
-    if (cacheService?.isAvailable()) {
-      await cacheService.set(
-        cacheKey,
-        {
-          data: buffer.toString("base64"),
-          contentType,
-        },
-        { ttl: 86400 }, // 24 hours
-      );
-    }
-
-    // Return response
-    c.header("Content-Type", contentType);
-    c.header("Cache-Control", CACHE_SUCCESS);
-    c.header("X-Cache", "MISS");
-    c.header("X-Content-Type-Options", "nosniff");
-    return c.body(buffer);
-  } catch (error) {
-    logger.error({ err: error, url }, "Proxy fetch error");
-
-    if (error instanceof Error && error.name === "AbortError") {
-      c.header("Cache-Control", CACHE_ERROR);
-      return c.json({ error: "Request timeout" }, 504);
-    }
-
-    c.header("Cache-Control", CACHE_ERROR);
-    return c.json({ error: "Failed to fetch remote media" }, 502);
+    return c.json({ error: result.error }, result.status);
   }
+
+  applyProxySecurityHeaders(c, result.contentType);
+  c.header("Content-Type", result.contentType);
+  c.header("Cache-Control", CACHE_SUCCESS);
+  c.header("X-Cache", result.cacheHit ? "HIT" : "MISS");
+  return c.body(new Uint8Array(result.buffer));
 });
 
 /**
@@ -228,31 +287,21 @@ proxy.get("/", async (c: Context) => {
 proxy.get("/avatar", async (c: Context) => {
   const url = c.req.query("url");
 
-  if (!url) {
-    // Return default avatar placeholder
-    c.header("Content-Type", "image/svg+xml");
-    c.header("Cache-Control", CACHE_SUCCESS);
-    return c.body(DEFAULT_AVATAR_SVG);
-  }
+  applyProxySecurityHeaders(c);
 
-  // Delegate to main proxy handler
-  // In case of error, return default avatar
-  try {
-    const proxyUrl = new URL("/proxy", c.req.url);
-    proxyUrl.searchParams.set("url", url);
-
-    const response = await fetch(proxyUrl.toString());
-    if (response.ok) {
-      const contentType = response.headers.get("content-type") || "image/png";
-      c.header("Content-Type", contentType);
+  if (url) {
+    const result = await fetchProxiedMedia(url, c.get("cacheService"));
+    if (result.ok) {
+      applyProxySecurityHeaders(c, result.contentType);
+      c.header("Content-Type", result.contentType);
       c.header("Cache-Control", CACHE_SUCCESS);
-      return c.body(await response.arrayBuffer());
+      return c.body(new Uint8Array(result.buffer));
     }
-  } catch {
-    // Fall through to default avatar
   }
 
+  // Return default avatar placeholder (static, trusted SVG)
   c.header("Content-Type", "image/svg+xml");
+  c.header("Content-Disposition", 'inline; filename="avatar.svg"');
   c.header("Cache-Control", CACHE_SUCCESS);
   return c.body(DEFAULT_AVATAR_SVG);
 });

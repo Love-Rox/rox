@@ -9,6 +9,7 @@ import webpush from "web-push";
 import { eq, and } from "drizzle-orm";
 import { generateId } from "shared";
 import { logger } from "../lib/logger.js";
+import { safeFetch } from "../lib/safeFetch.js";
 import type { Database } from "../db/index.js";
 import type { PushSubscription, NewPushSubscription, NotificationType } from "../db/schema/pg.js";
 import type { InstanceSettingsService } from "./InstanceSettingsService.js";
@@ -230,13 +231,18 @@ export class WebPushService {
         // Convert Buffer to Uint8Array for fetch compatibility
         const body = requestDetails.body ? new Uint8Array(requestDetails.body) : undefined;
 
-        // Web Push always uses POST method
-        const response = await fetch(requestDetails.endpoint, {
-          method: "POST",
-          headers: requestDetails.headers as Record<string, string>,
-          body,
-          signal: controller.signal,
-        });
+        // Web Push always uses POST method.
+        // Endpoints are user-supplied, so guard against SSRF and never follow redirects.
+        const response = await safeFetch(
+          requestDetails.endpoint,
+          {
+            method: "POST",
+            headers: requestDetails.headers as Record<string, string>,
+            body,
+            signal: controller.signal,
+          },
+          { maxRedirects: 0 },
+        );
 
         clearTimeout(timeoutId);
 
