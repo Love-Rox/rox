@@ -148,6 +148,79 @@ describe("RemoteNoteService", () => {
       expect(mockNoteRepository.create).not.toHaveBeenCalled();
     });
 
+    describe("origin validation", () => {
+      beforeEach(() => {
+        process.env.URL = "http://localhost:3000";
+      });
+
+      test("should reject notes with a javascript: id", async () => {
+        await expect(
+          service.processNote({
+            id: "javascript:alert(document.cookie)",
+            type: "Note",
+            attributedTo: "https://remote.example/users/testuser",
+            content: "<p>x</p>",
+          }),
+        ).rejects.toThrow();
+        expect(mockNoteRepository.findByUri).not.toHaveBeenCalled();
+        expect(mockNoteRepository.create).not.toHaveBeenCalled();
+      });
+
+      test("should reject remote notes attributed to a local user", async () => {
+        await expect(
+          service.processNote({
+            id: "https://remote.example/notes/evil",
+            type: "Note",
+            attributedTo: "http://localhost:3000/users/alice",
+            content: "<p>x</p>",
+          }),
+        ).rejects.toThrow();
+        expect(mockNoteRepository.create).not.toHaveBeenCalled();
+      });
+
+      test("should reject notes whose id origin differs from attributedTo", async () => {
+        await expect(
+          service.processNote({
+            id: "https://evil.example/notes/1",
+            type: "Note",
+            attributedTo: "https://remote.example/users/testuser",
+            content: "<p>x</p>",
+          }),
+        ).rejects.toThrow();
+        expect(mockNoteRepository.create).not.toHaveBeenCalled();
+      });
+
+      test("should return existing local note instead of creating for local ids", async () => {
+        const localNote = { id: "local-1", userId: "alice", uri: null };
+        mockNoteRepository.findById = mock(() => Promise.resolve(localNote as any));
+
+        const result = await service.processNote({
+          id: "http://localhost:3000/notes/local-1",
+          type: "Note",
+          attributedTo: "http://localhost:3000/users/alice",
+          content: "<p>x</p>",
+        });
+
+        expect(result.id).toBe("local-1");
+        expect(mockNoteRepository.findById).toHaveBeenCalledWith("local-1");
+        expect(mockNoteRepository.create).not.toHaveBeenCalled();
+      });
+
+      test("should throw for unknown local note ids", async () => {
+        mockNoteRepository.findById = mock(() => Promise.resolve(null));
+
+        await expect(
+          service.processNote({
+            id: "http://localhost:3000/notes/missing",
+            type: "Note",
+            attributedTo: "http://localhost:3000/users/alice",
+            content: "<p>x</p>",
+          }),
+        ).rejects.toThrow();
+        expect(mockNoteRepository.create).not.toHaveBeenCalled();
+      });
+    });
+
     test("should process note with attachments", async () => {
       const apNote = {
         id: "https://remote.example/notes/456",

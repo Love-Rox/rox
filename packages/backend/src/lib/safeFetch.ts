@@ -343,6 +343,25 @@ export async function safeFetch(
   init: RequestInit = {},
   options: SafeFetchOptions = {},
 ): Promise<Response> {
+  return (await safeFetchWithFinalUrl(input, init, options)).response;
+}
+
+/**
+ * Same as {@link safeFetch}, but also returns the URL of the final hop
+ * (after following redirects). Callers that bind trust to the requested URL
+ * (e.g. ActivityPub object/key fetches) must check that it did not change.
+ *
+ * @param input - URL to fetch
+ * @param init - Fetch init (the `redirect` option is ignored)
+ * @param options - Redirect and validation options
+ * @returns The final response and the URL it was served from
+ * @throws {UnsafeUrlError} If any hop targets a non-public address or the redirect limit is exceeded
+ */
+export async function safeFetchWithFinalUrl(
+  input: string | URL,
+  init: RequestInit = {},
+  options: SafeFetchOptions = {},
+): Promise<{ response: Response; finalUrl: URL }> {
   const maxRedirects = options.maxRedirects ?? DEFAULT_MAX_REDIRECTS;
   const fetchImpl = options.fetchImpl ?? fetch;
 
@@ -361,12 +380,12 @@ export async function safeFetch(
     });
 
     if (!REDIRECT_STATUSES.has(response.status)) {
-      return response;
+      return { response, finalUrl: current };
     }
 
     const location = response.headers.get("location");
     if (!location) {
-      return response;
+      return { response, finalUrl: current };
     }
 
     // Discard the redirect body

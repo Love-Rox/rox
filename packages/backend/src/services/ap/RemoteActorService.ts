@@ -15,6 +15,7 @@ import { generateId } from "shared";
 import { RemoteFetchService, type SignatureConfig } from "./RemoteFetchService.js";
 import { CacheTTL, CachePrefix } from "../../adapters/cache/DragonflyCacheAdapter.js";
 import { logger } from "../../lib/logger.js";
+import { isLocalHostname } from "../../utils/federationUrl.js";
 
 /**
  * ActivityPub Emoji tag
@@ -170,10 +171,9 @@ export class RemoteActorService {
    */
   async resolveActor(actorUri: string, forceRefresh = false): Promise<User> {
     // Check if this is a local URI - if so, find user by URI directly (local users have host=null)
-    const localHost = new URL(process.env.URL || "http://localhost:3000").hostname;
     const actorHost = new URL(actorUri).hostname;
 
-    if (actorHost === localHost) {
+    if (isLocalHostname(actorHost)) {
       // This is a local user URI - find by URI (which includes local users)
       const localUser = await this.userRepository.findByUri(actorUri);
       if (localUser) {
@@ -539,8 +539,7 @@ export class RemoteActorService {
     }
 
     // Check if local user
-    const localHost = new URL(process.env.URL || "http://localhost:3000").hostname;
-    if (host === localHost) {
+    if (isLocalHostname(host)) {
       const localUser = await this.userRepository.findByUsername(username, null);
       if (!localUser) {
         throw new Error(`Local user not found: ${username}`);
@@ -566,6 +565,9 @@ export class RemoteActorService {
           Accept: "application/jrd+json, application/json",
         },
         allowedContentTypes: ["application/jrd+json", "application/json"],
+        // Split-domain setups redirect WebFinger to the AP host; the actor
+        // document itself is fetched (same-origin only) afterwards.
+        allowCrossOriginRedirect: true,
       },
     );
 

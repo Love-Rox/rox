@@ -44,6 +44,12 @@ export class DeleteHandler extends BaseHandler {
       // Otherwise, try to resolve the actor and handle note deletion
       const remoteActor = await this.resolveActor(actorUri, c);
 
+      // ローカルユーザーのノートを連合経由で削除させない
+      if (remoteActor.host === null) {
+        this.warn(`Delete rejected: actor ${actorUri} resolves to a local user`);
+        return this.failure("Cannot delete local notes via federation");
+      }
+
       this.log("📥", `Delete: ${remoteActor.username}@${remoteActor.host} → ${objectUri}`);
 
       // Try to find and delete the note
