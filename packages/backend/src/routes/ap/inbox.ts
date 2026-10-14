@@ -74,7 +74,8 @@ inbox.post(
 
     // Enhanced activity validation
     const signatureKeyId = c.get("signatureKeyId");
-    const validationResult = validateActivity(activity, signatureKeyId);
+    const signatureActor = c.get("signatureActor");
+    const validationResult = validateActivity(activity, signatureKeyId, signatureActor);
 
     if (!validationResult.valid) {
       logger.warn(
@@ -207,7 +208,8 @@ inbox.post(
 
     // Enhanced activity validation
     const signatureKeyId = c.get("signatureKeyId");
-    const validationResult = validateActivity(activity, signatureKeyId);
+    const signatureActor = c.get("signatureActor");
+    const validationResult = validateActivity(activity, signatureKeyId, signatureActor);
 
     if (!validationResult.valid) {
       logger.warn(

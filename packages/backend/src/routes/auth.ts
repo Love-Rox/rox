@@ -12,6 +12,8 @@ import { PasskeyService } from "../services/PasskeyService.js";
 import { requireAuth } from "../middleware/auth.js";
 import { rateLimit, RateLimitPresets } from "../middleware/rateLimit.js";
 import { logger } from "../lib/logger.js";
+import { isInviteOnly, isRegistrationEnabled } from "../lib/registrationPolicy.js";
+import { toPublicUser } from "../lib/routeUtils.js";
 import type { Context } from "hono";
 
 const app = new Hono();
@@ -20,37 +22,15 @@ const app = new Hono();
  * Check if registration requires an invitation code
  * Uses DB setting first, falls back to environment variable
  */
-const checkIsInviteOnly = async (c: Context): Promise<boolean> => {
-  // First check DB setting
-  const instanceSettingsService = c.get("instanceSettingsService");
-  const dbSetting = await instanceSettingsService.isInviteOnly();
-
-  // If DB says invite-only, use that
-  if (dbSetting) return true;
-
-  // Fall back to environment variable for backwards compatibility
-  const requireInvitation = process.env.REQUIRE_INVITATION;
-  return requireInvitation === "true" || requireInvitation === "1";
-};
+const checkIsInviteOnly = (c: Context): Promise<boolean> =>
+  isInviteOnly(c.get("instanceSettingsService"));
 
 /**
  * Check if registration is enabled
  * Uses DB setting first, falls back to environment variable
  */
-const checkIsRegistrationEnabled = async (c: Context): Promise<boolean> => {
-  const instanceSettingsService = c.get("instanceSettingsService");
-  const dbSetting = await instanceSettingsService.isRegistrationEnabled();
-
-  // If DB setting exists and is false, registration is disabled
-  // Fall back to env var ENABLE_REGISTRATION if DB doesn't have a setting
-  if (!dbSetting) {
-    const envSetting = process.env.ENABLE_REGISTRATION;
-    // If env var is explicitly 'false' or '0', registration is disabled
-    if (envSetting === "false" || envSetting === "0") return false;
-  }
-
-  return dbSetting;
-};
+const checkIsRegistrationEnabled = (c: Context): Promise<boolean> =>
+  isRegistrationEnabled(c.get("instanceSettingsService"));
 
 /**
  * Registration Settings
@@ -182,7 +162,7 @@ app.post("/register", rateLimit(RateLimitPresets.register), async (c) => {
     }
 
     // Remove sensitive data from response
-    const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+    const publicUser = toPublicUser(user);
 
     return c.json(
       {
@@ -263,7 +243,7 @@ app.post("/session", rateLimit(RateLimitPresets.login), async (c) => {
     );
 
     // パスワードハッシュとメールアドレスを除外してレスポンス
-    const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+    const publicUser = toPublicUser(user);
 
     return c.json({
       user: publicUser,
@@ -354,7 +334,7 @@ app.get("/session", requireAuth(), async (c) => {
   }
 
   // パスワードハッシュとメールアドレスを除外
-  const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+  const publicUser = toPublicUser(user);
 
   return c.json({
     user: publicUser,
@@ -499,7 +479,7 @@ app.post("/passkey/authenticate/finish", rateLimit(RateLimitPresets.login), asyn
     const { user, session } = await passkeyService.verifyAuthentication(body.credential);
 
     // Remove sensitive data from response
-    const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+    const publicUser = toPublicUser(user);
 
     return c.json({
       user: publicUser,

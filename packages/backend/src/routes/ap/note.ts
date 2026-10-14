@@ -13,6 +13,7 @@ import type { Context } from "hono";
 import { logger } from "../../lib/logger.js";
 import { isActivityPubRequest } from "../../lib/crawlerDetection.js";
 import { textToHtml } from "../../lib/ogp.js";
+import { isPubliclyVisible } from "../../lib/noteVisibility.js";
 
 const note = new Hono();
 
@@ -51,6 +52,14 @@ note.get("/notes/:id", async (c: Context) => {
   const noteData = await noteRepository.findById(id as string);
 
   if (!noteData) {
+    return c.notFound();
+  }
+
+  // This endpoint does not authenticate the fetcher, so only notes visible to
+  // everyone may be served. Followers-only / specified notes reach their
+  // audience via inbox delivery; local-only notes are never federated.
+  // Respond 404 (not 403) so the note's existence is not disclosed.
+  if (!isPubliclyVisible(noteData) || noteData.localOnly) {
     return c.notFound();
   }
 

@@ -14,6 +14,17 @@
 
 import { signRequest, getSignedHeaders } from "../../utils/crypto.js";
 import { logger } from "../../lib/logger.js";
+import { safeFetchWithFinalUrl, UnsafeUrlError } from "../../lib/safeFetch.js";
+
+/**
+ * Content types accepted for ActivityPub object responses by default.
+ * Some servers respond with plain `application/json`, which is accepted too.
+ */
+export const ACTIVITYPUB_CONTENT_TYPES = [
+  "application/activity+json",
+  "application/ld+json",
+  "application/json",
+];
 
 /**
  * Signature configuration for authenticated fetches
@@ -39,6 +50,18 @@ export interface RemoteFetchOptions {
   headers?: Record<string, string>;
   /** HTTP Signature configuration for authenticated requests */
   signature?: SignatureConfig;
+  /**
+   * Accepted response media types (without parameters).
+   * Defaults to {@link ACTIVITYPUB_CONTENT_TYPES}.
+   */
+  allowedContentTypes?: string[];
+  /**
+   * Allow redirects to a different origin than the requested URL (default: false).
+   * ActivityPub objects are trusted by their URL's origin, so cross-origin
+   * redirects are rejected unless explicitly allowed (e.g. WebFinger on
+   * split-domain setups).
+   */
+  allowCrossOriginRedirect?: boolean;
 }
 
 /**
@@ -47,6 +70,8 @@ export interface RemoteFetchOptions {
 export interface RemoteFetchResult<T = any> {
   success: boolean;
   data?: T;
+  /** URL the response was actually served from (after redirects), on success */
+  finalUrl?: string;
   error?: {
     type: "timeout" | "network" | "rate_limit" | "server_error" | "invalid_response";
     message: string;
@@ -104,6 +129,8 @@ export class RemoteFetchService {
       initialRetryDelay = RemoteFetchService.DEFAULT_INITIAL_RETRY_DELAY,
       headers = {},
       signature,
+      allowedContentTypes = ACTIVITYPUB_CONTENT_TYPES,
+      allowCrossOriginRedirect = false,
     } = options;
 
     let lastError: RemoteFetchResult<T>["error"];
@@ -139,7 +166,13 @@ export class RemoteFetchService {
           };
         }
 
-        const result = await this.performFetch<T>(url, timeout, requestHeaders);
+        const result = await this.performFetch<T>(
+          url,
+          timeout,
+          requestHeaders,
+          allowedContentTypes,
+          allowCrossOriginRedirect,
+        );
 
         if (result.success) {
           return result;
@@ -197,6 +230,8 @@ export class RemoteFetchService {
    * @param url - URL to fetch
    * @param timeout - Timeout in milliseconds
    * @param headers - HTTP headers
+   * @param allowedContentTypes - Accepted response media types
+   * @param allowCrossOriginRedirect - Whether the final URL may differ in origin from `url`
    * @returns Fetch result
    *
    * @private
@@ -205,6 +240,8 @@ export class RemoteFetchService {
     url: string,
     timeout: number,
     headers: Record<string, string>,
+    allowedContentTypes: string[],
+    allowCrossOriginRedirect = false,
   ): Promise<RemoteFetchResult<T>> {
     try {
       // Create abort controller for timeout
@@ -212,13 +249,38 @@ export class RemoteFetchService {
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
       let response: Response;
+      let finalUrl: URL;
       try {
-        response = await fetch(url, {
+        // SSRF protection: blocks private destinations and re-validates redirects
+        ({ response, finalUrl } = await safeFetchWithFinalUrl(url, {
           headers,
           signal: controller.signal,
-        });
+        }));
+      } catch (error) {
+        if (error instanceof UnsafeUrlError) {
+          return {
+            success: false,
+            error: {
+              type: "invalid_response",
+              message: `URL rejected: ${error.message}`,
+            },
+          };
+        }
+        throw error;
       } finally {
         clearTimeout(timeoutId);
+      }
+
+      // Reject cross-origin redirects: the content would be attributed to the requested origin
+      if (!allowCrossOriginRedirect && finalUrl.origin !== new URL(url).origin) {
+        await response.body?.cancel().catch(() => {});
+        return {
+          success: false,
+          error: {
+            type: "invalid_response",
+            message: `Cross-origin redirect rejected: ${finalUrl.origin}`,
+          },
+        };
       }
 
       // Handle HTTP errors
@@ -260,6 +322,23 @@ export class RemoteFetchService {
         };
       }
 
+      // Validate content type before parsing
+      const contentType = (response.headers.get("content-type") ?? "")
+        .split(";")[0]!
+        .trim()
+        .toLowerCase();
+      if (!allowedContentTypes.includes(contentType)) {
+        await response.body?.cancel().catch(() => {});
+        return {
+          success: false,
+          error: {
+            type: "invalid_response",
+            message: `Unexpected content type: ${contentType || "(none)"}`,
+            statusCode: response.status,
+          },
+        };
+      }
+
       // Parse JSON response
       let data: T;
       try {
@@ -278,6 +357,7 @@ export class RemoteFetchService {
       return {
         success: true,
         data,
+        finalUrl: finalUrl.href,
       };
     } catch (error) {
       // Timeout or network error

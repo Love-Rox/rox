@@ -12,22 +12,34 @@ import { AnnounceHandler } from "../../../services/ap/inbox/handlers/AnnounceHan
 import type { Activity, HandlerContext } from "../../../services/ap/inbox/types";
 import type { Context } from "hono";
 
+// Document returned by the mocked RemoteFetchService (overridable per test)
+const defaultFetchedNote = {
+  type: "Note",
+  id: "https://another.example.com/notes/1",
+  content: "<p>Test note</p>",
+  attributedTo: "https://another.example.com/users/author",
+};
+let fetchedNote: Record<string, unknown> = { ...defaultFetchedNote };
+// Per-URL documents (take precedence over fetchedNote) and recorded fetch URLs
+let fetchedDocs: Record<string, unknown> = {};
+let fetchCalls: string[] = [];
+let fetchedFinalUrls: Record<string, string> = {};
+
 // Mock the RemoteFetchService
 mock.module("../../../services/ap/RemoteFetchService", () => ({
   RemoteFetchService: class {
-    fetchActivityPubObject = mock(() =>
-      Promise.resolve({
+    fetchActivityPubObject = mock((url: string) => {
+      fetchCalls.push(url);
+      return Promise.resolve({
         success: true,
-        data: {
-          type: "Note",
-          id: "https://remote.example.com/notes/1",
-          content: "<p>Test note</p>",
-          attributedTo: "https://remote.example.com/users/remoteuser",
-        },
-      }),
-    );
+        data: fetchedDocs[url] ?? fetchedNote,
+        finalUrl: fetchedFinalUrls[url] ?? url,
+      });
+    });
   },
 }));
+
+const renotable = { visibility: "public", localOnly: false, isDeleted: false };
 
 describe("AnnounceHandler", () => {
   let handler: AnnounceHandler;
@@ -45,6 +57,7 @@ describe("AnnounceHandler", () => {
           id: "note-123",
           uri: "http://localhost:3000/notes/note-123",
           text: "Original note",
+          ...renotable,
         }),
       ),
       create: mock(() => Promise.resolve({ id: "renote-456" })),
@@ -57,6 +70,7 @@ describe("AnnounceHandler", () => {
           id: "remote-note-789",
           uri: "https://remote.example.com/notes/1",
           text: "Remote note",
+          ...renotable,
         }),
       ),
     };
@@ -81,6 +95,11 @@ describe("AnnounceHandler", () => {
   };
 
   beforeEach(() => {
+    fetchedNote = { ...defaultFetchedNote };
+    fetchedDocs = {};
+    fetchCalls = [];
+    fetchedFinalUrls = {};
+    process.env.URL = "http://localhost:3000";
     handler = new AnnounceHandler();
     const honoContext = createMockHonoContext() as Context;
 
@@ -132,6 +151,106 @@ describe("AnnounceHandler", () => {
 
     expect(result.success).toBe(true);
     expect(mockRemoteNoteService.processNote).toHaveBeenCalled();
+  });
+
+  test("should not trust a cross-origin id served by the requested origin", async () => {
+    mockNoteRepository.findByUri = mock(() => Promise.resolve(null));
+    // another.example.com serves a document claiming to be victim's note
+    fetchedDocs = {
+      "https://another.example.com/notes/1": {
+        ...defaultFetchedNote,
+        id: "https://victim.example.com/notes/1",
+        attributedTo: "https://victim.example.com/users/bob",
+        content: "<p>forged</p>",
+      },
+      // victim.example.com's real document for that id
+      "https://victim.example.com/notes/1": {
+        ...defaultFetchedNote,
+        id: "https://victim.example.com/notes/1",
+        attributedTo: "https://victim.example.com/users/bob",
+        content: "<p>real</p>",
+      },
+    };
+
+    const activity: Activity = {
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Announce",
+      id: "https://remote.example.com/activities/announce-1",
+      actor: "https://remote.example.com/users/remoteuser",
+      object: "https://another.example.com/notes/1",
+    };
+
+    const result = await handler.handle(activity, mockContext);
+
+    expect(result.success).toBe(true);
+    expect(fetchCalls).toEqual([
+      "https://another.example.com/notes/1",
+      "https://victim.example.com/notes/1",
+    ]);
+    // Only the document fetched from the victim's own origin is processed
+    expect(mockRemoteNoteService.processNote.mock.calls[0][0].content).toBe("<p>real</p>");
+  });
+
+  test("should reject a fetch whose final URL is on another origin", async () => {
+    mockNoteRepository.findByUri = mock(() => Promise.resolve(null));
+    fetchedFinalUrls = { "https://another.example.com/notes/1": "https://evil.example.com/x" };
+
+    const activity: Activity = {
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Announce",
+      id: "https://remote.example.com/activities/announce-1",
+      actor: "https://remote.example.com/users/remoteuser",
+      object: "https://another.example.com/notes/1",
+    };
+
+    const result = await handler.handle(activity, mockContext);
+
+    expect(result.success).toBe(false);
+    expect(mockRemoteNoteService.processNote).not.toHaveBeenCalled();
+    expect(mockNoteRepository.create).not.toHaveBeenCalled();
+  });
+
+  test("should reject fetched note attributed to a local user", async () => {
+    mockNoteRepository.findByUri = mock(() => Promise.resolve(null));
+    fetchedNote = {
+      ...defaultFetchedNote,
+      attributedTo: "http://localhost:3000/users/alice",
+    };
+
+    const activity: Activity = {
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Announce",
+      id: "https://remote.example.com/activities/announce-1",
+      actor: "https://remote.example.com/users/remoteuser",
+      object: "https://another.example.com/notes/1",
+    };
+
+    const result = await handler.handle(activity, mockContext);
+
+    expect(result.success).toBe(false);
+    expect(result.message).toContain("local author");
+    expect(mockRemoteNoteService.processNote).not.toHaveBeenCalled();
+  });
+
+  test("should resolve local note by id without fetching when uri lookup misses", async () => {
+    mockNoteRepository.findByUri = mock(() => Promise.resolve(null));
+    mockNoteRepository.findById = mock(() =>
+      Promise.resolve({ id: "note-123", uri: null, text: "Local note", ...renotable }),
+    );
+
+    const activity: Activity = {
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Announce",
+      id: "https://remote.example.com/activities/announce-1",
+      actor: "https://remote.example.com/users/remoteuser",
+      object: "http://localhost:3000/notes/note-123",
+    };
+
+    const result = await handler.handle(activity, mockContext);
+
+    expect(result.success).toBe(true);
+    expect(mockNoteRepository.findById).toHaveBeenCalledWith("note-123");
+    expect(mockRemoteNoteService.processNote).not.toHaveBeenCalled();
   });
 
   test("should reject activity with missing object", async () => {
@@ -198,5 +317,115 @@ describe("AnnounceHandler", () => {
 
     expect(result.success).toBe(false);
     expect(result.message).toContain("Failed to handle Announce activity");
+  });
+
+  describe("security checks", () => {
+    const announce = (overrides: Partial<Activity> = {}): Activity => ({
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Announce",
+      id: "https://remote.example.com/activities/announce-1",
+      actor: "https://remote.example.com/users/remoteuser",
+      object: "http://localhost:3000/notes/note-123",
+      ...overrides,
+    });
+
+    test("should refetch by canonical id when fetched id differs, and accept exact match", async () => {
+      mockNoteRepository.findByUri = mock(() => Promise.resolve(null));
+      const requested = "https://another.example.com/@author/1";
+      const canonical = "https://another.example.com/notes/1";
+      fetchedDocs = {
+        [requested]: { ...defaultFetchedNote, id: canonical },
+        [canonical]: { ...defaultFetchedNote, id: canonical },
+      };
+
+      const result = await handler.handle(announce({ object: requested }), mockContext);
+
+      expect(result.success).toBe(true);
+      expect(fetchCalls).toEqual([requested, canonical]);
+      expect(mockRemoteNoteService.processNote.mock.calls[0][0].id).toBe(canonical);
+    });
+
+    test("should reject when the canonical refetch returns yet another id", async () => {
+      mockNoteRepository.findByUri = mock(() => Promise.resolve(null));
+      const requested = "https://another.example.com/@author/1";
+      const canonical = "https://another.example.com/notes/1";
+      fetchedDocs = {
+        [requested]: { ...defaultFetchedNote, id: canonical },
+        [canonical]: { ...defaultFetchedNote, id: "https://another.example.com/notes/2" },
+      };
+
+      const result = await handler.handle(announce({ object: requested }), mockContext);
+
+      expect(result.success).toBe(false);
+      expect(mockRemoteNoteService.processNote).not.toHaveBeenCalled();
+    });
+
+    test("should reject renote of a followers-only local note", async () => {
+      mockNoteRepository.findByUri = mock(() =>
+        Promise.resolve({ id: "note-123", ...renotable, visibility: "followers" }),
+      );
+
+      const result = await handler.handle(announce(), mockContext);
+
+      expect(result.success).toBe(false);
+      expect(mockNoteRepository.create).not.toHaveBeenCalled();
+    });
+
+    test("should reject renote of a specified (DM) note found via id fallback", async () => {
+      mockNoteRepository.findByUri = mock(() => Promise.resolve(null));
+      mockNoteRepository.findById = mock(() =>
+        Promise.resolve({ id: "note-123", uri: null, ...renotable, visibility: "specified" }),
+      );
+
+      const result = await handler.handle(announce(), mockContext);
+
+      expect(result.success).toBe(false);
+      expect(mockNoteRepository.create).not.toHaveBeenCalled();
+    });
+
+    test("should reject renote of a localOnly note", async () => {
+      mockNoteRepository.findByUri = mock(() =>
+        Promise.resolve({ id: "note-123", ...renotable, localOnly: true }),
+      );
+
+      const result = await handler.handle(announce(), mockContext);
+
+      expect(result.success).toBe(false);
+      expect(mockNoteRepository.create).not.toHaveBeenCalled();
+    });
+
+    test("should derive renote visibility from to/cc", async () => {
+      const PUBLIC = "https://www.w3.org/ns/activitystreams#Public";
+
+      await handler.handle(announce({ to: [PUBLIC] }), mockContext);
+      await handler.handle(
+        announce({ to: ["https://remote.example.com/users/remoteuser/followers"], cc: [PUBLIC] }),
+        mockContext,
+      );
+      await handler.handle(
+        announce({ to: ["https://remote.example.com/users/remoteuser/followers"] }),
+        mockContext,
+      );
+
+      const visibilities = mockNoteRepository.create.mock.calls.map((c: any[]) => c[0].visibility);
+      expect(visibilities).toEqual(["public", "home", "followers"]);
+    });
+
+    test("should reject a javascript: activity id", async () => {
+      const result = await handler.handle(announce({ id: "javascript:alert(1)" }), mockContext);
+
+      expect(result.success).toBe(false);
+      expect(mockNoteRepository.create).not.toHaveBeenCalled();
+    });
+
+    test("should reject an activity id on another origin (URI squatting)", async () => {
+      const result = await handler.handle(
+        announce({ id: "https://victim.example.com/notes/42" }),
+        mockContext,
+      );
+
+      expect(result.success).toBe(false);
+      expect(mockNoteRepository.create).not.toHaveBeenCalled();
+    });
   });
 });

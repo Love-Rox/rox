@@ -6,13 +6,15 @@
  * @module repositories/mysql/MysqlNoteRepository
  */
 
-import { eq, and, or, isNull, inArray, desc, gt, lt, sql } from "drizzle-orm";
+import { eq, and, or, isNull, inArray, desc, gt, lt, sql, exists, type SQL } from "drizzle-orm";
+import { alias } from "drizzle-orm/mysql-core";
 import type { MySql2Database } from "drizzle-orm/mysql2";
-import { notes, users } from "../../db/schema/mysql.js";
+import { follows, notes, users } from "../../db/schema/mysql.js";
 import type * as mysqlSchema from "../../db/schema/mysql.js";
 import type {
   INoteRepository,
   NoteCreateInput,
+  NoteVisibilityFilter,
   TimelineOptions,
 } from "../../interfaces/repositories/INoteRepository.js";
 import type { Note } from "shared";
@@ -21,6 +23,52 @@ type MysqlDatabase = MySql2Database<typeof mysqlSchema>;
 
 export class MysqlNoteRepository implements INoteRepository {
   constructor(private db: MysqlDatabase) {}
+
+  /**
+   * Build a viewer-aware visibility condition (Misskey semantics).
+   *
+   * - public / home: visible to anyone
+   * - followers: author, followers of the author, mentioned users,
+   *   or the author of the replied-to note
+   * - specified: author or recipients (stored in `mentions`)
+   *
+   * @param filter - Viewer filter; `viewerId: null` means unauthenticated
+   * @returns SQL condition restricting notes to those visible to the viewer
+   */
+  private buildVisibilityCondition(filter: NoteVisibilityFilter): SQL {
+    const publicCondition = inArray(notes.visibility, ["public", "home"]);
+    const viewerId = filter.viewerId;
+    if (!viewerId) {
+      return publicCondition;
+    }
+
+    const isMentioned = sql`JSON_CONTAINS(${notes.mentions}, ${JSON.stringify(viewerId)})`;
+    const replyParent = alias(notes, "visibility_reply_parent");
+
+    return or(
+      publicCondition,
+      eq(notes.userId, viewerId),
+      and(
+        eq(notes.visibility, "followers"),
+        or(
+          exists(
+            this.db
+              .select({ one: sql`1` })
+              .from(follows)
+              .where(and(eq(follows.followerId, viewerId), eq(follows.followeeId, notes.userId))),
+          ),
+          isMentioned,
+          exists(
+            this.db
+              .select({ one: sql`1` })
+              .from(replyParent)
+              .where(and(eq(replyParent.id, notes.replyId), eq(replyParent.userId, viewerId))),
+          ),
+        ),
+      ),
+      and(eq(notes.visibility, "specified"), isMentioned),
+    )!;
+  }
 
   async create(note: NoteCreateInput): Promise<Note> {
     const now = new Date();
@@ -142,6 +190,10 @@ export class MysqlNoteRepository implements INoteRepository {
 
     const conditions = [inArray(notes.userId, userIds), eq(notes.isDeleted, false)];
 
+    if (options.visibleTo) {
+      conditions.push(this.buildVisibilityCondition(options.visibleTo));
+    }
+
     if (sinceId) {
       conditions.push(gt(notes.id, sinceId));
     }
@@ -190,6 +242,10 @@ export class MysqlNoteRepository implements INoteRepository {
       conditions.push(or(and(...localConditions), inArray(notes.userId, userIds))!);
     } else {
       conditions.push(...localConditions);
+    }
+
+    if (options.visibleTo) {
+      conditions.push(this.buildVisibilityCondition(options.visibleTo));
     }
 
     if (sinceId) {
@@ -272,6 +328,10 @@ export class MysqlNoteRepository implements INoteRepository {
 
     const conditions = [eq(notes.userId, userId), eq(notes.isDeleted, false)];
 
+    if (options.visibleTo) {
+      conditions.push(this.buildVisibilityCondition(options.visibleTo));
+    }
+
     if (sinceId) {
       conditions.push(gt(notes.id, sinceId));
     }
@@ -310,6 +370,10 @@ export class MysqlNoteRepository implements INoteRepository {
 
     const conditions = [eq(notes.replyId, noteId), eq(notes.isDeleted, false)];
 
+    if (options.visibleTo) {
+      conditions.push(this.buildVisibilityCondition(options.visibleTo));
+    }
+
     if (sinceId) {
       conditions.push(gt(notes.id, sinceId));
     }
@@ -347,6 +411,10 @@ export class MysqlNoteRepository implements INoteRepository {
     const { limit = 20, sinceId, untilId } = options;
 
     const conditions = [eq(notes.renoteId, noteId), eq(notes.isDeleted, false)];
+
+    if (options.visibleTo) {
+      conditions.push(this.buildVisibilityCondition(options.visibleTo));
+    }
 
     if (sinceId) {
       conditions.push(gt(notes.id, sinceId));

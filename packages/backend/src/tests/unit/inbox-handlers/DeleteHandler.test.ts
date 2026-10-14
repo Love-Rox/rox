@@ -113,6 +113,25 @@ describe("DeleteHandler", () => {
     expect(mockNoteRepository.delete).not.toHaveBeenCalled();
   });
 
+  test("should reject note deletion when the actor resolves to a local user", async () => {
+    mockRemoteActorService.resolveActor = mock(() =>
+      Promise.resolve({ id: "remote-user-456", username: "alice", host: null }),
+    );
+
+    const activity: Activity = {
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Delete",
+      id: "http://localhost:3000/activities/delete-1",
+      actor: "http://localhost:3000/users/alice",
+      object: "http://localhost:3000/notes/1",
+    };
+
+    const result = await handler.handle(activity, mockContext);
+
+    expect(result.success).toBe(false);
+    expect(mockNoteRepository.delete).not.toHaveBeenCalled();
+  });
+
   test("should handle non-existent note gracefully", async () => {
     mockNoteRepository.findByUri = mock(() => Promise.resolve(null));
     mockUserRepository.findByUri = mock(() => Promise.resolve(null));

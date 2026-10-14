@@ -65,7 +65,7 @@ const defaultOptions: Required<SecurityHeadersOptions> = {
  * - X-Frame-Options: DENY (prevents clickjacking)
  * - X-XSS-Protection: 0 (legacy, modern browsers use CSP)
  * - Referrer-Policy: strict-origin-when-cross-origin
- * - Content-Security-Policy: restrictive policy
+ * - Content-Security-Policy: restrictive policy (skipped if the route already set one)
  * - Strict-Transport-Security: enables HSTS (production only)
  * - Permissions-Policy: disables sensitive features
  *
@@ -101,7 +101,8 @@ export function securityHeaders(options: SecurityHeadersOptions = {}) {
     c.header("Referrer-Policy", config.referrerPolicy);
 
     // Content Security Policy
-    if (config.contentSecurityPolicy) {
+    // Do not overwrite a stricter route-specific policy (e.g. the media proxy)
+    if (config.contentSecurityPolicy && !c.res.headers.has("Content-Security-Policy")) {
       c.header("Content-Security-Policy", config.contentSecurityPolicy);
     }
 
