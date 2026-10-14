@@ -10,6 +10,7 @@
 import { signRequest, getSignedHeaders } from "../../utils/crypto.js";
 import { logger } from "../../lib/logger.js";
 import { recordActivityDelivery } from "../../lib/metrics.js";
+import { safeFetch } from "../../lib/safeFetch.js";
 
 /**
  * Delivery timeout in milliseconds (30 seconds)
@@ -79,7 +80,8 @@ export class ActivityDeliveryService {
 
       let response: Response;
       try {
-        response = await fetch(inboxUrl, {
+        // SSRF protection: inbox URLs come from remote actor documents
+        response = await safeFetch(inboxUrl, {
           method: "POST",
           headers: headersObj,
           body,

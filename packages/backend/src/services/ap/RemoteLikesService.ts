@@ -15,6 +15,7 @@ import type { IUserRepository } from "../../interfaces/repositories/IUserReposit
 import type { ICustomEmojiRepository } from "../../interfaces/repositories/ICustomEmojiRepository.js";
 import { generateId } from "shared";
 import { logger } from "../../lib/logger.js";
+import { safeFetch } from "../../lib/safeFetch.js";
 
 /**
  * ActivityPub Collection interface (OrderedCollection or Collection)
@@ -358,7 +359,7 @@ export class RemoteLikesService {
 
       // Try Misskey API endpoint
       const apiUrl = `${url.origin}/api/notes/reactions`;
-      const response = await fetch(apiUrl, {
+      const response = await safeFetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -430,7 +431,7 @@ export class RemoteLikesService {
   ): Promise<Record<string, string>> {
     try {
       const apiUrl = `${baseUrl}/api/emojis`;
-      const response = await fetch(apiUrl, {
+      const response = await safeFetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

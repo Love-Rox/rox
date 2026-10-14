@@ -565,6 +565,7 @@ export class RemoteActorService {
         headers: {
           Accept: "application/jrd+json, application/json",
         },
+        allowedContentTypes: ["application/jrd+json", "application/json"],
       },
     );
 
