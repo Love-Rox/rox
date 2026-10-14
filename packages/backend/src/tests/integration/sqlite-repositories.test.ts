@@ -49,6 +49,8 @@ function createTestNote(overrides: {
   text: string;
   visibility?: "public" | "home" | "followers" | "specified";
   localOnly?: boolean;
+  mentions?: string[];
+  replyId?: string | null;
 }): NoteCreateInput {
   return {
     id: overrides.id,
@@ -57,10 +59,10 @@ function createTestNote(overrides: {
     cw: null,
     visibility: overrides.visibility ?? "public",
     localOnly: overrides.localOnly ?? false,
-    replyId: null,
+    replyId: overrides.replyId ?? null,
     renoteId: null,
     fileIds: [],
-    mentions: [],
+    mentions: overrides.mentions ?? [],
     emojis: [],
     tags: [],
     uri: null,
@@ -510,6 +512,146 @@ describe("SQLite Repository Integration Tests", () => {
 
       const count = await noteRepo.count();
       expect(count).toBe(2);
+    });
+  });
+
+  describe("SqliteNoteRepository visibility filtering", () => {
+    let noteRepo: SqliteNoteRepository;
+    let followRepo: SqliteFollowRepository;
+    const authorId = "vis-author";
+    const followerId = "vis-follower";
+    const strangerId = "vis-stranger";
+    const recipientId = "vis-recipient";
+
+    const idsOf = (list: Note[]) => list.map((n) => n.id).sort();
+
+    beforeAll(() => {
+      noteRepo = new SqliteNoteRepository(db);
+      followRepo = new SqliteFollowRepository(db);
+    });
+
+    beforeEach(async () => {
+      sqlite.exec("DELETE FROM notes");
+      sqlite.exec("DELETE FROM sessions");
+      sqlite.exec("DELETE FROM follows");
+      sqlite.exec("DELETE FROM users");
+
+      const userRepo = new SqliteUserRepository(db);
+      for (const id of [authorId, followerId, strangerId, recipientId]) {
+        await userRepo.create(
+          createTestUser({ id, username: id, email: `${id}@example.com`, passwordHash: "hash" }),
+        );
+      }
+      await followRepo.create(
+        createTestFollow({ id: uuidv4(), followerId: followerId, followeeId: authorId }),
+      );
+
+      // Insert sequentially so ordering is deterministic
+      await noteRepo.create(createTestNote({ id: "v-public", userId: authorId, text: "p" }));
+      await noteRepo.create(
+        createTestNote({ id: "v-home", userId: authorId, text: "h", visibility: "home" }),
+      );
+      await noteRepo.create(
+        createTestNote({ id: "v-followers", userId: authorId, text: "f", visibility: "followers" }),
+      );
+      await noteRepo.create(
+        createTestNote({
+          id: "v-specified",
+          userId: authorId,
+          text: "s",
+          visibility: "specified",
+          mentions: [recipientId],
+        }),
+      );
+    });
+
+    test("no filter keeps legacy behavior (all notes)", async () => {
+      const notes = await noteRepo.findByUserId(authorId, {});
+      expect(idsOf(notes)).toEqual(["v-followers", "v-home", "v-public", "v-specified"]);
+    });
+
+    test("anonymous viewers only see public and home notes", async () => {
+      const notes = await noteRepo.findByUserId(authorId, { visibleTo: { viewerId: null } });
+      expect(idsOf(notes)).toEqual(["v-home", "v-public"]);
+    });
+
+    test("non-followers only see public and home notes", async () => {
+      const notes = await noteRepo.findByUserId(authorId, { visibleTo: { viewerId: strangerId } });
+      expect(idsOf(notes)).toEqual(["v-home", "v-public"]);
+    });
+
+    test("followers additionally see followers-only notes", async () => {
+      const notes = await noteRepo.findByUserId(authorId, { visibleTo: { viewerId: followerId } });
+      expect(idsOf(notes)).toEqual(["v-followers", "v-home", "v-public"]);
+    });
+
+    test("recipients additionally see specified notes", async () => {
+      const notes = await noteRepo.findByUserId(authorId, {
+        visibleTo: { viewerId: recipientId },
+      });
+      expect(idsOf(notes)).toEqual(["v-home", "v-public", "v-specified"]);
+    });
+
+    test("the author sees all of their own notes", async () => {
+      const notes = await noteRepo.findByUserId(authorId, { visibleTo: { viewerId: authorId } });
+      expect(idsOf(notes)).toEqual(["v-followers", "v-home", "v-public", "v-specified"]);
+    });
+
+    test("mentioned users see followers-only notes", async () => {
+      await noteRepo.create(
+        createTestNote({
+          id: "v-followers-mention",
+          userId: authorId,
+          text: "fm",
+          visibility: "followers",
+          mentions: [strangerId],
+        }),
+      );
+      const notes = await noteRepo.findByUserId(authorId, { visibleTo: { viewerId: strangerId } });
+      expect(idsOf(notes)).toEqual(["v-followers-mention", "v-home", "v-public"]);
+    });
+
+    test("getTimeline (list/home) applies the filter", async () => {
+      const notes = await noteRepo.getTimeline({
+        userIds: [authorId],
+        visibleTo: { viewerId: strangerId },
+      });
+      expect(idsOf(notes)).toEqual(["v-home", "v-public"]);
+    });
+
+    test("findReplies applies the filter, including reply-target author access", async () => {
+      await noteRepo.create(createTestNote({ id: "v-parent", userId: strangerId, text: "parent" }));
+      await noteRepo.create(
+        createTestNote({
+          id: "v-reply-followers",
+          userId: authorId,
+          text: "reply",
+          visibility: "followers",
+          replyId: "v-parent",
+        }),
+      );
+      await noteRepo.create(
+        createTestNote({
+          id: "v-reply-public",
+          userId: authorId,
+          text: "reply2",
+          replyId: "v-parent",
+        }),
+      );
+
+      const anon = await noteRepo.findReplies("v-parent", { visibleTo: { viewerId: null } });
+      expect(idsOf(anon)).toEqual(["v-reply-public"]);
+
+      // The parent's author may see a followers-only reply to their note
+      const parentAuthor = await noteRepo.findReplies("v-parent", {
+        visibleTo: { viewerId: strangerId },
+      });
+      expect(idsOf(parentAuthor)).toEqual(["v-reply-followers", "v-reply-public"]);
+
+      const other = await noteRepo.findReplies("v-parent", {
+        visibleTo: { viewerId: recipientId },
+      });
+      expect(idsOf(other)).toEqual(["v-reply-public"]);
     });
   });
 

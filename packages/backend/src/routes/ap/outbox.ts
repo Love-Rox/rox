@@ -12,6 +12,28 @@ import type { Context } from "hono";
 
 const outbox = new Hono();
 
+const AS_PUBLIC = "https://www.w3.org/ns/activitystreams#Public";
+
+/**
+ * Build ActivityPub addressing for a publicly visible note.
+ *
+ * - public: to=Public, cc=followers
+ * - home (unlisted): to=followers, cc=Public
+ *
+ * @param visibility - Note visibility (must be public or home)
+ * @param followersUrl - Author's followers collection URL
+ * @returns to/cc addressing arrays
+ */
+function getPublicAddressing(
+  visibility: string,
+  followersUrl: string,
+): { to: string[]; cc: string[] } {
+  if (visibility === "home") {
+    return { to: [followersUrl], cc: [AS_PUBLIC] };
+  }
+  return { to: [AS_PUBLIC], cc: [followersUrl] };
+}
+
 /**
  * GET /users/:username/outbox
  *
@@ -41,9 +63,11 @@ outbox.get("/:username/outbox", async (c: Context) => {
   if (!page) {
     const noteRepository = c.get("noteRepository");
 
-    // Count total items (notes created by this user)
-    const notes = await noteRepository.findByUserId(user.id, {});
-    const totalItems = notes.length;
+    // Count total items (publicly visible, federatable notes only)
+    const notes = await noteRepository.findByUserId(user.id, {
+      visibleTo: { viewerId: null },
+    });
+    const totalItems = notes.filter((note) => !note.localOnly).length;
 
     const collection = {
       "@context": "https://www.w3.org/ns/activitystreams",
@@ -67,28 +91,40 @@ outbox.get("/:username/outbox", async (c: Context) => {
   const noteRepository = c.get("noteRepository");
   const limit = 20;
 
-  // Get user's notes with pagination
-  const notes = await noteRepository.findByUserId(user.id, { limit });
+  // Get user's notes with pagination.
+  // The outbox is served to unauthenticated fetchers, so only public/home notes
+  // are included, and local-only notes are never federated.
+  const notes = (
+    await noteRepository.findByUserId(user.id, {
+      limit,
+      visibleTo: { viewerId: null },
+    })
+  ).filter((note) => !note.localOnly);
 
-  // Convert notes to Create activities
-  const orderedItems = notes.map((note) => ({
-    "@context": "https://www.w3.org/ns/activitystreams",
-    id: `${baseUrl}/activities/${note.id}`,
-    type: "Create",
-    actor: `${baseUrl}/users/${username}`,
-    published: note.createdAt.toISOString(),
-    to: ["https://www.w3.org/ns/activitystreams#Public"],
-    cc: [`${baseUrl}/users/${username}/followers`],
-    object: {
-      id: `${baseUrl}/notes/${note.id}`,
-      type: "Note",
-      attributedTo: `${baseUrl}/users/${username}`,
-      content: note.text,
+  const followersUrl = `${baseUrl}/users/${username}/followers`;
+
+  // Convert notes to Create activities with addressing matching their visibility
+  const orderedItems = notes.map((note) => {
+    const { to, cc } = getPublicAddressing(note.visibility, followersUrl);
+    return {
+      "@context": "https://www.w3.org/ns/activitystreams",
+      id: `${baseUrl}/activities/${note.id}`,
+      type: "Create",
+      actor: `${baseUrl}/users/${username}`,
       published: note.createdAt.toISOString(),
-      to: ["https://www.w3.org/ns/activitystreams#Public"],
-      cc: [`${baseUrl}/users/${username}/followers`],
-    },
-  }));
+      to,
+      cc,
+      object: {
+        id: `${baseUrl}/notes/${note.id}`,
+        type: "Note",
+        attributedTo: `${baseUrl}/users/${username}`,
+        content: note.text,
+        published: note.createdAt.toISOString(),
+        to,
+        cc,
+      },
+    };
+  });
 
   const collectionPage = {
     "@context": "https://www.w3.org/ns/activitystreams",

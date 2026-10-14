@@ -423,7 +423,7 @@ export class ListService {
   async getListTimeline(
     listId: string,
     requesterId?: string,
-    options: Omit<TimelineOptions, "userIds"> = {},
+    options: Omit<TimelineOptions, "userIds" | "visibleTo"> = {},
   ): Promise<Note[]> {
     const list = await this.listRepository.findById(listId);
     if (!list) {
@@ -441,15 +441,19 @@ export class ListService {
       return [];
     }
 
-    // Get timeline for those users
+    // Get timeline for those users, restricted to notes the requester may see.
+    // List membership does not imply following, so followers-only and specified
+    // notes of members must be filtered per requester.
+    const viewerId = requesterId ?? null;
     const notes = await this.noteRepository.getTimeline({
       ...options,
       userIds: memberUserIds,
+      visibleTo: { viewerId },
     });
 
     // Hydrate renote and file information if noteService is available
     if (this.noteService) {
-      return await this.noteService.hydrateNotesForTimeline(notes);
+      return await this.noteService.hydrateNotesForTimeline(notes, viewerId);
     }
 
     return notes;

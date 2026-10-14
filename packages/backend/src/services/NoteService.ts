@@ -21,6 +21,7 @@ import { getTimelineStreamService } from "./TimelineStreamService.js";
 import { logger } from "../lib/logger.js";
 import type { EventBus } from "../lib/events.js";
 import { toPluginUser, toPluginNote } from "../plugins/utils.js";
+import { isNoteVisibleTo, isPubliclyVisible } from "../lib/noteVisibility.js";
 
 /**
  * Note creation input data
@@ -56,6 +57,11 @@ export interface TimelineOptions {
   sinceId?: string;
   /** Get notes older than this ID */
   untilId?: string;
+  /**
+   * Viewing user ID used for visibility filtering.
+   * `null` or omitted means an unauthenticated viewer (public/home notes only).
+   */
+  viewerId?: string | null;
 }
 
 /**
@@ -165,7 +171,8 @@ export class NoteService {
     // リプライ先の存在確認
     if (replyId) {
       const replyNote = await this.noteRepository.findById(replyId);
-      if (!replyNote) {
+      // Treat notes the author cannot see as non-existent (no existence oracle)
+      if (!replyNote || !(await this.isVisibleTo(replyNote, userId))) {
         throw new Error("Reply target note not found");
       }
     }
@@ -174,8 +181,12 @@ export class NoteService {
     let renoteTarget: Note | null = null;
     if (renoteId) {
       renoteTarget = await this.noteRepository.findById(renoteId);
-      if (!renoteTarget) {
+      if (!renoteTarget || !(await this.isVisibleTo(renoteTarget, userId))) {
         throw new Error("Renote target note not found");
+      }
+      // Misskey semantics: followers-only / specified notes of other users cannot be renoted
+      if (!isPubliclyVisible(renoteTarget) && renoteTarget.userId !== userId) {
+        throw new Error("Cannot renote a non-public note");
       }
     }
 
@@ -379,20 +390,30 @@ export class NoteService {
   /**
    * Get a note by ID
    *
+   * When `options` is supplied, the note is only returned if it is visible to
+   * `options.viewerId` (null = unauthenticated); otherwise null is returned,
+   * indistinguishable from a missing note. Omitting `options` skips the
+   * visibility check and is intended for trusted internal callers only.
+   *
    * @param noteId - Note ID
-   * @returns Note record or null if not found
+   * @param options - Optional viewer context for visibility enforcement
+   * @returns Note record or null if not found / not visible
    *
    * @example
    * ```typescript
-   * const note = await noteService.findById('note123');
+   * const note = await noteService.findById('note123', { viewerId: user?.id ?? null });
    * if (!note) {
    *   throw new Error('Note not found');
    * }
    * ```
    */
-  async findById(noteId: string): Promise<Note | null> {
+  async findById(noteId: string, options?: { viewerId: string | null }): Promise<Note | null> {
     const note = await this.noteRepository.findById(noteId);
     if (!note) return null;
+
+    if (options && !(await this.isVisibleTo(note, options.viewerId))) {
+      return null;
+    }
 
     // Hydrate file information
     const [hydratedNote] = await this.hydrateFiles([note]);
@@ -400,10 +421,62 @@ export class NoteService {
   }
 
   /**
-   * Hydrate renote information for a list of notes
-   * Fetches the renoted notes and their users for notes that have renoteId
+   * Check whether a single note is visible to a viewer.
+   *
+   * @param note - Note to check
+   * @param viewerId - Viewing user ID, or null for unauthenticated viewers
+   * @returns True if visible
+   *
+   * @private
    */
-  private async hydrateRenotes(notesList: Note[]): Promise<Note[]> {
+  private async isVisibleTo(note: Note, viewerId: string | null): Promise<boolean> {
+    return isNoteVisibleTo(note, viewerId, {
+      followRepository: this.followRepository,
+      noteRepository: this.noteRepository,
+    });
+  }
+
+  /**
+   * Filter a list of notes down to those visible to a viewer.
+   *
+   * Follow lookups are memoized per author to avoid redundant queries.
+   *
+   * @param notesList - Notes to filter
+   * @param viewerId - Viewing user ID, or null for unauthenticated viewers
+   * @returns Visible notes, preserving order
+   *
+   * @private
+   */
+  private async filterVisibleNotes(notesList: Note[], viewerId: string | null): Promise<Note[]> {
+    const followCache = new Map<string, Promise<boolean>>();
+    const deps = {
+      followRepository: {
+        exists: (followerId: string, followeeId: string): Promise<boolean> => {
+          const key = `${followerId}:${followeeId}`;
+          let cached = followCache.get(key);
+          if (!cached) {
+            cached = this.followRepository.exists(followerId, followeeId);
+            followCache.set(key, cached);
+          }
+          return cached;
+        },
+      },
+      noteRepository: this.noteRepository,
+    };
+
+    const visible = await Promise.all(notesList.map((n) => isNoteVisibleTo(n, viewerId, deps)));
+    return notesList.filter((_, i) => visible[i]);
+  }
+
+  /**
+   * Hydrate renote information for a list of notes
+   * Fetches the renoted notes and their users for notes that have renoteId.
+   * Referenced notes that are not visible to the viewer are omitted.
+   *
+   * @param notesList - Notes to hydrate
+   * @param viewerId - Viewing user ID, or null for unauthenticated viewers
+   */
+  private async hydrateRenotes(notesList: Note[], viewerId: string | null): Promise<Note[]> {
     // Collect unique renote IDs and reply IDs
     const renoteIds = [...new Set(notesList.filter((n) => n.renoteId).map((n) => n.renoteId!))];
     const replyIds = [...new Set(notesList.filter((n) => n.replyId).map((n) => n.replyId!))];
@@ -416,8 +489,9 @@ export class NoteService {
     // Fetch all referenced notes in a single batch
     const referencedNotes = await Promise.all(allIds.map((id) => this.noteRepository.findById(id)));
 
-    // Hydrate files for referenced notes
-    const validNotes = referencedNotes.filter((n): n is Note => n !== null);
+    // Hydrate files for referenced notes (only those the viewer may see)
+    const existingNotes = referencedNotes.filter((n): n is Note => n !== null);
+    const validNotes = await this.filterVisibleNotes(existingNotes, viewerId);
     const notesWithFiles = await this.hydrateFiles(validNotes);
 
     // Create a map for quick lookup
@@ -510,11 +584,17 @@ export class NoteService {
    * This is a public method that can be used by other services (like ListService)
    * to hydrate timeline notes with full renote/reply and file data.
    *
+   * Referenced reply/renote notes that are not visible to `viewerId` are omitted.
+   *
    * @param notesList - List of notes to hydrate
+   * @param viewerId - Viewing user ID (null/omitted = unauthenticated viewer)
    * @returns Notes with renote, reply, and files populated
    */
-  async hydrateNotesForTimeline(notesList: Note[]): Promise<Note[]> {
-    const hydratedNotes = await this.hydrateRenotes(notesList);
+  async hydrateNotesForTimeline(
+    notesList: Note[],
+    viewerId: string | null = null,
+  ): Promise<Note[]> {
+    const hydratedNotes = await this.hydrateRenotes(notesList, viewerId);
     return await this.hydrateFiles(hydratedNotes);
   }
 
@@ -640,7 +720,8 @@ export class NoteService {
     });
 
     // Hydrate renote and file information
-    const hydratedNotes = await this.hydrateRenotes(notes);
+    // Results are cached and shared across viewers, so hydrate as an anonymous viewer
+    const hydratedNotes = await this.hydrateRenotes(notes, null);
     const notesWithFiles = await this.hydrateFiles(hydratedNotes);
 
     // Cache first page results
@@ -682,10 +763,12 @@ export class NoteService {
       limit,
       sinceId: options.sinceId,
       untilId: options.untilId,
+      // Exclude e.g. DMs between followed users that do not involve the viewer
+      visibleTo: { viewerId: userId },
     });
 
     // Hydrate renote and file information
-    const hydratedNotes = await this.hydrateRenotes(notes);
+    const hydratedNotes = await this.hydrateRenotes(notes, userId);
     return await this.hydrateFiles(hydratedNotes);
   }
 
@@ -724,10 +807,11 @@ export class NoteService {
       limit,
       sinceId: options.sinceId,
       untilId: options.untilId,
+      visibleTo: { viewerId: userId },
     });
 
     // Hydrate renote and file information
-    const hydratedNotes = await this.hydrateRenotes(notes);
+    const hydratedNotes = await this.hydrateRenotes(notes, userId);
     return await this.hydrateFiles(hydratedNotes);
   }
 
@@ -768,7 +852,8 @@ export class NoteService {
     });
 
     // Hydrate renote and file information
-    const hydratedNotes = await this.hydrateRenotes(notes);
+    // Results are cached and shared across viewers, so hydrate as an anonymous viewer
+    const hydratedNotes = await this.hydrateRenotes(notes, null);
     const notesWithFiles = await this.hydrateFiles(hydratedNotes);
 
     // Cache first page results
@@ -784,58 +869,74 @@ export class NoteService {
    *
    * Returns posts from a specific user.
    *
+   * Only notes visible to `options.viewerId` are returned
+   * (unauthenticated viewers see public/home notes only).
+   *
    * @param userId - Target user ID
-   * @param options - Pagination options
+   * @param options - Pagination options and viewer context
    * @returns List of Note records
    *
    * @example
    * ```typescript
    * const notes = await noteService.getUserTimeline('user456', {
    *   limit: 20,
+   *   viewerId: currentUser?.id ?? null,
    * });
    * ```
    */
   async getUserTimeline(userId: string, options: TimelineOptions = {}): Promise<Note[]> {
     const limit = this.normalizeLimit(options.limit);
+    const viewerId = options.viewerId ?? null;
 
     const notes = await this.noteRepository.findByUserId(userId, {
       limit,
       sinceId: options.sinceId,
       untilId: options.untilId,
+      visibleTo: { viewerId },
     });
 
     // Hydrate renote and file information
-    const hydratedNotes = await this.hydrateRenotes(notes);
+    const hydratedNotes = await this.hydrateRenotes(notes, viewerId);
     return await this.hydrateFiles(hydratedNotes);
   }
 
   /**
    * Get replies to a note
    *
-   * Returns all replies to the specified note with hydrated user and renote data.
+   * Returns replies to the specified note that are visible to `options.viewerId`,
+   * with hydrated user and renote data. If the parent note exists but is not
+   * visible to the viewer, an empty list is returned.
    *
    * @param noteId - Parent note ID
-   * @param options - Timeline options (limit, sinceId, untilId)
+   * @param options - Timeline options (limit, sinceId, untilId) and viewer context
    * @returns List of reply notes with hydrated data
    *
    * @example
    * ```ts
    * const replies = await noteService.getReplies(noteId, {
    *   limit: 20,
+   *   viewerId: currentUser?.id ?? null,
    * });
    * ```
    */
   async getReplies(noteId: string, options: TimelineOptions = {}): Promise<Note[]> {
     const limit = this.normalizeLimit(options.limit);
+    const viewerId = options.viewerId ?? null;
+
+    const parent = await this.noteRepository.findById(noteId);
+    if (parent && !(await this.isVisibleTo(parent, viewerId))) {
+      return [];
+    }
 
     const replies = await this.noteRepository.findReplies(noteId, {
       limit,
       sinceId: options.sinceId,
       untilId: options.untilId,
+      visibleTo: { viewerId },
     });
 
     // Hydrate renote and file information
-    const hydratedNotes = await this.hydrateRenotes(replies);
+    const hydratedNotes = await this.hydrateRenotes(replies, viewerId);
     return await this.hydrateFiles(hydratedNotes);
   }
 
@@ -1083,9 +1184,11 @@ export class NoteService {
     };
 
     // Hydrate reply information if this is a reply
+    // Stream channels (local/social) are shared with anonymous subscribers, so only
+    // embed referenced notes that are visible to everyone.
     if (note.replyId) {
       const replyNote = await this.noteRepository.findById(note.replyId);
-      if (replyNote) {
+      if (replyNote && isPubliclyVisible(replyNote)) {
         const [replyNoteWithFiles] = await this.hydrateFiles([replyNote]);
         const replyUser = await this.userRepository.findById(replyNote.userId);
         if (replyUser) {
@@ -1108,7 +1211,7 @@ export class NoteService {
     // Hydrate renote information if this is a renote/quote
     if (note.renoteId) {
       const renoteNote = await this.noteRepository.findById(note.renoteId);
-      if (renoteNote) {
+      if (renoteNote && isPubliclyVisible(renoteNote)) {
         const [renoteNoteWithFiles] = await this.hydrateFiles([renoteNote]);
         const renoteUser = await this.userRepository.findById(renoteNote.userId);
         if (renoteUser) {
@@ -1193,6 +1296,10 @@ export class NoteService {
       // Check if list owner is a local user
       const listOwner = await this.userRepository.findById(list.userId);
       if (!listOwner || listOwner.host) continue;
+
+      // Do not notify list owners about notes they are not allowed to see
+      // (anyone can add any user to a list without following them)
+      if (!(await this.isVisibleTo(note, list.userId))) continue;
 
       await this.notificationService.createListNoteNotification(
         list.userId,
