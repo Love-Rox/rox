@@ -9,6 +9,7 @@
 import type { Activity, HandlerContext, HandlerResult } from "../types.js";
 import { BaseHandler } from "./BaseHandler.js";
 import { getTimelineStreamService } from "../../../TimelineStreamService.js";
+import { extractRefUri, isHttpUrl, isSameOrigin } from "../../../../utils/federationUrl.js";
 
 /**
  * Handler for Create activities
@@ -45,7 +46,20 @@ export class CreateHandler extends BaseHandler {
         to?: string | string[];
         cc?: string | string[];
         id?: string;
+        attributedTo?: unknown;
       };
+
+      // 署名済みアクター以外の投稿を作成させない (author/origin binding)
+      const actorUri = this.getActorUri(activity);
+      const attributedTo = extractRefUri(apObject.attributedTo);
+      if (!attributedTo || attributedTo !== actorUri) {
+        this.warn(`Create rejected: attributedTo (${attributedTo}) does not match actor`);
+        return this.failure("Invalid Create activity: attributedTo does not match actor");
+      }
+      if (!isHttpUrl(apObject.id) || !isSameOrigin(apObject.id, actorUri)) {
+        this.warn(`Create rejected: object id is not an http(s) URL on the actor's origin`);
+        return this.failure("Invalid Create activity: object id origin does not match actor");
+      }
       this.log(
         "📥",
         `Create: Receiving ${objectType} from ${activity.actor} | to: ${JSON.stringify(apObject.to)} | cc: ${JSON.stringify(apObject.cc)}`,

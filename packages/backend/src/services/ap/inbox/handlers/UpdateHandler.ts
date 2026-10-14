@@ -32,6 +32,13 @@ export class UpdateHandler extends BaseHandler {
 
       const actorUri = this.getActorUri(activity);
       const remoteActor = await this.resolveActor(actorUri, c);
+
+      // ローカルユーザー/ローカルノートを連合経由で更新させない
+      if (remoteActor.host === null) {
+        this.warn(`Update rejected: actor ${actorUri} resolves to a local user`);
+        return this.failure("Cannot update local users or notes via federation");
+      }
+
       const objectType = (object as { type?: string }).type;
 
       // Handle Person update (profile update)

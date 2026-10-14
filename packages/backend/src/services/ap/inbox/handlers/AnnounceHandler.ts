@@ -11,6 +11,7 @@ import { getObjectUri } from "../types.js";
 import { BaseHandler } from "./BaseHandler.js";
 import { RemoteFetchService, type SignatureConfig } from "../../RemoteFetchService.js";
 import { logger } from "../../../../lib/logger.js";
+import { extractRefUri, isLocalUrl, isSameOrigin } from "../../../../utils/federationUrl.js";
 
 /**
  * Handler for Announce activities
@@ -74,6 +75,16 @@ export class AnnounceHandler extends BaseHandler {
       const remoteNoteService = this.getRemoteNoteService(c);
       let targetNote = await noteRepository.findByUri(objectUri);
 
+      // ローカルノートは HTTP で自サーバーを取得せず、ID で直接検索する
+      if (!targetNote && isLocalUrl(objectUri)) {
+        const localId = new URL(objectUri).pathname.match(/^\/notes\/([^/]+)$/)?.[1];
+        targetNote = localId ? await noteRepository.findById(localId) : null;
+        if (!targetNote) {
+          this.warn(`Local note not found: ${objectUri}`);
+          return this.failure(`Local note not found: ${objectUri}`);
+        }
+      }
+
       // If note doesn't exist locally, fetch it from remote
       if (!targetNote) {
         this.log("ℹ️", `Target note not found locally, fetching: ${objectUri}`);
@@ -117,6 +128,22 @@ export class AnnounceHandler extends BaseHandler {
         }
 
         const noteObject = result.data as any;
+
+        // The fetched document must be served from the origin we requested,
+        // and must not claim to be authored by a local user.
+        if (
+          !noteObject ||
+          typeof noteObject.id !== "string" ||
+          !isSameOrigin(noteObject.id, objectUri)
+        ) {
+          this.warn(`Announce rejected: fetched object id is not same-origin with ${objectUri}`);
+          return this.failure("Fetched object id origin does not match requested URI");
+        }
+        if (isLocalUrl(extractRefUri(noteObject.attributedTo))) {
+          this.warn("Announce rejected: fetched object claims a local author");
+          return this.failure("Fetched object claims a local author");
+        }
+
         targetNote = await remoteNoteService.processNote(noteObject);
       }
 

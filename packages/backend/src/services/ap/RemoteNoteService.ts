@@ -15,6 +15,7 @@ import type { Note } from "shared";
 import { generateId } from "shared";
 import { RemoteActorService } from "./RemoteActorService.js";
 import { logger } from "../../lib/logger.js";
+import { extractRefUri, isHttpUrl, isLocalUrl, isSameOrigin } from "../../utils/federationUrl.js";
 
 /**
  * ActivityPub Note object
@@ -76,7 +77,9 @@ export class RemoteNoteService {
    * Resolves the author and creates the note in the database.
    *
    * @param noteObject - ActivityPub Note object
-   * @returns Created Note record
+   * @returns Created Note record (or the existing note when already known / local)
+   * @throws Error if the note id is not an http(s) URL, the note is attributed to a
+   *   local user, or its id origin does not match its author's origin
    *
    * @example
    * ```typescript
@@ -85,6 +88,11 @@ export class RemoteNoteService {
    * ```
    */
   async processNote(noteObject: APNote): Promise<Note> {
+    // Note id must be an http(s) URL (rejects e.g. `javascript:` ids stored as note.uri)
+    if (!isHttpUrl(noteObject?.id)) {
+      throw new Error("Invalid note: id must be an http(s) URL");
+    }
+
     // Check if note already exists
     const existing = await this.noteRepository.findByUri(noteObject.id);
     if (existing) {
@@ -92,13 +100,31 @@ export class RemoteNoteService {
       return existing;
     }
 
+    // Local notes are never created from remote documents: look up the existing one.
+    if (isLocalUrl(noteObject.id)) {
+      const localId = new URL(noteObject.id).pathname.match(/^\/notes\/([^/]+)$/)?.[1];
+      const localNote = localId ? await this.noteRepository.findById(localId) : null;
+      if (localNote) {
+        return localNote;
+      }
+      throw new Error(`Local note not found: ${noteObject.id}`);
+    }
+
+    const authorUri = extractRefUri(noteObject.attributedTo);
+    if (!isHttpUrl(authorUri)) {
+      throw new Error("Invalid note: attributedTo must be an http(s) URL");
+    }
+    // Remote notes must not be attributed to local users, and must be
+    // hosted on the same origin as their author.
+    if (isLocalUrl(authorUri)) {
+      throw new Error("Invalid note: remote note attributed to a local user");
+    }
+    if (!isSameOrigin(authorUri, noteObject.id)) {
+      throw new Error("Invalid note: id origin does not match attributedTo origin");
+    }
+
     // Resolve author (use injected service or create new instance for backward compatibility)
     const actorService = this.remoteActorService ?? new RemoteActorService(this.userRepository);
-    const authorUri =
-      typeof noteObject.attributedTo === "string"
-        ? noteObject.attributedTo
-        : noteObject.attributedTo.id;
-
     const author = await actorService.resolveActor(authorUri);
 
     // Extract text content

@@ -12,18 +12,22 @@ import { AnnounceHandler } from "../../../services/ap/inbox/handlers/AnnounceHan
 import type { Activity, HandlerContext } from "../../../services/ap/inbox/types";
 import type { Context } from "hono";
 
+// Document returned by the mocked RemoteFetchService (overridable per test)
+const defaultFetchedNote = {
+  type: "Note",
+  id: "https://another.example.com/notes/1",
+  content: "<p>Test note</p>",
+  attributedTo: "https://another.example.com/users/author",
+};
+let fetchedNote: Record<string, unknown> = { ...defaultFetchedNote };
+
 // Mock the RemoteFetchService
 mock.module("../../../services/ap/RemoteFetchService", () => ({
   RemoteFetchService: class {
     fetchActivityPubObject = mock(() =>
       Promise.resolve({
         success: true,
-        data: {
-          type: "Note",
-          id: "https://remote.example.com/notes/1",
-          content: "<p>Test note</p>",
-          attributedTo: "https://remote.example.com/users/remoteuser",
-        },
+        data: fetchedNote,
       }),
     );
   },
@@ -81,6 +85,7 @@ describe("AnnounceHandler", () => {
   };
 
   beforeEach(() => {
+    fetchedNote = { ...defaultFetchedNote };
     handler = new AnnounceHandler();
     const honoContext = createMockHonoContext() as Context;
 
@@ -132,6 +137,73 @@ describe("AnnounceHandler", () => {
 
     expect(result.success).toBe(true);
     expect(mockRemoteNoteService.processNote).toHaveBeenCalled();
+  });
+
+  test("should reject fetched note whose id is cross-origin with the requested URI", async () => {
+    mockNoteRepository.findByUri = mock(() => Promise.resolve(null));
+    fetchedNote = {
+      ...defaultFetchedNote,
+      id: "https://evil.example.com/notes/1",
+      attributedTo: "https://evil.example.com/users/eve",
+    };
+
+    const activity: Activity = {
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Announce",
+      id: "https://remote.example.com/activities/announce-1",
+      actor: "https://remote.example.com/users/remoteuser",
+      object: "https://another.example.com/notes/1",
+    };
+
+    const result = await handler.handle(activity, mockContext);
+
+    expect(result.success).toBe(false);
+    expect(result.message).toContain("origin does not match");
+    expect(mockRemoteNoteService.processNote).not.toHaveBeenCalled();
+    expect(mockNoteRepository.create).not.toHaveBeenCalled();
+  });
+
+  test("should reject fetched note attributed to a local user", async () => {
+    mockNoteRepository.findByUri = mock(() => Promise.resolve(null));
+    fetchedNote = {
+      ...defaultFetchedNote,
+      attributedTo: "http://localhost:3000/users/alice",
+    };
+
+    const activity: Activity = {
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Announce",
+      id: "https://remote.example.com/activities/announce-1",
+      actor: "https://remote.example.com/users/remoteuser",
+      object: "https://another.example.com/notes/1",
+    };
+
+    const result = await handler.handle(activity, mockContext);
+
+    expect(result.success).toBe(false);
+    expect(result.message).toContain("local author");
+    expect(mockRemoteNoteService.processNote).not.toHaveBeenCalled();
+  });
+
+  test("should resolve local note by id without fetching when uri lookup misses", async () => {
+    mockNoteRepository.findByUri = mock(() => Promise.resolve(null));
+    mockNoteRepository.findById = mock(() =>
+      Promise.resolve({ id: "note-123", uri: null, text: "Local note" }),
+    );
+
+    const activity: Activity = {
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Announce",
+      id: "https://remote.example.com/activities/announce-1",
+      actor: "https://remote.example.com/users/remoteuser",
+      object: "http://localhost:3000/notes/note-123",
+    };
+
+    const result = await handler.handle(activity, mockContext);
+
+    expect(result.success).toBe(true);
+    expect(mockNoteRepository.findById).toHaveBeenCalledWith("note-123");
+    expect(mockRemoteNoteService.processNote).not.toHaveBeenCalled();
   });
 
   test("should reject activity with missing object", async () => {

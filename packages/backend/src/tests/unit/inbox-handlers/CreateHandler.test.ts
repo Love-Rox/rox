@@ -168,4 +168,77 @@ describe("CreateHandler", () => {
     expect(result.success).toBe(false);
     expect(result.message).toContain("Failed to handle Create activity");
   });
+  describe("author/origin binding", () => {
+    const baseActivity = (object: Record<string, unknown>): Activity => ({
+      "@context": "https://www.w3.org/ns/activitystreams",
+      type: "Create",
+      id: "https://remote.example.com/activities/create-x",
+      actor: "https://remote.example.com/users/remoteuser",
+      object: { type: "Note", content: "<p>hi</p>", ...object },
+    });
+
+    test("should reject Create whose attributedTo differs from actor", async () => {
+      const result = await handler.handle(
+        baseActivity({
+          id: "https://remote.example.com/notes/1",
+          attributedTo: "https://remote.example.com/users/victim",
+        }),
+        mockContext,
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.message).toContain("attributedTo does not match actor");
+      expect(mockRemoteNoteService.processNote).not.toHaveBeenCalled();
+    });
+
+    test("should reject Create with missing attributedTo", async () => {
+      const result = await handler.handle(
+        baseActivity({ id: "https://remote.example.com/notes/1" }),
+        mockContext,
+      );
+
+      expect(result.success).toBe(false);
+      expect(mockRemoteNoteService.processNote).not.toHaveBeenCalled();
+    });
+
+    test("should accept attributedTo given as an object with matching id", async () => {
+      const result = await handler.handle(
+        baseActivity({
+          id: "https://remote.example.com/notes/1",
+          attributedTo: { id: "https://remote.example.com/users/remoteuser", type: "Person" },
+        }),
+        mockContext,
+      );
+
+      expect(result.success).toBe(true);
+      expect(mockRemoteNoteService.processNote).toHaveBeenCalled();
+    });
+
+    test("should reject Create with a javascript: object id", async () => {
+      const result = await handler.handle(
+        baseActivity({
+          id: "javascript:alert(1)",
+          attributedTo: "https://remote.example.com/users/remoteuser",
+        }),
+        mockContext,
+      );
+
+      expect(result.success).toBe(false);
+      expect(result.message).toContain("object id origin does not match actor");
+      expect(mockRemoteNoteService.processNote).not.toHaveBeenCalled();
+    });
+
+    test("should reject Create whose object id is on another origin", async () => {
+      const result = await handler.handle(
+        baseActivity({
+          id: "https://victim.example.com/notes/1",
+          attributedTo: "https://remote.example.com/users/remoteuser",
+        }),
+        mockContext,
+      );
+
+      expect(result.success).toBe(false);
+      expect(mockRemoteNoteService.processNote).not.toHaveBeenCalled();
+    });
+  });
 });

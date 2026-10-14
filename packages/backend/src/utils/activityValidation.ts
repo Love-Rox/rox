@@ -7,6 +7,8 @@
  * @module utils/activityValidation
  */
 
+import { isLocalUrl } from "./federationUrl.js";
+
 /**
  * Validation error types
  */
@@ -297,26 +299,27 @@ export function validateTimestamps(activity: any): ValidationResult {
 }
 
 /**
- * Validate actor/keyId consistency
+ * Validate actor/signature consistency
  *
- * Ensures that the signature keyId matches the actor.
- * The keyId should be in format: {actorUri}#main-key or similar.
+ * Ensures that the activity actor is exactly the owner of the key that signed
+ * the request, as verified by the signature middleware against the fetched
+ * key document. A string prefix comparison between keyId and actor is NOT
+ * sufficient (e.g. `.../users/bob2#main-key` or `.../users/bob/../eve#main-key`).
+ *
+ * Also rejects activities whose actor is on the local host: local users never
+ * deliver to our own inbox over HTTP.
  *
  * @param activity - ActivityPub activity
  * @param keyId - KeyId from HTTP Signature
+ * @param signatureActor - Key owner verified by the signature middleware
  * @returns Validation result
  */
 export function validateActorKeyIdConsistency(
   activity: any,
   keyId: string | undefined,
+  signatureActor?: string,
 ): ValidationResult {
   const errors: ValidationError[] = [];
-
-  if (!keyId) {
-    // If no keyId provided, skip this validation
-    // (signature verification middleware should handle this)
-    return { valid: true, errors: [] };
-  }
 
   const actorUri = extractActorUri(activity);
   if (!actorUri) {
@@ -324,15 +327,27 @@ export function validateActorKeyIdConsistency(
     return { valid: true, errors: [] };
   }
 
-  // KeyId should start with actor URI
-  // Common formats:
-  // - https://example.com/users/alice#main-key
-  // - https://example.com/users/alice/publickey
-  if (!keyId.startsWith(actorUri)) {
+  if (isLocalUrl(actorUri)) {
     errors.push({
       type: ValidationErrorType.ACTOR_MISMATCH,
       field: "actor",
-      message: "Activity actor does not match signature keyId",
+      message: "Activity actor must not be a local user",
+    });
+    return { valid: false, errors };
+  }
+
+  if (!keyId && !signatureActor) {
+    // If no signature info provided, skip this validation
+    // (signature verification middleware should handle this)
+    return { valid: true, errors: [] };
+  }
+
+  // Exact comparison against the verified key owner
+  if (!signatureActor || actorUri !== signatureActor) {
+    errors.push({
+      type: ValidationErrorType.ACTOR_MISMATCH,
+      field: "actor",
+      message: "Activity actor does not match signature key owner",
     });
   }
 
@@ -349,13 +364,18 @@ export function validateActorKeyIdConsistency(
  *
  * @param activity - ActivityPub activity
  * @param keyId - Optional keyId from HTTP Signature
+ * @param signatureActor - Optional key owner verified by the signature middleware
  * @returns Validation result
  */
-export function validateActivity(activity: any, keyId?: string): ValidationResult {
+export function validateActivity(
+  activity: any,
+  keyId?: string,
+  signatureActor?: string,
+): ValidationResult {
   const results: ValidationResult[] = [
     validateRequiredFields(activity),
     validateTimestamps(activity),
-    validateActorKeyIdConsistency(activity, keyId),
+    validateActorKeyIdConsistency(activity, keyId, signatureActor),
   ];
 
   const allErrors = results.flatMap((r) => r.errors);

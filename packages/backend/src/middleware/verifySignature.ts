@@ -21,11 +21,18 @@ import type { IUserRepository } from "../interfaces/repositories/IUserRepository
 import { CacheTTL, CachePrefix } from "../adapters/cache/DragonflyCacheAdapter.js";
 import { RemoteFetchService, type SignatureConfig } from "../services/ap/RemoteFetchService.js";
 import { logger } from "../lib/logger.js";
+import {
+  hasAmbiguousPath,
+  isLocalUrl,
+  isSameOrigin,
+  normalizeUrl,
+  parseHttpUrl,
+} from "../utils/federationUrl.js";
 
 /**
  * In-memory cache fallback for public keys when Redis is unavailable
  */
-const publicKeyMemoryCache = new Map<string, { key: string; expires: number }>();
+const publicKeyMemoryCache = new Map<string, { key: VerifiedPublicKey; expires: number }>();
 
 /**
  * In-memory cache for fetch failures to prevent repeated requests to failing servers
@@ -148,9 +155,142 @@ async function getSignatureConfig(
 }
 
 /**
+ * Public key bound to its verified owner (actor URI)
+ */
+export interface VerifiedPublicKey {
+  /** PEM-encoded public key */
+  publicKeyPem: string;
+  /** Actor URI that owns this key (verified against the fetched document) */
+  owner: string;
+}
+
+/**
+ * Validate a signature keyId before fetching it.
+ *
+ * Rejects keyIds that are not http(s) URLs, contain ambiguous path components
+ * (dot segments, backslashes, whitespace) that URL normalization would rewrite,
+ * or point at this instance (local users never deliver to our inbox over HTTP).
+ *
+ * @param keyId - KeyId from the Signature header
+ * @returns URL to fetch the key document from (keyId without fragment)
+ * @throws Error if the keyId is not acceptable
+ */
+export function validateKeyId(keyId: string): string {
+  if (!parseHttpUrl(keyId)) {
+    throw new Error("Invalid keyId: not an http(s) URL");
+  }
+  if (hasAmbiguousPath(keyId)) {
+    throw new Error("Invalid keyId: ambiguous path");
+  }
+  if (isLocalUrl(keyId)) {
+    throw new Error("Invalid keyId: points to local host");
+  }
+  const fetchUrl = keyId.split("#")[0];
+  if (!fetchUrl || normalizeUrl(fetchUrl) === null) {
+    throw new Error("Invalid keyId format");
+  }
+  return fetchUrl;
+}
+
+/**
+ * Extract the public key for `keyId` from a fetched document and verify its owner.
+ *
+ * Supported document shapes:
+ * - Actor document (Mastodon/Misskey/GoToSocial/etc.): `id` must be on the same origin
+ *   as the fetched URL, one of `publicKey` (object or array) must have `id === keyId`,
+ *   and its `owner` (defaulting to the document id) must equal the document id.
+ * - Standalone Key document (e.g. `/users/x/publickey`): `id` must equal keyId and
+ *   `owner` must be an http(s) URL on the same origin as the keyId.
+ *
+ * @param keyId - KeyId from the Signature header
+ * @param fetchUrl - URL the document was fetched from
+ * @param doc - Fetched JSON document
+ * @returns Verified PEM and owner actor URI
+ * @throws Error if the document does not prove ownership of the key
+ */
+export function extractVerifiedPublicKey(
+  keyId: string,
+  fetchUrl: string,
+  doc: unknown,
+): VerifiedPublicKey {
+  if (!doc || typeof doc !== "object") {
+    throw new Error("Key document is not an object");
+  }
+  const document = doc as {
+    id?: unknown;
+    owner?: unknown;
+    publicKey?: unknown;
+    publicKeyPem?: unknown;
+  };
+  const normalizedKeyId = normalizeUrl(keyId);
+  if (!normalizedKeyId) {
+    throw new Error("Invalid keyId");
+  }
+  const docId = typeof document.id === "string" ? document.id : null;
+
+  if (document.publicKey) {
+    // Actor document. Usually id === fetchUrl (Mastodon/Misskey `#main-key`), but
+    // GoToSocial serves a stub actor at `/users/x/main-key` whose id is `/users/x`,
+    // so require same origin here; the exact publicKey.id === keyId match below
+    // is what binds the key.
+    if (!docId || !isSameOrigin(docId, fetchUrl)) {
+      throw new Error("Actor document id is not on the keyId origin");
+    }
+    const candidates: unknown[] = Array.isArray(document.publicKey)
+      ? document.publicKey
+      : [document.publicKey];
+    const key = candidates.find(
+      (k): k is { id: string; owner?: unknown; publicKeyPem?: unknown } =>
+        !!k &&
+        typeof k === "object" &&
+        typeof (k as { id?: unknown }).id === "string" &&
+        normalizeUrl((k as { id: string }).id) === normalizedKeyId,
+    );
+    if (!key) {
+      throw new Error("publicKey.id does not match keyId");
+    }
+    if (typeof key.publicKeyPem !== "string" || !key.publicKeyPem) {
+      throw new Error("Public key not found in actor document");
+    }
+    const owner = typeof key.owner === "string" ? key.owner : docId;
+    if (owner !== docId) {
+      throw new Error("publicKey.owner does not match actor document id");
+    }
+    return { publicKeyPem: key.publicKeyPem, owner };
+  }
+
+  if (typeof document.publicKeyPem === "string" && document.publicKeyPem) {
+    // Standalone Key document
+    if (!docId || normalizeUrl(docId) !== normalizedKeyId) {
+      throw new Error("Key document id does not match keyId");
+    }
+    if (typeof document.owner !== "string" || !isSameOrigin(document.owner, keyId)) {
+      throw new Error("Key document owner is missing or cross-origin");
+    }
+    return { publicKeyPem: document.publicKeyPem, owner: document.owner };
+  }
+
+  throw new Error("Public key not found in actor document");
+}
+
+/**
+ * Check whether a cached value has the current {@link VerifiedPublicKey} shape.
+ * Legacy cache entries (plain PEM strings) are treated as a miss.
+ */
+function isVerifiedPublicKey(value: unknown): value is VerifiedPublicKey {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    typeof (value as VerifiedPublicKey).publicKeyPem === "string" &&
+    typeof (value as VerifiedPublicKey).owner === "string"
+  );
+}
+
+/**
  * Fetch remote actor's public key
  *
- * Retrieves the public key from the remote actor's document.
+ * Retrieves the public key from the remote key/actor document and verifies
+ * that the document actually binds the key to its owner.
  * Results are cached in Redis (1 hour) with in-memory fallback.
  *
  * For Authorized Fetch servers (which return 401/403 on unsigned requests),
@@ -160,21 +300,25 @@ async function getSignatureConfig(
  * @param cacheService - Optional cache service for Redis caching
  * @param userRepository - Optional user repository for signed fetch retry
  * @param baseUrl - Optional base URL of this instance for signed fetch
- * @returns PEM-formatted public key
- * @throws Error if key cannot be fetched
+ * @returns PEM-formatted public key and its verified owner
+ * @throws Error if key cannot be fetched or verified
  */
 async function fetchPublicKey(
   keyId: string,
   cacheService?: ICacheService,
   userRepository?: IUserRepository,
   baseUrl?: string,
-): Promise<string> {
+): Promise<VerifiedPublicKey> {
+  // keyId format: https://example.com/users/alice#main-key
+  // Fetch URL: https://example.com/users/alice
+  const actorUrl = validateKeyId(keyId);
+
   const cacheKey = `${CachePrefix.PUBLIC_KEY}:${keyId}`;
 
   // Check Redis cache first
   if (cacheService?.isAvailable()) {
-    const cached = await cacheService.get<string>(cacheKey);
-    if (cached) {
+    const cached = await cacheService.get<unknown>(cacheKey);
+    if (isVerifiedPublicKey(cached)) {
       return cached;
     }
   } else {
@@ -183,15 +327,6 @@ async function fetchPublicKey(
     if (cached && cached.expires > Date.now()) {
       return cached.key;
     }
-  }
-
-  // Fetch actor document
-  // keyId format: https://example.com/users/alice#main-key
-  // Actor URL: https://example.com/users/alice
-  const actorUrl = keyId.split("#")[0];
-
-  if (!actorUrl) {
-    throw new Error("Invalid keyId format");
   }
 
   // Check if we have a cached failure for this actor
@@ -213,9 +348,7 @@ async function fetchPublicKey(
   logger.debug({ keyId, actorUrl }, "Fetching public key for signature verification");
 
   // First, try unsigned fetch (works for most servers)
-  let result = await fetchService.fetchActivityPubObject<{
-    publicKey?: { publicKeyPem?: string };
-  }>(actorUrl, { maxRetries: 1 });
+  let result = await fetchService.fetchActivityPubObject<unknown>(actorUrl, { maxRetries: 1 });
 
   // If unsigned fetch failed with 401/403, retry with signed request
   // This is required for Authorized Fetch servers (e.g., some Mastodon instances)
@@ -234,9 +367,7 @@ async function fetchPublicKey(
     const signatureConfig = await getSignatureConfig(userRepository, baseUrl);
 
     if (signatureConfig) {
-      result = await fetchService.fetchActivityPubObject<{
-        publicKey?: { publicKeyPem?: string };
-      }>(actorUrl, {
+      result = await fetchService.fetchActivityPubObject<unknown>(actorUrl, {
         signature: signatureConfig,
         maxRetries: 2,
       });
@@ -266,28 +397,21 @@ async function fetchPublicKey(
     throw new Error(`Failed to fetch actor: ${errorMessage}`);
   }
 
-  const actor = result.data!;
-
-  // Extract public key
-  let publicKey: string;
-  if (actor.publicKey && actor.publicKey.publicKeyPem) {
-    publicKey = actor.publicKey.publicKeyPem;
-  } else {
-    throw new Error("Public key not found in actor document");
-  }
+  // Verify that the fetched document binds keyId to its owner
+  const verified = extractVerifiedPublicKey(keyId, actorUrl, result.data);
 
   // Cache in Redis (1 hour)
   if (cacheService?.isAvailable()) {
-    await cacheService.set(cacheKey, publicKey, { ttl: CacheTTL.LONG });
+    await cacheService.set(cacheKey, verified, { ttl: CacheTTL.LONG });
   } else {
     // Fallback to in-memory cache
     publicKeyMemoryCache.set(keyId, {
-      key: publicKey,
+      key: verified,
       expires: Date.now() + CacheTTL.LONG * 1000,
     });
   }
 
-  return publicKey;
+  return verified;
 }
 
 /**
@@ -339,9 +463,14 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
 
     // Fetch public key (with Redis caching and signed fetch retry)
     logger.debug({ keyId: params.keyId }, "Fetching public key");
-    const publicKey = await fetchPublicKey(params.keyId, cacheService, userRepository, baseUrl);
+    const { publicKeyPem: publicKey, owner: signatureActor } = await fetchPublicKey(
+      params.keyId,
+      cacheService,
+      userRepository,
+      baseUrl,
+    );
     logger.debug(
-      { keyId: params.keyId, keyLength: publicKey.length },
+      { keyId: params.keyId, owner: signatureActor, keyLength: publicKey.length },
       "Public key fetched successfully",
     );
 
@@ -389,8 +518,10 @@ export async function verifySignatureMiddleware(c: Context, next: Next): Promise
       c.set("requestBody", body);
     }
 
-    // Store keyId for activity validation
+    // Store keyId and the verified key owner for activity validation.
+    // The inbox route must require activity.actor === signatureActor.
     c.set("signatureKeyId", params.keyId);
+    c.set("signatureActor", signatureActor);
 
     logger.debug({ keyId: params.keyId }, "Signature verified successfully");
 
