@@ -1,125 +1,20 @@
 /**
  * User API Routes
  *
- * Provides endpoints for user registration, and retrieving and updating user information.
+ * Provides endpoints for retrieving and updating user information.
+ * Registration lives at `POST /api/auth/register` (the legacy `POST /api/users`
+ * endpoint was removed because it bypassed registration gating).
  *
  * @module routes/users
  */
 
 import { Hono } from "hono";
-import { AuthService } from "../services/AuthService.js";
 import { UserService } from "../services/UserService.js";
 import { requireAuth, optionalAuth } from "../middleware/auth.js";
 import { errorResponse } from "../lib/routeUtils.js";
 import { verifyPassword } from "../utils/password.js";
 
 const app = new Hono();
-
-/**
- * User Registration
- *
- * POST /api/users
- *
- * Registers a new user, automatically logs in, and issues a session token.
- * Only enabled when ENABLE_REGISTRATION environment variable is true.
- *
- * @remarks
- * Request Body:
- * ```json
- * {
- *   "username": "alice",
- *   "email": "alice@example.com",
- *   "password": "securePassword123",
- *   "name": "Alice Smith" // optional
- * }
- * ```
- *
- * Validation:
- * - username: 3-20 characters, alphanumeric and underscores only
- * - email: Valid email address format
- * - password: Minimum 8 characters
- *
- * Response (201):
- * ```json
- * {
- *   "user": { "id": "...", "username": "alice", ... },
- *   "token": "a3f2e1d0c9b8a7f6..."
- * }
- * ```
- *
- * Errors:
- * - 400: Validation error
- * - 403: Registration disabled
- * - 409: Username or email already exists
- */
-app.post("/", async (c) => {
-  // 登録機能が無効な場合
-  if (process.env.ENABLE_REGISTRATION !== "true") {
-    return c.json({ error: "Registration is disabled" }, 403);
-  }
-
-  const body = await c.req.json();
-
-  // バリデーション
-  if (!body.username || typeof body.username !== "string") {
-    return c.json({ error: "Username is required" }, 400);
-  }
-  if (!body.email || typeof body.email !== "string") {
-    return c.json({ error: "Email is required" }, 400);
-  }
-  if (!body.password || typeof body.password !== "string") {
-    return c.json({ error: "Password is required" }, 400);
-  }
-
-  // ユーザー名のバリデーション（英数字とアンダースコアのみ、3-20文字）
-  if (!/^[a-zA-Z0-9_]{3,20}$/.test(body.username)) {
-    return c.json(
-      {
-        error:
-          "Username must be 3-20 characters and contain only letters, numbers, and underscores",
-      },
-      400,
-    );
-  }
-
-  // メールアドレスの簡易バリデーション
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
-    return c.json({ error: "Invalid email address" }, 400);
-  }
-
-  // パスワードの長さチェック（最低8文字）
-  if (body.password.length < 8) {
-    return c.json({ error: "Password must be at least 8 characters" }, 400);
-  }
-
-  try {
-    const authService = new AuthService(c.get("userRepository"), c.get("sessionRepository"));
-    const { user, session } = await authService.register({
-      username: body.username,
-      email: body.email,
-      password: body.password,
-      name: body.name,
-    });
-
-    // パスワードハッシュを除外してレスポンス
-    const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
-
-    return c.json(
-      {
-        user: publicUser,
-        token: session.token,
-      },
-      201,
-    );
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error.message.includes("already exists")) {
-        return c.json({ error: error.message }, 409);
-      }
-    }
-    throw error;
-  }
-});
 
 /**
  * Get Own User Information

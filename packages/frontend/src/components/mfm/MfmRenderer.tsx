@@ -23,6 +23,7 @@ import katex from "katex";
 import { lookupEmojis } from "../../lib/atoms/customEmoji";
 import { containsHtml, htmlToMfm } from "../../lib/utils/htmlToText";
 import { getProxiedImageUrl } from "../../lib/utils/imageProxy";
+import { toSafeHttpUrl } from "../../lib/utils/safeUrl";
 
 /**
  * Props for MfmRenderer component
@@ -287,11 +288,16 @@ function MfmRendererComponent({
           </blockquote>
         );
 
-      case "url":
+      case "url": {
+        // Remote content: only render http(s) URLs as links
+        const safeUrl = toSafeHttpUrl(node.props.url);
+        if (!safeUrl) {
+          return <span key={index}>{node.props.url}</span>;
+        }
         return (
           <a
             key={index}
-            href={node.props.url}
+            href={safeUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary-500 hover:underline break-all"
@@ -299,12 +305,17 @@ function MfmRendererComponent({
             {node.props.url}
           </a>
         );
+      }
 
-      case "link":
+      case "link": {
+        const safeLinkUrl = toSafeHttpUrl(node.props.url);
+        if (!safeLinkUrl) {
+          return <span key={index}>{node.children?.map((child, i) => renderNode(child, i))}</span>;
+        }
         return (
           <a
             key={index}
-            href={node.props.url}
+            href={safeLinkUrl}
             target="_blank"
             rel="noopener noreferrer"
             className={`text-primary-500 hover:underline ${node.props.silent ? "" : ""}`}
@@ -312,6 +323,7 @@ function MfmRendererComponent({
             {node.children?.map((child, i) => renderNode(child, i))}
           </a>
         );
+      }
 
       case "mention":
         const mentionUsername = node.props.username;

@@ -17,6 +17,96 @@ import type { ISessionRepository } from "../interfaces/repositories/ISessionRepo
 import type { User, OAuthAccount } from "../db/schema/pg.js";
 import { logger } from "../lib/logger.js";
 import { generateKeyPair } from "../utils/crypto.js";
+import type { BlockedUsernameService } from "./BlockedUsernameService.js";
+import type { EventBus } from "../lib/events.js";
+import { toPluginUser } from "../plugins/utils.js";
+import type { RegistrationPolicy } from "../lib/registrationPolicy.js";
+
+/**
+ * Prefix of the placeholder password hash given to OAuth-created users.
+ * Such hashes can never match a password.
+ */
+const OAUTH_PASSWORD_HASH_PREFIX = "oauth:";
+
+/**
+ * Registration policy applied when an OAuth login would create a new account.
+ */
+export type OAuthRegistrationPolicy = RegistrationPolicy;
+
+/**
+ * Error codes raised by OAuthService for user-facing failures.
+ */
+export type OAuthErrorCode =
+  | "email_exists"
+  | "registration_disabled"
+  | "invite_only"
+  | "registration_cancelled"
+  | "username_not_allowed"
+  | "already_linked"
+  | "linked_to_other_user";
+
+/**
+ * User-facing OAuth error. The message is safe to show to end users.
+ */
+export class OAuthError extends Error {
+  /**
+   * @param code - Machine-readable error code
+   * @param message - Human-readable message safe to display
+   */
+  constructor(
+    public readonly code: OAuthErrorCode,
+    message: string,
+  ) {
+    super(message);
+    this.name = "OAuthError";
+  }
+}
+
+/**
+ * Whether a stored password hash can actually be used for password login.
+ *
+ * @param passwordHash - Stored password hash (may be an OAuth placeholder)
+ * @returns False for empty hashes and OAuth placeholder hashes
+ */
+export function hasUsablePassword(passwordHash: string | null | undefined): boolean {
+  return !!passwordHash && !passwordHash.startsWith(OAUTH_PASSWORD_HASH_PREFIX);
+}
+
+/**
+ * Select a verified email from GitHub's `/user/emails` response.
+ *
+ * Prefers the public profile email when it is listed as verified, otherwise the
+ * primary verified email. Unverified addresses are never returned.
+ *
+ * @param publicEmail - Email from the public profile (carries no verification flag)
+ * @param emails - Entries from `GET /user/emails`
+ * @returns A verified email or null
+ */
+export function selectVerifiedGitHubEmail(
+  publicEmail: string | null,
+  emails: GitHubEmail[],
+): string | null {
+  if (publicEmail) {
+    const match = emails.find(
+      (e) => e.verified && e.email.toLowerCase() === publicEmail.toLowerCase(),
+    );
+    if (match) return match.email;
+  }
+  return emails.find((e) => e.primary && e.verified)?.email ?? null;
+}
+
+/**
+ * Whether a Google userinfo response reports the email as verified.
+ *
+ * @param user - Google userinfo response (v2 or OIDC shape)
+ * @returns True only when Google explicitly marks the email as verified
+ */
+export function isGoogleEmailVerified(user: {
+  verified_email?: boolean;
+  email_verified?: boolean;
+}): boolean {
+  return user.verified_email === true || user.email_verified === true;
+}
 
 /**
  * GitHub user profile response
@@ -32,7 +122,7 @@ interface GitHubUser {
 /**
  * GitHub email response
  */
-interface GitHubEmail {
+export interface GitHubEmail {
   email: string;
   primary: boolean;
   verified: boolean;
@@ -44,6 +134,10 @@ interface GitHubEmail {
 interface GoogleUser {
   id: string;
   email?: string;
+  /** Whether Google has verified the email address (v2 userinfo) */
+  verified_email?: boolean;
+  /** Whether Google has verified the email address (OIDC userinfo) */
+  email_verified?: boolean;
   name?: string;
   picture?: string;
 }
@@ -56,6 +150,8 @@ interface DiscordUser {
   username: string;
   global_name?: string;
   email?: string;
+  /** Whether the email on the Discord account has been verified */
+  verified?: boolean;
   avatar?: string;
 }
 
@@ -105,6 +201,10 @@ interface OAuthTokenResponse {
 export interface OAuthUserProfile {
   id: string;
   username: string;
+  /**
+   * Email address reported by the provider.
+   * Only set when the provider has verified the address; otherwise null.
+   */
   email: string | null;
   displayName: string | null;
   avatarUrl: string | null;
@@ -120,6 +220,8 @@ export class OAuthService {
     private oauthAccountRepository: IOAuthAccountRepository,
     private userRepository: IUserRepository,
     private sessionRepository: ISessionRepository,
+    private blockedUsernameService?: Pick<BlockedUsernameService, "isUsernameBlocked">,
+    private eventBus?: EventBus,
   ) {
     // Load configs from environment
     this.loadConfigs();
@@ -456,21 +558,19 @@ export class OAuthService {
 
     const user = (await userResponse.json()) as GitHubUser;
 
-    // Get primary email if not public
-    let email: string | null = user.email;
-    if (!email) {
-      const emailResponse = await fetch("https://api.github.com/user/emails", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          Accept: "application/vnd.github.v3+json",
-        },
-      });
+    // Only trust emails that GitHub reports as verified. The public profile
+    // email carries no verification flag, so always consult /user/emails.
+    let email: string | null = null;
+    const emailResponse = await fetch("https://api.github.com/user/emails", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+    });
 
-      if (emailResponse.ok) {
-        const emails = (await emailResponse.json()) as GitHubEmail[];
-        const primaryEmail = emails.find((e) => e.primary && e.verified);
-        email = primaryEmail?.email || null;
-      }
+    if (emailResponse.ok) {
+      const emails = (await emailResponse.json()) as GitHubEmail[];
+      email = selectVerifiedGitHubEmail(user.email, emails);
     }
 
     return {
@@ -498,7 +598,7 @@ export class OAuthService {
     return {
       id: user.id,
       username: user.email?.split("@")[0] || user.id,
-      email: user.email || null,
+      email: isGoogleEmailVerified(user) ? user.email || null : null,
       displayName: user.name || null,
       avatarUrl: user.picture || null,
     };
@@ -527,7 +627,7 @@ export class OAuthService {
     return {
       id: user.id,
       username: user.username,
-      email: user.email || null,
+      email: user.verified === true ? user.email || null : null,
       displayName: user.global_name || user.username,
       avatarUrl,
     };
@@ -563,13 +663,28 @@ export class OAuthService {
   }
 
   /**
-   * Find or create user from OAuth profile
-   * Returns the user and a flag indicating if it's a new user
+   * Find or create a user from an OAuth profile.
+   *
+   * Security rules:
+   * - A provider identity is only ever resolved through an existing OAuth link row.
+   * - It is never auto-linked to an existing local account by email. Rox does not
+   *   verify local emails, and some providers report unverified emails, so an email
+   *   match is not proof of ownership. Users must log in and link explicitly.
+   * - New accounts are subject to the same registration gating as password sign-up
+   *   (registration enabled, invite-only mode, blocked usernames, plugin veto).
+   *
+   * @param provider - OAuth provider
+   * @param profile - Normalized provider profile (email is only set when verified)
+   * @param tokens - Provider token response
+   * @param policy - Current instance registration policy
+   * @returns The user, whether it was newly created, and the OAuth account link
+   * @throws {OAuthError} When an account with the same email exists, or sign-up is not allowed
    */
   async findOrCreateUser(
     provider: OAuthProvider,
     profile: OAuthUserProfile,
     tokens: OAuthTokenResponse,
+    policy: OAuthRegistrationPolicy,
   ): Promise<{ user: User; isNew: boolean; oauthAccount: OAuthAccount }> {
     // Check if OAuth account already exists
     const existingOAuthAccount = await this.oauthAccountRepository.findByProviderAccount(
@@ -600,86 +715,183 @@ export class OAuthService {
       return { user, isNew: false, oauthAccount: updatedAccount };
     }
 
-    // Check if user with same email exists (to link accounts)
-    let user: User | null = null;
-    let isNew = false;
-
+    // Never auto-link by email: refuse if a local account already uses this email.
     if (profile.email) {
-      user = await this.userRepository.findByEmail(profile.email);
+      const emailOwner = await this.userRepository.findByEmail(profile.email);
+      if (emailOwner) {
+        logger.warn(
+          { provider, userId: emailOwner.id },
+          "OAuth login refused: email already belongs to an existing account",
+        );
+        throw new OAuthError(
+          "email_exists",
+          "An account with this email already exists. Log in and link the provider from settings.",
+        );
+      }
     }
 
-    if (!user) {
-      // Create new user
-      const baseUsername = this.sanitizeUsername(profile.username);
+    // New account: apply registration gating
+    if (!policy.registrationEnabled) {
+      throw new OAuthError("registration_disabled", "Registration is currently disabled");
+    }
+    if (policy.inviteOnly) {
+      throw new OAuthError(
+        "invite_only",
+        "Registration on this server requires an invitation code. Sign up with an invitation code first, then link the provider from settings.",
+      );
+    }
+
+    const username = await this.pickAvailableUsername(profile.username);
+
+    // Let plugins veto or adjust the registration (same hook as password sign-up)
+    let displayName = profile.displayName;
+    if (this.eventBus) {
+      const beforeResult = await this.eventBus.emitBefore("user:beforeRegister", {
+        username,
+        displayName,
+      });
+      if (beforeResult.cancelled) {
+        throw new OAuthError(
+          "registration_cancelled",
+          beforeResult.cancelReason || "Registration cancelled by plugin",
+        );
+      }
+      if (beforeResult.modifiedPayload) {
+        displayName = beforeResult.modifiedPayload.displayName ?? displayName;
+      }
+    }
+
+    // Generate ActivityPub keypair for OAuth users
+    const { publicKey, privateKey } = generateKeyPair();
+    const baseUrl = process.env.URL || "http://localhost:3000";
+
+    const user = await this.userRepository.create({
+      id: generateId(),
+      username,
+      // Only verified provider emails are stored; otherwise use a non-routable placeholder
+      // (the column is NOT NULL + UNIQUE).
+      email: profile.email || `${profile.id}@${provider}.oauth`,
+      // OAuth-only users get a random unusable password hash
+      // This hash is not a valid bcrypt hash, so password login will always fail
+      passwordHash: `${OAUTH_PASSWORD_HASH_PREFIX}${provider}:${generateId()}`,
+      displayName,
+      host: null, // Local user
+      avatarUrl: profile.avatarUrl,
+      bannerUrl: null,
+      bio: null,
+      isAdmin: false,
+      isSuspended: false,
+      isDeleted: false,
+      deletedAt: null,
+      isSystemUser: false,
+      publicKey,
+      privateKey,
+      customCss: null,
+      uiSettings: null,
+      // ActivityPub fields for local users
+      inbox: `${baseUrl}/users/${username}/inbox`,
+      outbox: `${baseUrl}/users/${username}/outbox`,
+      followersUrl: `${baseUrl}/users/${username}/followers`,
+      followingUrl: `${baseUrl}/users/${username}/following`,
+      uri: `${baseUrl}/users/${username}`,
+      sharedInbox: null,
+      // Account migration fields
+      alsoKnownAs: [],
+      movedTo: null,
+      movedAt: null,
+      // Profile emojis
+      profileEmojis: [],
+      // Storage quota
+      storageQuotaMb: null,
+      // Remote actor fetch status (not applicable to local users)
+      goneDetectedAt: null,
+      fetchFailureCount: 0,
+      lastFetchAttemptAt: null,
+      lastFetchError: null,
+      // Follower/following counts start at 0
+      followersCount: 0,
+      followingCount: 0,
+    });
+
+    logger.info({ provider, userId: user.id, username }, "OAuth login: new user created");
+
+    if (this.eventBus) {
+      this.eventBus.emit("user:afterRegister", { user: toPluginUser(user) }).catch((error) => {
+        logger.error({ err: error, userId: user.id }, "Failed to emit user:afterRegister event");
+      });
+    }
+
+    const oauthAccount = await this.createLink(user.id, provider, profile, tokens);
+
+    return { user, isNew: true, oauthAccount };
+  }
+
+  /**
+   * Pick a unique, non-blocked username derived from the provider username.
+   *
+   * @param providerUsername - Username reported by the provider
+   * @returns An available username
+   * @throws {OAuthError} When no allowed username could be derived
+   */
+  private async pickAvailableUsername(providerUsername: string): Promise<string> {
+    // Fallback base (random) is used if the derived name is blocked (e.g. reserved words)
+    const candidates = [
+      this.sanitizeUsername(providerUsername),
+      this.sanitizeUsername(`user${generateId().substring(0, 8)}`),
+    ];
+
+    for (const baseUsername of candidates) {
+      if (await this.isUsernameBlocked(baseUsername)) continue;
+
       let username = baseUsername;
       let attempt = 0;
-
-      // Ensure unique username
       while (await this.userRepository.findByUsername(username)) {
         attempt++;
-        username = `${baseUsername}${attempt}`;
+        const suffix = String(attempt);
+        username = `${baseUsername.substring(0, 20 - suffix.length)}${suffix}`;
       }
 
-      // Generate ActivityPub keypair for OAuth users
-      const { publicKey, privateKey } = generateKeyPair();
-      const baseUrl = process.env.URL || "http://localhost:3000";
-
-      user = await this.userRepository.create({
-        id: generateId(),
-        username,
-        email: profile.email || `${profile.id}@${provider}.oauth`,
-        // OAuth-only users get a random unusable password hash
-        // This hash is not a valid bcrypt hash, so password login will always fail
-        passwordHash: `oauth:${provider}:${generateId()}`,
-        displayName: profile.displayName,
-        host: null, // Local user
-        avatarUrl: profile.avatarUrl,
-        bannerUrl: null,
-        bio: null,
-        isAdmin: false,
-        isSuspended: false,
-        isDeleted: false,
-        deletedAt: null,
-        isSystemUser: false,
-        publicKey,
-        privateKey,
-        customCss: null,
-        uiSettings: null,
-        // ActivityPub fields for local users
-        inbox: `${baseUrl}/users/${username}/inbox`,
-        outbox: `${baseUrl}/users/${username}/outbox`,
-        followersUrl: `${baseUrl}/users/${username}/followers`,
-        followingUrl: `${baseUrl}/users/${username}/following`,
-        uri: `${baseUrl}/users/${username}`,
-        sharedInbox: null,
-        // Account migration fields
-        alsoKnownAs: [],
-        movedTo: null,
-        movedAt: null,
-        // Profile emojis
-        profileEmojis: [],
-        // Storage quota
-        storageQuotaMb: null,
-        // Remote actor fetch status (not applicable to local users)
-        goneDetectedAt: null,
-        fetchFailureCount: 0,
-        lastFetchAttemptAt: null,
-        lastFetchError: null,
-        // Follower/following counts start at 0
-        followersCount: 0,
-        followingCount: 0,
-      });
-
-      isNew = true;
-      logger.info({ provider, userId: user.id, username }, "OAuth login: new user created");
-    } else {
-      logger.info({ provider, userId: user.id }, "OAuth login: linked to existing user by email");
+      if (username === baseUsername || !(await this.isUsernameBlocked(username))) {
+        return username;
+      }
     }
 
-    // Create OAuth account link
-    const oauthAccount = await this.oauthAccountRepository.create({
+    throw new OAuthError(
+      "username_not_allowed",
+      "Could not derive an allowed username from your account. Please register with a password instead.",
+    );
+  }
+
+  /**
+   * Check a username against the blocked/reserved username list.
+   *
+   * @param username - Candidate username
+   * @returns True if the username must not be used
+   */
+  private async isUsernameBlocked(username: string): Promise<boolean> {
+    if (!this.blockedUsernameService) return false;
+    const result = await this.blockedUsernameService.isUsernameBlocked(username);
+    return result.blocked;
+  }
+
+  /**
+   * Persist an OAuth link row for a user.
+   *
+   * @param userId - Local user ID
+   * @param provider - OAuth provider
+   * @param profile - Provider profile
+   * @param tokens - Provider token response
+   * @returns The created OAuth account link
+   */
+  private createLink(
+    userId: string,
+    provider: OAuthProvider,
+    profile: OAuthUserProfile,
+    tokens: OAuthTokenResponse,
+  ): Promise<OAuthAccount> {
+    return this.oauthAccountRepository.create({
       id: generateId(),
-      userId: user.id,
+      userId,
       provider,
       providerAccountId: profile.id,
       accessToken: tokens.access_token,
@@ -690,8 +902,6 @@ export class OAuthService {
       providerUsername: profile.username,
       providerEmail: profile.email,
     });
-
-    return { user, isNew, oauthAccount };
   }
 
   /**
@@ -719,38 +929,61 @@ export class OAuthService {
   }
 
   /**
-   * Link OAuth account to existing user
+   * Link an OAuth account to an existing (authenticated) user by exchanging a code.
+   *
+   * @param userId - ID of the authenticated user
+   * @param provider - OAuth provider
+   * @param code - Authorization code returned by the provider
+   * @returns The created OAuth account link
    */
   async linkAccount(userId: string, provider: OAuthProvider, code: string): Promise<OAuthAccount> {
-    // Check if already linked
+    // Check if already linked (before spending the code)
     const existing = await this.oauthAccountRepository.findByUserAndProvider(userId, provider);
     if (existing) {
-      throw new Error(`${provider} account is already linked`);
+      throw new OAuthError("already_linked", `${provider} account is already linked`);
     }
 
     // Exchange code and get profile
     const { tokens, profile } = await this.handleCallback(provider, code);
 
+    return this.linkProfile(userId, provider, profile, tokens);
+  }
+
+  /**
+   * Link an already-fetched provider profile to an existing (authenticated) user.
+   *
+   * The caller is responsible for having authenticated `userId` and for having
+   * verified the OAuth state that binds this callback to that user.
+   *
+   * @param userId - ID of the authenticated user
+   * @param provider - OAuth provider
+   * @param profile - Provider profile obtained from the callback
+   * @param tokens - Provider token response
+   * @returns The created OAuth account link
+   * @throws {OAuthError} When the user already has this provider linked, or the
+   *   provider account is linked to another user
+   */
+  async linkProfile(
+    userId: string,
+    provider: OAuthProvider,
+    profile: OAuthUserProfile,
+    tokens: OAuthTokenResponse,
+  ): Promise<OAuthAccount> {
+    const existing = await this.oauthAccountRepository.findByUserAndProvider(userId, provider);
+    if (existing) {
+      throw new OAuthError("already_linked", `${provider} account is already linked`);
+    }
+
     // Check if this provider account is linked to another user
     const otherLink = await this.oauthAccountRepository.findByProviderAccount(provider, profile.id);
     if (otherLink) {
-      throw new Error(`This ${provider} account is already linked to another user`);
+      throw new OAuthError(
+        "linked_to_other_user",
+        `This ${provider} account is already linked to another user`,
+      );
     }
 
-    // Create link
-    const oauthAccount = await this.oauthAccountRepository.create({
-      id: generateId(),
-      userId,
-      provider,
-      providerAccountId: profile.id,
-      accessToken: tokens.access_token,
-      refreshToken: tokens.refresh_token || null,
-      tokenExpiresAt: tokens.expires_in ? new Date(Date.now() + tokens.expires_in * 1000) : null,
-      scope: tokens.scope || null,
-      tokenType: tokens.token_type || "Bearer",
-      providerUsername: profile.username,
-      providerEmail: profile.email,
-    });
+    const oauthAccount = await this.createLink(userId, provider, profile, tokens);
 
     logger.info({ provider, userId }, "OAuth account linked");
     return oauthAccount;
@@ -769,8 +1002,9 @@ export class OAuthService {
     // Count linked OAuth accounts
     const linkedAccounts = await this.oauthAccountRepository.countByUserId(userId);
 
-    // User must have password or at least one other OAuth account
-    if (!user.passwordHash && linkedAccounts <= 1) {
+    // User must have a usable password or at least one other OAuth account.
+    // OAuth-created users carry a placeholder hash that can never be used to log in.
+    if (!hasUsablePassword(user.passwordHash) && linkedAccounts <= 1) {
       throw new Error("Cannot unlink the only login method. Set a password first.");
     }
 

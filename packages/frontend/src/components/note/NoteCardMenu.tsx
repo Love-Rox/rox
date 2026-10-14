@@ -5,6 +5,7 @@ import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { MoreHorizontal, Share, Copy, ExternalLink, Trash2, Flag } from "lucide-react";
 import { Button } from "../ui/Button";
+import { toSafeHttpUrl } from "../../lib/utils/safeUrl";
 
 /**
  * Props for the NoteCardMenu component
@@ -66,11 +67,13 @@ export function NoteCardMenu({
   }, [showMoreMenu]);
 
   /**
-   * Get the public URL for this note
+   * Get the public URL for this note.
+   * Remote `noteUri` is only used when it is an http(s) URL.
    */
   const getNoteUrl = (): string => {
-    if (noteUri) {
-      return noteUri;
+    const safeRemoteUrl = toSafeHttpUrl(noteUri);
+    if (safeRemoteUrl) {
+      return safeRemoteUrl;
     }
     const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
     return `${baseUrl}/notes/${noteId}`;
