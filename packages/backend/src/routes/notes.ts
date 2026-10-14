@@ -126,6 +126,7 @@ notes.post(
  * @returns {Note} Note record
  */
 notes.post("/show", optionalAuth(), async (c: Context) => {
+  const user = c.get("user");
   const noteService = createNoteService(c);
   const body = await c.req.json();
   const noteId = body.noteId;
@@ -134,7 +135,8 @@ notes.post("/show", optionalAuth(), async (c: Context) => {
     return c.json({ error: "noteId is required" }, 400);
   }
 
-  const note = await noteService.findById(noteId);
+  // Non-visible notes are reported as "not found" to avoid leaking their existence
+  const note = await noteService.findById(noteId, { viewerId: user?.id ?? null });
 
   if (!note) {
     return c.json({ error: "Note not found" }, 404);
@@ -299,6 +301,7 @@ notes.get("/global-timeline", optionalAuth(), async (c: Context) => {
  * @returns {Note[]} List of notes
  */
 notes.get("/user-notes", optionalAuth(), async (c: Context) => {
+  const user = c.get("user");
   const noteService = createNoteService(c);
   const userId = c.req.query("userId");
 
@@ -314,6 +317,7 @@ notes.get("/user-notes", optionalAuth(), async (c: Context) => {
     limit,
     sinceId,
     untilId,
+    viewerId: user?.id ?? null,
   });
 
   return c.json(timeline);
@@ -332,6 +336,7 @@ notes.get("/user-notes", optionalAuth(), async (c: Context) => {
  * @returns {Note[]} Array of reply notes
  */
 notes.get("/replies", optionalAuth(), async (c: Context) => {
+  const user = c.get("user");
   const noteService = createNoteService(c);
   const noteId = c.req.query("noteId");
 
@@ -347,6 +352,7 @@ notes.get("/replies", optionalAuth(), async (c: Context) => {
     limit,
     sinceId,
     untilId,
+    viewerId: user?.id ?? null,
   });
 
   return c.json(replies);

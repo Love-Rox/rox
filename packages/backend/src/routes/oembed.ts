@@ -12,6 +12,7 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
 import { generateNoteOEmbed, generateUserOEmbed, type OEmbedResponse } from "../lib/oembed.js";
+import { isPubliclyVisible } from "../lib/noteVisibility.js";
 
 const oembed = new Hono();
 
@@ -118,7 +119,8 @@ oembed.get("/", async (c: Context) => {
     const noteRepository = c.get("noteRepository");
     const noteData = await noteRepository.findById(resource.id);
 
-    if (!noteData || noteData.isDeleted) {
+    // oEmbed is unauthenticated: only notes visible to everyone may be embedded
+    if (!noteData || noteData.isDeleted || !isPubliclyVisible(noteData)) {
       return c.json({ error: "Note not found" }, 404);
     }
 
