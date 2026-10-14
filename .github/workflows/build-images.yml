@@ -10,6 +10,10 @@ name: Build & Push Images
 # Note: we intentionally do NOT publish a moving `:latest` tag. The cluster
 # tracks the explicit `:dev` tag, and avoiding `:latest` sidesteps the tag
 # resolution ambiguity that previously affected keel on the ikaskey instance.
+#
+# CI gate: images are only built after ci.yml passes for the same commit.
+# keel auto-deploys :dev, so publishing an image from a failing commit would
+# ship it to production (#288).
 
 on:
   push:
@@ -25,8 +29,12 @@ env:
   IMAGE_NAMESPACE: love-rox
 
 jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
   build:
     name: Build ${{ matrix.component }}
+    needs: ci
     runs-on: ubuntu-latest
     permissions:
       contents: read
