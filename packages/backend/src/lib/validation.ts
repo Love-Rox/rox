@@ -192,7 +192,7 @@ export const repliesQuerySchema = z.object({
 // ============================================
 
 /**
- * POST /api/users - User registration (same as auth register)
+ * User registration schema (alias of registerSchema; the legacy POST /api/users endpoint was removed)
  */
 export const createUserSchema = registerSchema;
 

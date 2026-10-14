@@ -4,6 +4,10 @@ on:
   push:
     branches-ignore:
       - 'dependabot/**'
+      # dev / main run CI via build-images.yml (workflow_call), which gates
+      # image publishing on the result. Skip here to avoid running CI twice.
+      - dev
+      - main
   pull_request:
     branches: [main, dev]
   workflow_call:

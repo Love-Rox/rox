@@ -15,7 +15,6 @@ import type { Context } from "hono";
 interface UserWithSensitiveData {
   passwordHash?: string | null;
   privateKey?: string | null;
-  [key: string]: unknown;
 }
 
 /**
@@ -39,6 +38,24 @@ type SanitizedUser<T extends UserWithSensitiveData> = Omit<T, "passwordHash" | "
 export function sanitizeUser<T extends UserWithSensitiveData>(user: T): SanitizedUser<T> {
   const { passwordHash: _p, privateKey: _pk, ...userData } = user;
   return userData as SanitizedUser<T>;
+}
+
+/**
+ * Removes credentials and private fields (passwordHash, privateKey, email)
+ * from a user object so it can be returned to anyone.
+ *
+ * Use this for every response that may contain a user other than the
+ * authenticated caller. Repositories return full rows (including the
+ * ActivityPub private key), so omitting a field here leaks it publicly.
+ *
+ * @param user - User object potentially containing sensitive data
+ * @returns User object safe for public responses
+ */
+export function toPublicUser<
+  T extends { passwordHash?: unknown; privateKey?: unknown; email?: unknown },
+>(user: T): Omit<T, "passwordHash" | "privateKey" | "email"> {
+  const { passwordHash: _p, privateKey: _pk, email: _e, ...publicUser } = user;
+  return publicUser;
 }
 
 /**

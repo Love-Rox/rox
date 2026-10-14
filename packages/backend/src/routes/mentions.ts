@@ -41,6 +41,8 @@ mentions.get("/", requireAuth(), async (c: Context) => {
       limit,
       sinceId,
       untilId,
+      // e.g. exclude DMs replying to the user's note that are not addressed to them
+      visibleTo: { viewerId: user.id },
     });
 
     return c.json(notes);

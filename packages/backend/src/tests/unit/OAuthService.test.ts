@@ -6,7 +6,13 @@
  */
 
 import { describe, test, expect, mock, beforeEach, afterEach } from "bun:test";
-import { OAuthService } from "../../services/OAuthService";
+import {
+  OAuthService,
+  OAuthError,
+  hasUsablePassword,
+  isGoogleEmailVerified,
+  selectVerifiedGitHubEmail,
+} from "../../services/OAuthService";
 import type { IOAuthAccountRepository } from "../../interfaces/repositories/IOAuthAccountRepository";
 import type { IUserRepository } from "../../interfaces/repositories/IUserRepository";
 import type { ISessionRepository } from "../../interfaces/repositories/ISessionRepository";
@@ -419,6 +425,290 @@ describe("OAuthService", () => {
       // Discord needs identify and email scopes
       expect(url).toContain("identify");
       expect(url).toContain("email");
+    });
+  });
+
+  describe("findOrCreateUser security", () => {
+    const tokens = { access_token: "tok", token_type: "Bearer" };
+    const openPolicy = { registrationEnabled: true, inviteOnly: false };
+    const profile = {
+      id: "999",
+      username: "victim",
+      email: "victim@example.com",
+      displayName: "Victim",
+      avatarUrl: null,
+    };
+
+    const makeService = (blocked?: (name: string) => boolean) =>
+      new OAuthService(
+        mockOAuthRepo,
+        mockUserRepo as IUserRepository,
+        mockSessionRepo as ISessionRepository,
+        blocked
+          ? {
+              isUsernameBlocked: mock((name: string) =>
+                Promise.resolve({ blocked: blocked(name) }),
+              ),
+            }
+          : undefined,
+      );
+
+    test("logs in an already-linked provider account", async () => {
+      (mockOAuthRepo.findByProviderAccount as ReturnType<typeof mock>).mockResolvedValue(
+        mockOAuthAccount,
+      );
+
+      const result = await makeService().findOrCreateUser("github", profile, tokens, {
+        registrationEnabled: false,
+        inviteOnly: true,
+      });
+
+      // Existing links keep working even when registration is closed
+      expect(result.isNew).toBe(false);
+      expect(result.user.id).toBe("user1");
+      expect(mockUserRepo.create).not.toHaveBeenCalled();
+      expect(mockOAuthRepo.create).not.toHaveBeenCalled();
+    });
+
+    test("never auto-links to an existing account with the same email", async () => {
+      (mockUserRepo.findByEmail as ReturnType<typeof mock>).mockResolvedValue(mockUser);
+
+      await expect(
+        makeService().findOrCreateUser("github", profile, tokens, openPolicy),
+      ).rejects.toThrow("An account with this email already exists");
+
+      expect(mockOAuthRepo.create).not.toHaveBeenCalled();
+      expect(mockUserRepo.create).not.toHaveBeenCalled();
+    });
+
+    test("throws OAuthError with email_exists code", async () => {
+      (mockUserRepo.findByEmail as ReturnType<typeof mock>).mockResolvedValue(mockUser);
+
+      try {
+        await makeService().findOrCreateUser("github", profile, tokens, openPolicy);
+        throw new Error("expected rejection");
+      } catch (err) {
+        expect(err).toBeInstanceOf(OAuthError);
+        expect((err as OAuthError).code).toBe("email_exists");
+      }
+    });
+
+    test("refuses sign-up when registration is disabled", async () => {
+      await expect(
+        makeService().findOrCreateUser("github", profile, tokens, {
+          registrationEnabled: false,
+          inviteOnly: false,
+        }),
+      ).rejects.toThrow("Registration is currently disabled");
+      expect(mockUserRepo.create).not.toHaveBeenCalled();
+    });
+
+    test("refuses sign-up when invite-only", async () => {
+      await expect(
+        makeService().findOrCreateUser("github", profile, tokens, {
+          registrationEnabled: true,
+          inviteOnly: true,
+        }),
+      ).rejects.toThrow("invitation code");
+      expect(mockUserRepo.create).not.toHaveBeenCalled();
+    });
+
+    test("creates a new user with verified email when allowed", async () => {
+      const result = await makeService().findOrCreateUser("github", profile, tokens, openPolicy);
+
+      expect(result.isNew).toBe(true);
+      const created = (mockUserRepo.create as ReturnType<typeof mock>).mock.calls[0]![0];
+      expect(created.email).toBe("victim@example.com");
+      expect(created.username).toBe("victim");
+      expect(mockOAuthRepo.create).toHaveBeenCalled();
+    });
+
+    test("uses a placeholder email when the provider email is not verified", async () => {
+      await makeService().findOrCreateUser(
+        "discord",
+        { ...profile, email: null },
+        tokens,
+        openPolicy,
+      );
+
+      expect(mockUserRepo.findByEmail).not.toHaveBeenCalled();
+      const created = (mockUserRepo.create as ReturnType<typeof mock>).mock.calls[0]![0];
+      expect(created.email).toBe("999@discord.oauth");
+    });
+
+    test("does not use a blocked username", async () => {
+      await makeService((name) => name === "admin").findOrCreateUser(
+        "github",
+        { ...profile, username: "admin" },
+        tokens,
+        openPolicy,
+      );
+
+      const created = (mockUserRepo.create as ReturnType<typeof mock>).mock.calls[0]![0];
+      expect(created.username).not.toBe("admin");
+      expect(created.username.startsWith("user")).toBe(true);
+    });
+
+    test("refuses sign-up if no allowed username can be derived", async () => {
+      await expect(
+        makeService(() => true).findOrCreateUser("github", profile, tokens, openPolicy),
+      ).rejects.toThrow("allowed username");
+      expect(mockUserRepo.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("provider email verification", () => {
+    const originalFetch = globalThis.fetch;
+
+    afterEach(() => {
+      globalThis.fetch = originalFetch;
+    });
+
+    const mockFetchSequence = (bodies: unknown[]) => {
+      let i = 0;
+      globalThis.fetch = mock(() =>
+        Promise.resolve(new Response(JSON.stringify(bodies[i++]), { status: 200 })),
+      ) as unknown as typeof fetch;
+    };
+
+    const getProfile = (service: OAuthService, method: string, ...args: unknown[]) =>
+      (service as any)[method](...args) as Promise<{ email: string | null }>;
+
+    test("drops unverified Discord email", async () => {
+      mockFetchSequence([{ id: "1", username: "u", email: "v@example.com", verified: false }]);
+      const service = new OAuthService(
+        mockOAuthRepo,
+        mockUserRepo as IUserRepository,
+        mockSessionRepo as ISessionRepository,
+      );
+      expect((await getProfile(service, "getDiscordProfile", "t")).email).toBeNull();
+    });
+
+    test("keeps verified Discord email", async () => {
+      mockFetchSequence([{ id: "1", username: "u", email: "v@example.com", verified: true }]);
+      const service = new OAuthService(
+        mockOAuthRepo,
+        mockUserRepo as IUserRepository,
+        mockSessionRepo as ISessionRepository,
+      );
+      expect((await getProfile(service, "getDiscordProfile", "t")).email).toBe("v@example.com");
+    });
+
+    test("drops unverified Google email", async () => {
+      mockFetchSequence([{ id: "1", email: "v@example.com", verified_email: false }]);
+      const service = new OAuthService(
+        mockOAuthRepo,
+        mockUserRepo as IUserRepository,
+        mockSessionRepo as ISessionRepository,
+      );
+      expect((await getProfile(service, "getGoogleProfile", "t")).email).toBeNull();
+    });
+
+    test("keeps verified Google email", async () => {
+      mockFetchSequence([{ id: "1", email: "v@example.com", verified_email: true }]);
+      const service = new OAuthService(
+        mockOAuthRepo,
+        mockUserRepo as IUserRepository,
+        mockSessionRepo as ISessionRepository,
+      );
+      expect((await getProfile(service, "getGoogleProfile", "t")).email).toBe("v@example.com");
+    });
+
+    test("drops unverified GitHub public email", async () => {
+      mockFetchSequence([
+        { id: 1, login: "u", name: null, email: "v@example.com", avatar_url: null },
+        [{ email: "v@example.com", primary: true, verified: false }],
+      ]);
+      const service = new OAuthService(
+        mockOAuthRepo,
+        mockUserRepo as IUserRepository,
+        mockSessionRepo as ISessionRepository,
+      );
+      expect((await getProfile(service, "getGitHubProfile", "t")).email).toBeNull();
+    });
+
+    test("selectVerifiedGitHubEmail prefers verified public email, then primary verified", () => {
+      const emails = [
+        { email: "primary@example.com", primary: true, verified: true },
+        { email: "public@example.com", primary: false, verified: true },
+        { email: "unverified@example.com", primary: false, verified: false },
+      ];
+      expect(selectVerifiedGitHubEmail("public@example.com", emails)).toBe("public@example.com");
+      expect(selectVerifiedGitHubEmail("unverified@example.com", emails)).toBe(
+        "primary@example.com",
+      );
+      expect(selectVerifiedGitHubEmail(null, emails)).toBe("primary@example.com");
+      expect(
+        selectVerifiedGitHubEmail(null, [{ email: "a@b.c", primary: true, verified: false }]),
+      ).toBeNull();
+    });
+
+    test("isGoogleEmailVerified requires an explicit true flag", () => {
+      expect(isGoogleEmailVerified({})).toBe(false);
+      expect(isGoogleEmailVerified({ verified_email: false })).toBe(false);
+      expect(isGoogleEmailVerified({ verified_email: true })).toBe(true);
+      expect(isGoogleEmailVerified({ email_verified: true })).toBe(true);
+    });
+  });
+
+  describe("linkProfile", () => {
+    const tokens = { access_token: "tok", token_type: "Bearer" };
+    const profile = {
+      id: "555",
+      username: "gh",
+      email: null,
+      displayName: null,
+      avatarUrl: null,
+    };
+
+    test("links provider to the given user", async () => {
+      const service = new OAuthService(
+        mockOAuthRepo,
+        mockUserRepo as IUserRepository,
+        mockSessionRepo as ISessionRepository,
+      );
+      await service.linkProfile("user1", "github", profile, tokens);
+      const created = (mockOAuthRepo.create as ReturnType<typeof mock>).mock.calls[0]![0];
+      expect(created.userId).toBe("user1");
+      expect(created.providerAccountId).toBe("555");
+    });
+
+    test("refuses if provider account is linked to another user", async () => {
+      (mockOAuthRepo.findByProviderAccount as ReturnType<typeof mock>).mockResolvedValue({
+        ...mockOAuthAccount,
+        userId: "other",
+      });
+      const service = new OAuthService(
+        mockOAuthRepo,
+        mockUserRepo as IUserRepository,
+        mockSessionRepo as ISessionRepository,
+      );
+      await expect(service.linkProfile("user1", "github", profile, tokens)).rejects.toThrow(
+        "already linked to another user",
+      );
+      expect(mockOAuthRepo.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("hasUsablePassword", () => {
+    test("treats OAuth placeholder hashes as unusable", () => {
+      expect(hasUsablePassword("oauth:github:abc")).toBe(false);
+      expect(hasUsablePassword(null)).toBe(false);
+      expect(hasUsablePassword("")).toBe(false);
+      expect(hasUsablePassword("$argon2id$v=19$hash")).toBe(true);
+    });
+
+    test("prevents OAuth-only users from unlinking their only login method", async () => {
+      // mockUser has an OAuth placeholder hash and a single link
+      (mockOAuthRepo.countByUserId as ReturnType<typeof mock>).mockResolvedValue(1);
+      const service = new OAuthService(
+        mockOAuthRepo,
+        mockUserRepo as IUserRepository,
+        mockSessionRepo as ISessionRepository,
+      );
+      await expect(service.unlinkAccount("user1", "github")).rejects.toThrow(
+        "Cannot unlink the only login method",
+      );
     });
   });
 });

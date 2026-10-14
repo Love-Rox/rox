@@ -1,10 +1,33 @@
 import type { Note } from "shared";
 
+/**
+ * Viewer-aware visibility filter for note list queries.
+ *
+ * When supplied, repositories only return notes the viewer is allowed to see
+ * (see `lib/noteVisibility.ts` for the rules):
+ * - `public` / `home`: always
+ * - `followers`: author, followers of the author (accepted follow),
+ *   mentioned users, or the author of the replied-to note
+ * - `specified`: author or recipients (stored in `mentions`)
+ *
+ * A `viewerId` of `null` represents an unauthenticated viewer and restricts
+ * results to `public` / `home` notes.
+ */
+export interface NoteVisibilityFilter {
+  /** Viewing user ID, or null for unauthenticated viewers */
+  viewerId: string | null;
+}
+
 export interface TimelineOptions {
   limit?: number;
   sinceId?: string;
   untilId?: string;
   userIds?: string[];
+  /**
+   * Restrict results to notes visible to this viewer.
+   * When omitted, no visibility filtering is applied (trusted/internal use only).
+   */
+  visibleTo?: NoteVisibilityFilter;
 }
 
 /**

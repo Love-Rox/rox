@@ -11,8 +11,31 @@ import type { Context } from "hono";
 import { requireAuth, optionalAuth } from "../middleware/auth.js";
 import { userRateLimit, RateLimitPresets } from "../middleware/rateLimit.js";
 import { ReactionService } from "../services/ReactionService.js";
+import { isNoteVisibleTo } from "../lib/noteVisibility.js";
 
 const reactions = new Hono();
+
+/**
+ * Check whether the current viewer may see a note.
+ *
+ * Missing notes are reported as visible so that existing not-found handling
+ * (and response shapes) stay unchanged; callers respond to non-visible notes
+ * exactly as they would for a missing note to avoid leaking existence.
+ *
+ * @param c - Hono context
+ * @param noteId - Note ID
+ * @returns False only if the note exists and is not visible to the viewer
+ */
+async function canViewerSeeNote(c: Context, noteId: string): Promise<boolean> {
+  const noteRepository = c.get("noteRepository");
+  const note = await noteRepository.findById(noteId);
+  if (!note) return true;
+  const viewer = c.get("user");
+  return isNoteVisibleTo(note, viewer?.id ?? null, {
+    followRepository: c.get("followRepository"),
+    noteRepository,
+  });
+}
 
 /**
  * POST /api/notes/reactions/create
@@ -54,6 +77,10 @@ reactions.post(
 
     if (!body.reaction) {
       return c.json({ error: "reaction is required" }, 400);
+    }
+
+    if (!(await canViewerSeeNote(c, body.noteId))) {
+      return c.json({ error: "Note not found" }, 400);
     }
 
     try {
@@ -149,6 +176,10 @@ reactions.get("/", optionalAuth(), async (c: Context) => {
     return c.json({ error: "noteId is required" }, 400);
   }
 
+  if (!(await canViewerSeeNote(c, noteId))) {
+    return c.json([]);
+  }
+
   try {
     const reactionsList = await reactionService.getReactionsByNote(noteId, limit);
     return c.json(reactionsList);
@@ -184,6 +215,10 @@ reactions.get("/counts", optionalAuth(), async (c: Context) => {
 
   if (!noteId) {
     return c.json({ error: "noteId is required" }, 400);
+  }
+
+  if (!(await canViewerSeeNote(c, noteId))) {
+    return c.json({});
   }
 
   try {
@@ -228,6 +263,10 @@ reactions.get("/counts-with-emojis", optionalAuth(), async (c: Context) => {
 
   if (!noteId) {
     return c.json({ error: "noteId is required" }, 400);
+  }
+
+  if (!(await canViewerSeeNote(c, noteId))) {
+    return c.json({ counts: {}, emojis: {} });
   }
 
   try {
