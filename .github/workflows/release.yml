@@ -32,8 +32,9 @@ jobs:
   # 0. Skip tags pushed by auto-tag.yml. auto-tag pushes with RELEASE_PAT, which
   #    (unlike GITHUB_TOKEN) fires this workflow too; without this guard both
   #    workflows create the same release and race on the SBOM upload (#278).
-  #    auto-tag creates annotated tags as github-actions[bot], so the tagger
-  #    tells them apart from tags pushed by hand.
+  #    auto-tag puts an explicit "[auto-tag]" marker in the tag message (#282).
+  #    The github-actions[bot] tagger check covers tags created before the
+  #    marker was introduced.
   guard:
     runs-on: ubuntu-latest
     outputs:
@@ -51,11 +52,13 @@ jobs:
           fi
           read -r TYPE SHA < <(gh api "repos/${{ github.repository }}/git/ref/tags/${TAG}" --jq '.object.type + " " + .object.sha')
           TAGGER=""
+          MESSAGE=""
           if [ "$TYPE" = "tag" ]; then
             TAGGER=$(gh api "repos/${{ github.repository }}/git/tags/${SHA}" --jq '.tagger.name')
+            MESSAGE=$(gh api "repos/${{ github.repository }}/git/tags/${SHA}" --jq '.message')
           fi
-          echo "Tag ${TAG}: type=${TYPE}, tagger=${TAGGER:-<none>}"
-          if [ "$TAGGER" = "github-actions[bot]" ]; then
+          echo "Tag ${TAG}: type=${TYPE}, tagger=${TAGGER:-<none>}, message=${MESSAGE:-<none>}"
+          if [[ "$MESSAGE" == *"[auto-tag]"* ]] || [ "$TAGGER" = "github-actions[bot]" ]; then
             echo "Tag was created by auto-tag.yml, which handles the release. Skipping."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
