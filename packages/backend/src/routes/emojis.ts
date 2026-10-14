@@ -13,6 +13,7 @@ import { generateId } from "shared";
 import type { ICustomEmojiRepository } from "../interfaces/repositories/ICustomEmojiRepository.js";
 import type { IFileStorage } from "../interfaces/IFileStorage.js";
 import { logger } from "../lib/logger.js";
+import { safeFetch } from "../lib/safeFetch.js";
 import { optionalAuth } from "../middleware/auth.js";
 
 /** Allowed emoji file types */
@@ -737,7 +738,7 @@ app.post("/adopt", async (c: Context) => {
   let contentType: string;
 
   try {
-    const response = await fetch(remoteUrl, {
+    const response = await safeFetch(remoteUrl, {
       headers: {
         "User-Agent": "Rox/1.0 (ActivityPub)",
       },

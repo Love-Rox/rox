@@ -13,6 +13,7 @@ import { requireAuth } from "../middleware/auth.js";
 import { rateLimit, RateLimitPresets } from "../middleware/rateLimit.js";
 import { logger } from "../lib/logger.js";
 import { isInviteOnly, isRegistrationEnabled } from "../lib/registrationPolicy.js";
+import { toPublicUser } from "../lib/routeUtils.js";
 import type { Context } from "hono";
 
 const app = new Hono();
@@ -161,7 +162,7 @@ app.post("/register", rateLimit(RateLimitPresets.register), async (c) => {
     }
 
     // Remove sensitive data from response
-    const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+    const publicUser = toPublicUser(user);
 
     return c.json(
       {
@@ -242,7 +243,7 @@ app.post("/session", rateLimit(RateLimitPresets.login), async (c) => {
     );
 
     // パスワードハッシュとメールアドレスを除外してレスポンス
-    const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+    const publicUser = toPublicUser(user);
 
     return c.json({
       user: publicUser,
@@ -333,7 +334,7 @@ app.get("/session", requireAuth(), async (c) => {
   }
 
   // パスワードハッシュとメールアドレスを除外
-  const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+  const publicUser = toPublicUser(user);
 
   return c.json({
     user: publicUser,
@@ -478,7 +479,7 @@ app.post("/passkey/authenticate/finish", rateLimit(RateLimitPresets.login), asyn
     const { user, session } = await passkeyService.verifyAuthentication(body.credential);
 
     // Remove sensitive data from response
-    const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+    const publicUser = toPublicUser(user);
 
     return c.json({
       user: publicUser,

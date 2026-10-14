@@ -1,5 +1,6 @@
 import type { IRemoteInstanceRepository } from "../interfaces/repositories/IRemoteInstanceRepository.js";
 import { logger } from "../lib/logger.js";
+import { safeFetch } from "../lib/safeFetch.js";
 import { fetchInstanceIcon } from "../lib/instance-icon.js";
 import { withMonitor } from "../lib/sentry.js";
 
@@ -280,7 +281,7 @@ export class RemoteInstanceRefreshService {
     try {
       // First, fetch well-known nodeinfo to get the actual nodeinfo URL
       const wellKnownUrl = `https://${host}/.well-known/nodeinfo`;
-      const wellKnownResponse = await fetch(wellKnownUrl, {
+      const wellKnownResponse = await safeFetch(wellKnownUrl, {
         headers: {
           Accept: "application/json",
         },
@@ -305,7 +306,7 @@ export class RemoteInstanceRefreshService {
       }
 
       // Fetch actual nodeinfo
-      const nodeInfoResponse = await fetch(nodeInfoLink.href, {
+      const nodeInfoResponse = await safeFetch(nodeInfoLink.href, {
         headers: {
           Accept: "application/json",
         },

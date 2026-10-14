@@ -8,9 +8,11 @@
 
 import { Hono } from "hono";
 import type { Context } from "hono";
+import type { Follow, User } from "shared";
 import { requireAuth } from "../middleware/auth.js";
 import { userRateLimit, RateLimitPresets } from "../middleware/rateLimit.js";
 import { FollowService } from "../services/FollowService.js";
+import { toPublicUser } from "../lib/routeUtils.js";
 
 const following = new Hono();
 
@@ -157,7 +159,13 @@ following.get("/users/followers", async (c: Context) => {
 
   try {
     const followers = await followService.getFollowers(userId, limit, offset);
-    return c.json(followers);
+    // Joined user rows are full DB rows (incl. passwordHash / privateKey)
+    return c.json(
+      (followers as Array<Follow & { follower?: User | null }>).map((f) => ({
+        ...f,
+        follower: f.follower ? toPublicUser(f.follower) : f.follower,
+      })),
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to get followers";
     return c.json({ error: message }, 400);
@@ -190,7 +198,12 @@ following.get("/users/following", async (c: Context) => {
 
   try {
     const following = await followService.getFollowing(userId, limit, offset);
-    return c.json(following);
+    return c.json(
+      (following as Array<Follow & { followee?: User | null }>).map((f) => ({
+        ...f,
+        followee: f.followee ? toPublicUser(f.followee) : f.followee,
+      })),
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to get following";
     return c.json({ error: message }, 400);

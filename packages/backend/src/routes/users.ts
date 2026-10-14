@@ -11,7 +11,7 @@
 import { Hono } from "hono";
 import { UserService } from "../services/UserService.js";
 import { requireAuth, optionalAuth } from "../middleware/auth.js";
-import { errorResponse } from "../lib/routeUtils.js";
+import { errorResponse, sanitizeUser, toPublicUser } from "../lib/routeUtils.js";
 import { verifyPassword } from "../utils/password.js";
 
 const app = new Hono();
@@ -51,7 +51,7 @@ app.get("/@me", requireAuth(), async (c) => {
   }
 
   // メールアドレスは含めるが、パスワードハッシュは除外
-  const { passwordHash: _passwordHash, ...userData } = user;
+  const userData = sanitizeUser(user);
 
   return c.json(userData);
 });
@@ -117,15 +117,7 @@ app.get("/search", async (c) => {
   });
 
   // Remove sensitive fields
-  const publicUsers = searchResults.map((user) => {
-    const {
-      passwordHash: _passwordHash,
-      email: _email,
-      privateKey: _privateKey,
-      ...publicUser
-    } = user;
-    return publicUser;
-  });
+  const publicUsers = searchResults.map((user) => toPublicUser(user));
 
   return c.json({ users: publicUsers });
 });
@@ -181,7 +173,7 @@ app.get("/show", optionalAuth(), async (c) => {
   }
 
   // パスワードハッシュとメールアドレスを除外
-  const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+  const publicUser = toPublicUser(user);
 
   // Check if current user is following this user (if authenticated)
   let isFollowed = false;
@@ -251,7 +243,7 @@ app.get("/resolve", optionalAuth(), async (c) => {
     const user = await remoteActorService.resolveActorByAcct(acct);
 
     // パスワードハッシュとメールアドレスを除外
-    const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+    const publicUser = toPublicUser(user);
 
     // Check if current user is following this user (if authenticated)
     let isFollowed = false;
@@ -363,7 +355,7 @@ app.get("/:id", async (c) => {
   }
 
   // パスワードハッシュとメールアドレスを除外
-  const { passwordHash: _passwordHash, email: _email, ...publicUser } = user;
+  const publicUser = toPublicUser(user);
 
   return c.json(publicUser);
 });
@@ -491,7 +483,7 @@ app.patch("/@me", requireAuth(), async (c) => {
 
   try {
     const updatedUser = await userService.updateProfile(user.id, updateData);
-    const { passwordHash: _passwordHash, ...userData } = updatedUser;
+    const userData = sanitizeUser(updatedUser);
     return c.json(userData);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to update profile";
