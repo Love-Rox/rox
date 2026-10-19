@@ -23,7 +23,7 @@
     "@aws-sdk/client-s3": "^3.1150.0",
     "@hono/zod-validator": "^0.9.1",
     "@sentry/bun": "^11.7.0",
-    "@sentry/core": "11.7.0",
+    "@sentry/core": "11.8.0",
     "@simplewebauthn/server": "^14.0.3",
     "blurhash": "^2.0.5",
     "bullmq": "^6.3.14",
